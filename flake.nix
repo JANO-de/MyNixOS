@@ -21,7 +21,7 @@
     nixosConfigurations = lib.genHosts {
       desktop = {
         username = "jano";
-        userDescription = "Jano's desktop";0
+        userDescription = "Jano's desktop";
       };
 
       laptop = {
