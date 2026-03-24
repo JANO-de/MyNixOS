@@ -1,9 +1,9 @@
-{ pkgs, lib, inputs, ... }:
+{ pkgs, lib, self', inputs, ... }:
 let
   myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
     inherit pkgs;
     settings = {
-      spawn-at-startup = [];
+      spawn-at-startup = [(lib.getExe self'.packages.myNoctalia)];
 
       xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 

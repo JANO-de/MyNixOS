@@ -7,7 +7,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
-
+    import-tree.url = "github:vic/import-tree";
   };
 
   outputs =
