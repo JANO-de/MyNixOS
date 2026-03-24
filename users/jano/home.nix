@@ -1,8 +1,8 @@
 { pkgs, inputs, self, ... }: {
   imports = [
-    "${self}/modules/home/apps.nix"
-    "${self}/modules/home/niri.nix"
-    "${self}/modules/home/shell.nix"
+    ../../modules/home/apps.nix
+    ../../modules/home/niri.nix
+    ../../modules/home/shell.nix
   ];
 
   home.username = "jano";
