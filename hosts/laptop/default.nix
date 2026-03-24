@@ -2,7 +2,6 @@
   imports = [
     ./hardware-configuration.nix
     ./configuration.nix
-    ../../modules/core # Any shared system modules
   ];
 
   networking.hostName = "laptop";
