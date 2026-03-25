@@ -64,10 +64,6 @@
 
   # Help Niri find your hardware
   hardware.graphics.enable = true;
-
-  # Crucial for Nvidia + Niri
-  boot.kernelParams = [ "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1" ];
-
   # Common Packages
   environment.systemPackages = with pkgs; [
     git
