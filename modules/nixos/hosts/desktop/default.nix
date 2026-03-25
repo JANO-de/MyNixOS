@@ -3,10 +3,7 @@
     modules = [
       self.nixosModules.desktopConfiguration
       self.nixosModules.core
-
-      {          
-        networking.hostName = "desktop";
-      }
     ];
+    networking.hostName = "desktop";
   };
 }
