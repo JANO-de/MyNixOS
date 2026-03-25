@@ -12,7 +12,7 @@
     
     users.users.jano = {
       isNormalUser = true;
-      extraGroups = [ "networkmanager" "wheel" "video" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "adbuser" "dialout" ];
     };
 
     services.pipewire = {

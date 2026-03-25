@@ -11,6 +11,8 @@
       pavucontrol       # Audio control GUI
       libnotify         # Notifications
       nemo
+      kdePackages.dolphin
+      kando
 
       steam
       bazaar
@@ -22,7 +24,22 @@
       whatsapp-electron
       vscode
       vesktop
+
+      mtkclient
+      android-tools
       
+      unrar
+      kdePackages.ark
+      unzip
+      zip
+      rar
+
+      python315
+
+      javaPackages.compiler.openjdk25
+      javaPackages.compiler.openjdk17
+      javaPackages.compiler.openjdk8
+
       # Screenshotting
       wl-clipboard
       cliphist
