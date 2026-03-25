@@ -18,22 +18,7 @@
     nix-gaming.url = "github:fufexan/nix-gaming";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" ];
-      # 1. Automatically import everything in modules/parts
-      imports = [
-        (inputs.import-tree ./modules)
-      ];
-
-      # 2. Define your hosts using your custom lib
-      flake = { self, ...}: let
-        myLib = import ./lib { inherit inputs self; };
-      in {
-        nixosConfigurations = {
-          desktop = myLib.mkHost "desktop" "jano";
-          laptop  = myLib.mkHost "laptop"  "jano";
-        };
-      };
-    };
+  outputs = inputs: inputs.flake-parts.lib.mkFlake
+    { inherit inputs; }
+    (inputs.import-tree ./modules);
 }
