@@ -17,6 +17,7 @@
       vscode
       vesktop
       flameshot
+      grim
     ];
   };
     
