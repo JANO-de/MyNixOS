@@ -10,12 +10,16 @@
       kitty             # Terminal for Niri
       pavucontrol       # Audio control GUI
       libnotify         # Notifications
+      nemo
+
+      steam
+      bazaar
 
       firefox
       librewolf
       kdePackages.kate
     
-      nemo
+      whatsapp-electron
       vscode
       vesktop
       
@@ -27,8 +31,10 @@
       grim
       grimblast
       slurp
-      flameshot
       swappy
+      
     ];
+
+    programs.kdeconnect.enable = true;
   };
 } 
