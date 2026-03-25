@@ -7,18 +7,28 @@
       wget
       curl
       direnv
-      firefox
-      librewolf
-      kdePackages.kate
       kitty             # Terminal for Niri
       pavucontrol       # Audio control GUI
       libnotify         # Notifications
+
+      firefox
+      librewolf
+      kdePackages.kate
+    
       nemo
       vscode
       vesktop
-      flameshot
+      
+      # Screenshotting
+      wl-clipboard
+      cliphist
+      imagemagick
+      dunst
       grim
+      grimblast
+      slurp
+      flameshot
+      swappy
     ];
   };
-    
-}
+} 

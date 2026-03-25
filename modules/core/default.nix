@@ -1,6 +1,10 @@
 { self, inputs, ... }: {
   flake.nixosModules.core = { pkgs, ...}: {
-    imports = [];
+    imports = [
+      self.nixosModules.basicApps
+      self.nixosModules.services
+      self.nixosModules.basicfonts
+    ];
 
     # Standard System Settings
     time.timeZone = "Europe/Madrid"; # Change to your zone
@@ -19,6 +23,12 @@
       LC_PAPER = "es_ES.UTF-8";
       LC_TELEPHONE = "es_ES.UTF-8";
       LC_TIME = "es_ES.UTF-8";
+    };
+
+    xdg.portal = {
+      enable = true;
+      extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+      config.common.default = "*";
     };
 
     nixpkgs.config.allowUnfree = true;

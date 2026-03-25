@@ -1,6 +1,6 @@
 { self, inputs, ... }: {
-  flake.nixosModules.basicApps = { pkgs, lib, config, ... }: 
+  flake.nixosModules.services = { pkgs, lib, config, ... }: 
   {
-        
+    services.dunst.enable = true;
   };
 }

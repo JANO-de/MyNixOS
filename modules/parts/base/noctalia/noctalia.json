@@ -5,7 +5,7 @@
       "barType": "simple",
       "position": "top",
       "monitors": [],
-      "density": "default",
+      "density": "comfortable",
       "showOutline": false,
       "showCapsule": true,
       "capsuleOpacity": 1,
@@ -260,7 +260,7 @@
       "settingsPanelSideBarCardStyle": false
     },
     "location": {
-      "name": "Tokyo",
+      "name": "Algeciras, Spain",
       "weatherEnabled": true,
       "weatherShowEffects": true,
       "useFahrenheit": false,
@@ -589,7 +589,7 @@
     },
     "colorSchemes": {
       "useWallpaperColors": false,
-      "predefinedScheme": "Noctalia (default)",
+      "predefinedScheme": "Lilac AMOLED",
       "darkMode": true,
       "schedulingMode": "off",
       "manualSunrise": "06:30",
@@ -644,60 +644,6 @@
       "gridSnap": false,
       "gridSnapScale": false,
       "monitorWidgets": []
-    }
-  },
-  "state": {
-    "doNotDisturb": false,
-    "noctaliaPerformanceMode": false,
-    "barVisible": true,
-    "openedPanel": "",
-    "lockScreenActive": false,
-    "wallpapers": {},
-    "desktopWidgetsEditMode": false,
-    "display": {
-      "HDMI-A-1": {
-        "name": "HDMI-A-1",
-        "connected": true,
-        "scale": 1.5,
-        "width": 2560,
-        "height": 1440,
-        "x": 1920,
-        "y": 0,
-        "physical_width": 600,
-        "physical_height": 330,
-        "refresh_rate": 60000,
-        "vrr_supported": false,
-        "vrr_enabled": false,
-        "transform": "Normal"
-      },
-      "eDP-1": {
-        "name": "eDP-1",
-        "connected": true,
-        "scale": 1,
-        "width": 1920,
-        "height": 1080,
-        "x": 0,
-        "y": 0,
-        "physical_width": 340,
-        "physical_height": 190,
-        "refresh_rate": 144003,
-        "vrr_supported": true,
-        "vrr_enabled": false,
-        "transform": "Normal"
-      }
-    },
-    "notificationsState": {
-      "lastSeenTs": 0
-    },
-    "changelogState": {
-      "lastSeenVersion": "v4.6.7"
-    },
-    "colorSchemesList": {
-      "schemes": [],
-      "timestamp": 0
-    },
-    "ui": {
-      "settingsSidebarExpanded": true
     }
   }
 }
