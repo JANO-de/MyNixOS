@@ -24,7 +24,7 @@
           "Mod+K".spawn-sh = "${lib.getExe pkgs.kitty}";
           "Mod+Q".close-window = null;
           "Mod+N".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
-          "Mod+Shift+S".spawn-sh = "${pkgs.grim}/bin/grim -g - | ${pkgs.swappy}/bin/swappy -f -";
+          "Mod+Shift+S".spawn-sh = "${lib.getExe pkgs.grim}
         };
       };
     };
