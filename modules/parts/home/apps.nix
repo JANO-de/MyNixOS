@@ -8,6 +8,7 @@
     libnotify         # Notifications
     nemo
     vscode
+    vesktop
     inputs.self.packages.${pkgs.system}.my-niri
   ];
 }
