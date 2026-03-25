@@ -2,7 +2,7 @@
   flake.nixosModules.niri = { pkgs, lib, ... }: {
     programs.niri = {
       enable = true;
-      package = self.packages.${pkgs.stdenv.stPlatform.system}.myNiri;
+      package = self.packages.${pkgs.system}.myNiri;
     };
   };
 

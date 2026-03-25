@@ -1,8 +1,8 @@
 { self, inputs, ... }: {
-  flake.nixosModules.desktopConfiguration = { pkgs, lib, ... }: {
+  flake.nixosModules.laptopConfiguration = { pkgs, lib, ... }: {
     # import any other modules from here
     imports = [
-      self.nixosModules.desktopHardware
+      self.nixosModules.laptopHardware
       self.nixosModules.niri
     ];
 
