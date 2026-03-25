@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, inputs, self, ... }: {
   home.packages = with pkgs; [
     firefox
     librewolf
@@ -8,6 +8,6 @@
     libnotify         # Notifications
     nemo
     vscode
-
+    inputs.self.packages.${pkgs.system}.my-niri
   ];
 }

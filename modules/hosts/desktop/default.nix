@@ -2,7 +2,7 @@
   imports = [
     ./hardware-configuration.nix
     ./configuration.nix
-    "${self}/modules/core"
+    "${self}/parts/core"
   ];
 
   networking.hostName = "desktop";

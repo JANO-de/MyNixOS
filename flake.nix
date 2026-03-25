@@ -8,27 +8,24 @@
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     import-tree.url = "github:vic/import-tree";
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs =
-    { self, nixpkgs, ... }@inputs:
-  let
-    lib = import ./lib {
-      inherit self inputs;
-    };
-  in
-  {
-    nixosConfigurations = lib.genHosts {
-      desktop = {
-        username = "jano";
-        userDescription = "Jano's desktop";
-      };
+  outputs = inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      # 1. Automatically import everything in modules/parts
+      imports = [
+        (inputs.import-tree ./modules/parts)
+      ];
 
-      laptop = {
-        username = "jano";
-        userDescription = "Jano's laptop";
+      # 2. Define your hosts using your custom lib
+      flake = let
+        myLib = import ./lib { inherit inputs; };
+      in {
+        nixosConfigurations = {
+          desktop = myLib.mkHost "desktop" "jano";
+          laptop  = myLib.mkHost "laptop"  "jano";
+        };
       };
-
     };
-  };
 }
