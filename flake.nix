@@ -15,7 +15,7 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       # 1. Automatically import everything in modules/parts
       imports = [
-        (inputs.import-tree ./modules/parts)
+        (inputs.import-tree ./modules)
       ];
 
       # 2. Define your hosts using your custom lib

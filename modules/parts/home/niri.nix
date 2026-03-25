@@ -1,11 +1,18 @@
-{ inputs, ... }: {
-  # This block runs for every system (x86_64-linux, etc.)
-  perSystem = { pkgs, lib, self', ... }:
-    let
-      myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
-        inherit pkgs;
-        settings = {
-          spawn-at-startup = [(lib.getExe self'.packages.myNoctalia)];
+{ self, inputs, ... }: {
+  flake.nixosModules.niri = { pkgs, lib, ... }: {
+    programs.niri = {
+      enable = true;
+      package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri;
+    };
+  };
+
+  perSystem = { pkgs, lib, self', ... }: {
+    packages.myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
+      inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
+      settings = {
+        spawn-at-startup = [
+          (lib.getExe self'.packages.myNoctalia)
+        ];
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
@@ -53,15 +60,12 @@
 
             # Apps
             "Print".spawn-sh = lib.getExe pkgs.grim; # Screenshot
-            "Mod+T".spawn-sh = lib.getExe pkgs.foot; # Terminal
+            "Mod+T".spawn-sh = lib.getExe pkgs.kitty; # Terminal
             "Mod+D".spawn-sh = lib.getExe pkgs.fuzzel; # Launcher
             "Mod+I".spawn-sh = lib.getExe pkgs.yazi; # Files
             "Mod+Alt+L".spawn-sh = "swaylock"; # Lock
             "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
           };
-        };
       };
-    in {
-      packages.my-niri = myNiri;
     };
 }

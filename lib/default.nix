@@ -1,10 +1,10 @@
-{ inputs, ... }: {
+{ inputs, self, ... }: {
   mkHost = hostName: userName: 
     inputs.nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
       modules = [
         # Path to the hardware/configuration for this specific host
-        ../modules/hosts/${hostName}
+        "${self}/hosts/${hostName}"
         
         # Load Home Manager
         inputs.home-manager.nixosModules.home-manager {
