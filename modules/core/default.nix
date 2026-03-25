@@ -63,15 +63,6 @@
 
     # Help Niri find your hardware
     hardware.graphics.enable = true;
-    # Common Packages
-    environment.systemPackages = with pkgs; [
-      git
-      polkit_gnome
-      vim
-      wget
-      curl
-      direnv
-    ];
 
     # Enable Flakes
     nix.settings.experimental-features = [ "nix-command" "flakes" ];

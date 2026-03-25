@@ -6,6 +6,8 @@
       self.nixosModules.niri
     ];
 
+    networking.hostName = "laptop";
+
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
     
     users.users.jano = {

@@ -4,7 +4,5 @@
       self.nixosModules.desktopConfiguration
       self.nixosModules.core
     ];
-
-    networking.hostName = "laptop";
   };
 }
