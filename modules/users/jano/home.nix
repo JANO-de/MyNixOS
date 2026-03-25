@@ -1,6 +1,6 @@
 { pkgs, inputs, self, ... }: {
   imports = [
-    "${self}/parts/home/apps.nix"
+    ./apps.nix
   ];
 
   home.username = "jano";
