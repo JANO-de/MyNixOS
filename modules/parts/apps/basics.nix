@@ -16,6 +16,7 @@
       nemo
       vscode
       vesktop
+      flameshot
     ];
   };
     
