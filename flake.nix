@@ -18,10 +18,12 @@
     nix-gaming.url = "github:fufexan/nix-gaming";
   };
 
-  outputs = inputs: inputs.flake-parts.lib.mkFlake
-    { 
-      system = "x86_64-linux";  
-      inherit inputs; 
-    }
-    (inputs.import-tree ./modules);
-}
+  outputs = inputs: inputs.flake-parts.lib.mkFlake 
+    { inherit inputs; } # 
+    {                   #
+      systems = [ "x86_64-linux" ]; 
+      
+      imports = [
+        (inputs.import-tree ./modules)
+      ];
+    };
