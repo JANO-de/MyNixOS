@@ -19,6 +19,8 @@
       bazaar
       mangohud
       protonup-ng
+      lutris
+      heroic
 
       # Browsers
       firefox
@@ -40,7 +42,7 @@
       rar
 
       python315
-      eclipse
+      eclipses.eclipse-java
       bluej
 
       javaPackages.compiler.openjdk25
@@ -66,6 +68,11 @@
       steam.gamescopeSession.enable = true;
       gamemode.enable = true;
 
+    };
+
+    environment.sessionVariables = {
+      STEAM_EXTRA_COMPAT_TOOLS_PATHS = 
+        "/home/jano/.steam/root/compatibilitytools.d";
     };
   };
 } 
