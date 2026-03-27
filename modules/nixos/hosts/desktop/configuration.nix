@@ -9,17 +9,6 @@
     networking.hostName = "desktop";
 
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    
-    users.users.jano = {
-      isNormalUser = true;
-      extraGroups = [ "networkmanager" "wheel" "video" "adbuser" "dialout" ];
-    };
-
-    services.pipewire = {
-      enable = true;
-      alsa.enable = true;
-     pulse.enable = true;
-    };
 
     time.timeZone = "Europe/Madrid";
     system.stateVersion = "25.11";

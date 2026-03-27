@@ -13,12 +13,17 @@
       nemo
       kdePackages.dolphin
       kando
-
+ 
+      # Gaming
       steam
       bazaar
+      mangohud
+      protonup
 
+      # Browsers
       firefox
       librewolf
+
       kdePackages.kate
     
       whatsapp-electron
@@ -35,6 +40,8 @@
       rar
 
       python315
+      eclipse
+      bluej
 
       javaPackages.compiler.openjdk25
       javaPackages.compiler.openjdk17
@@ -52,6 +59,13 @@
       
     ];
 
-    programs.kdeconnect.enable = true;
+    programs = {
+      
+      kdeconnect.enable = true;
+      steam.enable = true;
+      steam.gamescopeSession.enable = true;
+      gamemode.enable = true;
+
+    };
   };
 } 

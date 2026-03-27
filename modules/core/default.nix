@@ -56,6 +56,17 @@
     # Configure console keymap
     console.keyMap = "es";
 
+    users.users.jano = {
+      isNormalUser = true;
+      extraGroups = [ "networkmanager" "wheel" "video" "adbuser" "dialout" ];
+    };
+
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+     pulse.enable = true;
+    };
+
     # Common Networking
     networking.networkmanager.enable = true;
 
