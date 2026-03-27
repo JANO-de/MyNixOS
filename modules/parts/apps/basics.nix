@@ -20,7 +20,9 @@
       mangohud
       protonup-ng
       lutris
+      bottles
       heroic
+      inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.<package> # installs a package
 
       # Browsers
       firefox
