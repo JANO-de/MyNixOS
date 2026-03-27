@@ -18,7 +18,7 @@
       steam
       bazaar
       mangohud
-      protonup
+      protonup-ng
 
       # Browsers
       firefox
