@@ -4,6 +4,7 @@
     services = {
       dunst.enable = true;
       flatpak.enable = true;
+      gvfs.enable = true;
     };
 
     services.udev.extraRules = ''

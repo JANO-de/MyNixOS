@@ -10,8 +10,7 @@
       kitty             # Terminal for Niri
       pavucontrol       # Audio control GUI
       libnotify         # Notifications
-      nemo
-      kdePackages.dolphin
+      nautilus
       kando
  
       # Gaming
