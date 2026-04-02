@@ -1,10 +1,16 @@
 { self, inputs, ... }: {
   flake.nixosModules.kde = { pkgs, lib, ... }: {
     services = {
-    desktopManager.plasma6.enable = true;
-    displayManager.sddm.enable = true;
-    displayManager.sddm.wayland.enable = true;
+      displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+        # Use lib.mkDefault to avoid the "multiple definitions" error
+        package = lib.mkDefault pkgs.kdePackages.sddm; 
+      };
+      desktopManager.plasma6.enable = true;
     };
+
+    services.displayManager.sessionPackages = [ pkgs.kdePackages.plasma-desktop ];
 
     environment.systemPackages = with pkgs; [
     # KDE Utilities
