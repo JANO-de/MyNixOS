@@ -1,3 +1,40 @@
+let
+  hunt-sddm-theme = pkgs.stdenv.mkDerivation {
+    name = "sddm-hunt-theme";
+    src = pkgs.fetchFromGitHub {
+      owner = "MarianArlt";
+      repo = "sddm-sugar-candy";
+      rev = "v1.2";
+      sha256 = "0199cn7sp769n0mqv0mxy7m07vj6shf760f38y6p39sxl60i491s";
+    };
+    installPhase = ''
+      mkdir -p $out/share/sddm/themes/sugar-candy
+      cp -r ./* $out/share/sddm/themes/sugar-candy/
+      
+      # Replace the default background with your Frame 173
+      # We use the relative path to your hunt folder
+      cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
+      
+      # Edit the theme.conf to match your requirements
+      cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
+[General]
+Background="Backgrounds/hunt-bg.png"
+ScreenWidth=1920
+ScreenHeight=1080
+FormPosition=center
+HaveFormBackground=true
+PartialBlur=true
+MainColor=#ff0000
+AccentColor=#ff0000
+BackgroundColor=#000000
+# This makes the login text red
+FullSizeButtons=true
+# Point to your user image
+UserPictureEnabled=true
+EOF
+    '';
+  };
+in
 { self, inputs, ... }: {
   flake.nixosModules.core = { pkgs, ...}: {
     imports = [
@@ -123,7 +160,7 @@
     services.displayManager.sddm = {
       enable = true;
       wayland.enable = true;
-      theme = "sddm-sugar-candy-nix";
+      theme = "${hunt-sddm-theme}/share/sddm/themes/sugar-candy";
     };
 
     services.displayManager.sddm.settings = {

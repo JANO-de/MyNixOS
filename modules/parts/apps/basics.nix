@@ -1,7 +1,9 @@
 { self, inputs, ... }: {
   flake.nixosModules.basicApps = { pkgs, lib, ... }: {
     environment.systemPackages = with pkgs; [
-      pkgs.sddm-sugar-candy-nix
+      libsForQt5.qt5.qtgraphicaleffects
+      libsForQt5.qt5.qtquickcontrols2
+      libsForQt5.qt5.qtsvg
       git
       polkit_gnome
       vim
