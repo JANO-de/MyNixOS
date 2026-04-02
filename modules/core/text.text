@@ -1,0 +1,48 @@
+ /*let
+    hunt-sddm-theme = pkgs.stdenv.mkDerivation {
+      pname = "sddm-hunt-theme";
+      version = "1.0";
+      
+      # POINT TO YOUR LOCAL FOLDER HERE
+      src = ../parts/base/plymouth/sddm-theme; 
+
+      installPhase = ''
+        mkdir -p $out/share/sddm/themes/sugar-candy
+        cp -r ./* $out/share/sddm/themes/sugar-candy/
+        
+        # 1. THE QT6 TRANSLATION (Crucial)
+        # This replaces the old QtGraphicalEffects with the Qt6 compatibility layer
+        sed -i 's/import QtGraphicalEffects 1.0/import Qt5Compat.GraphicalEffects 1.0/g' $out/share/sddm/themes/sugar-candy/Main.qml
+        # 2. Force Metadata Name
+        sed -i 's/^Name=.*/Name=sugar-candy/' $out/share/sddm/themes/sugar-candy/metadata.desktop
+
+        # 3. Inject Background
+        mkdir -p $out/share/sddm/themes/sugar-candy/Backgrounds
+        cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
+        
+        # 4. Create theme.conf
+        cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
+[General]
+Background="Backgrounds/hunt-bg.png"
+FormPosition=center
+FormPosition=center
+HaveFormBackground=true
+PartialBlur=true
+# Colors
+MainColor=#cc0000
+AccentColor=#cc0000
+BackgroundColor=#000000
+# User Image
+UserPictureEnabled=true
+UserPicture="/share/sddm/themes/sugar-candy/Backgrounds/user.png"
+# Text Styling
+Font="Sans"
+FontSize=12
+# This helps with the 'red text' requirement for boot options
+SessionColor=#cc0000
+SessionFontSize=14
+EOF
+      '';
+    };
+  in
+**

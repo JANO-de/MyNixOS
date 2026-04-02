@@ -1,9 +1,12 @@
 { self, inputs, ... }: {
   flake.nixosModules.basicApps = { pkgs, lib, ... }: {
     environment.systemPackages = with pkgs; [
-      libsForQt5.qt5.qtgraphicaleffects
-      libsForQt5.qt5.qtquickcontrols2
-      libsForQt5.qt5.qtsvg
+      kdePackages.qt5compat          # Helps old themes run on Qt6
+      kdePackages.qtsvg
+      kdePackages.qtdeclarative
+      kdePackages.qt5compat
+      sddm-sugar-dark
+      sddm-astronaut
       git
       polkit_gnome
       vim

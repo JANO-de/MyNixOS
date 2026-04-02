@@ -1,43 +1,5 @@
 { self, inputs, ... }: {
   flake.nixosModules.core = { pkgs, ... }: 
-  # --- LET BLOCK STARTS HERE ---
-  let
-    hunt-sddm-theme = pkgs.stdenv.mkDerivation {
-      pname = "sddm-hunt-theme";
-      version = "1.0";
-      src = pkgs.fetchFromGitHub {
-        owner = "MarianArlt";
-        repo = "sddm-sugar-candy";
-        # Using the latest commit instead of the v1.2 tag to avoid 404s
-        rev = "a508fab2b5cc74423853177990ef324706592231";
-        sha256 = "sha256-S6U6Xshq3I8S8fR194hC276V04J/l2O06C5T2NNC8p0=";
-      };
-      installPhase = ''
-        mkdir -p $out/share/sddm/themes/sugar-candy
-        cp -r ./* $out/share/sddm/themes/sugar-candy/
-        
-        # Copy the specific frame for the background
-        cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
-        
-        # Overwrite the config file
-        cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
-[General]
-Background="Backgrounds/hunt-bg.png"
-ScreenWidth=1920
-ScreenHeight=1080
-FormPosition=center
-HaveFormBackground=true
-PartialBlur=true
-MainColor=#cc0000
-AccentColor=#cc0000
-BackgroundColor=#000000
-FullSizeButtons=true
-UserPictureEnabled=true
-EOF
-      '';
-    };
-  in
-  # --- MODULE BODY STARTS HERE ---
   {
     imports = [
       self.nixosModules.basicApps
@@ -69,6 +31,11 @@ EOF
       extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
       config.common.default = "*";
     };
+
+    services.desktopManager.plasma6.enable = true;
+    environment.plasma6.excludePackages = with pkgs.kdePackages; [
+      konsole
+    ];
 
     nixpkgs.config.allowUnfree = true;
 
@@ -114,50 +81,13 @@ EOF
     # Common Networking
     networking.networkmanager.enable = true;
 
-    environment.systemPackages = with pkgs; [
-      libsForQt5.qt5.qtgraphicaleffects
-      libsForQt5.qt5.qtquickcontrols2
-      libsForQt5.qt5.qtsvg
-    ];
-
-    # 2. Boot & Plymouth
-    boot = {
-      plymouth = {
-        enable = true;
-        theme = "hunt";
-        themePackages = [
-          (pkgs.stdenv.mkDerivation {
-            pname = "hunt-local-theme";
-            version = "1.0";
-            src = ../parts/base/plymouth/hunt;
-            installPhase = ''
-              mkdir -p $out/share/plymouth/themes/hunt
-              cp -r ./* $out/share/plymouth/themes/hunt/
-              substituteInPlace $out/share/plymouth/themes/hunt/hunt.plymouth \
-                --replace "/usr/share/plymouth/themes/hunt" "$out/share/plymouth/themes/hunt"
-              substituteInPlace $out/share/plymouth/themes/hunt/hunt.script \
-                --replace "/media/" "$out/share/plymouth/themes/hunt/media/"
-            '';
-          })
-        ];
-      };
-      consoleLogLevel = 3;
-      initrd.verbose = false;
-      kernelParams = [ "quiet" "splash" "udev.log_level=3" "systemd.show_status=auto" ];
-      loader.timeout = 3;
-      loader.systemd-boot.enable = true;
-      loader.efi.canTouchEfiVariables = true;
-    };
-
     # 3. SDDM Configuration
-    services.displayManager.sddm = {
+
+    boot.loader.grub = {
       enable = true;
-      wayland.enable = true;
-      # Use the derivation defined in the 'let' block
-      theme = "${hunt-sddm-theme}/share/sddm/themes/sugar-candy";
+      device = "nodev"; # Mandatory for UEFI
+      efiSupport = true;
     };
-    #services.displayManager.autoLogin.enable = true;
-    #services.displayManager.autoLogin.user = "jano";
 
     hardware.bluetooth.enable = true;
     services.power-profiles-daemon.enable = true;
