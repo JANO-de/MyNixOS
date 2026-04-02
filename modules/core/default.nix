@@ -8,8 +8,9 @@
       src = pkgs.fetchFromGitHub {
         owner = "MarianArlt";
         repo = "sddm-sugar-candy";
-        rev = "v1.2";
-        sha256 = "0199cn7sp769n0mqv0mxy7m07vj6shf760f38y6p39sxl60i491s";
+        # Using the latest commit instead of the v1.2 tag to avoid 404s
+        rev = "a508fab2b5cc74423853177990ef324706592231";
+        sha256 = "sha256-S6U6Xshq3I8S8fR194hC276V04J/l2O06C5T2NNC8p0=";
       };
       installPhase = ''
         mkdir -p $out/share/sddm/themes/sugar-candy
@@ -18,7 +19,7 @@
         # Copy the specific frame for the background
         cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
         
-        # Overwrite the config file with your specific Hunt settings
+        # Overwrite the config file
         cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
 [General]
 Background="Backgrounds/hunt-bg.png"
@@ -32,7 +33,6 @@ AccentColor=#cc0000
 BackgroundColor=#000000
 FullSizeButtons=true
 UserPictureEnabled=true
-# Setting specific fonts or red text colors here
 EOF
       '';
     };
