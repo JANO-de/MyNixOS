@@ -1,6 +1,6 @@
 { self, inputs, ... }: {
   flake.nixosModules.kde = { pkgs, ... }: {
-    services.displayManager.lightdm.enable = true; # Probemos con lightdm si quieres
+    services.displayManager.gdm.enable = true; # Probemos con lightdm si quieres
     services.desktopManager.plasma6.enable = true;
 
     environment.systemPackages = with pkgs; [
