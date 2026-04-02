@@ -6,6 +6,7 @@
       self.nixosModules.services
       self.nixosModules.basicfonts
       self.nixosModules.kde
+      self.nixosModules.nvidia
     ];
 
     # Standard System Settings
