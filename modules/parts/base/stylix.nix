@@ -41,7 +41,6 @@
       targets.gnome.enable = true;
       targets.gtk.enable = true;
       targets.plymouth.enable = true;
-      targets.kde.enable = true; # Ya que usas Plasma 6
     };
   };
 }
