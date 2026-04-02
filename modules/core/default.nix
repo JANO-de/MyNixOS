@@ -16,7 +16,7 @@
         cp -r ./* $out/share/sddm/themes/sugar-candy/
         
         # Copy the specific frame for the background
-        cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
+        cp ${../parts/base/plymouth/hunt/media/1920x1080/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
         
         # Overwrite the config file with your specific Hunt settings
         cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
