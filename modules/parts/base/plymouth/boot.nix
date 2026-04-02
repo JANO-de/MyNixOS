@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  flake.nixosModules.boot = { pkgs, config, ... }: {
+  flake.nixosModules.boot = { pkgs, config, lib, ... }: {
     boot = {
       # 1. Activar Plymouth
       plymouth = {
