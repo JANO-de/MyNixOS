@@ -88,8 +88,8 @@
             src = pkgs.fetchFromGitHub {
               owner = "Anxhul10";
               repo = "huntShowdown-plymouth";
-              rev = "6238b16752079088667634f1896067098f985062"; # Use the latest commit hash
-              sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Replace with actual hash
+              rev = "master"; # Using the main branch directly
+              hash = "sha256-R8zshFvN0pOfGvU3f09m/H9fA868f0O3YI9v1D8qZ/0=";
             };
 
             installPhase = ''
