@@ -121,6 +121,8 @@
     services.displayManager.sddm = {
       enable = true;
       wayland.enable = true;
+      autoLogin.enable = true;
+      autoLogin.user = "jano";
     };
 
     hardware.bluetooth.enable = true;
