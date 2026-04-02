@@ -81,21 +81,17 @@
         theme = "hunt";
         themePackages = [
           (pkgs.stdenv.mkDerivation {
-            pname = "hunt";
+            pname = "hunt-local-theme";
             version = "1.0";
-
-            # This tells Nix to look at the 'my-theme' folder in your config
-            src = ../parts/base/plymouth/hunt; 
+            src = ../parts/base/plymouth/hunt;
 
             installPhase = ''
               mkdir -p $out/share/plymouth/themes/hunt
               cp -r ./* $out/share/plymouth/themes/hunt/
 
-              # This ensures Plymouth looks in the Nix Store for the images/scripts
-              if [ -f $out/share/plymouth/themes/hunt/hunt.plymouth ]; then
-                substituteInPlace $out/share/plymouth/themes/hunt/hunt.plymouth \
-                  --replace "/usr/share/plymouth/themes/hunt" "$out/share/plymouth/themes/hunt"
-              fi
+              # We fix the .plymouth file AND the .script file
+              find $out/share/plymouth/themes/hunt -name "*.plymouth" -exec sed -i "s|/usr/share/plymouth/themes/hunt|$out/share/plymouth/themes/hunt|g" {} +
+              find $out/share/plymouth/themes/hunt -name "*.script" -exec sed -i "s|/usr/share/plymouth/themes/hunt|$out/share/plymouth/themes/hunt|g" {} +
             '';
           })
         ];
@@ -111,7 +107,7 @@
       # Hide the OS choice for bootloaders.
       # It's still possible to open the bootloader list by pressing any key
       # It will just not appear on screen unless a key is pressed
-      loader.timeout = 0;
+      loader.timeout = 3;
 
     };
 
