@@ -18,6 +18,8 @@
         "splash"
         "nvidia-drm.modeset=1" # This helps Nvidia/Plymouth play nice
         "udev.log_level=3"
+        "plymouth.ignore-serial-consoles"
+        "rd.udev.log_level=3"
         "vt.global_cursor_default=0"
       ];
     };

@@ -1,6 +1,7 @@
 { self, inputs, ... }: {
   flake.nixosModules.basicApps = { pkgs, lib, ... }: {
     environment.systemPackages = with pkgs; [
+      pkgs.sddm-sugar-candy-nix
       git
       polkit_gnome
       vim

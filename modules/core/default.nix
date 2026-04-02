@@ -89,12 +89,12 @@
               mkdir -p $out/share/plymouth/themes/hunt
               cp -r ./* $out/share/plymouth/themes/hunt/
 
-              # 1. Fix the .plymouth file (Standard)
+              # Fix .plymouth paths
               substituteInPlace $out/share/plymouth/themes/hunt/hunt.plymouth \
                 --replace "/usr/share/plymouth/themes/hunt" "$out/share/plymouth/themes/hunt"
 
-              # 2. Fix the .script file (Crucial!)
-              # This replaces the hardcoded "/media/" with the actual Nix store path
+              # Fix .script paths - matching the exact string in your hunt.script
+              # We replace the leading slash of /media/ to point to the store path
               substituteInPlace $out/share/plymouth/themes/hunt/hunt.script \
                 --replace "/media/" "$out/share/plymouth/themes/hunt/media/"
             '';
@@ -106,6 +106,7 @@
       initrd.verbose = false;
       kernelParams = [
         "quiet"
+        "splash" # Crucial for Plymouth
         "udev.log_level=3"
         "systemd.show_status=auto"
       ];
@@ -122,9 +123,31 @@
     services.displayManager.sddm = {
       enable = true;
       wayland.enable = true;
+      theme = "sddm-sugar-candy-nix";
     };
-    services.displayManager.autoLogin.enable = true;
-    services.displayManager.autoLogin.user = "jano";
+
+    services.displayManager.sddm.settings = {
+      Theme = {
+        # Path to your final animation frame
+        Background = "${../parts/base/plymouth/hunt/media/ezgif-frame-173.png}";
+        
+        # UI Customization
+        ScreenWidth = 1920;
+        ScreenHeight = 1080;
+        FormPosition = "center"; # The "bubble" position
+        HaveFormBackground = true;
+        PartialBlur = true;
+        
+        # Colors (The Red text for sessions)
+        MainColor = "#cc0000"; # Hunt Red
+        AccentColor = "#cc0000";
+        
+        # User Image
+        UserPicture = "/home/jano/.face"; # Path to your profile pic
+      };
+    };
+    #services.displayManager.autoLogin.enable = true;
+    #services.displayManager.autoLogin.user = "jano";
 
     hardware.bluetooth.enable = true;
     services.power-profiles-daemon.enable = true;
