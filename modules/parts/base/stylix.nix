@@ -38,9 +38,17 @@
       };
 
       # Targets para que se aplique en todo el sistema
-      targets.gnome.enable = true;
+      targets.gnome.enable = true; 
+      # GDM a veces necesita que el shell de GNOME también esté tematizado
+      targets.gnome-shell.enable = true;;
       targets.gtk.enable = true;
       targets.plymouth.enable = true;
+    };
+
+    services.xserver.displayManager.gdm.settings = {
+      "org/gnome/desktop/background" = {
+        picture-uri = "file://${../../assets/background.png}";
+      };
     };
   };
 }
