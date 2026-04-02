@@ -1,8 +1,0 @@
-[Plymouth Theme]
-Name=hunt
-Description=A plymouth theme inspired by hunt: showdown
-ModuleName=script
-
-[script]
-ImageDir=/usr/share/plymouth/themes/hunt
-ScriptFile=/usr/share/plymouth/themes/hunt/hunt.script

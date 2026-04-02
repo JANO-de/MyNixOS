@@ -18,6 +18,8 @@
     nix-gaming.url = "github:fufexan/nix-gaming";
 
     matugen.url = "github:/InioX/Matugen";
+
+    stylix.url = "github:danth/stylix";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake 

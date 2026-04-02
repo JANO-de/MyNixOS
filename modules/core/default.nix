@@ -7,6 +7,8 @@
       self.nixosModules.basicfonts
       self.nixosModules.kde
       self.nixosModules.nvidia
+      self.nixosModules.boot
+      self.nixosModules.theme
     ];
 
     # Standard System Settings
