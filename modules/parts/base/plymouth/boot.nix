@@ -9,7 +9,7 @@
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
             version = "1.0";
-            src = ./huntShowdown-plymouth; # La carpeta donde lo descomprimiste
+            src = ./huntShowdown-plymouth-0.0.2; # La carpeta donde lo descomprimiste
             installPhase = ''
               mkdir -p $out/share/plymouth/themes/
               cp -r * $out/share/plymouth/themes/
