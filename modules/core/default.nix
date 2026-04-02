@@ -1,22 +1,25 @@
-let
-  hunt-sddm-theme = pkgs.stdenv.mkDerivation {
-    name = "sddm-hunt-theme";
-    src = pkgs.fetchFromGitHub {
-      owner = "MarianArlt";
-      repo = "sddm-sugar-candy";
-      rev = "v1.2";
-      sha256 = "0199cn7sp769n0mqv0mxy7m07vj6shf760f38y6p39sxl60i491s";
-    };
-    installPhase = ''
-      mkdir -p $out/share/sddm/themes/sugar-candy
-      cp -r ./* $out/share/sddm/themes/sugar-candy/
-      
-      # Replace the default background with your Frame 173
-      # We use the relative path to your hunt folder
-      cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
-      
-      # Edit the theme.conf to match your requirements
-      cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
+{ self, inputs, ... }: {
+  flake.nixosModules.core = { pkgs, ... }: 
+  # --- LET BLOCK STARTS HERE ---
+  let
+    hunt-sddm-theme = pkgs.stdenv.mkDerivation {
+      pname = "sddm-hunt-theme";
+      version = "1.0";
+      src = pkgs.fetchFromGitHub {
+        owner = "MarianArlt";
+        repo = "sddm-sugar-candy";
+        rev = "v1.2";
+        sha256 = "0199cn7sp769n0mqv0mxy7m07vj6shf760f38y6p39sxl60i491s";
+      };
+      installPhase = ''
+        mkdir -p $out/share/sddm/themes/sugar-candy
+        cp -r ./* $out/share/sddm/themes/sugar-candy/
+        
+        # Copy the specific frame for the background
+        cp ${../parts/base/plymouth/hunt/media/ezgif-frame-173.png} $out/share/sddm/themes/sugar-candy/Backgrounds/hunt-bg.png
+        
+        # Overwrite the config file with your specific Hunt settings
+        cat <<EOF > $out/share/sddm/themes/sugar-candy/theme.conf
 [General]
 Background="Backgrounds/hunt-bg.png"
 ScreenWidth=1920
@@ -24,19 +27,18 @@ ScreenHeight=1080
 FormPosition=center
 HaveFormBackground=true
 PartialBlur=true
-MainColor=#ff0000
-AccentColor=#ff0000
+MainColor=#cc0000
+AccentColor=#cc0000
 BackgroundColor=#000000
-# This makes the login text red
 FullSizeButtons=true
-# Point to your user image
 UserPictureEnabled=true
+# Setting specific fonts or red text colors here
 EOF
-    '';
-  };
-in
-{ self, inputs, ... }: {
-  flake.nixosModules.core = { pkgs, ...}: {
+      '';
+    };
+  in
+  # --- MODULE BODY STARTS HERE ---
+  {
     imports = [
       self.nixosModules.basicApps
       self.nixosModules.services
@@ -112,6 +114,13 @@ in
     # Common Networking
     networking.networkmanager.enable = true;
 
+    environment.systemPackages = with pkgs; [
+      libsForQt5.qt5.qtgraphicaleffects
+      libsForQt5.qt5.qtquickcontrols2
+      libsForQt5.qt5.qtsvg
+    ];
+
+    # 2. Boot & Plymouth
     boot = {
       plymouth = {
         enable = true;
@@ -121,67 +130,31 @@ in
             pname = "hunt-local-theme";
             version = "1.0";
             src = ../parts/base/plymouth/hunt;
-
             installPhase = ''
               mkdir -p $out/share/plymouth/themes/hunt
               cp -r ./* $out/share/plymouth/themes/hunt/
-
-              # Fix .plymouth paths
               substituteInPlace $out/share/plymouth/themes/hunt/hunt.plymouth \
                 --replace "/usr/share/plymouth/themes/hunt" "$out/share/plymouth/themes/hunt"
-
-              # Fix .script paths - matching the exact string in your hunt.script
-              # We replace the leading slash of /media/ to point to the store path
               substituteInPlace $out/share/plymouth/themes/hunt/hunt.script \
                 --replace "/media/" "$out/share/plymouth/themes/hunt/media/"
             '';
           })
         ];
       };
-      # Enable "Silent boot"
       consoleLogLevel = 3;
       initrd.verbose = false;
-      kernelParams = [
-        "quiet"
-        "splash" # Crucial for Plymouth
-        "udev.log_level=3"
-        "systemd.show_status=auto"
-      ];
-      # Hide the OS choice for bootloaders.
-      # It's still possible to open the bootloader list by pressing any key
-      # It will just not appear on screen unless a key is pressed
+      kernelParams = [ "quiet" "splash" "udev.log_level=3" "systemd.show_status=auto" ];
       loader.timeout = 3;
-
+      loader.systemd-boot.enable = true;
+      loader.efi.canTouchEfiVariables = true;
     };
 
-    # Bootloader (Standard for UEFI systems)
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
+    # 3. SDDM Configuration
     services.displayManager.sddm = {
       enable = true;
       wayland.enable = true;
+      # Use the derivation defined in the 'let' block
       theme = "${hunt-sddm-theme}/share/sddm/themes/sugar-candy";
-    };
-
-    services.displayManager.sddm.settings = {
-      Theme = {
-        # Path to your final animation frame
-        Background = "${../parts/base/plymouth/hunt/media/ezgif-frame-173.png}";
-        
-        # UI Customization
-        ScreenWidth = 1920;
-        ScreenHeight = 1080;
-        FormPosition = "center"; # The "bubble" position
-        HaveFormBackground = true;
-        PartialBlur = true;
-        
-        # Colors (The Red text for sessions)
-        MainColor = "#cc0000"; # Hunt Red
-        AccentColor = "#cc0000";
-        
-        # User Image
-        UserPicture = "/home/jano/.face"; # Path to your profile pic
-      };
     };
     #services.displayManager.autoLogin.enable = true;
     #services.displayManager.autoLogin.user = "jano";
