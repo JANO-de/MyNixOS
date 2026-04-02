@@ -1,22 +1,7 @@
 { self, inputs, ... }: {
-  flake.nixosModules.kde = { pkgs, lib, ... }: {
-    
-    services.xserver.enable = true;
-    services.xserver.displayManager.lightdm = {
-      enable = true;
-
-      # Setting gtk as the greeter
-      greeters.gtk.enable = true;
-
-      # Example of having background as a particular color
-      background = "#6b321b";
-
-      # Example of the default image background (must be an absolute path)
-      #background = pkgs.nixos-artwork.wallpapers.simple-dark-gray-bottom.gnomeFilePath;
-
-    };
-    
-    # services.displayManager.sessionPackages = [ pkgs.kdePackages.plasma-desktop ];
+  flake.nixosModules.kde = { pkgs, ... }: {
+    services.displayManager.lightdm.enable = true; # Probemos con lightdm si quieres
+    services.desktopManager.plasma6.enable = true;
 
     environment.systemPackages = with pkgs; [
       # KDE Utilities
