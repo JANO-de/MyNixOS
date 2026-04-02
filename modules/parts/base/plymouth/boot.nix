@@ -4,8 +4,8 @@
       # 1. Activar Plymouth
       plymouth = {
         enable = true;
-        plymouth.theme = "huntShowdown-plymouth";
-        plymouth.themePackages = [ 
+        theme = "huntShowdown-plymouth";
+        themePackages = [ 
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
             version = "1.0";
