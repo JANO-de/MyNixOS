@@ -4,15 +4,22 @@
       # 1. Activar Plymouth
       plymouth = {
         enable = true;
-        theme = lib.mkForce "huntShowdown-plymouth";
+        theme = lib.mkForce "huntShowdown-plymouth-theme";
         themePackages = [ 
           (pkgs.stdenv.mkDerivation {
-            pname = "huntShowdown-plymouth";
+            pname = "huntShowdown-plymouth-theme";
             version = "1.0";
             src = ./huntShowdown-plymouth-0.0.2; # La carpeta donde lo descomprimiste
             installPhase = ''
-              mkdir -p $out/share/plymouth/themes/
-              cp -r * $out/share/plymouth/themes/
+              # Creamos la ruta completa que espera Plymouth
+              mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
+              
+              # Copiamos TODO el contenido a esa carpeta específica
+              cp -r * $out/share/plymouth/themes/huntShowdown-plymouth/
+              
+              # Si por alguna razón el archivo .plymouth está dentro de una subcarpeta, 
+              # esto lo sacará a la raíz del tema (ajusta si es necesario)
+              # mv $out/share/plymouth/themes/huntShowdown-plymouth/carpeta-extra/* $out/share/plymouth/themes/huntShowdown-plymouth/
             '';
           }) 
         ];
