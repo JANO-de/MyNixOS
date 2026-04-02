@@ -16,6 +16,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   
     nix-gaming.url = "github:fufexan/nix-gaming";
+
+    matugen.url = "github:/InioX/Matugen";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake 

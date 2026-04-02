@@ -58,8 +58,13 @@
 
     users.users.jano = {
       isNormalUser = true;
-      extraGroups = [ "networkmanager" "wheel" "video" "adbuser" "dialout" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "adbuser" "dialout" "libvirtd" ];
+      useDefaultShell = true;
+      shell = pkgs.zsh;
     };
+
+    users.defaultUserShell = pkgs.zsh;
+    system.userActivationScripts.zshrc = "touch .zshrc";
 
     services.pipewire = {
       enable = true;
@@ -69,6 +74,34 @@
 
     # Common Networking
     networking.networkmanager.enable = true;
+
+    boot = {
+
+      plymouth = {
+        enable = true;
+        theme = "rings";
+        themePackages = with pkgs; [
+          # By default we would install all themes
+          (adi1090x-plymouth-themes.override {
+            selected_themes = [ "rings" ];
+          })
+        ];
+      };
+
+      # Enable "Silent boot"
+      consoleLogLevel = 3;
+      initrd.verbose = false;
+      kernelParams = [
+        "quiet"
+        "udev.log_level=3"
+        "systemd.show_status=auto"
+      ];
+      # Hide the OS choice for bootloaders.
+      # It's still possible to open the bootloader list by pressing any key
+      # It will just not appear on screen unless a key is pressed
+      loader.timeout = 0;
+
+    };
 
     # Bootloader (Standard for UEFI systems)
     boot.loader.systemd-boot.enable = true;

@@ -12,9 +12,10 @@
       libnotify         # Notifications
       nautilus
       kando
+      heimdall
+      lz4
  
       # Gaming
-      steam
       bazaar
       mangohud
       protonup-ng
@@ -27,9 +28,12 @@
       librewolf
 
       kdePackages.kate
+
+      hunspell
+      hunspellDicts.es_ES
+      hunspellDicts.en_US
     
       whatsapp-electron
-      vscode
       vesktop
 
       mtkclient
@@ -38,12 +42,41 @@
       unrar
       kdePackages.ark
       unzip
+      file
       zip
+      p7zip
       rar
 
+      papers
+      rofi
+      fastfetch
+      quickshell
+      gnome-shell-extensions
+      playerctl
+      satty
+      yq-go
+      xdg-desktop-portal-gtk
+      eww
+      mpvpaper
+      gnome-tweaks
+      ffmpeg
+      fzf
+      killall
+      btop
+      taskwarrior3
+      matugen
+      wmctrl
+      steam-run
+      qbittorrent
+      plymouth
+
       python315
+      python314
+      jetbrains.idea
       eclipses.eclipse-java
       bluej
+      vscode
+      obsidian
 
       javaPackages.compiler.openjdk25
       javaPackages.compiler.openjdk17
@@ -64,15 +97,15 @@
     programs = {
       
       kdeconnect.enable = true;
-      steam.enable = true;
-      steam.gamescopeSession.enable = true;
       gamemode.enable = true;
-
+      zsh.enable = true;
     };
-
-    environment.sessionVariables = {
-      STEAM_EXTRA_COMPAT_TOOLS_PATHS = 
-        "/home/jano/.steam/root/compatibilitytools.d";
+    programs.steam = {
+      enable = true;
+      remotePlay.openFirewall = true; 
+      dedicatedServer.openFirewall = true; 
+      localNetworkGameTransfers.openFirewall = true;
+      gamescopeSession.enable = true;
     };
   };
 } 
