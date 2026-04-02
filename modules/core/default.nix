@@ -89,9 +89,14 @@
               mkdir -p $out/share/plymouth/themes/hunt
               cp -r ./* $out/share/plymouth/themes/hunt/
 
-              # We fix the .plymouth file AND the .script file
-              find $out/share/plymouth/themes/hunt -name "*.plymouth" -exec sed -i "s|/usr/share/plymouth/themes/hunt|$out/share/plymouth/themes/hunt|g" {} +
-              find $out/share/plymouth/themes/hunt -name "*.script" -exec sed -i "s|/usr/share/plymouth/themes/hunt|$out/share/plymouth/themes/hunt|g" {} +
+              # 1. Fix the .plymouth file (Standard)
+              substituteInPlace $out/share/plymouth/themes/hunt/hunt.plymouth \
+                --replace "/usr/share/plymouth/themes/hunt" "$out/share/plymouth/themes/hunt"
+
+              # 2. Fix the .script file (Crucial!)
+              # This replaces the hardcoded "/media/" with the actual Nix store path
+              substituteInPlace $out/share/plymouth/themes/hunt/hunt.script \
+                --replace "/media/" "$out/share/plymouth/themes/hunt/media/"
             '';
           })
         ];
