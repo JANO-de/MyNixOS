@@ -79,11 +79,27 @@
 
       plymouth = {
         enable = true;
-        theme = "rings";
-        themePackages = with pkgs; [
-          # By default we would install all themes
-          (adi1090x-plymouth-themes.override {
-            selected_themes = [ "rings" ];
+        theme = "hunt"; 
+        themePackages = [
+          (pkgs.stdenv.mkDerivation {
+            pname = "huntShowdown-plymouth";
+            version = "1.0";
+
+            src = pkgs.fetchFromGitHub {
+              owner = "Anxhul10";
+              repo = "huntShowdown-plymouth";
+              rev = "6238b16752079088667634f1896067098f985062"; # Use the latest commit hash
+              sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Replace with actual hash
+            };
+
+            installPhase = ''
+              mkdir -p $out/share/plymouth/themes/
+              # The repo contains a folder named 'hunt'
+              cp -r hunt $out/share/plymouth/themes/
+              
+              # Fix paths inside the .plymouth file to point to the nix store
+              sed -i "s|/usr/share/plymouth/themes/hunt|$out/share/plymouth/themes/hunt|g" $out/share/plymouth/themes/hunt/hunt.plymouth
+            '';
           })
         ];
       };

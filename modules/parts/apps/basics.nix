@@ -47,6 +47,7 @@
       zip
       p7zip
       rar
+      onlyoffice-desktopeditors
 
       papers
       rofi
