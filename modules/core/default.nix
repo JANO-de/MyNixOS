@@ -76,34 +76,30 @@
     networking.networkmanager.enable = true;
 
     boot = {
-
       plymouth = {
         enable = true;
-        theme = "hunt"; 
+        theme = "hunt";
         themePackages = [
           (pkgs.stdenv.mkDerivation {
-            pname = "huntShowdown-plymouth";
+            pname = "hunt";
             version = "1.0";
 
-            src = pkgs.fetchFromGitHub {
-              owner = "Anxhul10";
-              repo = "huntShowdown-plymouth";
-              rev = "master"; # Using the main branch directly
-              hash = "sha256-R8zshFvN0pOfGvU3f09m/H9fA868f0O3YI9v1D8qZ/0=";
-            };
+            # This tells Nix to look at the 'my-theme' folder in your config
+            src = ../parts/base/plymouth/hunt; 
 
             installPhase = ''
-              mkdir -p $out/share/plymouth/themes/
-              # The repo contains a folder named 'hunt'
-              cp -r hunt $out/share/plymouth/themes/
-              
-              # Fix paths inside the .plymouth file to point to the nix store
-              sed -i "s|/usr/share/plymouth/themes/hunt|$out/share/plymouth/themes/hunt|g" $out/share/plymouth/themes/hunt/hunt.plymouth
+              mkdir -p $out/share/plymouth/themes/hunt
+              cp -r ./* $out/share/plymouth/themes/hunt/
+
+              # This ensures Plymouth looks in the Nix Store for the images/scripts
+              if [ -f $out/share/plymouth/themes/hunt/hunt.plymouth ]; then
+                substituteInPlace $out/share/plymouth/themes/hunt/hunt.plymouth \
+                  --replace "/usr/share/plymouth/themes/hunt" "$out/share/plymouth/themes/hunt"
+              fi
             '';
           })
         ];
       };
-
       # Enable "Silent boot"
       consoleLogLevel = 3;
       initrd.verbose = false;
