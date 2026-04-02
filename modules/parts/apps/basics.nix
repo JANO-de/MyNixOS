@@ -38,6 +38,7 @@
 
       mtkclient
       android-tools
+      universal-android-debloater
       
       unrar
       kdePackages.ark
