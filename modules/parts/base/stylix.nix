@@ -11,7 +11,7 @@
       base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml";
 
       # --- CONFIGURACIÓN DE ICONOS ---
-      iconTheme = {
+      icons = {
         enable = true;
         package = pkgs.tela-circle-icon-theme; 
         dark = "Tela-circle-dracula";          

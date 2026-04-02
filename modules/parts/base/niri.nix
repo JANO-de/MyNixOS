@@ -26,10 +26,10 @@
           "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
           "Mod+Q".close-window = _: {};
           "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
-          "Mod+WheelScrollDown".focus-column-left = null;
-          "Mod+WheelScrollUp".focus-column-right = null;
-          "Mod+Ctrl+WheelScrollDown".focus-workspace-down = null;
-          "Mod+Ctrl+WheelScrollUp".focus-workspace-up = null;
+          "Mod+WheelScrollDown".focus-column-left = _: {};
+          "Mod+WheelScrollUp".focus-column-right = _: {};
+          "Mod+Ctrl+WheelScrollDown".focus-workspace-down = _: {};
+          "Mod+Ctrl+WheelScrollUp".focus-workspace-up = _: {};
 
           "Mod+1".focus-workspace = "w0";
           "Mod+2".focus-workspace = "w1";
@@ -53,15 +53,15 @@
           "Mod+Shift+9".move-column-to-workspace = "w8";
           "Mod+Shift+0".move-column-to-workspace = "w9";
 
-          "Mod+Left".focus-column-left = null;
-          "Mod+Right".focus-column-right = null;
-          "Mod+Up".focus-window-up = null;
-          "Mod+Down".focus-window-down = null;
+          "Mod+Left".focus-column-left = _: {};
+          "Mod+Right".focus-column-right = _: {};
+          "Mod+Up".focus-window-up = _: {};
+          "Mod+Down".focus-window-down = _: {};
 
-          "Mod+F".maximize-column = null;
-          "Mod+G".fullscreen-window = null;
-          "Mod+Shift+F".toggle-window-floating = null;
-          "Mod+C".center-column = null;
+          "Mod+F".maximize-column = _: {};
+          "Mod+G".fullscreen-window = _: {};
+          "Mod+Shift+F".toggle-window-floating = _: {};
+          "Mod+C".center-column = _: {};
 
           "Mod+Ctrl+S".spawn-sh = ''${lib.getExe pkgs.grim} -l 0 - | ${pkgs.wl-clipboard}/bin/wl-copy'';
 
