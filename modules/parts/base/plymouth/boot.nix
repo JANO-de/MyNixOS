@@ -25,7 +25,7 @@
       
       plymouth = {
         enable = true;
-        theme = lib.mkForce "huntShowdown-plymouth";
+        theme = lib.mkForce "huntShowdown-plymouth-0.0.2";
         themePackages = [ 
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
