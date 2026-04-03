@@ -1,6 +1,6 @@
 { self, inputs, ... }: {
   flake.nixosModules.boot = { pkgs, config, lib, ... }: {
-    modules = [
+    imports = [
       self.nixosModules.ply
     ];
     boot.loader = {
