@@ -54,6 +54,18 @@
       style = "adwaita-dark";
     };
 
+    services.displayManager.sddm = {
+      enable = true;
+      wayland.enable = true;
+      # Nota: Dependiendo del tema de SDDM, la opción para el fondo varía.
+      # Si usas el tema por defecto o uno simple:
+      settings = {
+        Theme = {
+          CursorTheme = "Bibata-Modern-Ice";
+        };
+      };
+    };
+
     # Variable de entorno para asegurar que el cursor se vea en Wayland
     environment.sessionVariables = {
       XCURSOR_SIZE = "24";
