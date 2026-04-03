@@ -14,7 +14,7 @@
         extraPackages = with pkgs; [
           inputs.ags.packages.${system}.io
           inputs.ags.packages.${system}.astal4
-          inputs.ags.packages.${system}.astal-apps
+          inputs.ags.packages.${system}.apps
           inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
           fzf
         ];
