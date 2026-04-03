@@ -14,14 +14,6 @@
           "${pkgs.bash}/bin/bash" "-c" "GDK_BACKEND=wayland ags run --gtk 3"
         ];
 
-        window-rules = [
-          {
-            # Filtramos por el título que le pusimos en AGS
-            match = [{ app-id = "bar"; }]; # A veces AGS v2 usa app-id en lugar de title
-            geometry-corner-radius = 0;
-          }
-        ];
-
         xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
         input.keyboard.xkb.layout = "es";
