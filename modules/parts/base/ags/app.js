@@ -1,26 +1,20 @@
-// ~/.config/ags/app.js
-import { App, Astal, Gtk, Gdk } from "astal/gtk3"
+import { App, Astal, Gtk } from "astal/gtk3"
 
 const HuntBar = () => (
     <window
-        name="bar"
+        name="bar" // Este nombre debe coincidir con el 'match' de Niri
+        className="Bar"
+        namespace="metal-bar"
+        // Los anclajes son vitales para que Niri sepa dónde poner la barra
         anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
-        exclusivity={Astal.Exclusivity.EXCLUSIVE}>
-        <centerbox css="background-color: #14140f; border-bottom: 2px solid #ccaa44; padding: 4px;">
-            <label 
-                halign={Gtk.Align.START} 
-                label=" ᛟ HUNT: NIXOS " 
-                css="color: #ccaa44; font-weight: bold;" 
-            />
-            <label 
-                label="The Bayou is loading..." 
-                css="color: #eee;"
-            />
-            <label 
-                halign={Gtk.Align.END} 
-                label="System Ready " 
-                css="color: #ccaa44;"
-            />
+        // EXCLUSIVE hace que las ventanas de Niri no se solapen con la barra
+        exclusivity={Astal.Exclusivity.EXCLUSIVE}
+        layer={Astal.Layer.TOP}
+        visible={true}>
+        <centerbox css="background-color: #14140f; border-bottom: 2px solid #ccaa44; padding: 6px;">
+            <label label=" ᛟ HUNT: NIRI " css="color: #ccaa44; font-weight: bold;" />
+            <label label="Searching for Clues..." css="color: #eee;" />
+            <label label="System Ready " css="color: #ccaa44;" />
         </centerbox>
     </window>
 )

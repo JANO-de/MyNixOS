@@ -11,7 +11,18 @@
       inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
       settings = {
         spawn-at-startup = [
-          "ags"
+          "${pkgs.bash}/bin/bash" "-c" "GDK_BACKEND=wayland ags run --gtk 3"
+        ];
+
+        window-rules = [
+          {
+            # Esto detecta la ventana de AGS
+            match = [{ title = "bar"; }]; 
+            # Bloquea que Niri la mueva o le ponga bordes
+            geometry-corner-radius = 0;
+            clip-to-geometry = true;
+            exclude-from-states = "all"; # No aparece en el historial ni capturas
+          }
         ];
 
         xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
@@ -25,7 +36,7 @@
         binds = {
           "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
           "Mod+Q".close-window = _: {};
-          "Mod+S".spawn = [ "ags" "-t" "snippet-menu" ];
+          "Mod+S".spawn-sh = lib.getExe pkgs.rofi;
           "Mod+WheelScrollDown".focus-column-left = _: {};
           "Mod+WheelScrollUp".focus-column-right = _: {};
           "Mod+Ctrl+WheelScrollDown".focus-workspace-down = _: {};
