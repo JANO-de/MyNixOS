@@ -23,8 +23,8 @@
       initrd.systemd.enable = true; # CRÍTICO
       plymouth = {
         enable = true;
-        theme = lib.mkForce "huntShowdown-plymouth";
-        themePackages = [
+        theme = "dotLockG" ; # lib.mkForce "huntShowdown-plymouth";
+        /*themePackages = [
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
             version = "0.0.2";
@@ -34,7 +34,7 @@
               cp -r * $out/share/plymouth/themes/huntShowdown-plymouth
             '';
           })
-        ];
+        ];*/
       };
       kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" "fbcon=nodefer" ];
     };
