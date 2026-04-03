@@ -5,6 +5,7 @@
       kdePackages.qtsvg
       kdePackages.qtdeclarative
       kdePackages.qt5compat
+      kdePackages.sddm-kcm
       sddm-sugar-dark
       sddm-astronaut
       git

@@ -34,29 +34,12 @@
           name = "Noto Sans";
         };
       };
-
-      targets.gtk.enable = true;       
-      targets.plymouth.enable = true;  
     };
 
     qt = {
       enable = true;
       platformTheme = lib.mkForce "gnome"; 
       style = lib.mkForce "adwaita-dark";
-    };
-
-    services.displayManager.sddm = {
-      enable = true;
-      # --- CAMBIO AQUÍ ---
-      # Ponlo en false. Esto hace que la pantalla de LOGIN sea X11 (estable con NVIDIA).
-      # Niri seguirá abriéndose en Wayland sin problemas.
-      wayland.enable = lib.mkForce false; 
-      
-      settings = {
-        Theme = {
-          CursorTheme = "Bibata-Modern-Ice";
-        };
-      };
     };
 
     environment.sessionVariables = {

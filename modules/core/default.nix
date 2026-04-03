@@ -24,14 +24,6 @@
       LC_TIME = "es_ES.UTF-8";
     };
 
-    services.displayManager.sddm = {
-      enable = true;
-      wayland.enable = false; # Mantenemos X11 para el login por estabilidad en NVIDIA
-      # El fondo lo gestionará Stylix automáticamente a través de GTK/Qt
-    };
-    
-    services.displayManager.gdm.enable = false;
-
     xdg.portal = {
       enable = true;
       extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
@@ -65,7 +57,7 @@
         layout = "es";
         variant = "nodeadkeys";
       };
-      # No habilitamos ningún Desktop Manager aquí, lo hacemos en sus respectivos módulos
+      videoDrivers = [ "nvidia" ];
     };
 
     # --- OPTIMIZACIÓN NVIDIA + PLYMOUTH ---

@@ -1,10 +1,11 @@
 { self, inputs, ... }: {
   flake.nixosModules.kde = { pkgs, lib, ... }: {
     services.desktopManager.plasma6.enable = true;
-    services.displayManager.sddm = {
+    services.displayManager.gdm = {
       enable = true;
-      wayland.enable = lib.mkForce false; # X11 es más estable para el fondo en NVIDIA
     };
+    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.displayManager.gdm.wayland = true;
 
     environment.systemPackages = with pkgs; [
       # KDE Utilities
