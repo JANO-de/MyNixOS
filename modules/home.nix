@@ -10,7 +10,7 @@
 
       home.packages = with pkgs; [
         # Add any user-specific packages here
-        quickshell.packages.{system}.default
+        quickshell
       ];
       
       # Home Manager requires these two options to be set
