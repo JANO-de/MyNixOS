@@ -63,7 +63,6 @@
       papers
       rofi
       fastfetch
-      quickshell
       gnome-shell-extensions
       playerctl
       satty
