@@ -4,6 +4,8 @@
       kdePackages.qt5compat          # Helps old themes run on Qt6
       kdePackages.qtsvg
       kdePackages.qtdeclarative
+      kdePackages.qtimageformats
+      kdePackages.qtmultimedia
       kdePackages.qt5compat
       kdePackages.sddm-kcm
       sddm-sugar-dark
