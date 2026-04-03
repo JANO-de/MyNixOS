@@ -34,6 +34,7 @@
 
       # Essential for NVIDIA + Plymouth
       boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-      boot.kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" ];
+      boot.kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" "nvidia.NVreg_PreserveVideoMemoryAllocations=1" "fbcon=nodefer" ];
+      systemd.services.display-manager.after = [ "plymouth-quit.service" "rc-local.service" ];
     };
 }
