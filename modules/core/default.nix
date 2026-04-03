@@ -73,8 +73,6 @@
 
     # --- PROGRAMAS Y SYSTEMD ---
     # Evitamos que el terminal se llene de mensajes durante la animación de Plymouth
-    boot.consoleLogLevel = 0;
-    boot.initrd.verbose = false;
 
     users.defaultUserShell = pkgs.zsh;
     system.userActivationScripts.zshrc = "touch .zshrc";
