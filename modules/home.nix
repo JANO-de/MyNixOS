@@ -1,5 +1,11 @@
 { inputs, self, ... }: {
   flake.nixosModules.home = { pkgs, config, astal, ... }: 
+  let
+    configs = builtins.path {
+      path = ./configs;
+      name = "quickshell-configs";
+    };
+  in
   {
     # 1. Import the HM module into NixOS
     imports = [ inputs.home-manager.nixosModules.home-manager ];
@@ -10,8 +16,13 @@
 
       home.packages = with pkgs; [
         # Add any user-specific packages here
-        quickshell
       ];
+
+      programs.quickshell = {
+        enable = true;
+        activeConfig = configs;
+        systemd.enable = true;
+      };
       
       # Home Manager requires these two options to be set
       home.stateVersion = "25.11"; 
