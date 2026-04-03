@@ -1,11 +1,11 @@
-{ inputs, lib, ... }: {
-  perSystem = { pkgs, system, lib, ... }: {
-    # Usamos la librería directamente desde el paquete de ags para el sistema actual
-    packages.myAgs = inputs.ags.lib.bundle {
+{ inputs, ... }: {
+  perSystem = { pkgs, system, ... }: {
+    # Usamos el builder específico para tu sistema (x86_64-linux)
+    packages.myAgs = inputs.ags.builders.${system}.bundle {
       inherit pkgs;
-      src = ./ags; # Asegúrate de que esta carpeta existe y tiene un config.js o main.ts
+      src = ./ags; # Asegúrate de que esta carpeta tenga tu main.ts o config.js
       name = "my-ags-shell";
-      entrypoint = "main.ts"; # Descomenta y asegúrate de que el nombre coincida
+      entrypoint = "main.ts";
 
       extraPackages = with pkgs; [
         libdbusmenu-gtk3
@@ -15,7 +15,7 @@
     };
   };
 
-  # Esto registra el módulo para que puedas usarlo en tu configuración de NixOS
+  # Módulo de NixOS para instalar el binario y AGS base
   flake.nixosModules.ags = { pkgs, ... }: {
     environment.systemPackages = [
       inputs.ags.packages.${pkgs.system}.default
