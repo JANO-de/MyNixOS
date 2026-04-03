@@ -5,6 +5,7 @@
       sddm = {
         enable = true;
         wayland.enable = true;
+        theme = "sugar-dark";
       };
       gdm = {
         enable = false;

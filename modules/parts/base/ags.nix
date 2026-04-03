@@ -1,26 +1,18 @@
-{ inputs, pkgs, ... }: {
-  flake.nixosModules.ags = { pkgs, ... }: {
-    imports = [ inputs.ags.nixosModules.default ];
+{ self, inputs, ... }: {
+  perSystem = { pkgs, system, ... }: {
+    # Definimos nuestro propio paquete de AGS con nuestra config integrada
+    packages.myAgs = inputs.ags.lib.bundle {
+      inherit pkgs;
+      src = ./ags; # La carpeta donde estará tu JS/CSS
+      name = "my-ags-shell";
+      #entrypoint = "main.ts"; # o main.js
 
-    programs.ags = {
-      enable = true;
-      # Paquetes adicionales que AGS podría necesitar para tus snippets
+      # Aquí puedes añadir librerías extra si las necesitas
       extraPackages = with pkgs; [
-        gtksourceview
-        webkitgtk
-        accountsservice
+        libdbusmenu-gtk3
+        networkmanager
+        brightnessctl
       ];
     };
-
-    # Instalamos dependencias para que tus scripts de JS funcionen
-    environment.systemPackages = with pkgs; [
-      bun # Recomendado para ejecutar/probar JS rápido
-      dart-sass # Si quieres usar SCSS para los estilos de tus menús
-    ];
   };
 }
-
-/*{ self, inputs, ... }: {
-  perSystem = { pkgs, ... }: {
-    packages.myNoctalia = inputs.wrapper-modules.wrappers.noctalia-shell.wrap {
-      inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!*/

@@ -1,0 +1,10 @@
+{
+  "bar": {
+    "position": "top",
+    "theme": "hunt-showdown",
+    "opacity": 0.8
+  },
+  "colors": {
+    "accent": "#ccaa44"
+  }
+}
