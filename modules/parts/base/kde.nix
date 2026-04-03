@@ -4,10 +4,9 @@
     services.displayManager = {
       gdm = {
         enable = true;
+        wayland = true;
       };
     };
-    services.xserver.displayManager.gdm.enable = true;
-    services.xserver.displayManager.gdm.wayland = true;
 
     environment.systemPackages = with pkgs; [
       # KDE Utilities
