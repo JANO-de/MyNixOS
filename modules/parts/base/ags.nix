@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  perSystem = { pkgs, system, ... }: {
+  perSystem = { pkgs, system, lib, ... }: {
     # Definimos nuestro propio paquete de AGS con nuestra config integrada
     packages.myAgs = inputs.ags.lib.bundle {
       inherit pkgs;
