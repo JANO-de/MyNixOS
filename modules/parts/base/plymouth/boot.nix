@@ -28,12 +28,5 @@
       };
       kernelParams = [ "quiet" "splash" "nvidia-drm.fbdev=1" "nvidia-drm.modeset=1" "fbcon=nodefer" ];
     };
-
-    # Retraso para asegurar que vemos la animación
-    systemd.services."delay-display-manager" = {
-      wantedBy = [ "display-manager.service" ];
-      before = [ "display-manager.service" ];
-      script = "${pkgs.coreutils}/bin/sleep 3"; # Usamos la ruta absoluta al binario
-    };
   };
 }

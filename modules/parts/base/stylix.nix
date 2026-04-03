@@ -5,7 +5,7 @@
     ];
 
     stylix = {
-      enable = true;
+      enable = false;
       image = ../../assets/background.png; 
       
       polarity = "dark";

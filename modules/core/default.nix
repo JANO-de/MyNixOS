@@ -8,7 +8,6 @@
       self.nixosModules.kde
       self.nixosModules.nvidia
       self.nixosModules.boot
-      self.nixosModules.theme
     ];
 
     # (Optional) If you want English menus but Spanish formats (dates/money)
@@ -89,9 +88,6 @@
     hardware.bluetooth.enable = true;
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
-
-    # Help Niri find your hardware
-    hardware.graphics.enable = true;
 
     # Enable Flakes
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
