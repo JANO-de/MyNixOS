@@ -23,12 +23,12 @@
       initrd.systemd.enable = true; # CRÍTICO
       plymouth = {
         enable = true;
-        theme = "huntShowdown-plymouth";
+        theme = lib.mkForce "huntShowdown-plymouth";
         themePackages = [
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
             version = "0.0.2";
-            src = ./huntShowdown-plymouth-0.0.2;
+            src = ./huntShowdown-plymouth;
             installPhase = ''
               mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
               cp -r * $out/share/plymouth/themes/huntShowdown-plymouth
