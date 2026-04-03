@@ -29,9 +29,6 @@
       LC_TELEPHONE = "es_ES.UTF-8";
       LC_TIME = "es_ES.UTF-8";
     };
-
-    stylix.targets.niri.enable = true; # Si usas el módulo de Stylix reciente
-    stylix.targets.gnome.enable = true; # Ayuda con las apps GTK
     
     xdg.portal = {
       enable = true;
