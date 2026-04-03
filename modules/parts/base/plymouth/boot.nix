@@ -49,8 +49,6 @@
 
       consoleLogLevel = 0;
       initrd.verbose = false;
-      
-      kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" "fbcon=nodefer" ];
 
       initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
     };
