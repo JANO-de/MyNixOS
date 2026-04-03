@@ -49,8 +49,8 @@
     # Esto ayuda a que las apps encuentren los iconos y el cursor sin Home Manager
     qt = {
       enable = true;
-      platformTheme = "gnome";
-      style = "adwaita-dark";
+      platformTheme = lib.mkForce "gnome"; 
+      style = lib.mkForce "adwaita-dark";
     };
 
     services.displayManager.sddm = {
@@ -69,6 +69,7 @@
     environment.sessionVariables = {
       XCURSOR_SIZE = "24";
       XCURSOR_THEME = "Bibata-Modern-Ice";
+      QT_QPA_PLATFORMTHEME = "gnome";
     };
   };
 }
