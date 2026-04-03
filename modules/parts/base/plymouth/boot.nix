@@ -1,6 +1,6 @@
 { self, inputs, ... }: {
   flake.nixosModules.boot = { pkgs, config, lib, ... }: {
-    
+
     boot.loader = {
       grub.enable = true;
 
@@ -63,10 +63,6 @@
       # 3. Cargar NVIDIA en el Initrd (Early KMS) 
       # Esto evita que se quede el guion parpadeando antes de la animación
       initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-
-      # 4. Forzar que la animación dure un poco más (opcional)
-      # Esto crea un retraso artificial para que de tiempo a ver la intro
-      loader.timeout = 2;
     };
 
     # Evitar que el sistema arranque tan rápido que se salte la animación
