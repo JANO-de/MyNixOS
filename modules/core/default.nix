@@ -7,9 +7,8 @@
       self.nixosModules.basicfonts
       self.nixosModules.kde
       self.nixosModules.nvidia
-      self.nixosModules.boot
-      self.nixosModules.ags
-    ];
+      self.nixosModules.boot      
+      ];
 
     # (Optional) If you want English menus but Spanish formats (dates/money)
     i18n.extraLocaleSettings = {

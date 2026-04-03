@@ -10,9 +10,7 @@
     packages.myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
       inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
       settings = {
-        spawn-at-startup = [
-          "${pkgs.bash}/bin/bash" "-c" "GDK_BACKEND=wayland ags run --gtk 3"
-        ];
+        spawn-at-startup = [ ];
 
         xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
