@@ -14,7 +14,7 @@
       description = "Aylur's GTK Shell";
       wantedBy = [ "graphical-session.target" ];
       serviceConfig = {
-        ExecStart = "${inputs.ags.packages.${pkgs.system}.default}/bin/ags";
+        ExecStart = "${inputs.ags.packages.${pkgs.system}.default}/bin/ags run";
         Restart = "on-failure";
       };
     };
