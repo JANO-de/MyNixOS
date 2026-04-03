@@ -6,7 +6,7 @@
       systemd-boot = {
         enable = true;
         configurationLimit = 10; 
-        consoleMode = "1920x1080";
+        consoleMode = "auto";
       };
 
       efi = {
