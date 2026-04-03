@@ -1,5 +1,8 @@
 { self, inputs, ... }: {
   flake.nixosModules.nvidia = { config, pkgs, ... }: {
+
+    boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+
     # 1. Habilitar drivers de video en Xserver (también afecta a Wayland)
     services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -23,13 +26,10 @@
 
     # 2. Configuración extra para Wayland/Plasma
     environment.sessionVariables = {
-        # Fuerza a las apps de Qt a usar Wayland
-        QT_QPA_PLATFORM = "wayland";
-        # Ayuda con el parpadeo en algunas apps de Electron
-        NIXOS_OZONE_WL = "1";
-        # Necesario para que NVIDIA y Wayland se lleven bien
+        LIBVA_DRIVER_NAME = "nvidia";
         GBM_BACKEND = "nvidia-drm";
         __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+        NVD_BACKEND = "direct";
     };
   };
 }

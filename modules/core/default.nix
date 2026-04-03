@@ -57,7 +57,6 @@
         layout = "es";
         variant = "nodeadkeys";
       };
-      videoDrivers = [ "nvidia" ];
     };
 
     # --- NETWORKING Y LOCALIZACIÓN ---
