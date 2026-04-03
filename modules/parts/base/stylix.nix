@@ -1,12 +1,12 @@
 { self, inputs, ... }: {
-  flake.nixosModules.theme = { pkgs, ... }: {
+  flake.nixosModules.theme = { pkgs, config, lib, ... }: {
     imports = [ 
       inputs.stylix.nixosModules.stylix 
     ];
 
     stylix = {
       enable = true;
-      # 1. Pon aquí la imagen final de la animación (el logo de GNOME que quieres de fondo)
+      # Asegúrate de que esta ruta sea correcta desde la ubicación de style.nix
       image = ../../assets/background.png; 
       
       polarity = "dark";
@@ -39,16 +39,25 @@
         };
       };
 
-      # Targets para que se aplique en todo el sistema
-      stylix.targets.sddm.enable = true;
-      targets.gtk.enable = true;
-      targets.plymouth.enable = true;
+      # --- TARGETS DE SISTEMA ---
+      targets.sddm.enable = true;      # Stylix pondrá el fondo en SDDM automáticamente
+      targets.gtk.enable = true;       # Tema para ventanas en Niri/Plasma
+      targets.plymouth.enable = true;  # Intenta aplicar colores al cargador (si el tema lo soporta)
+      targets.console.enable = true;   # Colores en la TTY
     };
 
-    services.xserver.displayManager.gdm.settings = {
-      "org/gnome/desktop/background" = {
-        picture-uri = "file://${../../assets/background.png}";
-      };
+    # Forzar el esquema de GNOME/GTK a nivel de sistema para Niri
+    # Esto ayuda a que las apps encuentren los iconos y el cursor sin Home Manager
+    qt = {
+      enable = true;
+      platformTheme = "gnome";
+      style = "adwaita-dark";
+    };
+
+    # Variable de entorno para asegurar que el cursor se vea en Wayland
+    environment.sessionVariables = {
+      XCURSOR_SIZE = "24";
+      XCURSOR_THEME = "Bibata-Modern-Ice";
     };
   };
 }
