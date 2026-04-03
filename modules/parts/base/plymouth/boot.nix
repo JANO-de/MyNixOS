@@ -38,7 +38,9 @@
       initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
     };
 
-    systemd.watchdog.runtimeTime = "10s";
-    systemd.watchdog.rebootTime = "10s";
+    systemd.settings.Manager = {
+      RebootWatchdogSec = "10s";
+      RuntimeWatchdogSec = "10s";
+    };
   };
 }
