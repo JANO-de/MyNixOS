@@ -4,7 +4,7 @@
     services.displayManager = {
       sddm = {
         enable = true;
-        package = pkgs.kdePackages.sddm; # Fuerza la versión compatible con Plasma 6
+        package = lib.mkForce pkgs.kdePackages.sddm; # Fuerza la versión compatible con Plasma 6
         wayland.enable = true; # En tarjetas modernas, SDDM-Wayland suele ser más estable que X11
       };
       gdm = {
