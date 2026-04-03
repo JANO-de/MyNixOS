@@ -30,7 +30,7 @@
       # El fondo lo gestionará Stylix automáticamente a través de GTK/Qt
     };
     
-    services.xserver.displayManager.gdm.enable = false;
+    services.displayManager.gdm.enable = false;
 
     xdg.portal = {
       enable = true;
