@@ -15,11 +15,11 @@
         };
 
         installPhase = ''
-          mkdir -p $out/share/plymouth/themes/hunt
-          cp -r * $out/share/plymouth/themes/hunt
+          mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
+          cp -r * $out/share/plymouth/themes/huntShowdown-plymouth
           # Corregimos la ruta interna del archivo .plymouth
-          sed -i "s|ImageDir=/usr/share/plymouth/themes/hunt|ImageDir=$out/share/plymouth/themes/hunt|g" $out/share/plymouth/themes/hunt/hunt.plymouth
-          sed -i "s|ScriptFile=/usr/share/plymouth/themes/hunt/hunt.script|ScriptFile=$out/share/plymouth/themes/hunt/hunt.script|g" $out/share/plymouth/themes/hunt/hunt.plymouth
+          sed -i "s|ImageDir=/usr/share/plymouth/themes/huntShowdown-plymouth|ImageDir=$out/share/plymouth/themes/huntShowdown-plymouth|g" $out/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.plymouth
+          sed -i "s|ScriptFile=/usr/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.script|ScriptFile=$out/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.script|g" $out/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.plymouth
         '';
       };
     in
@@ -28,7 +28,7 @@
       boot.plymouth = {
         enable = true;
         themePackages = [ hunt-showdown-plymouth ];
-        theme = "hunt";
+        theme = "huntShowdown-plymouth";
       };
 
       # Configuraciones para NVIDIA
