@@ -12,6 +12,7 @@
         enable = true;
         configDir = ./parts/base/ags;
         extraPackages = with pkgs; [
+          inputs.ags.packages.${system}.astal-apps
           inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
           fzf
         ];
