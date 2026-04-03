@@ -2,8 +2,7 @@
   flake.nixosModules.boot = { pkgs, config, lib, ... }: {
 
     boot.loader = {
-      grub.enable = true;
-
+      grub.enable = lib.mkForce false;
       systemd-boot = {
         enable = true;
         # Limita el número de generaciones en el menú para que no sea un caos
