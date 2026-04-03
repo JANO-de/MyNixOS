@@ -11,7 +11,7 @@
       inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
       settings = {
         spawn-at-startup = [
-          { command = [ "${pkgs.bash}/bin/bash" "-c" "sleep 2 && ${lib.getExe self'.packages.myNoctalia}" ]; }
+          "${pkgs.bash}/bin/bash" "-c" "sleep 2 && ${lib.getExe self'.packages.myNoctalia}"
         ];
 
         xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
