@@ -23,7 +23,7 @@
       initrd.systemd.enable = true; # CRÍTICO
       plymouth = {
         enable = true;
-        theme = "dotLockG" ; # lib.mkForce "huntShowdown-plymouth";
+        theme = lib.mkForce "catppuccin-mocha" ; # lib.mkForce "huntShowdown-plymouth";
         /*themePackages = [
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
