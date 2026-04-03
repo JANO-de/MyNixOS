@@ -11,7 +11,7 @@
       inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
       settings = {
         spawn-at-startup = [
-          "${pkgs.bash}/bin/bash" "-c" "sleep 2 && ${lib.getExe self'.packages.myNoctalia}"
+          "ags"
         ];
 
         xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
@@ -25,7 +25,7 @@
         binds = {
           "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
           "Mod+Q".close-window = _: {};
-          "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
+          "Mod+S".spawn = [ "ags" "-t" "snippet-menu" ];
           "Mod+WheelScrollDown".focus-column-left = _: {};
           "Mod+WheelScrollUp".focus-column-right = _: {};
           "Mod+Ctrl+WheelScrollDown".focus-workspace-down = _: {};

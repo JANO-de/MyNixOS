@@ -20,6 +20,8 @@
       kando
       heimdall
       lz4
+      plymouth
+      adi1090x-plymouth-themes
  
       # Gaming
       bazaar
