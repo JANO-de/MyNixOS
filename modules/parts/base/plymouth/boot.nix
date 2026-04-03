@@ -6,7 +6,7 @@
       systemd-boot = {
         enable = true;
         configurationLimit = 10; 
-        consoleMode = "max";
+        consoleMode = "1920x1080";
       };
 
       efi = {
@@ -42,19 +42,7 @@
       consoleLogLevel = 0;
       initrd.verbose = false;
       
-      kernelParams = [
-        "quiet"
-        "splash"
-        "boot.shell_on_fail"
-        "loglevel=3"
-        "rd.systemd.show_status=false"
-        "rd.udev.log_level=3"
-        "udev.log_priority=3"
-        "nvidia-drm.modeset=1"
-        # Evita que la terminal de texto se salte la cola frente a la animación
-        "fbcon=nodefer" 
-        "vt.global_cursor_default=0"
-      ];
+      kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" "fbcon=nodefer" ];
 
       initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
     };

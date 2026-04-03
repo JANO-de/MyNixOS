@@ -40,7 +40,7 @@
       };
 
       # Targets para que se aplique en todo el sistema
-      targets.gnome.enable = true; 
+      stylix.targets.sddm.enable = true;
       targets.gtk.enable = true;
       targets.plymouth.enable = true;
     };

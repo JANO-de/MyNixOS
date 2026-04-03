@@ -30,10 +30,13 @@
       LC_TIME = "es_ES.UTF-8";
     };
 
+    stylix.targets.niri.enable = true; # Si usas el módulo de Stylix reciente
+    stylix.targets.gnome.enable = true; # Ayuda con las apps GTK
+    
     xdg.portal = {
       enable = true;
-      extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
-      config.common.default = "*";
+      extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
+      config.common.default = "gtk";
     };
 
     nixpkgs.config.allowUnfree = true;

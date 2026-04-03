@@ -1,6 +1,10 @@
 { self, inputs, ... }: {
   flake.nixosModules.kde = { pkgs, ... }: {
-    services.displayManager.gdm.enable = true; # Probemos con lightdm si quieres
+    services.displayManager.sddm = {
+      enable = true;
+      wayland.enable = true; # Crucial para Niri/Plasma Wayland
+      theme = "sugar-candy"; # O el que prefieras
+    };
     services.desktopManager.plasma6.enable = true;
 
     environment.systemPackages = with pkgs; [
