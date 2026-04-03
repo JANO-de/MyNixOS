@@ -137,6 +137,26 @@
         "type": "github"
       }
     },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775223910,
+        "narHash": "sha256-QRdehpSKTttlZe0oY2n5OCfZeCMrHkKNlWF1LJzO9tY=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "f68887a4c11e662b0eb0323d34b3fb9506226719",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "import-tree": {
       "locked": {
         "lastModified": 1773693634,
@@ -363,6 +383,7 @@
       "inputs": {
         "ags": "ags",
         "flake-parts": "flake-parts",
+        "home-manager": "home-manager",
         "import-tree": "import-tree",
         "matugen": "matugen",
         "nix-gaming": "nix-gaming",
