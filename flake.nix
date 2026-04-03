@@ -11,10 +11,7 @@
     
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
     
-    noctalia.url = "github:noctalia-dev/noctalia-shell";
-    
     import-tree.url = "github:vic/import-tree";
-
     flake-parts.url = "github:hercules-ci/flake-parts";
   
     nix-gaming.url = "github:fufexan/nix-gaming";
@@ -22,6 +19,7 @@
     matugen.url = "github:/InioX/Matugen";
 
     ags.url = "github:Aylur/ags";
+    astal.url = "github:Aylur/astal";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake 
