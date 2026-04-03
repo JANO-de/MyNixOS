@@ -1,5 +1,26 @@
 { self, inputs, ... }: {
   flake.nixosModules.boot = { pkgs, config, lib, ... }: {
+    
+    boot.loader = {
+      grub.enable = true;
+
+      systemd-boot = {
+        enable = true;
+        # Limita el número de generaciones en el menú para que no sea un caos
+        configurationLimit = 10; 
+        # Resolución de la consola (opcional)
+        consoleMode = "max";
+      };
+
+      efi = {
+       canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot"; # Asegúrate de que coincida con tu /etc/fixos (o hardware-configuration.nix)
+      };
+
+      # 4. Timeout del menú (segundos que espera antes de arrancar)
+      timeout = 5;
+    };
+
     boot = {
       # 1. Activar Plymouth
       plymouth = {

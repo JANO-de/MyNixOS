@@ -80,14 +80,6 @@
     # Common Networking
     networking.networkmanager.enable = true;
 
-    # 3. SDDM Configuration
-
-    boot.loader.grub = {
-      enable = true;
-      device = "nodev"; # Mandatory for UEFI
-      efiSupport = true;
-    };
-
     hardware.bluetooth.enable = true;
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
