@@ -1,5 +1,5 @@
 { inputs, self, ... }: {
-  flake.nixosModules.home = { pkgs, config, ... }: 
+  flake.nixosModules.home = { pkgs, config, astal, ... }: 
   {
     # 1. Import the HM module into NixOS
     imports = [ inputs.home-manager.nixosModules.home-manager ];
@@ -18,7 +18,7 @@
       };
       
       # Home Manager requires these two options to be set
-      home.stateVersion = "23.11"; 
+      home.stateVersion = "25.11"; 
     };
   };
 }
