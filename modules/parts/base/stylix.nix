@@ -44,7 +44,7 @@
       targets.gtk.enable = true;       # Tema para ventanas en Niri/Plasma
       targets.plymouth.enable = true;  # Intenta aplicar colores al cargador (si el tema lo soporta)
       targets.console.enable = true;   # Colores en la TTY
-      target.niri.enable = true;
+      targets.niri.enable = true;
     };
 
     # Forzar el esquema de GNOME/GTK a nivel de sistema para Niri
