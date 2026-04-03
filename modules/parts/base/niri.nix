@@ -16,12 +16,13 @@
 
         window-rules = [
           {
-            # Esto detecta la ventana de AGS
-            match = [{ title = "bar"; }]; 
-            # Bloquea que Niri la mueva o le ponga bordes
+            # Filtramos por el título que le pusimos en AGS
+            match = [{ title = "bar"; }];
+            
+            # En lugar de exclude-from-states (que parece dar error de versión), 
+            # usamos opciones más estándar de Niri para paneles
             geometry-corner-radius = 0;
-            clip-to-geometry = true;
-            exclude-from-states = "all"; # No aparece en el historial ni capturas
+            default-column-width = { proportion = 1.0; };
           }
         ];
 
