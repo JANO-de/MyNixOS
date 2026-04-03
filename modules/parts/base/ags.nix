@@ -1,5 +1,5 @@
-{ inputs, ... }: {
-  perSystem = { pkgs, system, ... }: {
+{ inputs, lib, ... }: {
+  perSystem = { pkgs, system, lib, ... }: {
     # Usamos la librería directamente desde el paquete de ags para el sistema actual
     packages.myAgs = inputs.ags.lib.bundle {
       inherit pkgs;
