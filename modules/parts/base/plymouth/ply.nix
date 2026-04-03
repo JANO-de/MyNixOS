@@ -11,7 +11,7 @@
           owner = "Anxhul10";
           repo = "huntShowdown-plymouth";
           rev = "master";
-          sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; 
+          sha256 = "sha256-zBaz6LWan6ExXfWv5nRGjamfV47SpfQSxvS/jQ8G4Ck="; 
         };
 
         installPhase = ''
