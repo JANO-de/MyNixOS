@@ -25,15 +25,15 @@
       
       plymouth = {
         enable = true;
-        theme = lib.mkForce "huntShowdown-plymouth-0.0.2";
+        theme = lib.mkForce "huntShowdown-plymouth";
         themePackages = [ 
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
             version = "1.0";
-            src = ./huntShowdown-plymouth-0.0.2; 
+            src = ./huntShowdown-plymouth; 
             installPhase = ''
-              mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth-0.0.2
-              cp -r * $out/share/plymouth/themes/huntShowdown-plymouth-0.0.2/
+              mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
+              cp -r * $out/share/plymouth/themes/huntShowdown-plymouth/
             '';
           }) 
         ];
