@@ -1,11 +1,18 @@
 { self, inputs, ... }: {
   flake.nixosModules.kde = { pkgs, lib, ... }: {
     services.desktopManager.plasma6.enable = true;
-    services.displayManager.gdm = {
-      enable = true;
+    services.displayManager = {
+      sddm = {
+        enable = true;
+        package = pkgs.kdePackages.sddm; # Fuerza la versión compatible con Plasma 6
+        wayland.enable = true; # En tarjetas modernas, SDDM-Wayland suele ser más estable que X11
+      };
+      gdm = {
+        enable = false;
+      };
     };
-    services.xserver.displayManager.gdm.enable = true;
-    services.xserver.displayManager.gdm.wayland = true;
+    services.xserver.displayManager.gdm.enable = false;
+    services.xserver.displayManager.gdm.wayland = false;
 
     environment.systemPackages = with pkgs; [
       # KDE Utilities

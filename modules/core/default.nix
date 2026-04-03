@@ -65,7 +65,7 @@
     hardware.nvidia = {
       modesetting.enable = true;
       powerManagement.enable = false;
-      open = false; # Cambiar a true si usas una tarjeta serie 20 o superior y prefieres drivers open
+      open = true; # Cambiar a true si usas una tarjeta serie 20 o superior y prefieres drivers open
       nvidiaSettings = true;
     };
 
