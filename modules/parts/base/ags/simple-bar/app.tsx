@@ -1,6 +1,6 @@
 import { createBinding, For, This } from "ags"
 import app from "ags/gtk4/app"
-import style from "./style"
+import style from "./style.scss"
 import Bar from "./Bar"
 
 app.start({
