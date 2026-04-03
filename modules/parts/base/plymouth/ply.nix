@@ -20,9 +20,10 @@
         installPhase = ''
           mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
           cp -r * $out/share/plymouth/themes/huntShowdown-plymouth
-          # Corregimos la ruta interna del archivo .plymouth
-          sed -i "s|ImageDir=/usr/share/plymouth/themes/huntShowdown-plymouth|ImageDir=$out/share/plymouth/themes/huntShowdown-plymouth|g" $out/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.plymouth
-          sed -i "s|ScriptFile=/usr/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.script|ScriptFile=$out/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.script|g" $out/share/plymouth/themes/huntShowdown-plymouth/huntShowdown-plymouth.plymouth
+          
+          # Ajustamos las rutas eliminando cualquier referencia absoluta a /usr
+          find $out -type f -name "*.plymouth" -exec sed -i "s|/usr/share/plymouth/themes/huntShowdown-plymouth|$out/share/plymouth/themes/huntShowdown-plymouth|g" {} +
+          find $out -type f -name "*.script" -exec sed -i "s|/usr/share/plymouth/themes/huntShowdown-plymouth|$out/share/plymouth/themes/huntShowdown-plymouth|g" {} +
         '';
       };
     in
