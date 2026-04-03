@@ -11,12 +11,6 @@
       self.nixosModules.theme
     ];
 
-    # Standard System Settings
-    time.timeZone = "Europe/Madrid"; # Change to your zone
-
-    # Set the system-wide language
-    i18n.defaultLocale = "es_ES.UTF-8";
-
     # (Optional) If you want English menus but Spanish formats (dates/money)
     i18n.extraLocaleSettings = {
       LC_ADDRESS = "es_ES.UTF-8";
