@@ -17,12 +17,8 @@
         window-rules = [
           {
             # Filtramos por el título que le pusimos en AGS
-            match = [{ title = "bar"; }];
-            
-            # En lugar de exclude-from-states (que parece dar error de versión), 
-            # usamos opciones más estándar de Niri para paneles
+            match = [{ app-id = "bar"; }]; # A veces AGS v2 usa app-id en lugar de title
             geometry-corner-radius = 0;
-            default-column-width = { proportion = 1.0; };
           }
         ];
 
