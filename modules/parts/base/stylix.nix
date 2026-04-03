@@ -1,6 +1,9 @@
 { self, inputs, ... }: {
   flake.nixosModules.theme = { pkgs, ... }: {
-    imports = [ inputs.stylix.nixosModules.stylix ];
+    imports = [ 
+      inputs.stylix.nixosModules.stylix 
+      ../../assets/background.png
+    ];
 
     stylix = {
       enable = true;
