@@ -40,7 +40,6 @@
       };
 
       # --- TARGETS DE SISTEMA ---
-      targets.sddm.enable = true;      # Stylix pondrá el fondo en SDDM automáticamente
       targets.gtk.enable = true;       # Tema para ventanas en Niri/Plasma
       targets.plymouth.enable = true;  # Intenta aplicar colores al cargador (si el tema lo soporta)
       targets.console.enable = true;   # Colores en la TTY
