@@ -1,15 +1,17 @@
-{ inputs, pkgs, ... }:
-{
-  imports = [ inputs.ags.homeManagerModules.default ];
+{ inputs, self, ... }: {
+  flake.nixosModules.home = { pkgs, ... }: 
+  {
+    imports = [ inputs.ags.homeManagerModules.default ];
 
-  programs.ags = {
-    enable = true;
-    configDir = ./parts/base/ags;
+    programs.ags = {
+      enable = true;
+      configDir = ./parts/base/ags;
 
-    extraPackages = with pkgs; [
-      # Reference the system via stdenv to avoid the circular pkgs dependency
-      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
-      fzf
-    ];
+      extraPackages = with pkgs; [
+        # Reference the system via stdenv to avoid the circular pkgs dependency
+        inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
+        fzf
+      ];
+    };
   };
 }
