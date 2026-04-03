@@ -2,9 +2,13 @@
   flake.nixosModules.kde = { pkgs, lib, ... }: {
     services.desktopManager.plasma6.enable = true;
     services.displayManager = {
-      gdm = {
+      sddm = {
         enable = true;
-        wayland = true;
+        wayland.enable = true;
+      };
+      gdm = {
+        enable = false;
+        wayland = false;
       };
     };
 

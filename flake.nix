@@ -16,8 +16,6 @@
 
     matugen.url = "github:/InioX/Matugen";
 
-    stylix.url = "github:danth/stylix";
-
     ags.url = "github:Aylur/ags";
   };
 
