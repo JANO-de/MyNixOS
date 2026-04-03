@@ -2,7 +2,7 @@
   flake.nixosModules.home = { pkgs, config, astal, ... }: 
   let
     configs = builtins.path {
-      path = ./configs;
+      path = ./parts/base/quickshell/configs;
       name = "quickshell-configs";
     };
   in
