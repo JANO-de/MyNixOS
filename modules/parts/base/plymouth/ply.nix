@@ -14,6 +14,9 @@
           sha256 = "sha256-zBaz6LWan6ExXfWv5nRGjamfV47SpfQSxvS/jQ8G4Ck="; 
         };
 
+        dontPatchELF = true;
+        dontRewriteMode = true;
+
         installPhase = ''
           mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
           cp -r * $out/share/plymouth/themes/huntShowdown-plymouth
