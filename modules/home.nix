@@ -1,17 +1,24 @@
 { inputs, self, ... }: {
-  flake.nixosModules.home = { pkgs, ... }: 
+  flake.nixosModules.home = { pkgs, config, ... }: 
   {
-    imports = [ inputs.ags.homeManagerModules.default ];
+    # 1. Import the HM module into NixOS
+    imports = [ inputs.home-manager.nixosModules.home-manager ];
 
-    programs.ags = {
-      enable = true;
-      configDir = ./parts/base/ags;
+    # 2. Define the user-specific config
+    home-manager.users.jano = { # Replace 'jano' with your actual username
+      imports = [ inputs.ags.homeManagerModules.default ];
 
-      extraPackages = with pkgs; [
-        # Reference the system via stdenv to avoid the circular pkgs dependency
-        inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
-        fzf
-      ];
+      programs.ags = {
+        enable = true;
+        configDir = ./parts/base/ags;
+        extraPackages = with pkgs; [
+          inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
+          fzf
+        ];
+      };
+      
+      # Home Manager requires these two options to be set
+      home.stateVersion = "23.11"; 
     };
   };
 }
