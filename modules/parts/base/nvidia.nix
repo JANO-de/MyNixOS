@@ -12,7 +12,7 @@
         
         # Usa el driver "open source" de NVIDIA (solo para tarjetas serie 20xx o más nuevas)
         # Si tu tarjeta es vieja (serie 10xx o anterior), ponlo en false.
-        open = false;
+        open = true;
 
         # Habilita el menú de configuración de NVIDIA
         nvidiaSettings = true;
