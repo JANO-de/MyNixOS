@@ -2,7 +2,6 @@
   flake.nixosModules.theme = { pkgs, ... }: {
     imports = [ 
       inputs.stylix.nixosModules.stylix 
-      ../../assets
     ];
 
     stylix = {
