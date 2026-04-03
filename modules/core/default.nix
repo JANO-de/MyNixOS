@@ -29,7 +29,15 @@
       LC_TELEPHONE = "es_ES.UTF-8";
       LC_TIME = "es_ES.UTF-8";
     };
+
+    services.displayManager.sddm = {
+      enable = true;
+      wayland.enable = false; # Mantenemos X11 para el login por estabilidad en NVIDIA
+      # El fondo lo gestionará Stylix automáticamente a través de GTK/Qt
+    };
     
+    services.xserver.displayManager.gdm.enable = false;
+
     xdg.portal = {
       enable = true;
       extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
@@ -53,20 +61,45 @@
       };
     };
 
-    services.xserver.xkb = {
-      layout = "es";
-      variant = "nodeadkeys";
-    };
-
     # Configure console keymap
     console.keyMap = "es";
 
+    # --- CONFIGURACIÓN DE XSERVER (Base para SDDM) ---
+    services.xserver = {
+      enable = true;
+      xkb = {
+        layout = "es";
+        variant = "nodeadkeys";
+      };
+      # No habilitamos ningún Desktop Manager aquí, lo hacemos en sus respectivos módulos
+    };
+
+    # --- OPTIMIZACIÓN NVIDIA + PLYMOUTH ---
+    # Esto fuerza a que el driver de NVIDIA cargue antes que el login
+    hardware.nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = false;
+      open = false; # Cambiar a true si usas una tarjeta serie 20 o superior y prefieres drivers open
+      nvidiaSettings = true;
+    };
+
+    # --- NETWORKING Y LOCALIZACIÓN ---
+    networking.hostName = "desktop";
+    networking.networkmanager.enable = true;
+    time.timeZone = "Europe/Madrid";
+    i18n.defaultLocale = "es_ES.UTF-8";
+
+    # --- USUARIOS ---
     users.users.jano = {
       isNormalUser = true;
-      extraGroups = [ "networkmanager" "wheel" "video" "adbuser" "dialout" "libvirtd" ];
-      useDefaultShell = true;
-      shell = pkgs.zsh;
+      description = "jano";
+      extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
     };
+
+    # --- PROGRAMAS Y SYSTEMD ---
+    # Evitamos que el terminal se llene de mensajes durante la animación de Plymouth
+    boot.consoleLogLevel = 0;
+    boot.initrd.verbose = false;
 
     users.defaultUserShell = pkgs.zsh;
     system.userActivationScripts.zshrc = "touch .zshrc";
@@ -76,9 +109,6 @@
       alsa.enable = true;
      pulse.enable = true;
     };
-
-    # Common Networking
-    networking.networkmanager.enable = true;
 
     hardware.bluetooth.enable = true;
     services.power-profiles-daemon.enable = true;

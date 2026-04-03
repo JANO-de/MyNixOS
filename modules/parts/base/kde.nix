@@ -1,11 +1,10 @@
 { self, inputs, ... }: {
-  flake.nixosModules.kde = { pkgs, ... }: {
+  flake.nixosModules.kde = { pkgs, lib, ... }: {
+    services.desktopManager.plasma6.enable = true;
     services.displayManager.sddm = {
       enable = true;
-      wayland.enable = true; # Crucial para Niri/Plasma Wayland
-      theme = "sugar-candy"; # O el que prefieras
+      wayland.enable = lib.mkForce false; # X11 es más estable para el fondo en NVIDIA
     };
-    services.desktopManager.plasma6.enable = true;
 
     environment.systemPackages = with pkgs; [
       # KDE Utilities

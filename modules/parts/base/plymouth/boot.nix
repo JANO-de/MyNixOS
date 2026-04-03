@@ -20,37 +20,24 @@
     };
 
     boot = {
-      # --- CLAVE PARA NVIDIA Y PLYMOUTH ---
-      initrd.systemd.enable = true; 
-      
+      initrd.systemd.enable = true; # CRÍTICO
       plymouth = {
         enable = true;
-        theme = lib.mkForce "huntShowdown-plymouth";
-        themePackages = [ 
+        theme = "huntShowdown-plymouth";
+        themePackages = [
           (pkgs.stdenv.mkDerivation {
             pname = "huntShowdown-plymouth";
-            version = "1.0";
-            src = ./huntShowdown-plymouth; 
+            version = "0.0.2";
+            src = ./huntShowdown-plymouth-0.0.2;
             installPhase = ''
               mkdir -p $out/share/plymouth/themes/huntShowdown-plymouth
-              cp -r * $out/share/plymouth/themes/huntShowdown-plymouth/
+              cp -r * $out/share/plymouth/themes/huntShowdown-plymouth
             '';
-          }) 
+          })
         ];
       };
-
-      kernelParams = [ 
-        "quiet" 
-        "splash" 
-        "nvidia-drm.modeset=1" 
-        "fbcon=nodefer" 
-        "vt.global_cursor_default=0"
-      ];
-
-      consoleLogLevel = 0;
-      initrd.verbose = false;
-
-      initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+      kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" "fbcon=nodefer" ];
+      loader.systemd-boot.enable = true;
     };
 
     # Retraso para asegurar que vemos la animación
