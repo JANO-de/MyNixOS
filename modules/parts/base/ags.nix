@@ -1,24 +1,22 @@
 { inputs, ... }: {
-  perSystem = { pkgs, system, ... }: {
-    # Usamos el builder específico para tu sistema (x86_64-linux)
-    packages.myAgs = inputs.ags.builders.${system}.bundle {
-      inherit pkgs;
-      src = ./ags; # Asegúrate de que esta carpeta tenga tu main.ts o config.js
-      name = "my-ags-shell";
-      entrypoint = "main.ts";
-
-      extraPackages = with pkgs; [
-        libdbusmenu-gtk3
-        networkmanager
-        brightnessctl
-      ];
-    };
-  };
-
-  # Módulo de NixOS para instalar el binario y AGS base
   flake.nixosModules.ags = { pkgs, ... }: {
+    # 1. Instalamos AGS y lo necesario para que tus widgets funcionen
     environment.systemPackages = [
       inputs.ags.packages.${pkgs.system}.default
+      pkgs.bun         # Para ejecutar JS/TS rápido
+      pkgs.sassc       # Para los estilos CSS
+      pkgs.brightnessctl # Para controlar brillo desde la barra
+      pkgs.networkmanager # Para el widget de red
     ];
+
+    # 2. Opcional: Si quieres que AGS arranque solo al iniciar sesión
+    systemd.user.services.ags = {
+      description = "Aylur's GTK Shell";
+      wantedBy = [ "graphical-session.target" ];
+      serviceConfig = {
+        ExecStart = "${inputs.ags.packages.${pkgs.system}.default}/bin/ags";
+        Restart = "on-failure";
+      };
+    };
   };
 }

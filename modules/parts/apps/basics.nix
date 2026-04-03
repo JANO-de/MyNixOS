@@ -80,7 +80,6 @@
       steam-run
       qbittorrent
       plymouth
-      self.packages.${pkgs.system}.myAgs
 
       python315
       python314

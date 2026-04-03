@@ -8,6 +8,7 @@
       self.nixosModules.kde
       self.nixosModules.nvidia
       self.nixosModules.boot
+      self.nixosModules.ags
     ];
 
     # (Optional) If you want English menus but Spanish formats (dates/money)
