@@ -7,8 +7,8 @@
     configDir = ./parts/base/ags;
 
     extraPackages = with pkgs; [
-      # Use the system attribute from the pkgs object passed to the module
-      inputs.astal.packages.${system}.battery 
+      # Reference the system via stdenv to avoid the circular pkgs dependency
+      inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
       fzf
     ];
   };
