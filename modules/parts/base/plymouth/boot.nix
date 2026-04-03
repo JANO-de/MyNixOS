@@ -37,7 +37,6 @@
         ];
       };
       kernelParams = [ "quiet" "splash" "nvidia-drm.modeset=1" "fbcon=nodefer" ];
-      loader.systemd-boot.enable = true;
     };
 
     # Retraso para asegurar que vemos la animación
