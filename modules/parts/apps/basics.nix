@@ -39,6 +39,7 @@
       librewolf
 
       kdePackages.kate
+      fuzzel
 
       hunspell
       hunspellDicts.es_ES

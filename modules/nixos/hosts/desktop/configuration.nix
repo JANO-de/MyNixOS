@@ -3,7 +3,6 @@
     # import any other modules from here
     imports = [
       self.nixosModules.desktopHardware
-      self.nixosModules.niri
     ];
 
     networking.hostName = "desktop";

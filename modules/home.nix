@@ -1,30 +1,36 @@
 { inputs, self, ... }: {
-  flake.nixosModules.home = { pkgs, config, astal, ... }: 
-  let
-    configs = builtins.path {
-      path = ./parts/base/quickshell/configs;
-      name = "quickshell-configs";
-    };
-  in
-  {
-    # 1. Import the HM module into NixOS
+  flake.nixosModules.home = { pkgs, lib, config, ... }: {
     imports = [ inputs.home-manager.nixosModules.home-manager ];
 
-    # 2. Define the user-specific config
-    home-manager.users.jano = { # Replace 'jano' with your actual username
-      imports = [ inputs.ags.homeManagerModules.default ];
-
-      home.packages = with pkgs; [
-        # Add any user-specific packages here
+    home-manager.users.jano = {
+      imports = [ 
+        inputs.noctalia.homeModules.default
+        inputs.niri.homeModules.niri
       ];
 
-      programs.quickshell = {
+      programs.noctalia-shell = {
         enable = true;
-        activeConfig = configs;
-        systemd.enable = true;
+        settings.templates.enableUserTemplates = true;
       };
-      
-      # Home Manager requires these two options to be set
+
+      programs.niri = {
+        enable = true;
+        # Use the package from your flake if you have a custom one
+        package = pkgs.niri; 
+
+        settings = {
+          # Using spawn-at-startup here is great for Nix-path resolution
+          spawn-at-startup = [
+            { command = [ "${lib.getExe pkgs.noctalia-shell}" ]; }
+          ];
+        };
+
+        # This imports your manual config.kdl
+        # PRO TIP: Put your keybinds and complex layout rules in the .kdl file
+        # and keep the "Nix-dependent" paths in the 'settings' block above.
+        extraConfig = builtins.readFile ./parts/base/niri/config.kdl;
+      };
+
       home.stateVersion = "25.11"; 
     };
   };
