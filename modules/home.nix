@@ -21,7 +21,7 @@
         settings = {
           # Using spawn-at-startup here is great for Nix-path resolution
           spawn-at-startup = [
-            { command = [ "${lib.getExe pkgs.noctalia-shell}" ]; }
+            "noctalia-shell"
           ];
         };
 
