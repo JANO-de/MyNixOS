@@ -2,6 +2,7 @@
   flake.nixosModules.home = { pkgs, lib, config, ... }: {
     imports = [ inputs.home-manager.nixosModules.home-manager ];
 
+    home-manager.backupFileExtension = "backup";
     home-manager.users.jano = {
       imports = [ 
         inputs.noctalia.homeModules.default
