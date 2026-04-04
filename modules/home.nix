@@ -16,7 +16,7 @@
       programs.noctalia-shell = {
         enable = true;
         settings.templates.enableUserTemplates = true;
-        settings = { "./parts/base/noctalia-shell/config.json" };
+        settings = (builtins.fromJSON (builtins.readFile "./parts/base/noctalia-shell/config.json")).settings;
       };
 
       programs.niri = {
