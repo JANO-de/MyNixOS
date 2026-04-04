@@ -9,6 +9,11 @@
         inputs.niri.homeModules.niri
       ];
 
+      home.packages = with pkgs; [
+        # Add any additional packages you want in your home environment here
+        inputs.noctalia.packages.${pkgs.system}.quickshell
+      ];
+
       programs.noctalia-shell = {
         enable = true;
         settings.templates.enableUserTemplates = true;
@@ -21,9 +26,7 @@
 
         settings = {
           # Using spawn-at-startup here is great for Nix-path resolution
-          spawn-at-startup = [
-            "noctalia-shell"
-          ];
+          spawn-at-startup = [ "${lib.getExe pkgs.noctalia-shell}" ];
 
           binds = with config.lib.niri; {
             "Mod+Return".action = spawn "kitty";
