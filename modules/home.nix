@@ -28,7 +28,7 @@
         # This imports your manual config.kdl
         # PRO TIP: Put your keybinds and complex layout rules in the .kdl file
         # and keep the "Nix-dependent" paths in the 'settings' block above.
-        extraConfig = builtins.readFile ./parts/base/niri/config.kdl;
+        config = builtins.readFile ./parts/base/niri/config.kdl;
       };
 
       home.stateVersion = "25.11"; 
