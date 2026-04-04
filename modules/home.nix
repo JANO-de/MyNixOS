@@ -11,12 +11,16 @@
 
       home.packages = with pkgs; [
         # Add any additional packages you want in your home environment here
-        inputs.noctalia.packages.${pkgs.system}.quickshell
       ];
 
       programs.noctalia-shell = {
         enable = true;
         settings.templates.enableUserTemplates = true;
+      };
+
+      programs.quickshell = {
+        enable = true;
+        settings.defaultShell = "${lib.getExe pkgs.noctalia-shell}";
       };
 
       programs.niri = {
