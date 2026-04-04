@@ -70,7 +70,7 @@ input {
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Outputs
 // Remember to uncomment the node by removing "/-"!
-/-output "eDP-1" {
+output "eDP-1" {
     // Uncomment this line to disable this output.
     // off
 
@@ -98,10 +98,10 @@ input {
     // so to put another output directly adjacent to it on the right, set its x to 1920.
     // If the position is unset or results in an overlap, the output is instead placed
     // automatically.
-    position x=2160 y=0
+    position x=2560 y=0
 }
 
-/-output "HDMI-A-1" {
+output "HDMI-A-1" {
     // Uncomment this line to disable this output.
     // off
 

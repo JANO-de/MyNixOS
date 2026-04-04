@@ -16,11 +16,7 @@
       programs.noctalia-shell = {
         enable = true;
         settings.templates.enableUserTemplates = true;
-      };
-
-      programs.quickshell = {
-        enable = true;
-        settings.defaultShell = "${lib.getExe pkgs.noctalia-shell}";
+        settings = { "./parts/base/noctalia-shell/config.json" };
       };
 
       programs.niri = {
