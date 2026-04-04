@@ -5,7 +5,7 @@
     home-manager.users.jano = {
       imports = [ 
         inputs.noctalia.homeModules.default
-        niri.homeModules.niri
+        inputs.niri.homeModules.niri
       ];
 
       programs.noctalia-shell = {
