@@ -24,6 +24,12 @@
           spawn-at-startup = [
             "noctalia-shell"
           ];
+
+          binds = with config.lib.niri; {
+            "Mod+Return".action = spawn "kitty";
+            "Mod+Q".action = close-window;
+            "Mod+F".action = maximize-column;
+          };
         };
 
         # This imports your manual config.kdl
