@@ -9,6 +9,8 @@
       font-awesome
       powerline-fonts
       powerline-symbols 
+      crimson
+      crimson-pro
     ];
   };
 }
