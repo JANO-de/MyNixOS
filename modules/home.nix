@@ -25,10 +25,9 @@
 
         settings = {
           # Using spawn-at-startup here is great for Nix-path resolution
-          spawn-at-startup = [ "${lib.getExe pkgs.noctalia-shell}" ];
+          spawn-at-startup = [ "noctalia-shell ipc call lockScreen toggle" ];
 
           binds = with config.lib.niri; {
-            "Mod+Return".action = spawn "kitty";
             "Mod+Q".action = close-window;
             "Mod+F".action = maximize-column;
           };

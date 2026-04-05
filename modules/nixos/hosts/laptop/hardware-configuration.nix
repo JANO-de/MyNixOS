@@ -1,8 +1,6 @@
 { self, inputs, ... }: {
   flake.nixosModules.laptopHardware = { config, lib, pkgs, modulesPath, ... }: {
-    imports = [
-      (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+    imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
     boot.initrd.availableKernelModules = [ "xhci_pci" "vmd" "nvme" "usb_storage" "sd_mod" ];
     boot.initrd.kernelModules = [ ];
@@ -10,12 +8,12 @@
     boot.extraModulePackages = [ ];
 
     fileSystems."/" =
-      { device = "/dev/disk/by-uuid/d230bad5-52f4-4681-85f7-325f362a9429";
+      { device = "/dev/disk/by-uuid/a765b42a-c775-4a19-b3e0-aec55c1c58bb";
         fsType = "ext4";
       };
 
     fileSystems."/boot" =
-      { device = "/dev/disk/by-uuid/90E0-5A40";
+      { device = "/dev/disk/by-uuid/892C-9E8D";
         fsType = "vfat";
         options = [ "fmask=0077" "dmask=0077" ];
       };

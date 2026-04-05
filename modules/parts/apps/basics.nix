@@ -39,7 +39,6 @@
       librewolf
 
       kdePackages.kate
-      fuzzel
 
       hunspell
       hunspellDicts.es_ES
@@ -59,10 +58,15 @@
       zip
       p7zip
       rar
-      onlyoffice-desktopeditors
+
+      # Gnome Office
+      libreoffice-qt-fresh
+      gnumeric
+      gnucash
+      dia
+      tomboy-ng
 
       papers
-      rofi
       fastfetch
       gnome-shell-extensions
       playerctl
@@ -120,5 +124,9 @@
       localNetworkGameTransfers.openFirewall = true;
       gamescopeSession.enable = true;
     };
+
+    fonts.packages = with pkgs; [
+      corefonts
+    ];
   };
 } 
