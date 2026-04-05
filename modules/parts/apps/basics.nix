@@ -86,6 +86,7 @@
       steam-run
       qbittorrent
       plymouth
+      wine
 
       python315
       python314
