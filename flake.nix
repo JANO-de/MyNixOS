@@ -26,6 +26,12 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   
     nix-gaming.url = "github:fufexan/nix-gaming";
+
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    orion-browser.url = "github:dokokitsune/orion-browser-flake";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake 

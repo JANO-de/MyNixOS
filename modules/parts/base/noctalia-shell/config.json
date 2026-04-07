@@ -97,6 +97,9 @@
       ],
       "center": [
         {
+          "id": "plugin:weekly-calendar"
+        },
+        {
           "characterCount": 2,
           "colorizeIcons": false,
           "emptyColor": "secondary",
@@ -116,6 +119,33 @@
           "showBadge": true,
           "showLabelsOnlyWhenOccupied": true,
           "unfocusedIconsOpacity": 1
+        },
+        {
+          "defaultSettings": {
+            "completedCount": 0,
+            "count": 0,
+            "current_page_id": 0,
+            "exportEmptySections": false,
+            "exportFormat": "markdown",
+            "exportPath": "~/Documents",
+            "isExpanded": false,
+            "pages": [
+              {
+                "id": 0,
+                "name": "General"
+              }
+            ],
+            "priorityColors": {
+              "high": "#f44336",
+              "low": "#9e9e9e",
+              "medium": "#2196f3"
+            },
+            "showBackground": true,
+            "showCompleted": true,
+            "todos": [],
+            "useCustomColors": false
+          },
+          "id": "plugin:todo"
         }
       ],
       "right": [
@@ -160,6 +190,20 @@
           "textColor": "none"
         },
         {
+          "defaultSettings": {
+            "autoHeight": true,
+            "cheatsheetData": [],
+            "columnCount": 3,
+            "detectedCompositor": "",
+            "hyprlandConfigPath": "~/.config/hypr/hyprland.conf",
+            "modKeyVariable": "$mod",
+            "niriConfigPath": "~/.config/niri/config.kdl",
+            "windowHeight": 0,
+            "windowWidth": 1400
+          },
+          "id": "plugin:keybind-cheatsheet"
+        },
+        {
           "colorizeDistroLogo": false,
           "colorizeSystemIcon": "none",
           "customIconPath": "",
@@ -167,6 +211,10 @@
           "icon": "noctalia",
           "id": "ControlCenter",
           "useDistroLogo": false
+        },
+        {
+          "defaultSettings": {},
+          "id": "plugin:kde-connect"
         }
       ]
     },
@@ -182,7 +230,7 @@
     "screenOverrides": []
   },
   "general": {
-    "avatarImage": "/home/jano/.face",
+    "avatarImage": "/home/jano/usr.png",
     "dimmerOpacity": 0.2,
     "showScreenCorners": false,
     "forceBlackScreenCorners": false,
@@ -260,7 +308,7 @@
     "settingsPanelSideBarCardStyle": false
   },
   "location": {
-    "name": "",
+    "name": "Algeciras",
     "weatherEnabled": true,
     "weatherShowEffects": true,
     "weatherTaliaMascotAlways": false,
@@ -273,7 +321,7 @@
     "firstDayOfWeek": -1,
     "hideWeatherTimezone": false,
     "hideWeatherCityName": false,
-    "autoLocate": false
+    "autoLocate": true
   },
   "calendar": {
     "cards": [
@@ -504,38 +552,59 @@
     "powerOptions": [
       {
         "action": "lock",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "1"
       },
       {
         "action": "suspend",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "2"
       },
       {
         "action": "hibernate",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "3"
       },
       {
         "action": "reboot",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "4"
       },
       {
         "action": "logout",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "5"
       },
       {
         "action": "shutdown",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "6"
       },
       {
         "action": "rebootToUefi",
+        "command": "",
+        "countdownEnabled": true,
         "enabled": true,
         "keybind": "7"
+      },
+      {
+        "action": "userspaceReboot",
+        "command": "",
+        "countdownEnabled": true,
+        "enabled": false,
+        "keybind": ""
       }
     ]
   },
@@ -612,7 +681,32 @@
     "syncGsettings": true
   },
   "templates": {
-    "activeTemplates": [],
+    "activeTemplates": [
+      {
+        "enabled": true,
+        "id": "discord"
+      },
+      {
+        "enabled": true,
+        "id": "niri"
+      },
+      {
+        "enabled": true,
+        "id": "kitty"
+      },
+      {
+        "enabled": true,
+        "id": "qt"
+      },
+      {
+        "enabled": true,
+        "id": "code"
+      },
+      {
+        "enabled": true,
+        "id": "pywalfox"
+      }
+    ],
     "enableUserTheming": false
   },
   "nightLight": {
@@ -655,10 +749,49 @@
     "customCommands": "[]"
   },
   "desktopWidgets": {
-    "enabled": false,
+    "enabled": true,
     "overviewEnabled": true,
-    "gridSnap": false,
+    "gridSnap": true,
     "gridSnapScale": false,
-    "monitorWidgets": []
+    "monitorWidgets": [
+      {
+        "name": "eDP-1",
+        "widgets": [
+          {
+            "clockColor": "none",
+            "clockStyle": "analog",
+            "customFont": "",
+            "format": "HH:mm\\nd MMMM yyyy",
+            "id": "Clock",
+            "roundedCorners": true,
+            "scale": 1.1918763713532246,
+            "showBackground": true,
+            "useCustomFont": false,
+            "x": 20,
+            "y": 880
+          },
+          {
+            "hideMode": "visible",
+            "id": "MediaPlayer",
+            "roundedCorners": true,
+            "showAlbumArt": true,
+            "showBackground": true,
+            "showButtons": true,
+            "showVisualizer": true,
+            "visualizerType": "linear",
+            "x": 220,
+            "y": 980
+          },
+          {
+            "id": "Weather",
+            "roundedCorners": true,
+            "scale": 1.0990501920833966,
+            "showBackground": true,
+            "x": 220,
+            "y": 880
+          }
+        ]
+      }
+    ]
   }
 }

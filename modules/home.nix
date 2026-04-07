@@ -10,7 +10,8 @@
       ];
 
       home.packages = with pkgs; [
-        # Add any additional packages you want in your home environment here
+        xwayland-satellite
+        xorg.xhost
       ];
 
       programs.noctalia-shell = {

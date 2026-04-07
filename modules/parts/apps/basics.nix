@@ -35,8 +35,8 @@
       heroic
 
       # Browsers
-      firefox
-      librewolf
+      floorp-bin
+      pywalfox-native
 
       kdePackages.kate
 
@@ -95,6 +95,7 @@
       bluej
       vscode
       obsidian
+      evtest
 
       javaPackages.compiler.openjdk25
       javaPackages.compiler.openjdk17
