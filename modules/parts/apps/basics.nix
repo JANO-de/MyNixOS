@@ -34,6 +34,8 @@
       bottles
       heroic
 
+      jq
+
       # Browsers
       floorp-bin
       pywalfox-native
