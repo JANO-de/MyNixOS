@@ -48,6 +48,7 @@
     
       whatsapp-electron
       vesktop
+      telegram-desktop
 
       mtkclient
       android-tools
@@ -63,10 +64,7 @@
 
       # Gnome Office
       libreoffice-qt-fresh
-      gnumeric
       gnucash
-      dia
-      tomboy-ng
 
       papers
       fastfetch
