@@ -68,10 +68,7 @@
 
     # --- USUARIOS ---
     users.users.jano = {
-      isNormalUser = true;   binds = with config.lib.niri; {
-            "Mod+Q".action = close-window;
-            "Mod+F".action = maximize-column;
-          };
+      isNormalUser = true;
       description = "jano";
       extraGroups = [ "networkmanager" "wheel" "video" "audio" "dialout" ];
     };
