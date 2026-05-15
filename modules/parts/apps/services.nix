@@ -7,6 +7,24 @@
       gvfs.enable = true;
     };
 
+    services.postgresql = {
+      enable = true;
+      package = pkgs.postgresql_16;
+      ensureDatabases = [ "bookmarket" ];
+      ensureUsers = [
+        {
+          name = "bookmarket_user";
+          ensureDBOwnership = true;
+        }
+      ];
+      authentication = pkgs.lib.mkOverride 10 ''
+        # TYPE  DATABASE        USER            ADDRESS         METHOD
+        local   all             all                             trust
+        host    all             all             127.0.0.1/32    scram-sha-256
+        host    all             all             ::1/128         scram-sha-256
+      '';
+    };
+
     services.udev.extraRules = ''
       # MediaTek BROM (The KingKong 9 ID)
       SUBSYSTEM=="usb", ATTR{idVendor}=="0e8d", ATTR{idProduct}=="0003", MODE="0666", GROUP="adbusers"
