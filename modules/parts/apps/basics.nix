@@ -97,6 +97,9 @@
       obsidian
       evtest
 
+      antigravity
+      postgresql
+
       javaPackages.compiler.openjdk25
       javaPackages.compiler.openjdk17
       javaPackages.compiler.openjdk8
