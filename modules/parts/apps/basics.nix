@@ -25,6 +25,7 @@
       lz4
       plymouth
       adi1090x-plymouth-themes
+      R
  
       # Gaming
       bazaar

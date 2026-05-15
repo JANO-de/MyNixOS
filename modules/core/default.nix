@@ -70,7 +70,7 @@
     users.users.jano = {
       isNormalUser = true;
       description = "jano";
-      extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "audio" "dialout" ];
     };
 
     # --- PROGRAMAS Y SYSTEMD ---
