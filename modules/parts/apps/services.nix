@@ -13,7 +13,7 @@
       ensureDatabases = [ "bookmarket" ];
       ensureUsers = [
         {
-          name = "bookmarket_user";
+          name = "bookmarket";
           ensureDBOwnership = true;
         }
       ];
