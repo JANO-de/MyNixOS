@@ -11,6 +11,9 @@
   libGL,
   python3,
   niri,
+  awww,
+  dbus,
+  pipewire,
   src,
   theme,
 }:
@@ -121,6 +124,46 @@ stdenv.mkDerivation {
     substituteInPlace tide-island-launcher \
       --replace-fail "/usr/bin/quickshell" "${quickshell}/bin/quickshell"
 
+    # NixOS has no /usr/bin/quickshell or /usr/share/tide-island: inject the
+    # store paths used by the config app's generated shortcut files.
+    substituteInPlace Tide-island-app/backend.cpp \
+      --replace-fail "/usr/bin/quickshell" "${quickshell}/bin/quickshell" \
+      --replace-fail "/usr/share/tide-island" "$out/share/tide-island"
+
+    substituteInPlace Tide-island-app/Shortcut.qml \
+      --replace-fail "/usr/bin/quickshell" "${quickshell}/bin/quickshell" \
+      --replace-fail "/usr/share/tide-island" "$out/share/tide-island"
+
+    substituteInPlace backend/SysBackend.cpp \
+      --replace-fail "/usr/share/tide-island/bin/lyricsmpris" "$out/share/tide-island/bin/lyricsmpris"
+
+    # The bundled launcher rewrites ~/.config/niri/config.kdl with an include of
+    # its shortcut file. On NixOS that file is a declarative read-only store
+    # symlink, so never run --ensure-niri-shortcuts. Binds are declared in
+    # modules/home/niri/config.kdl instead.
+    substituteInPlace tide-island-launcher \
+      --replace-fail '"$CONFIG_APP" --ensure-niri-shortcuts || true' 'true # niri shortcuts are managed declaratively in the NixOS niri config'
+
+    # Keep the config app from rewriting the main niri config when the user
+    # clicks "Apply" on the shortcut page; only write the reference file.
+    python3 - <<'PY'
+    path = "Tide-island-app/backend.cpp"
+    text = open(path).read()
+    start = text.index("    if (includePresent)\n")
+    anchor = text.index("QSaveFile outputConfig(mainConfigInfo.absoluteFilePath());", start)
+    end = text.index("\n}", anchor) + 2
+    new_tail = (
+        "    // NixOS: the main niri config is a declarative, read-only home-manager\n"
+        "    // store symlink. Only write the reference shortcut file; actual niri\n"
+        "    // binds are declared in modules/home/niri/config.kdl, not via include.\n"
+        "    (void)managedIncludeLine;\n"
+        "    return true;\n"
+        "}\n"
+    )
+    text = text[:start] + new_tail + text[end:]
+    open(path, "w").write(text)
+    PY
+
     cat > patch-theme-mapping.json <<'JSON'
     ${builtins.toJSON mapping}
     JSON
@@ -134,11 +177,18 @@ stdenv.mkDerivation {
       --replace-fail "/usr/bin/tide-island" "$out/bin/tide-island"
     substituteInPlace "$out/share/applications/tide-island.desktop" \
       --replace-fail "/usr/bin/tide-island" "$out/bin/tide-island"
+    substituteInPlace "$out/share/applications/tide-island-config.desktop" \
+      --replace-fail "/usr/bin/tide-island-config-app" "$out/bin/tide-island-config-app"
   '';
 
   postFixup = ''
     wrapProgram "$out/bin/tide-island" \
+      --prefix PATH : "$out/bin" \
       --prefix PATH : "${niri}/bin" \
+      --prefix PATH : "${awww}/bin" \
+      --prefix PATH : "${python3}/bin" \
+      --prefix PATH : "${dbus}/bin" \
+      --prefix PATH : "${pipewire}/bin" \
       --prefix QML_IMPORT_PATH : "$out/lib/qt6/qml" \
       --prefix QML_IMPORT_PATH : "${qt6.qtdeclarative}/lib/qt-6/qml" \
       --prefix QML_IMPORT_PATH : "${qt6.qt5compat}/lib/qt-6/qml"

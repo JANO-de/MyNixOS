@@ -14,5 +14,6 @@
     fuzzel
     swaybg
     polkit_gnome # launched via spawn-at-startup in the niri config
+    awww # animated wallpaper daemon used by the Tide Island wallpaper picker
   ];
 }
