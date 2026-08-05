@@ -10,6 +10,7 @@
   udev,
   libGL,
   python3,
+  niri,
   src,
   theme,
 }:
@@ -107,6 +108,7 @@ stdenv.mkDerivation {
     libGL
     udev
     quickshell
+    niri
   ];
 
   cmakeFlags = [
@@ -136,9 +138,10 @@ stdenv.mkDerivation {
 
   postFixup = ''
     wrapProgram "$out/bin/tide-island" \
+      --prefix PATH : "${niri}/bin" \
       --prefix QML_IMPORT_PATH : "$out/lib/qt6/qml" \
-      --prefix QML_IMPORT_PATH : "${qt6.qtdeclarative}/lib/qt6/qml" \
-      --prefix QML_IMPORT_PATH : "${qt6.qt5compat}/lib/qt6/qml"
+      --prefix QML_IMPORT_PATH : "${qt6.qtdeclarative}/lib/qt-6/qml" \
+      --prefix QML_IMPORT_PATH : "${qt6.qt5compat}/lib/qt-6/qml"
   '';
 
   meta = {

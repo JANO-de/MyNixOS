@@ -22,7 +22,7 @@ in
     TERM = "alacritty"
 
     [window]
-    decorations = "Full"
+    decorations = "None"
     opacity = 0.93
     startup_mode = "Maximized"
 
