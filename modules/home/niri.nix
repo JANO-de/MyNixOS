@@ -1,13 +1,30 @@
-{ config, pkgs, lib, ... }:
-
 {
-  # niri config, validated against the installed niri version at build time
+  config,
+  pkgs,
+  lib,
+  theme,
+  ...
+}:
+
+let
+  # Inject theme colors into the static KDL template
+  content = lib.replaceStrings
+    [ "@FOCUS@" "@FOCUS_INACTIVE@" ]
+    [ (theme.color "accent") (theme.color "surface") ]
+    (builtins.readFile ./niri/config.kdl);
+in
+{
+  # niri config, validated against the installed niri version at build time.
+  # Colors come from the central theme (modules/theme.nix).
   xdg.configFile."niri/config.kdl" = {
     source = pkgs.runCommand "niri-config-validated" {
       nativeBuildInputs = [ pkgs.niri ];
     } ''
-      niri validate --config ${./niri/config.kdl}
-      cp ${./niri/config.kdl} $out
+      cat > config.kdl <<'EOF'
+      ${content}
+      EOF
+      niri validate --config config.kdl
+      cp config.kdl $out
     '';
   };
 }

@@ -34,7 +34,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs; theme = import ../../modules/theme.nix; };
     users.jano = import ../../modules/home/default.nix;
   };
 

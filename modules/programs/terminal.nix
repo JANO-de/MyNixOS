@@ -1,5 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, theme, ... }:
 
+let
+  c = theme.palette;
+in
 {
   environment.systemPackages = with pkgs; [
     alacritty
@@ -24,19 +27,19 @@
     startup_mode = "Maximized"
 
     [font]
-    normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
-    bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
-    italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
-    bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
+    normal = { family = "${theme.fonts.terminal}", style = "Regular" }
+    bold = { family = "${theme.fonts.terminal}", style = "Bold" }
+    italic = { family = "${theme.fonts.terminal}", style = "Italic" }
+    bold_italic = { family = "${theme.fonts.terminal}", style = "Bold Italic" }
     size = 11.0
 
     [colors]
-    primary = { background = "#1e1e2e", foreground = "#cdd6f4" }
-    cursor = { text = "#1e1e2e", cursor = "#f5e0dc" }
-    selection = { text = "#1e1e2e", background = "#f5e0dc" }
+    primary = { background = "${c.base}", foreground = "${c.text}" }
+    cursor = { text = "${c.base}", cursor = "${c.rosewater}" }
+    selection = { text = "${c.base}", background = "${c.surface2}" }
 
-    normal = { black = "#45475a", red = "#f38ba8", green = "#a6e3a1", yellow = "#f9e2af", blue = "#89b4fa", magenta = "#f5c2e7", cyan = "#94e2d5", white = "#bac2de" }
-    bright = { black = "#585b70", red = "#f38ba8", green = "#a6e3a1", yellow = "#f9e2af", blue = "#89b4fa", magenta = "#f5c2e7", cyan = "#94e2d5", white = "#a6adc8" }
+    normal = { black = "${c.surface1}", red = "${c.red}", green = "${c.green}", yellow = "${c.yellow}", blue = "${c.blue}", magenta = "${c.pink}", cyan = "${c.teal}", white = "${c.subtext1}" }
+    bright = { black = "${c.surface2}", red = "${c.red}", green = "${c.green}", yellow = "${c.yellow}", blue = "${c.blue}", magenta = "${c.pink}", cyan = "${c.teal}", white = "${c.subtext0}" }
 
     [cursor]
     style = { shape = "Block", blinking = "Always" }

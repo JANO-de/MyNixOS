@@ -20,16 +20,17 @@
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
+    theme = import ./modules/theme.nix;
   in
   {
     overlays.default = final: prev: {
-      tide-island = final.callPackage ./pkgs/tide-island { src = tide-island; };
+      tide-island = final.callPackage ./pkgs/tide-island { src = tide-island; inherit theme; };
     };
 
     nixosConfigurations = {
       laptop = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs theme; };
         modules = [
           inputs.home-manager.nixosModules.home-manager
           ({ pkgs, ... }: { nixpkgs.overlays = [ self.overlays.default ]; })
