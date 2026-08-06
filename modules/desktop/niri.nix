@@ -15,5 +15,7 @@
     swaybg
     polkit_gnome # launched via spawn-at-startup in the niri config
     awww # animated wallpaper daemon used by the Tide Island wallpaper picker
+    brightnessctl # Fn brightness keys (XF86MonBrightness*)
+    playerctl # Fn media keys (XF86AudioPlay/Next/Prev)
   ];
 }
