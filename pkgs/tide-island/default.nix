@@ -192,6 +192,7 @@ stdenv.mkDerivation {
       --prefix PATH : "/run/current-system/sw/bin" \
       --prefix PATH : "/run/current-system/sw/sbin" \
       --prefix PATH : "/etc/profiles/per-user/jano/bin" \
+      --prefix PATH : "/run/wrappers/bin" \
       --prefix QML_IMPORT_PATH : "$out/lib/qt6/qml" \
       --prefix QML_IMPORT_PATH : "${qt6.qtdeclarative}/lib/qt-6/qml" \
       --prefix QML_IMPORT_PATH : "${qt6.qt5compat}/lib/qt-6/qml"
