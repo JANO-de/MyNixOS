@@ -28,7 +28,6 @@
       gp = "git push";
       gl = "git log --oneline --graph";
       ff = "fastfetch";
-      discord = "firefoxpwa site launch 01KYQX1GG3FR0DJXMJRQNVG3DP";
     };
   };
 

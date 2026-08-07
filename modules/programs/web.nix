@@ -2,7 +2,6 @@
 
 {
   environment.systemPackages = with pkgs; [
-    (librewolf.override { nativeMessagingHosts = [ pkgs.firefoxpwa ]; })
-    firefoxpwa
+    librewolf
   ];
 }
