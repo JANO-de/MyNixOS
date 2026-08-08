@@ -129,5 +129,6 @@ in
   home.sessionVariables = {
     QML_IMPORT_PATH = qtImportPaths;
     QT_QPA_PLATFORM = "wayland";
+    QML2_IMPORT_PATH = "${pkgs.qt6.qtmultimedia}/lib/qt-6/qml";
   };
 }
