@@ -21,7 +21,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, tide-island }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, tide-island, inir }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

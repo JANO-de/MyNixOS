@@ -21,6 +21,22 @@
         "type": "github"
       }
     },
+    "inir": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786019222,
+        "narHash": "sha256-159pMRQZZKzbYBzGwJUlEYhtIulGb6bNG1i04NbPHkg=",
+        "owner": "snowarch",
+        "repo": "inir",
+        "rev": "f1e8a6ee5283a51640e715fc083881d88e02a5bf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "snowarch",
+        "repo": "inir",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1784707089,
@@ -52,6 +68,7 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "inir": "inir",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "tide-island": "tide-island"
