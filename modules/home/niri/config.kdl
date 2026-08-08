@@ -132,8 +132,6 @@ binds {
     Mod+Ctrl+Right { move-column-right; }
     Mod+Ctrl+H     { move-column-left; }
     Mod+Ctrl+J     { move-window-down; }
-    Mod+Ctrl+K     { move-window-up; }
-    Mod+Ctrl+L     { move-column-right; }
 
     Mod+Shift+Left  { focus-monitor-left; }
     Mod+Shift+Down  { focus-monitor-down; }
@@ -142,7 +140,6 @@ binds {
     Mod+Shift+H     { focus-monitor-left; }
     Mod+Shift+J     { focus-monitor-down; }
     Mod+Shift+Z     { focus-monitor-up; }
-    Mod+Shift+L     { focus-monitor-right; }
 
     Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
@@ -150,8 +147,6 @@ binds {
     Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
     Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
 
     Mod+Page_Down      { focus-workspace-down; }
     Mod+Page_Up        { focus-workspace-up; }
@@ -194,7 +189,6 @@ binds {
 
     Mod+BracketLeft  { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
-    Mod+Comma  { consume-window-into-column; }
     Mod+Period { expel-window-from-column; }
 
     Mod+R { switch-preset-column-width; }
@@ -231,7 +225,7 @@ binds {
     Mod+N repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "sidebarRight" "toggle"; }
 
     // Settings
-    Mod+Comma repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "settings" "toggle"; }
+    Mod+Shift+Comma repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "settings" "toggle"; }
 
     // Session / power menu
     Mod+Shift+Q repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "session" "toggle"; }
@@ -247,10 +241,10 @@ binds {
     Mod+Ctrl+V repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "cliphistService" "update"; }
 
     // Lock screen
-    Mod+Ctrl+L repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "lock" "activate"; }
+    Mod+Shift+L repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "lock" "activate"; }
 
     // Wallpaper selector
-    Mod+Shift+Comma repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "wallpaperSelector" "toggle"; }
+    Mod+Ctrl+Comma repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "wallpaperSelector" "toggle"; }
 
     // Bar toggle
     Mod+B repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "bar" "toggle"; }

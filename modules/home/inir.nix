@@ -25,7 +25,7 @@ let
   qtImportPaths = "${pkgs.qt6.qt5compat}/lib/qt-6/qml:${pkgs.qt6.qtpositioning}/lib/qt-6/qml:${pkgs.kdePackages.syntax-highlighting}/lib/qt-6/qml:${pkgs.kdePackages.kirigami.unwrapped}/lib/qt-6/qml";
 
   qsWithPaths = pkgs.writeShellScriptBin "qs-inir" ''
-    export QML_IMPORT_PATH="${qtImportPaths}${if config.home.packagesqtImportPaths != "" then ":${config.home.packagesqtImportPaths}" else ""}"
+    export QML_IMPORT_PATH="${qtImportPaths}"
     export QT_QPA_PLATFORM="wayland"
     exec ${pkgs.quickshell}/bin/qs "$@"
   '';

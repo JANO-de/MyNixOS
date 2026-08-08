@@ -1,30 +1,20 @@
-{
-  config,
-  pkgs,
-  lib,
-  theme,
-  ...
-}:
+{ config, pkgs, ... }:
 
-let
-  content = lib.replaceStrings
-    [ "@FOCUS@" "@FOCUS_INACTIVE@" ]
-    [
-      (theme.color "accent")
-      (theme.color "surface")
-    ]
-    (builtins.readFile ./niri/inir-config.kdl);
-in
 {
-  xdg.configFile."niri/config.kdl" = {
-    source = pkgs.runCommand "niri-config-validated" {
-      nativeBuildInputs = [ pkgs.niri ];
-    } ''
-      cat > config.kdl <<'KDLEOF'
-      ${content}
-      KDLEOF
-      niri validate --config config.kdl
-      cp config.kdl $out
-    '';
-  };
+  programs.niri.enable = true;
+
+  # Electron apps (vscode, discord, ...) run natively on Wayland
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  # Polkit auth agent for the niri session (no NixOS module exists anymore)
+  security.polkit.enable = true;
+
+  # Minimal niri companions (Tide Island provides its own launcher)
+  environment.systemPackages = with pkgs; [
+    fuzzel
+    polkit_gnome # launched via spawn-at-startup in the niri config
+    awww # animated wallpaper daemon used by the Tide Island wallpaper picker
+    brightnessctl # Fn brightness keys (XF86MonBrightness*)
+    playerctl # Fn media keys (XF86AudioPlay/Next/Prev)
+  ];
 }
