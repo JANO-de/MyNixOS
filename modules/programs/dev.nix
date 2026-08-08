@@ -14,5 +14,8 @@
     kdePackages.kate
     neovide
     godot
+    quickshell
+    kdePackages.kirigami
+    qt6.qt5compat
   ];
 }

@@ -57,10 +57,7 @@ in
 
   qt = {
     enable = true;
-    platformTheme = {
-      name = "kvantum";
-      package = pkgs.kdePackages.qtstyleplugin-kvantum;
-    };
+    platformTheme = "gtk3";
     kvantum = {
       enable = true;
       settings.General.theme = "catppuccin-mocha-mauve";
