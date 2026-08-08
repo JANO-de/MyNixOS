@@ -12,7 +12,6 @@
   # Minimal niri companions (Tide Island provides its own launcher)
   environment.systemPackages = with pkgs; [
     fuzzel
-    swaybg
     polkit_gnome # launched via spawn-at-startup in the niri config
     awww # animated wallpaper daemon used by the Tide Island wallpaper picker
     brightnessctl # Fn brightness keys (XF86MonBrightness*)

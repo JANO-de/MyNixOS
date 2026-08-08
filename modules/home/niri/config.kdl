@@ -235,6 +235,5 @@ binds {
     Mod+Shift+W repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleWallpaperPicker"; }
 }
 
-spawn-at-startup "swaybg" "-c" "#1e1e2e"
 spawn-at-startup "polkit-gnome-authentication-agent-1"
 spawn-at-startup "awww-daemon"
