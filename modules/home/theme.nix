@@ -49,6 +49,10 @@ in
       name = "catppuccin-mocha-mauve-standard+black";
       package = gtkPkg;
     };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
     font = {
       name = theme.fonts.sans;
       package = pkgs.inter;

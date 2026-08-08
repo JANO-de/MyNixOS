@@ -19,17 +19,14 @@ let
     (builtins.readFile ./niri/config.kdl);
 in
 {
-  # niri config, validated against the installed niri version at build time.
-  # Colors come from the central theme (modules/theme.nix).
   xdg.configFile."niri/config.kdl" = {
     source = pkgs.runCommand "niri-config-validated" {
       nativeBuildInputs = [ pkgs.niri ];
+      passAsFile = [ "content" ];
+      inherit content;
     } ''
-      cat > config.kdl <<'EOF'
-      ${content}
-      EOF
-      niri validate --config config.kdl
-      cp config.kdl $out
+      niri validate --config "$contentPath"
+      cp "$contentPath" $out
     '';
   };
 }

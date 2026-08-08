@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -17,5 +17,6 @@
     quickshell
     kdePackages.kirigami
     qt6.qt5compat
+    pkgs.gowall
   ];
 }
