@@ -223,7 +223,16 @@ binds {
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 
+    // Tide Island shortcuts — call the Quickshell IPC bridge of the running
+    // island. Paths are injected via @QUICKSHELL_BIN@ / @TIDE_QML_DIR@.
+    Mod+Shift+Space repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "island" "toggle"; }
+    Mod+Space repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleApplicationLauncher"; }
     Mod+Shift+slash repeat=false { toggle-overview; }
+    Mod+Shift+D repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "showClock"; }
+    Mod+Shift+M repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "togglePlayer"; }
+    Mod+Shift+C repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleControlCenter"; }
+    Mod+Shift+N repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleNotificationCenter"; }
+    Mod+Shift+W repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleWallpaperPicker"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"
