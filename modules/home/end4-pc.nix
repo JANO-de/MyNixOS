@@ -46,6 +46,7 @@ let
     cp -r ${end4pcSrc} $out
     chmod -R u+w $out
     patch -d $out -p1 < ${./end4-pc/launcher-search-keybinds.patch}
+    patch -d $out -p1 < ${./end4-pc/ai-schema-fix.patch}
     cp ${./end4-pc/services/NiriKeybinds.qml} $out/services/NiriKeybinds.qml
     mkdir -p $out/scripts/niri
     cp ${./end4-pc/scripts/niri/get_keybinds.py} $out/scripts/niri/get_keybinds.py
