@@ -40,6 +40,18 @@ let
     hash = "sha256-XLlcB0ZIFkP7BGBZEcp7zTcMMmtnSWP4Sqio+NWe1rs=";
   };
 
+  # Pinned source + the niri keybind-lookup additions from ./end4-pc/
+  # (niri parser script, NiriKeybinds.qml service, LauncherSearch patch).
+  end4pcSrcPatched = pkgs.runCommand "end4-pc-niri-patched" { } ''
+    cp -r ${end4pcSrc} $out
+    chmod -R u+w $out
+    patch -d $out -p1 < ${./end4-pc/launcher-search-keybinds.patch}
+    cp ${./end4-pc/services/NiriKeybinds.qml} $out/services/NiriKeybinds.qml
+    mkdir -p $out/scripts/niri
+    cp ${./end4-pc/scripts/niri/get_keybinds.py} $out/scripts/niri/get_keybinds.py
+    chmod +x $out/scripts/niri/get_keybinds.py
+  '';
+
   # Best-effort Python env for scripts/colors/generate_colors_material.py
   # and friends (Material You palette generation, thumbnails, lyrics).
   # materialyoucolor IS packaged in nixpkgs as of late 2025. If any of
@@ -63,6 +75,15 @@ in
   # quickshell itself, niri, fuzzel, swaybg, brightnessctl and playerctl
   # are already provided by modules/desktop/niri.nix in this flake.
   home.packages = with pkgs; [
+    # Wrapper around quickshell's `qs` that adds the Qt5Compat QML module
+    # path (QtQuick.GraphicalEffects and friends, used heavily by end4-pC's
+    # QML). Without it, `qs -c end4-pC` fails with
+    # "module Qt5Compat.GraphicalEffects is not installed".
+    (writeShellScriptBin "qs" ''
+      export QML_IMPORT_PATH="${qt6.qt5compat}/lib/qt-6/qml:${qt6.qtpositioning}/lib/qt-6/qml:${kdePackages.syntax-highlighting}/lib/qt-6/qml:${kdePackages.kirigami.unwrapped}/lib/qt-6/qml''${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
+      exec ${quickshell}/bin/qs "$@"
+    '')
+
     end4pcPython
 
     # Screenshots / region select (modules/ii/regionSelector)
@@ -102,8 +123,14 @@ in
   # Placed as end4-pC (matching `qs -c end4-pC` from the upstream README)
   # alongside, not replacing, any other quickshell config you keep here
   # (e.g. Tide Island).
+  #
+  # end4-pC ships keybind lookup only for Hyprland (HyprlandKeybinds.qml +
+  # scripts/hyprland/get_keybinds.py), so on niri the "<" launcher prefix
+  # came up empty. The `end4-pc/` dir next to this file adds the niri
+  # equivalent (scripts/niri/get_keybinds.py + services/NiriKeybinds.qml)
+  # and patches LauncherSearch.qml to pick them when WM.compositor == niri.
   xdg.configFile."quickshell/end4-pC" = {
-    source = end4pcSrc;
+    source = end4pcSrcPatched;
     recursive = true;
   };
 

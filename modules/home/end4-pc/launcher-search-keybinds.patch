@@ -1,0 +1,13 @@
+diff --git a/services/LauncherSearch.qml b/services/LauncherSearch.qml
+index b8ad462..14fba2b 100644
+--- a/services/LauncherSearch.qml
++++ b/services/LauncherSearch.qml
+@@ -328,7 +328,7 @@ Singleton {
+                     result = result.concat(flatten(child));
+                 }
+                 return result;
+-            })(HyprlandKeybinds.keybinds);
++            })(WM.compositor === "niri" ? NiriKeybinds.keybinds : HyprlandKeybinds.keybinds);
+ 
+             return flatBinds.filter(bind => {
+                 if (!bind.comment) return false;
