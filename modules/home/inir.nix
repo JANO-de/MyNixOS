@@ -61,6 +61,7 @@ in
     libnotify
     libsForQt5.qt5ct
     libsForQt5.qtstyleplugin-kvantum
+    libsForQt5.qtgraphicaleffects
     kdePackages.qtstyleplugin-kvantum
     material-symbols
     nerd-fonts.jetbrains-mono
