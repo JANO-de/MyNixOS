@@ -7,14 +7,12 @@
 }:
 
 let
-  # Inject theme colors and Tide Island store paths into the static KDL template
+  # Inject theme colors into the static KDL template
   content = lib.replaceStrings
-    [ "@FOCUS@" "@FOCUS_INACTIVE@" "@QUICKSHELL_BIN@" "@TIDE_QML_DIR@" ]
+    [ "@FOCUS@" "@FOCUS_INACTIVE@" ]
     [
       (theme.color "accent")
       (theme.color "surface")
-      "${pkgs.quickshell}/bin/quickshell"
-      "${pkgs.tide-island}/share/tide-island"
     ]
     (builtins.readFile ./niri/config.kdl);
 in
