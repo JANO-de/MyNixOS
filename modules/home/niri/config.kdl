@@ -223,17 +223,48 @@ binds {
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 
-    // Tide Island shortcuts — call the Quickshell IPC bridge of the running
-    // island. Paths are injected via @QUICKSHELL_BIN@ / @TIDE_QML_DIR@.
-    Mod+Shift+Space repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "island" "toggle"; }
-    Mod+Space repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleApplicationLauncher"; }
-    Mod+Shift+slash repeat=false { toggle-overview; }
-    Mod+Shift+D repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "showClock"; }
-    Mod+Shift+M repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "togglePlayer"; }
-    Mod+Shift+C repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleControlCenter"; }
-    Mod+Shift+N repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleNotificationCenter"; }
-    Mod+Shift+W repeat=false { spawn "@QUICKSHELL_BIN@" "ipc" "--any-display" "-p" "@TIDE_QML_DIR@" "call" "tide" "toggleWallpaperPicker"; }
+    // end4-pC shortcuts — call the Quickshell IPC bridge of the running
+    // shell config (modules/home/end4-pc.nix). Replaces the Tide Island
+    // binds; Tide Island's autostart is disabled.
+    Mod+Space repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "search" "toggle"; }
+    Mod+Tab   repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "search" "workspacesToggle"; }
+
+    Mod+A repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "sidebarLeft" "toggle"; }
+    Mod+N repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "sidebarRight" "toggle"; }
+
+    // Settings (reassigned from Mod+Escape: collides with toggle-keyboard-shortcuts-inhibit)
+    Mod+Shift+Escape repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "settings" "toggle"; }
+
+    // Session / power menu (reassigned from Mod+Shift+E: collides with quit)
+    Mod+Shift+Q repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "session" "toggle"; }
+
+    // Region screenshot / OCR search
+    Print         { spawn "qs" "-c" "end4-pC" "ipc" "call" "region" "screenshot"; }
+    Mod+Shift+S   { spawn "qs" "-c" "end4-pC" "ipc" "call" "region" "search"; }
+
+    // Media controls popup
+    Mod+M repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "mediaControls" "toggle"; }
+
+    // Clipboard history (reassigned from Mod+V: collides with toggle-window-floating)
+    Mod+Ctrl+V repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "cliphistService" "update"; }
+
+    // On-screen keyboard toggle (reassigned from Mod+K: collides with focus-window-up)
+    Mod+O repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "osk" "toggle"; }
+
+    // Lock screen (reassigned from Mod+Ctrl+L: collides with move-column-right)
+    Mod+Ctrl+Escape repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "lock" "activate"; }
+
+    // Wallpaper selector (reassigned from Mod+Comma: collides with consume-window-into-column)
+    Mod+Shift+Comma repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "wallpaperSelector" "toggle"; }
+
+    // Top bar toggle
+    Mod+B repeat=false { spawn "qs" "-c" "end4-pC" "ipc" "call" "bar" "toggle"; }
+
+    // NOTE: XF86MonBrightnessUp/Down not bound here — niri's own
+    // brightnessctl passthrough (above) already handles brightness; don't
+    // double-bind (per end4-pC README).
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"
 spawn-at-startup "awww-daemon"
+spawn-at-startup "qs" "-c" "end4-pC"

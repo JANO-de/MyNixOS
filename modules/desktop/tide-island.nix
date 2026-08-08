@@ -15,6 +15,8 @@
       Restart = "on-failure";
       RestartSec = 3;
     };
-    wantedBy = [ "graphical-session.target" ];
+    # Disabled: replaced by end4-pC (see modules/home/end4-pc.nix). Uncomment
+    # wantedBy to restore Tide Island as the autostarted shell instead.
+    # wantedBy = [ "graphical-session.target" ];
   };
 }

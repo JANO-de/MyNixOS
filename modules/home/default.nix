@@ -8,5 +8,6 @@
   imports = [
     ./niri.nix
     ./theme.nix
+    ./end4-pc.nix
   ];
 }
