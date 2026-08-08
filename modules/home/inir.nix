@@ -49,6 +49,7 @@ in
 {
   home.packages = with pkgs; [
     quickshell
+    opencode
     inirPython
     qsWithPaths
     grim
