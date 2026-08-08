@@ -14,6 +14,11 @@
       url = "github:enhaoswen/Tide-island/1.0.35";
       flake = false;
     };
+
+    inir = {
+      url = "github:snowarch/inir";
+      flake = false;  # iNiR doesn't have a flake yet
+    };
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, tide-island }@inputs:
