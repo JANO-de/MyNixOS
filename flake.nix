@@ -15,10 +15,7 @@
       flake = false;
     };
 
-    inir = {
-      url = "github:snowarch/inir";
-      flake = false;  # iNiR doesn't have a flake yet
-    };
+    inir.url = "github:snowarch/inir";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, tide-island, inir }@inputs:

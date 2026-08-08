@@ -2,6 +2,15 @@
 
 {
   programs.niri.enable = true;
+  programs.inir = {
+    enable = true;
+    service.compositor = "niri";
+    extraPackages = [
+      config.programs.niri.package
+      pkgs.glib          # gsettings
+      pkgs.ffmpeg         # multimedia backend
+    ];
+  };
 
   # Electron apps (vscode, discord, ...) run natively on Wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
