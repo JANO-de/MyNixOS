@@ -8,5 +8,6 @@
     ./messaging.nix
     ./productivity.nix
     ./gaming.nix
+    ./file-manager.nix
   ];
 }
