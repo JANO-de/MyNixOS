@@ -19,7 +19,7 @@
       grep = "rg";
       find = "fd";
       ps = "procs";
-      cd = "z";
+      zz = "z";
       vim = "nvim";
       nv = "neovide";
       g = "git";
@@ -36,3 +36,5 @@
     VISUAL = "nvim";
   };
 }
+
+

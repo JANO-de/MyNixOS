@@ -18,5 +18,11 @@
     kdePackages.kirigami
     qt6.qt5compat
     pkgs.gowall
+    btop
+    qbittorrent
+    opencode
+
+    # DAW (Music)
+    ardour
   ];
 }

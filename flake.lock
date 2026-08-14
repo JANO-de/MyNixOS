@@ -21,22 +21,6 @@
         "type": "github"
       }
     },
-    "inir": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1786019222,
-        "narHash": "sha256-159pMRQZZKzbYBzGwJUlEYhtIulGb6bNG1i04NbPHkg=",
-        "owner": "snowarch",
-        "repo": "inir",
-        "rev": "f1e8a6ee5283a51640e715fc083881d88e02a5bf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "snowarch",
-        "repo": "inir",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1784707089,
@@ -65,30 +49,44 @@
         "type": "indirect"
       }
     },
-    "root": {
-      "inputs": {
-        "home-manager": "home-manager",
-        "inir": "inir",
-        "nixpkgs": "nixpkgs",
-        "nixpkgs-unstable": "nixpkgs-unstable",
-        "tide-island": "tide-island"
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1786106723,
+        "narHash": "sha256-CgKDSHL6rqAAQkkvg1xaZDQXb77+4XW73iGcUMJ+2w0=",
+        "rev": "f13ff45afd1bb73e640eaa08a7066dbed07e3238",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1049422.f13ff45afd1b/nixexprs.tar.zst"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
       }
     },
-    "tide-island": {
-      "flake": false,
+    "noctalia": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
       "locked": {
-        "lastModified": 1785685694,
-        "narHash": "sha256-mQF9p1fuJ5YLXWOtyUGHhi6wsWmyXYu2Q54R5obrz10=",
-        "owner": "enhaoswen",
-        "repo": "Tide-island",
-        "rev": "e937410fa61de581b0a88cbad496c0f5746adec9",
+        "lastModified": 1786620772,
+        "narHash": "sha256-r+rijNjl9Q+3V0Z+E+dvOgc/XbWJ6UoK/B9c/zCJpBs=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "713e6caa3ac6e9d5bf3aba678e150df6c1555194",
         "type": "github"
       },
       "original": {
-        "owner": "enhaoswen",
-        "ref": "1.0.35",
-        "repo": "Tide-island",
+        "owner": "noctalia-dev",
+        "ref": "cachix",
+        "repo": "noctalia",
         "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "noctalia": "noctalia"
       }
     }
   },

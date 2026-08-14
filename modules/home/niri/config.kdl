@@ -47,12 +47,25 @@ window-rule {
 }
 
 window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
 }
 
 window-rule {
     draw-border-with-background false
+}
+
+// Show Noctalia's blurred wallpaper copy in the niri overview backdrop
+layer-rule {
+    match namespace="^noctalia-backdrop"
+    place-within-backdrop true
 }
 
 layout {
@@ -95,20 +108,20 @@ hotkey-overlay {
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 binds {
-    Mod+D { spawn "fuzzel"; }
+    Mod+D repeat=false { spawn-sh "noctalia msg panel-toggle launcher"; }
     Mod+Return { spawn "alacritty"; }
 
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
     Ctrl+Alt+Delete { quit; }
 
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl set 5%-"; }
-    XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "brightnessctl set 5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
     XF86AudioPrev         allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioPlay         allow-when-locked=true { spawn-sh "playerctl play-pause"; }
     XF86AudioPause        allow-when-locked=true { spawn-sh "playerctl pause"; }
@@ -217,45 +230,17 @@ binds {
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 
-    // iNiR shortcuts
-    Mod+Space repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "search" "toggle"; }
-    Mod+Tab   repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "search" "workspacesToggle"; }
-
-    Mod+A repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "sidebarLeft" "toggle"; }
-    Mod+N repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "sidebarRight" "toggle"; }
-
-    // Settings
-    Mod+Shift+Comma repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "settings" "toggle"; }
-
-    // Session / power menu
-    Mod+Shift+Q repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "session" "toggle"; }
-
-    // Region screenshot / OCR search
-    Print         { spawn "qs" "-c" "inir" "ipc" "call" "region" "screenshot"; }
-    Mod+Shift+S   { spawn "qs" "-c" "inir" "ipc" "call" "region" "search"; }
-
-    // Media controls popup
-    Mod+M repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "mediaControls" "toggle"; }
-
-    // Clipboard history
-    Mod+Ctrl+V repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "cliphistService" "update"; }
-
-    // Lock screen
-    Mod+Shift+L repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "lock" "activate"; }
-
-    // Wallpaper selector
-    Mod+Ctrl+Comma repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "wallpaperSelector" "toggle"; }
-
-    // Bar toggle
-    Mod+B repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "bar" "toggle"; }
-
-    // Cheatsheet
-    Mod+Slash repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "cheatsheet" "toggle"; }
-
-    // Panel family switch
-    Mod+Shift+W repeat=false { spawn "qs" "-c" "inir" "ipc" "call" "panelFamily" "switch"; }
+    // Noctalia shell
+    Mod+S        repeat=false { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Comma    repeat=false { spawn-sh "noctalia msg settings-toggle"; }
+    Alt+Tab      repeat=false { spawn-sh "noctalia msg window-switcher"; }
+    Mod+Shift+L  repeat=false { spawn-sh "noctalia msg session lock"; }
+    Mod+Shift+S  repeat=false { spawn-sh "noctalia msg screenshot-region"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"
-spawn-at-startup "awww-daemon"
-spawn-at-startup "qs-inir" "-c" "inir"
+
+// Allows notification actions and window activation from Noctalia
+debug {
+    honor-xdg-activation-with-invalid-serial
+}

@@ -72,4 +72,10 @@ in
   # Keep the manual gtk.css/colors.css declarative and in sync with the theme
   xdg.configFile."gtk-3.0/colors.css".text = colorsCss;
   xdg.configFile."gtk-3.0/gtk.css".text = "@import 'colors.css';\n";
+
+  # The gtk module writes settings.ini as a regular file, so every activation
+  # sees a "foreign" file it wants to back up — and the previous run's
+  # settings.ini.backup blocks it, failing the whole switch. Force overwrite.
+  xdg.configFile."gtk-3.0/settings.ini".force = true;
+  xdg.configFile."gtk-4.0/settings.ini".force = true;
 }

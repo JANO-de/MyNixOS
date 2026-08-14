@@ -10,32 +10,34 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    tide-island = {
-      url = "github:enhaoswen/Tide-island/1.0.35";
-      flake = false;
+    # Noctalia shell — pin to the "cachix" branch, which always points to the
+    # latest commit with prebuilt binaries on https://noctalia.cachix.org
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
+  
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    inir.url = "github:snowarch/inir";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, tide-island, inir }@inputs:
+  nixConfig = {
+    extra-substituters = [ "https://noctalia.cachix.org" ];
+    extra-trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+  };
+
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, noctalia, zen-browser }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
     theme = import ./modules/theme.nix;
   in
   {
-    overlays.default = final: prev: {
-      tide-island = final.callPackage ./pkgs/tide-island { src = tide-island; inherit theme; };
-    };
-
     nixosConfigurations = {
       laptop = lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs theme; };
         modules = [
           inputs.home-manager.nixosModules.home-manager
-          ({ pkgs, ... }: { nixpkgs.overlays = [ self.overlays.default ]; })
           ./hosts/laptop/default.nix
         ];
       };

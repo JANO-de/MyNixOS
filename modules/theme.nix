@@ -1,6 +1,6 @@
 # Central theme definition for the whole system.
 # A single source of truth — every module reads its colors/fonts from here,
-# so changing `current` restyles niri, terminals, GTK, Qt, SDDM, Tide Island...
+# so changing `current` restyles niri, terminals, GTK, Qt, SDDM...
 let
   # Available schemes
   schemes = {

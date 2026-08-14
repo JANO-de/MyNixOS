@@ -1,6 +1,11 @@
 { config, pkgs, ... }:
 
 {
+  # gvfs is Nautilus' backend for device enumeration/mounting (removable
+  # drives, other disks, GVFS mounts). Without it Nautilus shows no other
+  # disks in the sidebar and cannot mount USB devices.
+  services.gvfs.enable = true;
+
   environment.systemPackages = with pkgs; [
     nautilus
   ];
