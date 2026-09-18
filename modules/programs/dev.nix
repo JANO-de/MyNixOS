@@ -22,7 +22,7 @@
     inputs.opencode-flake.packages.${pkgs.system}.opencode-avx
 
     # Java
-    jdk21
+    jdk25
     android-studio
     eclipses.eclipse-java
     jetbrains.idea
