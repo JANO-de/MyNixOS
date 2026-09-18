@@ -6,21 +6,19 @@
   home.stateVersion = "26.05";
 
   imports = [
-    inputs.noctalia.homeModules.default
     ./niri.nix
     ./theme.nix
   ];
 
-  programs.noctalia = {
-    enable = true;
-    settings = {
-      theme = {
-        mode = "dark";
-        source = "builtin";
-        builtin = "Catppuccin";
-      };
-      # Keep apps launched from Noctalia alive across shell restarts
-      shell.launch_apps_as_systemd_services = true;
-    };
+  # Shadow the system Steam desktop entry with one that forces UI scaling,
+  # so -forcedesktopscaling is applied no matter how Steam is launched.
+  xdg.desktopEntries.steam = {
+    name = "Steam";
+    genericName = "Steam";
+    exec = "env STEAM_FORCE_DESKTOPUI_SCALING=1.5 steam -forcedesktopscaling 1.5 %U";
+    icon = "steam";
+    categories = [ "Game" ];
+    mimeType = [ "x-scheme-handler/steam" "x-scheme-handler/steamlink" ];
+    terminal = false;
   };
 }

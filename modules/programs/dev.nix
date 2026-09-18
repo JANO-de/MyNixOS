@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -14,13 +14,33 @@
     kdePackages.kate
     neovide
     godot
-    quickshell
-    kdePackages.kirigami
     qt6.qt5compat
     pkgs.gowall
     btop
     qbittorrent
-    opencode
+    nodejs_22
+    inputs.opencode-flake.packages.${pkgs.system}.opencode-avx
+
+    # Java
+    jdk21
+    android-studio
+    eclipses.eclipse-java
+    jetbrains.idea
+
+    # iNiR Dependencies
+    kdePackages.syntax-highlighting
+    kdePackages.kirigami
+    kdePackages.kdialog
+    quickshell
+    wl-clipboard
+    cliphist
+    wireplumber
+    grim
+    slurp
+    python314Packages.materialyoucolor
+    kdePackages.plasma-browser-integration
+    kdePackages.plasma-integration
+    darkly
 
     # DAW (Music)
     ardour

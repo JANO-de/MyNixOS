@@ -7,5 +7,6 @@
     ./printing.nix
     ./ssh.nix
     ./flatpak.nix
+    ./autoupgrade.nix
   ];
 }

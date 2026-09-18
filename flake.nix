@@ -9,23 +9,31 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Noctalia shell — pin to the "cachix" branch, which always points to the
-    # latest commit with prebuilt binaries on https://noctalia.cachix.org
-    noctalia.url = "github:noctalia-dev/noctalia/cachix";
   
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    inir.url = "github:snowarch/inir";
+
+    opencode-flake.url = "github:noblepayne/opencode-flake";
+
+    # CachyOS kernel — release branch = CI-built & cached on their Attic.
+    # Do NOT override its nixpkgs input (patches/kernel must stay in sync).
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
   };
 
   nixConfig = {
-    extra-substituters = [ "https://noctalia.cachix.org" ];
-    extra-trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+    extra-substituters = [
+      "https://attic.xuyh0120.win/lantian"
+    ];
+    extra-trusted-public-keys = [
+      "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+    ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, noctalia, zen-browser }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, inir, nix-cachyos-kernel, opencode-flake }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
@@ -38,6 +46,8 @@
         specialArgs = { inherit inputs theme; };
         modules = [
           inputs.home-manager.nixosModules.home-manager
+          # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
+          ({ ... }: { nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ]; })
           ./hosts/laptop/default.nix
         ];
       };

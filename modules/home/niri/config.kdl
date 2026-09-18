@@ -27,14 +27,14 @@ input {
 }
 
 output "HDMI-A-1" {
-    mode "3840x2160@60.030"
-    scale 1.5
+    mode "1920x1080@60.030"
+    scale 1
     position x=0 y=0
 }
 
 output "eDP-1" {
     scale 1
-    position x=2560 y=0
+    position x=1920 y=0
 }
 
 window-rule {
@@ -47,13 +47,6 @@ window-rule {
 }
 
 window-rule {
-    match app-id="dev.noctalia.Noctalia"
-    open-floating true
-    default-column-width { fixed 1080; }
-    default-window-height { fixed 920; }
-}
-
-window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
 }
@@ -62,11 +55,6 @@ window-rule {
     draw-border-with-background false
 }
 
-// Show Noctalia's blurred wallpaper copy in the niri overview backdrop
-layer-rule {
-    match namespace="^noctalia-backdrop"
-    place-within-backdrop true
-}
 
 layout {
     gaps 20
@@ -108,20 +96,19 @@ hotkey-overlay {
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 binds {
-    Mod+D repeat=false { spawn-sh "noctalia msg panel-toggle launcher"; }
     Mod+Return { spawn "alacritty"; }
 
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
     Ctrl+Alt+Delete { quit; }
 
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
+    //XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
+    //XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
+    //XF86AudioMute        allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
-    XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
+    //XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
+    //XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
     XF86AudioPrev         allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioPlay         allow-when-locked=true { spawn-sh "playerctl play-pause"; }
     XF86AudioPause        allow-when-locked=true { spawn-sh "playerctl pause"; }
@@ -230,12 +217,15 @@ binds {
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 
-    // Noctalia shell
-    Mod+S        repeat=false { spawn-sh "noctalia msg panel-toggle control-center"; }
-    Mod+Comma    repeat=false { spawn-sh "noctalia msg settings-toggle"; }
-    Alt+Tab      repeat=false { spawn-sh "noctalia msg window-switcher"; }
-    Mod+Shift+L  repeat=false { spawn-sh "noctalia msg session lock"; }
-    Mod+Shift+S  repeat=false { spawn-sh "noctalia msg screenshot-region"; }
+    Mod+Space repeat=false { spawn-sh "inir overview toggle"; }
+    Mod+Ctrl+V { spawn-sh "inir clipboard toggle"; }
+    Mod+Comma { spawn-sh "inir settings"; }
+    Mod+Slash { spawn-sh "inir cheatsheet toggle"; }
+    Mod+Shift+W {spawn-sh "inir panelFamily cycle"; }
+    Mod+Alt+L allow-when-locked=true { spawn-sh "inir lock activate"; }
+    Mod+Shift+S { spawn-sh "inir region screenshot"; }
+    Mod+Shift+X { spawn-sh "inir region ocr"; }
+    Mod+Shift+A { spawn-sh "inir region search"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"

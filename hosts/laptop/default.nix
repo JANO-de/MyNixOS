@@ -29,6 +29,20 @@
 
   console.keyMap = "es";
 
+  # External NTFS drive "Elements" (Seagate). Mounted with ntfs-3g (FUSE), which
+  # is safe for read/write on NTFS. "nofail" means boot won't block/stop when
+  # the drive isn't plugged in; then just open /mnt/Elements to access it.
+  fileSystems."/mnt/Elements" = {
+    device = "/dev/disk/by-uuid/D6B6960AB695EB6F";
+    fsType = "ntfs-3g";
+    options = [ "nofail" "uid=1000" "gid=100" "umask=000" ];
+  };
+
+  # ntfs-3g provides the mount.ntfs-3g helper used by the mount above
+  environment.systemPackages = with pkgs; [
+    ntfs3g
+  ];
+
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {
     useGlobalPkgs = true;

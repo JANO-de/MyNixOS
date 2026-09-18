@@ -16,7 +16,7 @@
   '';
   boot.extraModulePackages = [ ];
   boot.kernelParams = [ "pcie_aspm=off" ];
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/1188c698-d8a5-463b-9f4a-fd15a3ccfd03";
