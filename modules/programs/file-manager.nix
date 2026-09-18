@@ -8,6 +8,12 @@
 
   environment.systemPackages = with pkgs; [
     nautilus
+    yazi
+    # yazi preview/openers: images, video thumbnails, PDF text, archives
+    chafa
+    ffmpegthumbnailer
+    poppler-utils
+    p7zip
   ];
 
   # Nautilus is the default file manager on this system.

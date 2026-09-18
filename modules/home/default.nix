@@ -7,6 +7,7 @@
 
   imports = [
     ./niri.nix
+    ./alacritty.nix
     ./theme.nix
   ];
 

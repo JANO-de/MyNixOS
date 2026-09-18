@@ -26,15 +26,17 @@ input {
     focus-follows-mouse
 }
 
+// HDMI-A-1 is shared between two monitors: the 4K at home and the 1920x1080 at school.
+// No mode is set so niri picks the native mode of whichever is connected.
+// The explicit x=0 keeps it on the left; eDP-1 is left unpositioned so niri
+// auto-places it directly to the right (in logical pixels, so both screens line up).
 output "HDMI-A-1" {
-    mode "1920x1080@60.030"
-    scale 1
+    scale 1.5
     position x=0 y=0
 }
 
 output "eDP-1" {
     scale 1
-    position x=1920 y=0
 }
 
 window-rule {
@@ -97,6 +99,7 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 binds {
     Mod+Return { spawn "alacritty"; }
+    Mod+E { spawn "alacritty" "-e" "yazi"; }
 
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
