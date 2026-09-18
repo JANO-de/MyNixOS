@@ -23,6 +23,7 @@
 
     # Java
     jdk25
+    zulu25
     android-studio
     eclipses.eclipse-java
     jetbrains.idea
