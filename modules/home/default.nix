@@ -11,6 +11,18 @@
     ./theme.nix
   ];
 
+  # These are NOT extra iNiR packages for the inir.service unit — the unit's
+  # fixed PATH is fine. They are needed on the user's *login/manager* PATH
+  # because `scripts/inir` re-imports PATH from `systemctl --user
+  # show-environment` when its child commands run (settings window via
+  # execDetached, wallpaper sync, etc.). Without `qs` (quickshell) on that
+  # PATH, right-click → Settings silently fails with "qs not found".
+  home.packages = [
+    pkgs.quickshell
+    (pkgs.python3.withPackages (ps: with ps; [ pip materialyoucolor pillow evdev numpy ]))
+    pkgs.jq
+  ];
+
   # Shadow the system Steam desktop entry with one that forces UI scaling,
   # so -forcedesktopscaling is applied no matter how Steam is launched.
   xdg.desktopEntries.steam = {
