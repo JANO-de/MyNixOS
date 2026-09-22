@@ -37,11 +37,16 @@ in {
   # extraPackages (inside `programs.inir`) wires the Qt plugin/QML search
   # paths; the inir user service's own $PATH is a short fixed list, so the
   # interpreter-tools the shell spawns internally must be declared here too.
+  # `flock` (settings-window serialization) and `awk` (stage/instance
+  # listing) are used by scripts/inir; they are also present on the manager
+  # PATH (sw/bin) so both code paths stay covered.
   systemd.user.services.inir.path = [
     (pkgs.python3.withPackages (ps: with ps; [ pip materialyoucolor pillow evdev numpy ]))
     pkgs.jq
     pkgs.cliphist
     pkgs.ddcutil
+    pkgs.util-linux
+    pkgs.gawk
   ];
 
   programs.inir = {
