@@ -33,7 +33,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, inir, nix-cachyos-kernel, opencode-flake }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, opencode-flake, inir }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

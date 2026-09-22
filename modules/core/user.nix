@@ -5,6 +5,6 @@
     isNormalUser = true;
     description = "jano";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "wheel" "networkmanager" ];
   };
 }

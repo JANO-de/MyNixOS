@@ -28,21 +28,6 @@
     eclipses.eclipse-java
     jetbrains.idea
 
-    # iNiR Dependencies
-    kdePackages.syntax-highlighting
-    kdePackages.kirigami
-    kdePackages.kdialog
-    quickshell
-    wl-clipboard
-    cliphist
-    wireplumber
-    grim
-    slurp
-    python314Packages.materialyoucolor
-    kdePackages.plasma-browser-integration
-    kdePackages.plasma-integration
-    darkly
-
     # DAW (Music)
     ardour
   ];

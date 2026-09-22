@@ -30,10 +30,18 @@ input {
 // No mode is set so niri picks the native mode of whichever is connected.
 // The explicit x=0 keeps it on the left; eDP-1 is left unpositioned so niri
 // auto-places it directly to the right (in logical pixels, so both screens line up).
+
+// * ------------- School  ------------- *
 output "HDMI-A-1" {
-    scale 1.5
+    scale 1
     position x=0 y=0
 }
+
+// * ------------- Home  ------------- *
+//output "HDMI-A-1" {
+//    scale 1.5
+//    position x=0 y=0
+//}
 
 output "eDP-1" {
     scale 1
@@ -100,6 +108,21 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 binds {
     Mod+Return { spawn "alacritty"; }
     Mod+E { spawn "alacritty" "-e" "yazi"; }
+
+    // --- iNiR shell (merged from reference niri/config.kdl) ---
+    Mod+W      { spawn "inir" "wallpaperSelector" "toggle"; }   // was: toggle-column-tabbed-display -> Mod+Shift+T
+    Mod+Shift+T { toggle-column-tabbed-display; }
+    Mod+Space  { spawn "inir" "overview" "toggle"; }
+    Super+Tab  { toggle-overview; }
+    Mod+Shift+W { spawn "inir" "panelFamily" "cycle"; }
+    Mod+V      { spawn "inir" "clipboard" "toggle"; }          // was: toggle-window-floating -> Mod+Ctrl+V
+    Mod+Ctrl+V { toggle-window-floating; }
+    Mod+Comma  { spawn "inir" "settings"; }
+    Mod+Slash  { spawn "inir" "cheatsheet" "toggle"; }
+    Mod+Shift+S { spawn "inir" "region" "screenshot"; }
+    Mod+Shift+X { spawn "inir" "region" "ocr"; }
+    Mod+B      { spawn "zen"; }
+    // --- /iNiR ---
 
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
@@ -209,9 +232,7 @@ binds {
     Mod+Shift+Minus { set-window-height "-10%"; }
     Mod+Shift+Equal { set-window-height "+10%"; }
 
-    Mod+V       { toggle-window-floating; }
     Mod+Shift+V { switch-focus-between-floating-and-tiling; }
-    Mod+W { toggle-column-tabbed-display; }
 
     Home { screenshot; }
     Ctrl+Home { screenshot-screen; }
@@ -219,16 +240,6 @@ binds {
 
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
-
-    Mod+Space repeat=false { spawn-sh "inir overview toggle"; }
-    Mod+Ctrl+V { spawn-sh "inir clipboard toggle"; }
-    Mod+Comma { spawn-sh "inir settings"; }
-    Mod+Slash { spawn-sh "inir cheatsheet toggle"; }
-    Mod+Shift+W {spawn-sh "inir panelFamily cycle"; }
-    Mod+Alt+L allow-when-locked=true { spawn-sh "inir lock activate"; }
-    Mod+Shift+S { spawn-sh "inir region screenshot"; }
-    Mod+Shift+X { spawn-sh "inir region ocr"; }
-    Mod+Shift+A { spawn-sh "inir region search"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"
@@ -237,3 +248,17 @@ spawn-at-startup "polkit-gnome-authentication-agent-1"
 debug {
     honor-xdg-activation-with-invalid-serial
 }
+
+// --- iNiR shell hooks (from reference niri/config.kdl) ---
+// iNiR's wallpaper/background layers must sit in the backdrop layer, behind
+// every window, or the desktop art won't render at all.
+layer-rule {
+    match namespace="^quickshell:(iiBackdrop|wBackdrop)$"
+    place-within-backdrop true
+}
+
+environment {
+    ELECTRON_OZONE_PLATFORM_HINT "wayland"
+    QT_IMAGEIO_MAXALLOC "0"
+}
+// --- /iNiR ---
