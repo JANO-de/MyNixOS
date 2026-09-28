@@ -28,6 +28,11 @@
 
   networking.hostName = "surface";
 
+  # THROWAWAY passwords so first boot is reachable (tty + SSH); the real ones
+  # are set imperatively afterwards with `passwd jano` / `passwd root`.
+  users.users.jano.initialPassword = "bde92496e9dbd256";
+  users.users.root.initialPassword = "bde92496e9dbd256";
+
   time.timeZone = "Europe/Madrid";
 
   i18n.defaultLocale = "es_ES.UTF-8";
