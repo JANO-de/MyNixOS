@@ -1,6 +1,11 @@
 // Niri configuration — managed declaratively by home-manager
 // Validated at build time with `niri validate`.
-// Colors come from the central theme via @FOCUS@ / @FOCUS_INACTIVE@ placeholders.
+// Colors come from the central theme via the FOCUS placeholders.
+// The EDP_SCALE, TABLET_INPUT, TABLET_TOP and TABLET_BINDS placeholders are
+// filled in by whichever host uses this config (see modules/home/niri.nix);
+// the tablet-only ones expand to nothing on the laptop and desktop.
+
+@TABLET_TOP@
 
 input {
     keyboard {
@@ -23,6 +28,7 @@ input {
         dwt
     }
 
+@TABLET_INPUT@
     focus-follows-mouse
 }
 
@@ -44,7 +50,7 @@ output "HDMI-A-1" {
 //}
 
 output "eDP-1" {
-    scale 1
+    scale @EDP_SCALE@
 }
 
 window-rule {
@@ -127,6 +133,8 @@ binds {
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
     Ctrl+Alt+Delete { quit; }
+
+@TABLET_BINDS@
 
     //XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
     //XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }

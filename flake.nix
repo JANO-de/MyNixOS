@@ -22,6 +22,10 @@
     # CachyOS kernel — release branch = CI-built & cached on their Attic.
     # Do NOT override its nixpkgs input (patches/kernel must stay in sync).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+
+    # Hardware enablement for the Surface (linux-surface patched kernel,
+    # IPTS touch, Marvell wifi firmware, thermald, surface-control).
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
 
   nixConfig = {
@@ -33,7 +37,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, opencode-flake, inir }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
@@ -62,6 +66,36 @@
           ./hosts/desktop/default.nix
         ];
       };
+
+      # Microsoft Surface Pro 5 (i5 / 8GB / 128GB).
+      # Deliberately NO CachyOS overlay: the Surface relies on nixos-hardware's
+      # linux-surface patched kernel (SAM/IPTS/thermald) + the in-tree Marvell
+      # mwifiex wifi driver. The CachyOS kernel would drop all of that.
+      surface = lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs theme; };
+        modules = [
+          inputs.home-manager.nixosModules.home-manager
+          ./hosts/surface/default.nix
+        ];
+      };
+
+      # Live USB image used to install `surface` (and to rescue it). Same GNOME
+      # installer as upstream, plus nixos-hardware's Surface support (patched
+      # kernel + iptsd + redistributable firmware), so touch and Wi-Fi work in
+      # the live session where the official image has neither.
+      installer = lib.nixosSystem {
+        inherit system;
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
+          inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
+          ./modules/installer/surface-live.nix
+        ];
+      };
+    };
+
+    packages.${system} = {
+      nixos-gnome-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
     };
   };
 }

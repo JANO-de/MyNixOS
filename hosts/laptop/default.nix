@@ -48,7 +48,13 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    extraSpecialArgs = { inherit inputs; theme = import ../../modules/theme.nix; };
+    # `tablet` toggles the touch-only parts of the niri config (see
+    # modules/home/niri.nix). Not a tablet: false.
+    extraSpecialArgs = {
+      inherit inputs;
+      theme = import ../../modules/theme.nix;
+      tablet = false;
+    };
     users.jano = import ../../modules/home/default.nix;
   };
 
