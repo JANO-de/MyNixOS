@@ -92,6 +92,12 @@
           ./modules/installer/surface-live.nix
         ];
       };
+
+      # Tiny first-stage system for the SP5 (see hosts/surface-bootstrap/default.nix).
+      surface-bootstrap = lib.nixosSystem {
+        inherit system;
+        modules = [ ./hosts/surface-bootstrap/default.nix ];
+      };
     };
 
     packages.${system} = {

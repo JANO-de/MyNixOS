@@ -20,6 +20,12 @@
   # The SP5 only has Intel HD 620 graphics, no NVIDIA GPU.
   hardware.nvidia.enable = false;
 
+  # 8 GB of RAM / 128 GB disk: keep the closure small and the tablet lean.
+  # niri-only (no Plasma/KDE), no heavy IDEs/office/gaming runtimes.
+  modules.desktop.plasma.enable = false;
+  modules.programs.heavy.enable = false;
+  modules.programs.gaming.enable = false;
+
   networking.hostName = "surface";
 
   time.timeZone = "Europe/Madrid";
@@ -38,6 +44,9 @@
   };
 
   console.keyMap = "es";
+
+  # SP5 screen-tearing fix (same as the installer live config).
+  boot.kernelParams = [ "i915.enable_psr=0" ];
 
   # No hardware-configuration.nix on purpose: the filesystem layout is declared
   # by label so the exact disk/UUIDs of this particular unit do not have to be

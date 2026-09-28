@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./options.nix
     ./dev.nix
     ./terminal.nix
     ./web.nix
