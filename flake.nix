@@ -51,6 +51,17 @@
           ./hosts/laptop/default.nix
         ];
       };
+
+      desktop = lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs theme; };
+        modules = [
+          inputs.home-manager.nixosModules.home-manager
+          # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
+          ({ ... }: { nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ]; })
+          ./hosts/desktop/default.nix
+        ];
+      };
     };
   };
 }
