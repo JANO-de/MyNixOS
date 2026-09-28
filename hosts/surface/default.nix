@@ -20,7 +20,7 @@
   # The SP5 only has Intel HD 620 graphics, no NVIDIA GPU.
   hardware.nvidia.enable = false;
 
-  # 8 GB of RAM / 128 GB disk: keep the closure small and the tablet lean.
+  # 4 GB of RAM / 128 GB disk: keep the closure small and the tablet lean.
   # niri-only (no Plasma/KDE), no heavy IDEs/office/gaming runtimes.
   modules.desktop.plasma.enable = false;
   modules.programs.heavy.enable = false;
@@ -69,12 +69,18 @@
     fsType = "ext4";
   };
 
-  # 8GB of RAM: keep the zram ceiling from modules/core below half of physical
-  # memory so a swap-heavy workload cannot eat the whole system.
+  # 4GB of RAM: keep the zram ceiling from modules/core below half of physical
+  # memory so a swap-heavy workload cannot eat the whole system. On top of it,
+  # an 8GB swapfile gives suspend/restore and heavier WM/electron loads room
+  # (NixOS creates the swapfile on first activation).
   zramSwap = {
     memoryPercent = lib.mkForce 50;
     memoryMax = lib.mkForce 4294967296; # 4 GiB
   };
+
+  swapDevices = [
+    { device = "/swapfile"; size = 8192; }
+  ];
 
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {

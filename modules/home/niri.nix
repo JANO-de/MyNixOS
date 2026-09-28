@@ -23,20 +23,36 @@ let
     }
   '';
 
-  # On-screen keyboard, docked at the bottom. niri has no touchscreen gestures
-  # yet, so this is started with the session and toggled with a hotkey.
+  # On-screen keyboard and auto-rotation, tablet only.
+  #
+  # wvkbd starts hidden (`--hidden`) and `--auto` pops it up only when the
+  # focused app requests a text input (input-method-v2, which niri
+  # implements), then hides it when the text input goes away. So the OSK no
+  # longer eats screen space until you actually have to type.
+  #
+  # iio-niri listens to iio-sensor-proxy's accelerometer and rotates eDP-1
+  # after you, e.g., flip the tablet into portrait. It's firewall-safe: it
+  # only calls `niri msg output ... transform` via IPC. If the SP5's
+  # accelerometer doesn't surface in Linux, it simply idles and the manual
+  # Mod+F9/F10/F12 binds from TABLET_BINDS cover rotation instead.
   tabletTop = lib.optionalString tablet ''
     // --- Surface Pro 5 (tablet) ---
-    spawn-at-startup "wvkbd -H 210 -L 160"
+    spawn-at-startup "wvkbd -H 210 -L 160 --hidden --auto"
+    spawn-at-startup "iio-niri" "listen" "--monitor" "eDP-1"
     // --- /Surface Pro 5 ---
   '';
 
-  # Indented so it lands inside `binds { }`. Mod+N hides/shows the keyboard,
-  # which is the only way to get it out of the way when the Type Cover is on.
-  # Plain string on purpose: Nix strips the common indentation out of
-  # indented strings, which would take the intended indent with it.
+  # Indented so it lands inside `binds { }`. Mod+F9/F10 rotate eDP-1 one way
+  # around (left/right), Mod+F12 resets; Mod+N hides/shows the OSK manually as
+  # a fallback when the Type Cover is on and auto-show is in the way. Plain
+  # strings on purpose: Nix strips the common indentation out of indented
+  # strings, which would take the intended indent with it.
   tabletBinds = lib.optionalString tablet
-    "\n    Mod+N { spawn \"wvkbd-toggle\"; }\n";
+    "\n"
+    + "    Mod+F9 { spawn \"niri\" \"msg\" \"output\" \"eDP-1\" \"transform\" \"90\"; }\n"
+    + "    Mod+F10 { spawn \"niri\" \"msg\" \"output\" \"eDP-1\" \"transform\" \"270\"; }\n"
+    + "    Mod+F12 { spawn \"niri\" \"msg\" \"output\" \"eDP-1\" \"transform\" \"normal\"; }\n"
+    + "    Mod+N { spawn \"wvkbd-toggle\"; }\n";
 
   # Inject theme colors and host-specific bits into the static KDL template
   content = lib.replaceStrings
