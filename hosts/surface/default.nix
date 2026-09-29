@@ -27,6 +27,8 @@
   modules.desktop.gnome.enable = true;
   modules.programs.heavy.enable = false;
   modules.programs.gaming.enable = false;
+  # The XAMPP workbench lives on the laptop (/opt/lampp); the tablet has none.
+  modules.services.xampp.enable = false;
 
   # Tablet: no password at the login screen — GDM autologin into the GNOME
   # session, which does have an on-screen keyboard if a password is ever needed

@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./options.nix
     ./network.nix
     ./audio.nix
     ./printing.nix

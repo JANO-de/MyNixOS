@@ -82,6 +82,7 @@ EOF
 in
 
 {
+  config = lib.mkIf config.modules.services.xampp.enable {
   # XAMPP 8.2.12 installed at /opt/lampp (class workbench). NixOS has no
   # classic FHS: XAMPP's binaries expect glibc + friends under /lib64 and its
   # control scripts hard-code PATH=/sbin:/usr/sbin:/bin:/usr/bin (e.g. mysql.server
@@ -201,4 +202,5 @@ in
     pkgs.zenity
     pkgs.xdg-utils
   ];
+  };
 }
