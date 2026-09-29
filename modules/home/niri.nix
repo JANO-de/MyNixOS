@@ -25,12 +25,18 @@ let
 
   # On-screen keyboard and auto-rotation, tablet only.
   #
-  # NB: wvkbd is NOT spawned here — it runs as a systemd user service (see
-  # systemd.user.services.wvkbd in modules/desktop/tablet.nix) because niri's
-  # spawn-at-startup races the Wayland socket at boot and was unreliable.
-  # The service starts it hidden; `--auto` pops it up only while a text input
-  # is focused, and Mod+N still overrides it manually via wvkbd-toggle
-  # (see TABLET_BINDS).
+  # NB: this niri tablet path is now dormant — the only machine that used it
+  # (the Surface) runs GNOME instead, so nothing enables `tablet` today and the
+  # wvkbd/iio-niri packages this references live in no module. Left in place so
+  # a future niri tablet can revive it by restoring those packages (originally
+  # systemd.user.services.wvkbd + iio-niri in the deleted
+  # modules/desktop/tablet.nix).
+  #
+  # Design notes (in case it is revived): wvkbd was NOT spawned here — it ran
+  # as a systemd user service because niri's spawn-at-startup races the
+  # Wayland socket at boot and was unreliable. The service started it hidden;
+  # `--auto` popped it up only while a text input was focused, and Mod+N still
+  # overrode it manually via wvkbd-toggle (see TABLET_BINDS).
   #
   # iio-niri listens to iio-sensor-proxy's accelerometer and rotates eDP-1
   # after you, e.g., flip the tablet into portrait. It's firewall-safe: it

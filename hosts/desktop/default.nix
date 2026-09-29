@@ -50,10 +50,14 @@
     backupFileExtension = "backup";
     # `tablet` toggles the touch-only parts of the niri config (see
     # modules/home/niri.nix). Not a tablet: false.
+    # `niriEnabled`/`gnomeEnabled` select which home modules apply (the surface
+    # runs GNOME: niri=false, gnome=true).
     extraSpecialArgs = {
       inherit inputs;
       theme = import ../../modules/theme.nix;
       tablet = false;
+      niriEnabled = true;
+      gnomeEnabled = false;
     };
     users.jano = import ../../modules/home/default.nix;
   };

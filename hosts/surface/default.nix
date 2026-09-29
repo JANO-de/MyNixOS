@@ -12,8 +12,6 @@
     ../../modules/hardware/surface.nix
     ../../modules/services
     ../../modules/desktop
-    # On-screen keyboard and other touch-first bits
-    ../../modules/desktop/tablet.nix
     ../../modules/programs
   ];
 
@@ -21,23 +19,22 @@
   hardware.nvidia.enable = false;
 
   # 4 GB of RAM / 128 GB disk: keep the closure small and the tablet lean.
-  # niri-only (no Plasma/KDE), no heavy IDEs/office/gaming runtimes.
+  # GNOME + Wayland instead of niri: built-in on-screen keyboard, auto screen
+  # rotation (iio-sensor-proxy), HiDPI scaling and touch gestures straight
+  # from the settings. No Plasma/KDE, no heavy IDEs/office/gaming runtimes.
+  modules.desktop.niri.enable = false;
   modules.desktop.plasma.enable = false;
+  modules.desktop.gnome.enable = true;
   modules.programs.heavy.enable = false;
   modules.programs.gaming.enable = false;
 
-  # Tablet: no password at the login screen (lightdm has no on-screen
-  # keyboard). Boot straight into the niri session; the screen locks again on
-  # suspend instead. lightdm is provided by the inir flake module, which has
-  # no autologin option of its own, so seed lightdm's conf.d declaratively.
-  system.activationScripts.lightdm-autologin.text = ''
-    mkdir -p /etc/lightdm/lightdm.conf.d
-    cat > /etc/lightdm/lightdm.conf.d/autologin.conf <<'CFG'
-    [Seat:*]
-    autologin-user=jano
-    autologin-session=niri
-    CFG
-  '';
+  # Tablet: no password at the login screen — GDM autologin into the GNOME
+  # session, which does have an on-screen keyboard if a password is ever needed
+  # again. The screen locks on suspend.
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "jano";
+  };
 
   networking.hostName = "surface";
 
@@ -84,8 +81,9 @@
 
   # 4GB of RAM: keep the zram ceiling from modules/core below half of physical
   # memory so a swap-heavy workload cannot eat the whole system. On top of it,
-  # an 8GB swapfile gives suspend/restore and heavier WM/electron loads room
-  # (NixOS creates the swapfile on first activation).
+  # an 8GB swapfile gives suspend/restore and GNOME (shell + daemons are a bit
+  # hungrier than niri) room to breathe (NixOS creates the swapfile on first
+  # activation).
   zramSwap = {
     memoryPercent = lib.mkForce 50;
     memoryMax = lib.mkForce 4294967296; # 4 GiB
@@ -100,12 +98,13 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    # `tablet = true` makes modules/home/niri.nix fill in the touch-only bits
-    # of the niri config (digitiser mapping, OSK, 2x output scale).
+    # niriEnabled=false skips the niri wayland config (surface runs GNOME);
+    # gnomeEnabled=true pulls the touch-first GNOME tweaks.
     extraSpecialArgs = {
       inherit inputs;
       theme = import ../../modules/theme.nix;
-      tablet = true;
+      niriEnabled = false;
+      gnomeEnabled = true;
     };
     users.jano = import ../../modules/home/default.nix;
   };

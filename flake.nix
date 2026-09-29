@@ -47,7 +47,9 @@
     nixosConfigurations = {
       laptop = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs theme; };
+        # niriEnabled=true: niri+iNiR shell (also the module-system default, but
+        # passed explicitly so the defaulted-arg probe doesn't recurse).
+        specialArgs = { inherit inputs theme; niriEnabled = true; };
         modules = [
           inputs.home-manager.nixosModules.home-manager
           # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
@@ -58,7 +60,9 @@
 
       desktop = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs theme; };
+        # niriEnabled=true: niri+iNiR shell (also the module-system default, but
+        # passed explicitly so the defaulted-arg probe doesn't recurse).
+        specialArgs = { inherit inputs theme; niriEnabled = true; };
         modules = [
           inputs.home-manager.nixosModules.home-manager
           # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
@@ -67,13 +71,15 @@
         ];
       };
 
-      # Microsoft Surface Pro 5 (i5 / 8GB / 128GB).
+      # Microsoft Surface Pro 5 (i5 / 4GB / 128GB).
       # Deliberately NO CachyOS overlay: the Surface relies on nixos-hardware's
       # linux-surface patched kernel (SAM/IPTS/thermald) + the in-tree Marvell
       # mwifiex wifi driver. The CachyOS kernel would drop all of that.
       surface = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs theme; };
+        # niriEnabled=false selects the GNOME desktop over the niri+iNiR shell
+        # (see modules/desktop/default.nix).
+        specialArgs = { inherit inputs theme; niriEnabled = false; };
         modules = [
           inputs.home-manager.nixosModules.home-manager
           ./hosts/surface/default.nix
