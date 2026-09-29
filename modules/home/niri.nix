@@ -28,7 +28,9 @@ let
   # NB: wvkbd is NOT spawned here — it runs as a systemd user service (see
   # systemd.user.services.wvkbd in modules/desktop/tablet.nix) because niri's
   # spawn-at-startup races the Wayland socket at boot and was unreliable.
-  # Mod+N toggles it manually via the wvkbd-toggle script (see TABLET_BINDS).
+  # The service starts it hidden; `--auto` pops it up only while a text input
+  # is focused, and Mod+N still overrides it manually via wvkbd-toggle
+  # (see TABLET_BINDS).
   #
   # iio-niri listens to iio-sensor-proxy's accelerometer and rotates eDP-1
   # after you, e.g., flip the tablet into portrait. It's firewall-safe: it
@@ -42,8 +44,8 @@ let
   '';
 
   # Indented so it lands inside `binds { }`. Mod+F9/F10 rotate eDP-1 one way
-  # around (left/right), Mod+F12 resets; Mod+N hides/shows the OSK manually as
-  # a fallback when the Type Cover is on and auto-show is in the way. Plain
+  # around (left/right), Mod+F12 resets; Mod+N is a manual OSK toggle as a
+  # fallback for when the Type Cover is on and the auto-pop is in the way. Plain
   # strings on purpose: Nix strips the common indentation out of indented
   # strings, which would take the intended indent with it.
   tabletBinds = lib.optionalString tablet
