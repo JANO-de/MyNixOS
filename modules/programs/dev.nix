@@ -1,8 +1,9 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    neovim
+  environment.systemPackages =
+    (with pkgs; [
+      neovim
     wget
     git
     curl
@@ -23,13 +24,6 @@
 
     # UML Designer
     drawio
-
-    # Java
-    jdk25
-    zulu25
-    android-studio
-    eclipses.eclipse-java
-    jetbrains.idea
 
     # DAW (Music)
     ardour
@@ -122,5 +116,16 @@
     mpv
     mpvScripts.mpris             # media-key/MPRIS integration for the YouTube Music widget
     yt-dlp
-  ];
+    ])
+    # Heavy Java/IDE toolchain — gated by modules.programs.heavy.enable so lean
+    # tablets (Surface: 4GB RAM, 128GB disk) skip the biggest store hogs:
+    # Android Studio, IntelliJ, Eclipse, extra JDKs and every transitive dep
+    # (jetbrains jdk/jcef alone is ~1.3GB).
+    ++ lib.optionals config.modules.programs.heavy.enable (with pkgs; [
+      jdk25
+      zulu25
+      android-studio
+      eclipses.eclipse-java
+      jetbrains.idea
+    ]);
 }
