@@ -26,6 +26,19 @@
   modules.programs.heavy.enable = false;
   modules.programs.gaming.enable = false;
 
+  # Tablet: no password at the login screen (lightdm has no on-screen
+  # keyboard). Boot straight into the niri session; the screen locks again on
+  # suspend instead. lightdm is provided by the inir flake module, which has
+  # no autologin option of its own, so seed lightdm's conf.d declaratively.
+  system.activationScripts.lightdm-autologin.text = ''
+    mkdir -p /etc/lightdm/lightdm.conf.d
+    cat > /etc/lightdm/lightdm.conf.d/autologin.conf <<'CFG'
+    [Seat:*]
+    autologin-user=jano
+    autologin-session=niri
+    CFG
+  '';
+
   networking.hostName = "surface";
 
   # THROWAWAY passwords so first boot is reachable (tty + SSH); the real ones

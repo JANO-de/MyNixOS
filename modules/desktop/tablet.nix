@@ -28,17 +28,21 @@ in
     pkgs.iio-niri # auto-rotation daemon (spawned from the niri config)
     pkgs.brightnessctl # Fn brightness keys, also handy for on-screen OSDs
 
-    # `wvkbd-toggle`: starts the keyboard if it is not running, otherwise
-    # SIGRTMIN (34) toggles its visibility. -x matches the exact process name
-    # so we never signal anything else. niri starts wvkbd at session start
-    # (see @TABLET_TOP@ in modules/home/niri/config.kdl) with --auto, so this
-    # mostly acts as the manual show/hide switch; starting it if dead is just
-    # belt and braces.
+# The binary nixpkgs ships is `wvkbd-mobintl` (from the mobintl fork), not
+  # `wvkbd` — using the wrong name makes every spawn fail silently. That took
+  # a while to find; do not "fix" the name back.
+  #
+  # `wvkbd-toggle`: starts the keyboard if it is not running, otherwise
+  # SIGRTMIN (34) toggles its visibility. -x matches the exact process name
+  # so we never signal anything else. niri starts wvkbd-mobintl docked at
+  # session start (see @TABLET_TOP@ in modules/home/niri/config.kdl), so this
+  # mostly acts as the manual show/hide switch; starting it if dead is just
+  # belt and braces.
     (pkgs.writeShellScriptBin "wvkbd-toggle" ''
-      if pgrep -x wvkbd >/dev/null; then
-        pkill -34 -x wvkbd
+      if pgrep -x wvkbd-mobintl >/dev/null; then
+        pkill -34 -x wvkbd-mobintl
       else
-        setsid wvkbd ${wvkbdArgs} >/dev/null 2>&1 &
+        setsid wvkbd-mobintl ${wvkbdArgs} >/dev/null 2>&1 &
       fi
     '')
   ];

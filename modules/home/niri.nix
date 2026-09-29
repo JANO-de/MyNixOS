@@ -36,7 +36,7 @@ let
   # Mod+F9/F10/F12 binds from TABLET_BINDS cover rotation instead.
   tabletTop = lib.optionalString tablet ''
     // --- Surface Pro 5 (tablet) ---
-    spawn-at-startup "wvkbd -H 210 -L 160"
+    spawn-at-startup "wvkbd-mobintl -H 210 -L 160"
     spawn-at-startup "iio-niri" "listen" "--monitor" "eDP-1"
     // --- /Surface Pro 5 ---
   '';
