@@ -13,5 +13,7 @@
     ./productivity.nix
     ./gaming.nix
     ./file-manager.nix
+    ./qol.nix
+    ./zathura.nix
   ];
 }

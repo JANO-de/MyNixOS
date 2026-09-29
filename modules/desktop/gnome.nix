@@ -10,8 +10,11 @@
 
 {
   config = lib.mkIf config.modules.desktop.gnome.enable {
-    services.desktopManager.gnome.enable = true;
-    services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+
+  # The greeter is chosen by greeter.nix; GDM is the default but a host (e.g.
+  # the Surface tablet) can ask for the themed SDDM instead.
+  services.displayManager.gdm.enable = config.modules.desktop.displayManager == "gdm";
 
     # GNOME needs a policy agent and the Polkit stack (niri's module usually
     # provided it; keep it self-contained here so a niri-less tablet still has

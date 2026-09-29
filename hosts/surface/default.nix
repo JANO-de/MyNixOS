@@ -25,10 +25,27 @@
   modules.desktop.niri.enable = false;
   modules.desktop.plasma.enable = false;
   modules.desktop.gnome.enable = true;
+  # Themed login screen (catppuccin) even though the session is GNOME: GDM
+  # cannot be themed, SDDM can, and the session itself does not care which
+  # greeter started it. See modules/desktop/greeter.nix.
+  modules.desktop.displayManager = "sddm";
   modules.programs.heavy.enable = false;
   modules.programs.gaming.enable = false;
   # The XAMPP workbench lives on the laptop (/opt/lampp); the tablet has none.
   modules.services.xampp.enable = false;
+
+  # Power: longer battery life than the desktop, and the drives are old enough
+  # to be worth watching.
+  modules.services.powertop.enable = true;
+  modules.services.smartd.enable = true;
+
+  # Reading/scanning and poking around from a terminal.
+  modules.programs.zathura.enable = true;
+  modules.programs.qol.enable = true;
+
+  # The bezel button opens a menu (lock/log out/suspend/hibernate/restart/shut
+  # down) instead of the shell's own dialog, which cannot offer hibernation.
+  modules.desktop.powerMenu.enable = true;
 
   # The Surface doubles as an extra monitor: moonlight-qt renders a sunshine
   # server's screen (laptop/desktop) fullscreen.
@@ -41,13 +58,10 @@
   # or serve nothing at all (just keep the binaries):
   #   modules.programs.deskflow.role = "none";
 
-  # Tablet: no password at the login screen — GDM autologin into the GNOME
-  # session, which does have an on-screen keyboard if a password is ever needed
-  # again. The screen locks on suspend.
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "jano";
-  };
+  # Tablet: a real login screen, no autologin. SDDM themes the greeter
+  # (catppuccin), and the password prompt is typed with the GNOME on-screen
+  # keyboard, so a lock screen is not a dead end on a touch-only tablet.
+  # The screen still locks automatically on suspend/idle.
 
   networking.hostName = "surface";
 
@@ -105,6 +119,13 @@
   swapDevices = [
     { device = "/swapfile"; size = 8192; }
   ];
+
+  # Hibernate to the swapfile above: the resume device is the filesystem that
+  # holds it, and the kernel/systemd finds the swap header on it. The 8 GB
+  # swapfile is only usable for hibernate if the image is smaller than that,
+  # which on 4 GB of RAM means a suspended session with a couple of apps open.
+  # Verify a real hibernate/resume cycle before relying on it.
+  boot.resumeDevice = "/dev/disk/by-label/NIXROOT";
 
   # Waydroid setup for surface
   virtualisation.waydroid.enable = true;

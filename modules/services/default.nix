@@ -11,5 +11,7 @@
     ./autoupgrade.nix
     ./sunshine.nix
     ./xampp.nix
+    ./powertop.nix
+    ./smartd.nix
   ];
 }

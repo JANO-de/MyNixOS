@@ -9,8 +9,10 @@
   imports = [
     ./options.nix
     ./awww.nix
+    ./greeter.nix
     ./plasma.nix
     ./niri.nix
     ./gnome.nix
+    ./power-menu.nix
   ] ++ lib.optional niriEnabled ./shell;
 }
