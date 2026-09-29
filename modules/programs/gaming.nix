@@ -32,8 +32,6 @@
     gamescope
     bazaar
     heroic
-    waydroid
-    waydroid-helper
     steamcmd
     ftb-app
   ]);
