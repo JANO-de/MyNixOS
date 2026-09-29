@@ -32,26 +32,22 @@ input {
     focus-follows-mouse
 }
 
-// HDMI-A-1 is shared between two monitors: the 4K at home and the 1920x1080 at school.
-// No mode is set so niri picks the native mode of whichever is connected.
-// The explicit x=0 keeps it on the left; eDP-1 is left unpositioned so niri
-// auto-places it directly to the right (in logical pixels, so both screens line up).
+// --- Monitor output configuration ---
+// HDMI-A-1 is shared between two monitors: the 4K at home and the 1920x1080 at
+// school. No mode is declared here on purpose, so niri picks the native mode of
+// whichever is connected, and unpositioned outputs are auto-placed.
+//
+// This file deliberately declares NO `output` blocks. Niri merges an output
+// block found in an include with one from the main config, later keys winning,
+// so Monitor Manager writes here would silently override this file rather than
+// fail loudly. Keeping one owner avoids that ambiguity. Output settings live
+// only in the optional include at the bottom of this file, which the Monitor
+// Manager GUI owns; the saved profiles are what replace the old per-location
+// presets:
+//
+//   school  HDMI-A-1 scale 1, position x=0 y=0 (eDP-1 auto-placed to its right)
+//   home    HDMI-A-1 scale 1.5, position x=0 y=0 (4K)
 
-// * ------------- School  ------------- *
-output "HDMI-A-1" {
-    scale 1
-    position x=0 y=0
-}
-
-// * ------------- Home  ------------- *
-//output "HDMI-A-1" {
-//    scale 1.5
-//    position x=0 y=0
-//}
-
-output "eDP-1" {
-    scale @EDP_SCALE@
-}
 
 window-rule {
     match title="Kando Menu"
@@ -124,7 +120,8 @@ binds {
     Mod+V      { spawn "inir" "clipboard" "toggle"; }          // was: toggle-window-floating -> Mod+Ctrl+V
     Mod+Ctrl+V { toggle-window-floating; }
     Mod+Comma  { spawn "inir" "settings"; }
-    Mod+Slash  { spawn "inir" "cheatsheet" "toggle"; }
+    Mod+Ctrl+M { spawn "inir-monitor-manager"; }
+    Mod+Ctrl+K  { spawn "inir" "cheatsheet" "toggle"; }
     Mod+Shift+S { spawn "inir" "region" "screenshot"; }
     Mod+Shift+X { spawn "inir" "region" "ocr"; }
     Mod+B      { spawn "zen"; }
@@ -269,4 +266,13 @@ environment {
     ELECTRON_OZONE_PLATFORM_HINT "wayland"
     QT_IMAGEIO_MAXALLOC "0"
 }
+
+// --- Monitor Manager ---
+// Written by the Monitor Manager GUI (see modules/desktop/shell/scripts/
+// monitor-manager.py). The blocks above define the declarative defaults; this
+// optional include is evaluated last so the GUI's output blocks override them.
+// `optional=true` keeps the config valid while the file does not exist yet, and
+// niri watches it, so saving from the GUI live-reloads the compositor.
+include optional=true "config.d/15-outputs.kdl"
+// --- /Monitor Manager ---
 // --- /iNiR ---

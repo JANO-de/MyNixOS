@@ -10,6 +10,14 @@ let
   # gracefully otherwise; the wallpaper path sync always runs.
   niriSyncColors = pkgs.writeShellScriptBin "niri-sync-colors" (builtins.readFile ./scripts/niri-sync-colors);
 
+  # obsidian-sync-colors — keep the Obsidian "ITS Theme" colors in sync with
+  # the same iNiR Material You palette. The vault theme routes its color
+  # variables through --inir-* custom properties whose fallbacks are the stock
+  # ITS colors; this script derives those tokens from the generated palette,
+  # writes them to .obsidian/snippets/inir-theme.css and enables the snippet in
+  # appearance.json, so the theme is untouched when iNiR has no palette yet.
+  obsidianSyncColors = pkgs.writeShellScriptBin "obsidian-sync-colors" (builtins.readFile ./scripts/obsidian-sync-colors);
+
   # Optional daily notifier: checks whether origin/main has commits not yet
   # pulled into the local flake repo. Adapted from the reference repo to point
   # at this flake instead of the stock /etc/nixos layout.
@@ -18,6 +26,50 @@ let
   # Optional weekly auto-updater: pulls origin/main and rebuilds ONLY if the
   # clone is clean and the build succeeds, rolling back the checkout otherwise.
   configAutoUpdater = pkgs.writeShellScriptBin "auto-update" (builtins.readFile ./scripts/auto-update.sh);
+
+  # Monitor Manager — a standalone Quickshell window plus an iNiR settings page
+  # for arranging niri outputs, and named layout profiles.
+  #
+  # The upstream iNiR package hard-codes its settings page list, so the page has
+  # to be spliced into the packaged runtime rather than dropped in as an overlay.
+  # overrideAttrs is used rather than copying the output so that the upstream
+  # runtimeDependencies/propagatedBuildInputs survive: the shell is launched
+  # with the package's own dependency PATH, and losing those would break it.
+  inirBase = inputs.inir.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+  inirWithMonitorManager = inirBase.overrideAttrs (old: {
+    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.makeWrapper ];
+
+    postInstall = ''
+      runtime="$out/share/quickshell/inir"
+
+      # The settings page imports the shared UI as the `qs.monitorManager`
+      # module, so that directory needs its qmldir. The name is camelCase
+      # because QML import URIs reject hyphens. The page itself lives in its own
+      # directory so the standalone launch never scans its qs.* imports.
+      mkdir -p "$runtime/monitorManager" "$runtime/monitor-manager-settings"
+      cp ${./monitor-manager}/* "$runtime/monitorManager/"
+      cp ${./monitor-manager-settings}/*.qml "$runtime/monitor-manager-settings/"
+
+      # Backend, next to the niri-config.py the shell already knows about.
+      install -m 0755 ${./scripts/monitor-manager.py} "$runtime/scripts/monitor-manager.py"
+
+      # Register the settings page. This aborts the build if the upstream
+      # registry no longer matches, rather than shipping a page that is
+      # silently missing from the settings window.
+      python3 ${./inir-monitor-manager}/patch-inir-registry.py \
+        "$runtime/modules/settings/SettingsPageRegistry.qml"
+
+      # Standalone launcher for the Mod+Ctrl+M keybind. The pane starts the
+      # backend as `python3 <script>`, so python has to be on PATH; the
+      # absolute path is passed separately because the settings page inherits
+      # the shell's environment instead of this wrapper's.
+      makeWrapper ${lib.getExe pkgs.quickshell} "$out/bin/inir-monitor-manager" \
+        --add-flags "-p $runtime/monitorManager/MonitorManager.qml" \
+        --set-default MONITOR_MANAGER_PY "$runtime/scripts/monitor-manager.py" \
+        --prefix PATH : ${lib.makeBinPath [ pkgs.python3 ]}
+    '';
+  });
 
 in {
 
@@ -52,7 +104,9 @@ in {
   programs.inir = {
     enable = true;
     service.compositor = "niri";
-    extraPackages = import ./modules/inir-deps.nix { inherit pkgs; };
+    # Carries the Monitor Manager QML, its backend and the patched settings
+    # registry. environment.systemPackages picks up the launcher from here.
+    package = inirWithMonitorManager;
   };
 
   # Wallpaper → Niri color sync, watching the iNiR-generated palette
@@ -74,6 +128,27 @@ in {
     serviceConfig = {
       Type = "simple";
       ExecStart = "${lib.getExe niriSyncColors} --watch";
+      Restart = "always";
+      RestartSec = 2;
+    };
+  };
+
+  # Wallpaper → Obsidian "ITS Theme" color sync, watching the same generated
+  # palette directory.
+  systemd.user.services.obsidian-sync-colors = {
+    description = "Sync Obsidian ITS Theme colors with iNiR generated theme data";
+    after = [ "inir.service" ];
+    wantedBy = [ "default.target" ];
+    path = with pkgs; [
+      inotify-tools
+      jq
+      python3
+      # flock (appearance.json serialization) lives in util-linux.
+      util-linux
+    ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${lib.getExe obsidianSyncColors} --watch";
       Restart = "always";
       RestartSec = 2;
     };

@@ -1,0 +1,283 @@
+#!/usr/bin/env bash
+# Synchronizes iNiR's generated Material You palette with the Obsidian
+# "ITS Theme" vault colors.
+#
+# The vault theme (ITS Theme, in .obsidian/themes/ITS Theme/theme.css) routes
+# its color variables through --inir-* custom properties with the stock ITS
+# colors as fallbacks. This script reads the iNiR-generated palette
+# ($GENERATED_DIR/app-palette.json, palette.json or colors.json), derives the
+# matching ITS-equivalent tokens, writes them to
+# .obsidian/snippets/inir-theme.css and makes sure that snippet is enabled in
+# appearance.json. Without the snippet (or without iNiR having generated a
+# palette yet) the theme looks completely unchanged.
+set -Eeuo pipefail
+
+OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian Vaults/MEGATHREAD}"
+GENERATED_DIR="${GENERATED_DIR:-$HOME/.local/state/quickshell/user/generated}"
+SNIPPET_FILE="$OBSIDIAN_VAULT/.obsidian/snippets/inir-theme.css"
+APPEARANCE_FILE="$OBSIDIAN_VAULT/.obsidian/appearance.json"
+
+PYTHON="python3"
+
+sync_once() {
+    local palette=""
+    for candidate in app-palette.json palette.json colors.json; do
+        if [[ -f "$GENERATED_DIR/$candidate" ]]; then
+            palette="$GENERATED_DIR/$candidate"
+            break
+        fi
+    done
+
+    [[ -n "$palette" ]] || return 0
+
+    command -v "$PYTHON" >/dev/null 2>&1 || {
+        echo "obsidian-sync-colors: python3 not found" >&2
+        return 1
+    }
+
+    mkdir -p "$(dirname "$SNIPPET_FILE")"
+
+    "$PYTHON" - "$palette" "$GENERATED_DIR" "$SNIPPET_FILE" <<'PY'
+import colorsys
+import json
+import os
+import sys
+
+palette_json, generated_dir, snippet_file = sys.argv[1], sys.argv[2], sys.argv[3]
+meta_path = os.path.join(generated_dir, "theme-meta.json")
+
+with open(palette_json) as fh:
+    p = json.load(fh)
+
+
+def first(*keys):
+    for key in keys:
+        if key in p and p[key]:
+            return p[key]
+    return None
+
+
+def to_rgb(color):
+    c = color.lstrip("#")
+    return [int(c[i:i + 2], 16) for i in (0, 2, 4)]
+
+
+def to_hex(rgb):
+    return "#" + "".join(f"{min(255, max(0, int(round(v)))):02x}" for v in rgb)
+
+
+def to_hsl_frac(rgb):
+    r, g, b = [v / 255.0 for v in rgb]
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    return h, l, s
+
+
+def rgb_triplet(rgb):
+    return ", ".join(str(int(round(v))) for v in rgb)
+
+
+def shade(hex_color, factor):
+    # factor > 1 => lighter, < 1 => darker
+    rgb = to_rgb(hex_color)
+    return to_hex([fuzzy(v * factor) for v in rgb])
+
+
+def fuzzy(v):
+    return min(255, max(0, int(round(v))))
+
+
+# Material role -> color (app_palette preferred; base palette fallback).
+accent = first("app_accent", "primary") or "#6750A4"
+accent2 = first("secondary") or accent
+accent2_lite = first("tertiary") or accent
+accent_container = first("app_accent_container", "primary_container") or accent
+note = first("app_background", "background", "surface") or "#1A1E24"
+active_bg = first("app_surface", "surface_container_low", "surface") or note
+fg = first("app_foreground", "on_background", "on_surface") or "#CFD7DD"
+text = first("app_on_surface", "on_surface") or fg
+soft_text = first("app_subtext", "on_surface_variant", "outline") or text
+faint_text = first("outline") or soft_text
+lines = first("app_border_subtle", "outline_variant", "outline") or faint_text
+table = first("surface_container_high", "app_surface_popup") or active_bg
+ui_bg = first("surface_dim", "scrim", "shadow") or note
+ui_alt_bg = first("surface_container_lowest", "app_surface") or ui_bg
+code_text = first("tertiary", "secondary", "error") or accent2_lite
+headers = accent
+selection = first("app_selection") or accent_container
+success = first("success") or "#32603E"
+error = first("error") or "#772D2D"
+
+
+def to_rgba(color, alpha):
+    r, g, b = to_rgb(snippet_hex(color))
+    return f"rgba({r}, {g}, {b}, {alpha})"
+
+
+def snippet_hex(color):
+    # Keep hex colors, drop anything that is already functional notation.
+    return color if color.startswith("#") else to_hex(to_rgb(color))
+
+mode = "dark"
+if os.path.exists(meta_path):
+    with open(meta_path) as fh:
+        meta = json.load(fh)
+    mode = meta.get("mode", "dark")
+
+# --dark-accent / --lite-accent use the same fixed lightness ladder as the
+# theme's own .accent-color derivation blocks (lines 14554-14614 of theme.css),
+# keeping hue/saturation from the wallpaper accent.
+h, l, s = to_hsl_frac(to_rgb(accent))
+if mode == "light":
+    dark_lightness, lite_lightness = 0.40, 0.50
+else:
+    dark_lightness, lite_lightness = 0.30, 0.70
+dark_hsl = colorsys.hls_to_rgb(h, dark_lightness, s)
+lite_hsl = colorsys.hls_to_rgb(h, lite_lightness, s)
+dark_accent = to_hex([v * 255 for v in dark_hsl])
+lite_accent = to_hex([v * 255 for v in lite_hsl])
+
+# The same token set is written for whichever mode the palette was generated in
+# (dark or light). The vault theme reads these via var(--inir-*, <stock>).
+inir_tokens = {
+    "inir-accent-hue": int(round(h * 360)),
+    "inir-accent-sat": f"{int(round(s * 100))}%",
+    "inir-accent-lit": f"{int(round(l * 100))}%",
+    "inir-accent": accent,
+    "inir-accent-rgb": rgb_triplet(to_rgb(accent)),
+    "inir-accent-dark": dark_accent,
+    "inir-accent-light": lite_accent,
+    "inir-accent2": accent2,
+    "inir-accent2-lite": accent2_lite,
+    "inir-note": note,
+    "inir-note-rgb": rgb_triplet(to_rgb(note)),
+    "inir-active-bg": active_bg,
+    "inir-fg": fg,
+    "inir-text": text,
+    "inir-headers": headers,
+    "inir-soft-text": soft_text,
+    "inir-faint-text": faint_text,
+    "inir-code-text": code_text,
+    "inir-lines": lines,
+    "inir-table": table,
+    "inir-ui-bg": ui_bg,
+    "inir-ui-alt-bg": ui_alt_bg,
+    "inir-success": success,
+    "inir-error": error,
+    "inir-selection": to_rgba(selection, 0.40),
+    "inir-selection-soft": to_rgba(selection, 0.25),
+}
+
+
+def render(mode_name):
+    out = [f"/* Generated by obsidian-sync-colors from {os.path.basename(palette_json)} */"]
+    out.append("/* Wallpaper-driven Material You palette for ITS Theme. */")
+    out.append("")
+    out.append(f"body.theme-{mode_name} {{")
+    for key, value in inir_tokens.items():
+        out.append(f"  --{key}: {value};")
+    out.append("}")
+    out.append("")
+    return "\n".join(out)
+
+
+css = [
+    "/*===iNiR Wallpaper Colors - do not edit, regenerated on wallpaper change===*/",
+    "",
+]
+css.append(render(mode))
+
+with open(snippet_file, "w") as fh:
+    fh.write("\n".join(css) + "\n")
+
+print(f"obsidian-sync-colors: wrote {snippet_file} (mode={mode})")
+PY
+
+    # Make sure the snippet is enabled in Obsidian's appearance settings, and
+    # keep the vault theme in sync with the palette mode ("obsidian" = dark,
+    # "moonstone" = light) so body.theme-* matches the generated snippet.
+    if [[ -f "$APPEARANCE_FILE" ]]; then
+        local lockfile
+        local tmpfile
+
+        lockfile="$APPEARANCE_FILE.lock"
+        tmpfile="${APPEARANCE_FILE}.tmp.$$"
+
+        # Determine the palette mode from theme-meta.json (via python we already
+        # know it, but avoid threading state: re-read cheaply with jq).
+        local palette_mode
+        palette_mode="dark"
+        if [[ -f "$GENERATED_DIR/theme-meta.json" ]]; then
+            palette_mode="$(jq -r '.mode // "dark"' "$GENERATED_DIR/theme-meta.json")"
+        fi
+        if [[ "$palette_mode" == "light" ]]; then
+            local obsidian_theme="moonstone"
+        else
+            local obsidian_theme="obsidian"
+        fi
+
+        if (
+            flock -w 5 200 || exit 1
+
+            jq --arg theme "$obsidian_theme" \
+                '.theme = $theme |
+                 .enabledCssSnippets |= (if index("inir-theme") then . else . + ["inir-theme"] end)' \
+                "$APPEARANCE_FILE" > "$tmpfile"
+
+            mv -f "$tmpfile" "$APPEARANCE_FILE"
+        ) 200>"$lockfile"; then
+            :
+        else
+            rm -f "$tmpfile"
+            echo "obsidian-sync-colors: could not enable snippet in appearance.json" >&2
+        fi
+    fi
+}
+
+case "${1:-}" in
+    "")
+        sync_once
+        ;;
+
+    --watch)
+        command -v inotifywait >/dev/null 2>&1 || {
+            echo "obsidian-sync-colors: inotifywait not found" >&2
+            exit 1
+        }
+
+        while [[ ! -d "$GENERATED_DIR" ]]; do
+            sleep 2
+        done
+
+        sync_once
+
+        inotifywait -m \
+            -e close_write,moved_to \
+            --format '%f' \
+            "$GENERATED_DIR" |
+        while read -r file; do
+            case "$file" in
+                app-palette.json|palette.json|colors.json|theme-meta.json)
+                    sync_once || echo "obsidian-sync-colors: sync failed, will retry on next event" >&2
+                    ;;
+            esac
+        done
+        ;;
+
+    --help|-h)
+        cat <<'HELP'
+Usage:
+  obsidian-sync-colors
+  obsidian-sync-colors --watch
+
+Derives ITS Theme colors (--inir-*) from the iNiR-generated Material You
+palette and writes them to the Obsidian CSS snippet
+    .obsidian/snippets/inir-theme.css
+then enables that snippet in .obsidian/appearance.json.
+HELP
+        ;;
+
+    *)
+        echo "Usage: obsidian-sync-colors [--watch]" >&2
+        exit 2
+        ;;
+esac
