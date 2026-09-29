@@ -8,6 +8,7 @@
 {
   imports = [
     ./options.nix
+    ./awww.nix
     ./plasma.nix
     ./niri.nix
     ./gnome.nix
