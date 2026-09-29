@@ -25,10 +25,9 @@ let
 
   # On-screen keyboard and auto-rotation, tablet only.
   #
-  # wvkbd starts hidden (`--hidden`) and `--auto` pops it up only when the
-  # focused app requests a text input (input-method-v2, which niri
-  # implements), then hides it when the text input goes away. So the OSK no
-  # longer eats screen space until you actually have to type.
+  # wvkbd is docked at the bottom and always visible, so there's a keyboard
+  # the moment the session starts — no dependence on input-method-v2 firing to
+  # pop it up. Mod+N toggles it manually (see TABLET_BINDS).
   #
   # iio-niri listens to iio-sensor-proxy's accelerometer and rotates eDP-1
   # after you, e.g., flip the tablet into portrait. It's firewall-safe: it
@@ -37,7 +36,7 @@ let
   # Mod+F9/F10/F12 binds from TABLET_BINDS cover rotation instead.
   tabletTop = lib.optionalString tablet ''
     // --- Surface Pro 5 (tablet) ---
-    spawn-at-startup "wvkbd -H 210 -L 160 --hidden --auto"
+    spawn-at-startup "wvkbd -H 210 -L 160"
     spawn-at-startup "iio-niri" "listen" "--monitor" "eDP-1"
     // --- /Surface Pro 5 ---
   '';

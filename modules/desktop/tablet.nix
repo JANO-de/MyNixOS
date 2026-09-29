@@ -1,11 +1,14 @@
 # Touch-first bits for the Surface Pro 5. Imported only by hosts/surface.
 #
 # The tablet is usable with or without the Type Cover, so it needs an
-# on-screen keyboard. niri starts wvkbd hidden (`--hidden`) and lets
-# `--auto` pop it up whenever a focused app requests text input
-# (input-method-v2, which niri implements), hiding it again afterwards.
-# Mod+N (see @TABLET_BINDS@ in modules/home/niri.nix) still does a manual
-# hide/show through `wvkbd-toggle`.
+# on-screen keyboard. niri starts wvkbd docked at the bottom of the screen
+# (see @TABLET_TOP@ in modules/home/niri/config.kdl) so it is *always*
+# visible and usable, and Mod+N hides/shows it (see @TABLET_BINDS@ in
+# modules/home/niri.nix) through `wvkbd-toggle`.
+#
+# (Tried wvkbd --hidden --auto — pop-up only on text focus via
+# input-method-v2 — but it didn't fire reliably in this niri build, so a
+# keyboard that's simply there when you need it wins.)
 #
 # The screen can be used in any orientation: iio-sensor-proxy feeds the
 # accelerometer to `iio-niri` (spawned by niri, see @TABLET_TOP@), which
@@ -15,10 +18,9 @@
 
 let
   # -H: height in portrait, -L: height in landscape. ~15% of the screen either
-  # way, which is about right for a 2736x1824 panel at scale 2. --hidden +
-  # --auto: starts out of the way and only appears when a text field is
-  # focused.
-  wvkbdArgs = "-H 210 -L 160 --hidden --auto";
+  # way, which is about right for a 2736x1824 panel at scale 2. Starts docked
+  # and visible.
+  wvkbdArgs = "-H 210 -L 160";
 in
 {
   environment.systemPackages = [
