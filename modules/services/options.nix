@@ -8,4 +8,12 @@
       description = "Wire up the XAMPP workbench (/opt/lampp): system users, FHS compat layer, per-service systemd units and the xampp-panel launcher. Disable on hosts that never installed /opt/lampp (e.g. the Surface tablet), whose xampp units would otherwise fail at every activation.";
     };
   };
+
+  options.modules.services.sunshine = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Run the Sunshine GPU screen-streaming server (paired with a moonlight client, e.g. the Surface used as an extra monitor).";
+    };
+  };
 }

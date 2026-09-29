@@ -30,7 +30,6 @@
       '';
     }))
     gamescope
-    bazaar
     heroic
     steamcmd
     ftb-app

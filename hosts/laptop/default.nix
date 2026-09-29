@@ -43,6 +43,14 @@
     ntfs3g
   ];
 
+  # The Surface acts as an extra monitor via this sunshine server + moonlight
+  # on the tablet (KMS/pipewire capture under niri).
+  modules.services.sunshine.enable = true;
+
+  # Deskflow keyboard/mouse sharing: this machine may serve or join another.
+  # Pick one: modules.programs.deskflow.role = "server";
+  #         modules.programs.deskflow.role = "client"; modules.programs.deskflow.serverAddress = "desktop";
+
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {
     useGlobalPkgs = true;

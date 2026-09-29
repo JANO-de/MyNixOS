@@ -9,6 +9,7 @@
     ./ssh.nix
     ./flatpak.nix
     ./autoupgrade.nix
+    ./sunshine.nix
     ./xampp.nix
   ];
 }

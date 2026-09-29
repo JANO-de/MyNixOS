@@ -30,6 +30,17 @@
   # The XAMPP workbench lives on the laptop (/opt/lampp); the tablet has none.
   modules.services.xampp.enable = false;
 
+  # The Surface doubles as an extra monitor: moonlight-qt renders a sunshine
+  # server's screen (laptop/desktop) fullscreen.
+  modules.programs.moonlight.enable = true;
+
+  # Deskflow keyboard/mouse sharing: the tablet can serve its Type Cover or
+  # join a server. Pick one (Surface as client of the laptop/desktop):
+  #   modules.programs.deskflow.role = "client";
+  #   modules.programs.deskflow.serverAddress = "laptop";
+  # or serve nothing at all (just keep the binaries):
+  #   modules.programs.deskflow.role = "none";
+
   # Tablet: no password at the login screen — GDM autologin into the GNOME
   # session, which does have an on-screen keyboard if a password is ever needed
   # again. The screen locks on suspend.
