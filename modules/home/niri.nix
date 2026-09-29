@@ -25,9 +25,10 @@ let
 
   # On-screen keyboard and auto-rotation, tablet only.
   #
-  # wvkbd is docked at the bottom and always visible, so there's a keyboard
-  # the moment the session starts — no dependence on input-method-v2 firing to
-  # pop it up. Mod+N toggles it manually (see TABLET_BINDS).
+  # NB: wvkbd is NOT spawned here — it runs as a systemd user service (see
+  # systemd.user.services.wvkbd in modules/desktop/tablet.nix) because niri's
+  # spawn-at-startup races the Wayland socket at boot and was unreliable.
+  # Mod+N toggles it manually via the wvkbd-toggle script (see TABLET_BINDS).
   #
   # iio-niri listens to iio-sensor-proxy's accelerometer and rotates eDP-1
   # after you, e.g., flip the tablet into portrait. It's firewall-safe: it
@@ -36,7 +37,6 @@ let
   # Mod+F9/F10/F12 binds from TABLET_BINDS cover rotation instead.
   tabletTop = lib.optionalString tablet ''
     // --- Surface Pro 5 (tablet) ---
-    spawn-at-startup "wvkbd-mobintl -H 210 -L 160"
     spawn-at-startup "iio-niri" "listen" "--monitor" "eDP-1"
     // --- /Surface Pro 5 ---
   '';

@@ -1,14 +1,15 @@
 # Touch-first bits for the Surface Pro 5. Imported only by hosts/surface.
 #
 # The tablet is usable with or without the Type Cover, so it needs an
-# on-screen keyboard. niri starts wvkbd docked at the bottom of the screen
-# (see @TABLET_TOP@ in modules/home/niri/config.kdl) so it is *always*
-# visible and usable, and Mod+N hides/shows it (see @TABLET_BINDS@ in
-# modules/home/niri.nix) through `wvkbd-toggle`.
-#
-# (Tried wvkbd --hidden --auto — pop-up only on text focus via
-# input-method-v2 — but it didn't fire reliably in this niri build, so a
-# keyboard that's simply there when you need it wins.)
+  # on-screen keyboard. wvkbd-mobintl runs as a systemd user service
+  # (systemd.user.services.wvkbd below) and lives docked at the bottom of the
+  # screen, always visible; Mod+N hides/shows it (see @TABLET_BINDS@ in
+  # modules/home/niri.nix) through `wvkbd-toggle`.
+  #
+  # (True pop-up-only-on-text-focus needs `wvkbd --auto`, which upstream added
+  # after the 0.19.4 that nixpkgs 26.05 ships — it rejects the flag. A simply
+  # docked keyboard is the reliable default; bump the wvkbd package if you
+  # want the focus-triggered one.)
 #
 # The screen can be used in any orientation: iio-sensor-proxy feeds the
 # accelerometer to `iio-niri` (spawned by niri, see @TABLET_TOP@), which
@@ -34,10 +35,10 @@ in
   #
   # `wvkbd-toggle`: starts the keyboard if it is not running, otherwise
   # SIGRTMIN (34) toggles its visibility. -x matches the exact process name
-  # so we never signal anything else. niri starts wvkbd-mobintl docked at
-  # session start (see @TABLET_TOP@ in modules/home/niri/config.kdl), so this
-  # mostly acts as the manual show/hide switch; starting it if dead is just
-  # belt and braces.
+  # so we never signal anything else. The systemd user service runs the
+  # keyboard at session start; this mostly acts as the manual show/hide
+  # switch, and starting it if the service somehow left it dead is belt and
+  # braces.
     (pkgs.writeShellScriptBin "wvkbd-toggle" ''
       if pgrep -x wvkbd-mobintl >/dev/null; then
         pkill -34 -x wvkbd-mobintl
@@ -46,6 +47,24 @@ in
       fi
     '')
   ];
+
+  # Start the keyboard as a user service instead of via niri's
+  # spawn-at-startup: the latter races the Wayland socket at boot and the
+  # keyboard routinely never came up. systemd orders it after the graphical
+  # session and restarts it if it dies. WAYLAND_DISPLAY is set explicitly
+  # because user services don't inherit it otherwise.
+  systemd.user.services.wvkbd = {
+    description = "On-screen virtual keyboard";
+    after = [ "graphical-session-pre.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.wvkbd}/bin/wvkbd-mobintl ${wvkbdArgs}";
+      Restart = "on-failure";
+      Environment = "WAYLAND_DISPLAY=wayland-1";
+    };
+  };
 
   # Accelerometer/gyro subscription for auto-rotation (and for future
   # orientation-aware apps). Harmless if the device exposes no sensor.
