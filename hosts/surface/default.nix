@@ -95,6 +95,11 @@
     { device = "/swapfile"; size = 8192; }
   ];
 
+  # Waydroid setup for surface
+  virtualisation.waydroid.enable = true;
+  virtualisation.waydroid.package = pkgs.waydroid-nftables;
+  environment.systemPackages = [ pkgs.wl-clipboard ];
+
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {
     useGlobalPkgs = true;
