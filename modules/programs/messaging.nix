@@ -5,5 +5,6 @@
     dissent
     legcord
     zapzap
+    simplex-chat-desktop
   ];
 }
