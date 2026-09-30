@@ -19,6 +19,14 @@
   # the radio always on.
   networking.networkmanager.wifi.powersave = false;
 
+  # mwifiex fails the EAPOL 4-way handshake when the AP enforces PMF (802.11w)
+  # or negotiates it in a WPA2/WPA3 transition: it associates, sends EAPOL to
+  # the AP and drops immediately. Default PMF OFF for every connection.
+  environment.etc."NetworkManager/conf.d/00-surface-pmf.conf".text = ''
+    [connection]
+    802-11-wireless-security.pmf=0
+  '';
+
   # --- touch ---
   # The Type Cover's trackpad follows the same rules as the other hosts.
   services.libinput.touchpad = {
