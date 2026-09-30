@@ -38,6 +38,21 @@
     options = [ "nofail" "uid=1000" "gid=100" "umask=000" ];
   };
 
+  # Freshly formatted internal data drives (ext4, wiped in place of the old
+  # NTFS/btrfs layouts). "nofail" keeps boot snappy even if a drive is missing,
+  # "noatime" avoids the write traffic a desktop does not need.
+  fileSystems."/mnt/data" = {
+    device = "/dev/disk/by-uuid/f6a19317-f36e-4a3f-8934-423b2e3d8ed4";
+    fsType = "ext4";
+    options = [ "nofail" "noatime" ];
+  };
+
+  fileSystems."/mnt/ssd" = {
+    device = "/dev/disk/by-uuid/949f3a95-eae7-4068-a57a-ff0d695142e1";
+    fsType = "ext4";
+    options = [ "nofail" "noatime" ];
+  };
+
   # ntfs-3g provides the mount.ntfs-3g helper used by the mount above
   environment.systemPackages = with pkgs; [
     ntfs3g
