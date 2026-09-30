@@ -30,6 +30,11 @@
   # The XAMPP workbench lives on the laptop (/opt/lampp); the tablet has none.
   modules.services.xampp.enable = false;
 
+  # Cheapest battery wins on a Skylake tablet: PowerTOP autotune at boot and
+  # smartd keeping an eye on the 2016-era SSD.
+  modules.services.powertop.enable = true;
+  services.smartd.enable = true;
+
   # The Surface doubles as an extra monitor: moonlight-qt renders a sunshine
   # server's screen (laptop/desktop) fullscreen.
   modules.programs.moonlight.enable = true;
@@ -41,13 +46,32 @@
   # or serve nothing at all (just keep the binaries):
   #   modules.programs.deskflow.role = "none";
 
-  # Tablet: no password at the login screen — GDM autologin into the GNOME
-  # session, which does have an on-screen keyboard if a password is ever needed
-  # again. The screen locks on suspend.
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "jano";
-  };
+  # Login screen: GDM, no autologin anymore. Pretty it up with the theme's
+  # catppuccin-mocha wallpaper (greeter renders org.gnome.desktop.background).
+  programs.dconf.profiles.gdm.databases = [
+    {
+      settings."org/gnome/desktop/background" = {
+        picture-uri = "file://${pkgs.nixos-artwork.wallpapers.catppuccin-mocha.gnomeFilePath}";
+        picture-uri-dark = "file://${pkgs.nixos-artwork.wallpapers.catppuccin-mocha.gnomeFilePath}";
+      };
+    }
+  ];
+
+  # Volume rocker: the SP5 buttons report plain VolUp/VolDown keycodes (they
+  # are "Sideband GPIO" events), so GNOME gets the events and routes them via
+  # gsd -> pipewire. If they still do nothing, the usual culprits are (a) no
+  # default sink (see the wireplumber note in modules/services/audio.nix) or
+  # (b) the rocker reporting as unknown scancodes — then run `keyd monitor`
+  # while pressing it and enable a mapping like:
+  #   services.keyd.enable = true;
+  #   services.keyd.keyboards.surface-rocker = { ids = [ "...:...:..." ]; settings = { pageup = "volumeup"; pagedown = "volumedown"; }; };
+
+  # Hibernate (in the GNOME power dialog) needs a resume_from-swapfile entry:
+  # read the current volume key:  sudo filefrag -v /swapfile  (first row, 4th
+  # column) and the root UUID (blkid), then uncomment:
+  #   boot.resumeDevice = "/dev/disk/by-uuid/XXXX";
+  #   boot.kernelParams = [ "resume_offset=YYYY" ];
+  # Then GDM's power dialog gains a Hibernate button next to Suspend.
 
   networking.hostName = "surface";
 

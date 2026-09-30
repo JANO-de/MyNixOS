@@ -16,4 +16,12 @@
       description = "Run the Sunshine GPU screen-streaming server (paired with a moonlight client, e.g. the Surface used as an extra monitor).";
     };
   };
+
+  options.modules.services.powertop = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Apply PowerTOP autotuning at every boot (CPU governor, WiFi PS, USB autosuspend). Cheapest battery win on Skylake tablets.";
+    };
+  };
 }

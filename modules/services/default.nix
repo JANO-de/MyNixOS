@@ -10,6 +10,7 @@
     ./flatpak.nix
     ./autoupgrade.nix
     ./sunshine.nix
+    ./powertop.nix
     ./xampp.nix
   ];
 }

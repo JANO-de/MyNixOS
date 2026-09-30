@@ -50,4 +50,20 @@
       description = "Host (name or IP) of the deskflow server, for hosts with role = 'client'.";
     };
   };
+
+  options.modules.programs.qol = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install the light terminal QoL toolkit (btop, atuin, zoxide, fzf, eza, bat, delta, tmux, yq).";
+    };
+  };
+
+  options.modules.programs.reading = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install zathura (mupdf + PS plugins) as a light PDF viewer.";
+    };
+  };
 }
