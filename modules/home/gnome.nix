@@ -14,6 +14,8 @@
       "org.gnome.Software.desktop"
       "org.gnome.TextEditor.desktop"
       "org.gnome.Calculator.desktop"
+      "com.github.xournalpp.xournalpp.desktop"
+      "com.github.flxzt.rnote.desktop"
     ];
 
     # Show the on-screen keyboard toggle in the quick settings so it can be
@@ -31,5 +33,9 @@
 
   # GNOME Software (pw) UI dependency path convenience.
   # Home Manager's per-user packages complement the system ones.
-  home.packages = [ pkgs.gnome-tweaks ];
+  # xournalpp: PDF annotation (annotate.me.sh opens PDFs straight into it).
+  # rnote: infinite-canvas handwriting with live PDF background.
+  # Both take pen pressure, pen eraser-end and tool-type palm rejection from
+  # iptsd; the pen itself is configured in gnome-control-center (Wacom panel).
+  home.packages = [ pkgs.gnome-tweaks pkgs.xournalpp pkgs.rnote ];
 }

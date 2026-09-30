@@ -29,6 +29,9 @@
   # cannot be themed, SDDM can, and the session itself does not care which
   # greeter started it. See modules/desktop/greeter.nix.
   modules.desktop.displayManager = "sddm";
+  # ...and the password field comes with an on-screen keyboard, so the greeter is
+  # not a dead end on a touch-only tablet.
+  modules.desktop.greeterOsK.enable = true;
   modules.programs.heavy.enable = false;
   modules.programs.gaming.enable = false;
   # The XAMPP workbench lives on the laptop (/opt/lampp); the tablet has none.
@@ -43,9 +46,18 @@
   modules.programs.zathura.enable = true;
   modules.programs.qol.enable = true;
 
-  # The bezel button opens a menu (lock/log out/suspend/hibernate/restart/shut
-  # down) instead of the shell's own dialog, which cannot offer hibernation.
-  modules.desktop.powerMenu.enable = true;
+  # Short press on the bezel button blanks the screen (press again to wake it),
+  # long press asks before powering off. This replaces the old action menu, whose
+  # lock/log-out/suspend/hibernate entries remain reachable from the shell menu.
+  modules.desktop.powerButton.enable = true;
+
+  # The bezel volume buttons, routed via keyd + a GNOME keybinding because
+  # gsd-media-keys crashes on this machine (see modules/desktop/volume-keys.nix).
+  modules.desktop.volumeKeys.enable = true;
+
+  # Idle -> login screen (logind), then idle -> suspend (gsd-power). See
+  # modules/desktop/idle-lock.nix for why each piece lives where it does.
+  modules.desktop.idleLock.enable = true;
 
   # The Surface doubles as an extra monitor: moonlight-qt renders a sunshine
   # server's screen (laptop/desktop) fullscreen.

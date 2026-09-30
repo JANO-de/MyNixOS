@@ -13,6 +13,8 @@
     ./plasma.nix
     ./niri.nix
     ./gnome.nix
-    ./power-menu.nix
+    ./power-button.nix
+    ./volume-keys.nix
+    ./idle-lock.nix
   ] ++ lib.optional niriEnabled ./shell;
 }

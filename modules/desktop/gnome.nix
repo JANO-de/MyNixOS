@@ -27,7 +27,22 @@
       {
         settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark";
       }
-    ];
+    ]
+    # Single owner of custom-keybindings: every module that wants a binding
+    # contributes to modules.desktop.customKeybindings, and they are emitted
+    # here as one entry. Writing that gsettings key from two places would make
+    # the later write silently replace the earlier one.
+    ++ lib.optional (
+      config.modules.desktop.customKeybindings != [ ]
+    ) {
+      settings."org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = builtins.toJSON (
+        map (
+          { name, command, binding, ... }: {
+            inherit name command binding;
+          }
+        ) config.modules.desktop.customKeybindings
+      );
+    };
 
     # Accelerometer/gyro feed for auto-rotate. Harmless without a sensor.
     hardware.sensor.iio.enable = true;
