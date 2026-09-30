@@ -40,12 +40,21 @@ let
   action = pkgs.writeShellApplication {
     name = "power-button-action";
     runtimeInputs = [
+      pkgs.glib
       pkgs.systemd
       pkgs.yad
     ];
     text = ''
       case "''${1:-}" in
         poweroff)
+          # GNOME's own dialog (Cancel / Power Off, with a countdown) is drawn
+          # by the shell, so it needs no display access from here. yad is only
+          # a fallback if the session manager cannot be reached.
+          if gdbus call --session --dest org.gnome.SessionManager \
+            --object-path /org/gnome/SessionManager \
+            --method org.gnome.SessionManager.Shutdown >/dev/null 2>&1; then
+            exit 0
+          fi
           # yad exits with the id of the button that was pressed, so only a
           # deliberate "Shut down" reaches systemctl; Cancel and the 60s
           # timeout both fall through.
@@ -68,8 +77,10 @@ let
 
   daemonSource = ''
     #!${pkgs.python3}/bin/python3
+    import glob
     import os
     import re
+    import select
     import struct
     import subprocess
     import sys
@@ -96,11 +107,7 @@ let
 
     def selftest():
         """Sanity checks that need no input device, so a broken build fails here."""
-        node = power_node()
-        if node is None:
-            print("power-button: selftest: no KEY_POWER node present (fine in the sandbox)")
-        else:
-            print("power-button: selftest: found " + str(node[1]))
+        print("power-button: selftest: nodes " + str(power_nodes()))
         # The kernel bitmap parser is the part most likely to rot, so check the
         # two encodings it has to get right: a single bit in one word, and two
         # bits in the following word (event6's volume keys).
@@ -118,6 +125,7 @@ let
         print("power-button: selftest: long press threshold "
               + str(LONG_PRESS_MS) + "ms")
         print("power-button: selftest: ok")
+
     def key_codes(bitmap):
         """Key codes set in one "B: KEY=" value from /proc/bus/input/devices.
 
@@ -132,31 +140,6 @@ let
                 if (value >> bit) & 1:
                     codes.append(WORD_BITS * index + bit)
         return codes
-
-    def power_node():
-        """Return (name, path) of the input node reporting KEY_POWER, or None."""
-        try:
-            with open("/proc/bus/input/devices") as handle:
-                blocks = handle.read().strip().split("\n\n")
-        except OSError as error:
-            log("cannot read /proc/bus/input/devices: " + str(error))
-            return None
-
-        for block in blocks:
-            name = re.search(r'N: Name="([^"]+)"', block)
-            handlers = re.search(r"H: Handlers=(.*)", block)
-            bitmap = re.search(r"B: KEY=(.*)", block)
-            if not (name and handlers and bitmap):
-                continue
-            if KEY_POWER not in key_codes(bitmap.group(1)):
-                continue
-            nodes = [
-                node for node in handlers.group(1).split()
-                if node.startswith("event")
-            ]
-            if nodes:
-                return name.group(1), "/dev/input/" + nodes[0]
-        return None
 
     def session_property(session_id, name):
         result = subprocess.run(
@@ -178,14 +161,18 @@ let
         candidates = []
         for line in result.stdout.splitlines():
             fields = line.split()
-            if len(fields) > 2 and fields[2] in ("user", "greeter"):
-                candidates.append(fields)
+            if not fields:
+                continue
+            klass = session_property(fields[0], "Class")
+            if klass in ("user", "greeter") and \
+                    session_property(fields[0], "State") == "active":
+                candidates.append((fields[0], klass))
 
-        for fields in sorted(candidates, key=lambda entry: entry[2] != "user"):
-            uid = session_property(fields[0], "UID")
+        for sid, klass in sorted(candidates, key=lambda entry: entry[1] != "user"):
+            uid = session_property(sid, "User")
             if not uid.isdigit():
                 continue
-            return session_property(fields[0], "Name") or "root", int(uid)
+            return session_property(sid, "Name") or "root", int(uid)
         return None
 
     def run_in_session(argv):
@@ -195,6 +182,11 @@ let
             return
         user, uid = target
         runtime = "/run/user/" + str(uid)
+        sockets = sorted(
+            os.path.basename(entry)
+            for entry in glob.glob(runtime + "/wayland-*")
+            if not entry.endswith(".lock"))
+        wayland = sockets[0] if sockets else "wayland-0"
         # runuser without --login does not need a shell for the target user, and
         # the environment is passed explicitly so it survives runuser's own
         # idea of what a login environment looks like.
@@ -203,67 +195,104 @@ let
             "XDG_RUNTIME_DIR=" + runtime,
             "DBUS_SESSION_BUS_ADDRESS=unix:path=" + runtime + "/bus",
             "XDG_SESSION_TYPE=wayland",
-            "WAYLAND_DISPLAY=wayland-0",
+            "WAYLAND_DISPLAY=" + wayland,
+            "GDK_BACKEND=wayland,x11",
+            "DISPLAY=:0",
             ACTION,
         ] + argv[1:])
 
-    def open_grabbed(path):
-        handle = os.open(path, os.O_RDONLY)
-        libc = ctypes.CDLL("libc.so.6", use_errno=True)
-        if libc.ioctl(handle, EVIOCGRAB, 1) != 0:
-            os.close(handle)
-            return None
-        return handle
+    def power_nodes():
+        """Every input node reporting KEY_POWER as [(name, path)].
+
+        keyd may already own the raw node and re-emit the key on its own virtual
+        keyboard, so all matching nodes are read and presses are de-duplicated.
+        """
+        found = []
+        try:
+            with open("/proc/bus/input/devices") as handle:
+                blocks = handle.read().strip().split("\n\n")
+        except OSError as error:
+            log("cannot read /proc/bus/input/devices: " + str(error))
+            return found
+        for block in blocks:
+            name = re.search(r'N: Name="([^"]+)"', block)
+            handlers = re.search(r"H: Handlers=(.*)", block)
+            bitmap = re.search(r"B: KEY=(.*)", block)
+            if not (name and handlers and bitmap):
+                continue
+            if KEY_POWER not in key_codes(bitmap.group(1)):
+                continue
+            for node in handlers.group(1).split():
+                if node.startswith("event"):
+                    found.append((name.group(1), "/dev/input/" + node))
+        return found
+
+    def suspend():
+        subprocess.run([SYSTEMCTL, "suspend"])
 
     def watch():
-        libc = ctypes.CDLL("libc.so.6", use_errno=True)
+        size = struct.calcsize(EVENT_FORMAT)
         while True:
-            found = power_node()
-            if found is None:
+            fds = {}
+            for name, path in power_nodes():
+                try:
+                    fds[os.open(path, os.O_RDONLY)] = path
+                except OSError as error:
+                    log("cannot open " + path + ": " + str(error))
+            if not fds:
                 log("no node reports KEY_POWER; retrying")
                 time.sleep(5)
                 continue
 
-            name, path = found
-            try:
-                handle = open_grabbed(path)
-            except OSError as error:
-                log("cannot open " + path + ": " + str(error))
-                time.sleep(5)
-                continue
-            if handle is None:
-                log("cannot grab " + path + "; retrying")
-                time.sleep(5)
-                continue
+            log("watching " + ", ".join(fds.values()))
+            pressed = {}
+            first_press = 0.0
+            alive = True
+            while alive:
+                ready, _, _ = select.select(list(fds), [], [])
+                for fd in ready:
+                    try:
+                        data = os.read(fd, size)
+                    except OSError:
+                        alive = False
+                        break
+                    if len(data) < size:
+                        alive = False
+                        break
+                    _, _, kind, code, value = struct.unpack(EVENT_FORMAT, data)
+                    if kind != EV_KEY or code != KEY_POWER:
+                        continue
+                    if value == EV_PRESSED:
+                        if not pressed:
+                            first_press = time.monotonic()
+                        pressed[fd] = True
+                    elif value == EV_RELEASED and fd in pressed:
+                        del pressed[fd]
+                        # One physical press can show up on several nodes (raw
+                        # and keyd's virtual one), one of which may release
+                        # instantly. Act only when every node has released, so
+                        # the hold time is that of the real button.
+                        if pressed:
+                            continue
+                        now = time.monotonic()
+                        held = now - first_press
+                        # The press that wakes the tablet arrives as an instant
+                        # press+release; a real tap lasts far longer.
+                        if held < 0.05:
+                            log("ignoring glitch press")
+                            continue
+                        is_long = held >= LONG_PRESS
+                        log(("long press" if is_long else "short press")
+                            + " after " + ("%.2f" % held) + "s")
+                        if is_long:
+                            run_in_session([ACTION, "poweroff"])
+                        else:
+                            suspend()
 
-            log("watching " + path + " (" + name + ")")
-            pressed = None
-            while True:
-                try:
-                    data = os.read(handle, struct.calcsize(EVENT_FORMAT))
-                except OSError:
-                    break
-                if len(data) < struct.calcsize(EVENT_FORMAT):
-                    break
-
-                _, _, kind, code, value = struct.unpack(EVENT_FORMAT, data)
-                if kind != EV_KEY or code != KEY_POWER:
-                    continue
-
-                if value == EV_PRESSED:
-                    pressed = time.monotonic()
-                elif value == EV_RELEASED and pressed is not None:
-                    held = time.monotonic() - pressed
-                    pressed = None
-                    # Auto-repeat (value 2) is ignored above, so one press is one
-                    # action no matter how long the button is held down.
-                    log(("long press" if held >= threshold else "short press")
-                        + " after " + ("%.2f" % held) + "s")
-                    run_in_session([ACTION,
-                                    "poweroff" if held >= threshold else "blank"])
-
-            os.close(handle)
-            log(path + " went away; re-resolving")
+            for fd in fds:
+                os.close(fd)
+            log("node went away; re-resolving")
+            time.sleep(1)
 
     if "--selftest" in sys.argv:
         selftest()

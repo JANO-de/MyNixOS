@@ -50,10 +50,21 @@ in
           # through NIXPKGS_QT6_QML_IMPORT_PATH, which is not a variable the QML
           # engine reads, so the keyboard's modules have to be named here.
           # GreeterEnvironment is a comma-separated KEY=value list in [General].
-          GreeterEnvironment = "QML2_IMPORT_PATH="
+          GreeterEnvironment = "QT_IM_MODULE=qtvirtualkeyboard,QML2_IMPORT_PATH="
             + lib.makeSearchPath "lib/qt-6/qml" [
               pkgs.qt6.qtdeclarative
               pkgs.qt6.qtvirtualkeyboard
+            ]
+            # The input-context plugin (platforminputcontexts/) lives in the
+            # virtual keyboard's own plugin dir, which the greeter's
+            # QT_PLUGIN_PATH does not list; without it Qt silently ignores
+            # QT_IM_MODULE and the keys highlight but type nothing.
+            + ",QT_PLUGIN_PATH="
+            + lib.makeSearchPath "lib/qt-6/plugins" [
+              pkgs.qt6.qtvirtualkeyboard
+              pkgs.qt6.qtbase
+              pkgs.qt6.qtsvg
+              pkgs.qt6.qtdeclarative
             ];
         };
       })
