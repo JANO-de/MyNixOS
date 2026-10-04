@@ -126,6 +126,13 @@
     kdePackages.breeze-gtk
     kdePackages.plasma-integration
     kdePackages.kirigami-addons
+    kdePackages.okular 
+    kdePackages.kdeconnect-kde
+    krita 
+    xournalpp 
+    rnote 
+    kando 
+    anki
   ];
 
   # --- storage / firmware ---
@@ -148,9 +155,4 @@
   nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 14d"; };
   nix.settings.auto-optimise-store = true;
   services.flatpak.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    kdePackages.okular kdePackages.kdeconnect-kde
-    krita xournalpp rnote kando anki
-  ];
 }
