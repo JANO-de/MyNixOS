@@ -63,6 +63,14 @@
   # GPU under Wayland, so test the KMS backend if streaming is flaky.
   modules.services.sunshine.enable = true;
 
+  # SDDM picks its session from `defaultSession`, and nixpkgs' sddm module
+  # defaults that to plasma. Left alone, the greeter therefore starts Plasma,
+  # not niri -- logging in shows nothing useful on a machine that actually runs
+  # niri, and it looks like the login itself failed ("Started Session 2 of
+  # User jano" then a blank screen, because the session that came up was never
+  # the one wanted).
+  services.displayManager.defaultSession = "niri";
+
   # Deskflow keyboard/mouse sharing: this machine may serve or join another.
   # Pick one: modules.programs.deskflow.role = "server";
   #         modules.programs.deskflow.role = "client"; modules.programs.deskflow.serverAddress = "laptop";
