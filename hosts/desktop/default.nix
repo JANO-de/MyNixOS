@@ -62,6 +62,7 @@
   # on the tablet. NB: capture on this host runs on the NVIDIA/Intel hybrid
   # GPU under Wayland, so test the KMS backend if streaming is flaky.
   modules.services.sunshine.enable = true;
+  modules.programs.moonlight.enable = true;
 
   # Android-in-a-container alongside the desktop session (Waydroid).
   modules.services.waydroid.enable = true;
@@ -76,7 +77,7 @@
 
   # Deskflow keyboard/mouse sharing: this machine may serve or join another.
   # Pick one: modules.programs.deskflow.role = "server";
-  #         modules.programs.deskflow.role = "client"; modules.programs.deskflow.serverAddress = "laptop";
+  modules.programs.deskflow.role = "client"; modules.programs.deskflow.serverAddress = "laptop";
 
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {
