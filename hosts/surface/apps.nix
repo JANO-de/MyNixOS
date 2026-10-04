@@ -2,17 +2,13 @@
 # Names are looked up with `or null`, so a package missing from this nixpkgs is
 # skipped instead of breaking evaluation, and so are packages nixpkgs marks
 # insecure (usually an old bundled Electron, e.g. Obsidian). Skipped on purpose: kdenlive and
-# rustdesk (heavy, use the desktop), gnome-pomodoro (pulls GNOME).
+# neochat (needs the insecure olm library), rustdesk (heavy, use the desktop), gnome-pomodoro (pulls GNOME).
 { pkgs, lib, ... }:
 
 let
   pick = set: names: lib.filter (p: p != null && !(p.meta.insecure or false)) (map (n: set.${n} or null) names);
 in
 {
-  permittedInsecurePackages = [
-    "olm-3.2.16"
-  ];
-
   environment.systemPackages =
     pick pkgs [
       "obsidian"     # markdown notes (unfree)
@@ -30,7 +26,6 @@ in
       "elisa"
       "kclock"
       "merkuro"      # calendar / contacts
-      "neochat"
       "itinerary"
       "tokodon"
       "spectacle"
