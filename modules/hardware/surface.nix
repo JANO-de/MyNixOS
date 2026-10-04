@@ -118,9 +118,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    libwacom-surface
-    kdePackages.maliit-framework
-    kdePackages.maliit-keyboard
     kdePackages.qqc2-desktop-style
     kdePackages.breeze
     kdePackages.breeze-gtk
