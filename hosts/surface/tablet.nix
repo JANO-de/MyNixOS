@@ -44,9 +44,6 @@ in
   };
   services.displayManager.defaultSession = "plasma";
   services.displayManager.sddm.wayland.enable = false;
-  # Touch-only login: hide the X cursor (touch still works; the touchpad
-  # pointer is invisible at the login screen only).
-  services.displayManager.sddm.settings.X11.ServerArguments = "-nolisten tcp -nocursor";
 
   # Electron/Chromium apps (VS Code, browsers) use Wayland natively.
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
@@ -85,7 +82,5 @@ in
     krita
     anki
     kando     # touch pie-menu launcher
-  ]
-  # In-session on-screen keyboard (Plasma 6.4+); skipped if this nixpkgs lacks it.
-  ++ lib.optional (pkgs.kdePackages ? plasma-keyboard) pkgs.kdePackages.plasma-keyboard;
+  ];
 }
