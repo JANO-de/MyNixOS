@@ -13,6 +13,7 @@ in
     pick pkgs [
       "obsidian"     # markdown notes (unfree)
       "zotero"       # references
+      "neochat"
       "haruna"       # video
       "foliate"      # ebooks
       "libreoffice-qt"
@@ -40,4 +41,6 @@ in
     dataDir = "/home/jano";
     openDefaultPorts = true;
   };
+
+  nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
 }
