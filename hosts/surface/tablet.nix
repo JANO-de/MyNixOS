@@ -43,6 +43,9 @@ in
     greeterOsK.enable = true;
   };
   services.displayManager.defaultSession = "plasma";
+  # SDDM prefers the last-used session over defaultSession; forget it every
+  # boot so a stale Plasma X11 choice can never override Wayland.
+  systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];
   services.displayManager.sddm.wayland.enable = false;
 
   # Electron/Chromium apps (VS Code, browsers) use Wayland natively.
