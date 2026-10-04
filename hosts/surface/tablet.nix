@@ -1,7 +1,7 @@
 # Plasma 6 (Wayland) tablet session: login screen, on-screen keyboard, pen and
 # touch apps. Auto-rotate (iio) and the udev button rules are in hardware.nix.
 # Touch Mode: System Settings > Workspace > General Behavior.
-{ pkgs, lib, ... }:
+{ pkgs, lib, inputs, ... }:
 
 {
   # Plasma on Wayland, themed SDDM greeter with an on-screen keyboard so the
@@ -14,6 +14,9 @@
   };
   services.displayManager.defaultSession = "plasma";
   services.displayManager.sddm.wayland.enable = false;
+  # Touch-only login: hide the X cursor (touch still works; the touchpad
+  # pointer is invisible at the login screen only).
+  services.displayManager.sddm.settings.X11.ServerArguments = "-nolisten tcp -nocursor";
 
   # Electron/Chromium apps (VS Code, browsers) use Wayland natively.
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
@@ -33,13 +36,14 @@
     [Windows]
     BorderlessMaximizedWindows=true
   '';
+  environment.sessionVariables.BROWSER = "zen";
   environment.sessionVariables.XCURSOR_SIZE = "36";
 
   environment.systemPackages = with pkgs; [
     wl-clipboard
     qt6.qtvirtualkeyboard # greeter on-screen keyboard (see modules/desktop/greeter.nix)
 
-    firefox
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     kdePackages.okular
     kdePackages.kdeconnect-kde
     xournalpp # pen: PDF annotation
