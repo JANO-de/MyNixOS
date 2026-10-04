@@ -32,4 +32,12 @@
       description = "Run smartd in the background to poll the disks' SMART attributes, with journal and wall notifications. Catches a failing drive before it disappears.";
     };
   };
+
+  options.modules.services.waydroid = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable Waydroid, Android in a container on top of the Wayland session (nftables variant). Needs a kernel with binder/IPC support and a Wayland compositor session to attach to.";
+    };
+  };
 }

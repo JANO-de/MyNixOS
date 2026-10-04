@@ -13,5 +13,6 @@
     ./xampp.nix
     ./powertop.nix
     ./smartd.nix
+    ./waydroid.nix
   ];
 }
