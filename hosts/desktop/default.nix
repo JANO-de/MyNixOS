@@ -63,6 +63,9 @@
   # GPU under Wayland, so test the KMS backend if streaming is flaky.
   modules.services.sunshine.enable = true;
 
+  # Android-in-a-container alongside the desktop session (Waydroid).
+  modules.services.waydroid.enable = true;
+
   # SDDM picks its session from `defaultSession`, and nixpkgs' sddm module
   # defaults that to plasma. Left alone, the greeter therefore starts Plasma,
   # not niri -- logging in shows nothing useful on a machine that actually runs

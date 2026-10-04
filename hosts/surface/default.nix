@@ -149,9 +149,8 @@
   # Verify a real hibernate/resume cycle before relying on it.
   boot.resumeDevice = "/dev/disk/by-label/NIXROOT";
 
-  # Waydroid setup for surface
-  virtualisation.waydroid.enable = true;
-  virtualisation.waydroid.package = pkgs.waydroid-nftables;
+  # Android-in-a-container on the tablet session (Waydroid).
+  modules.services.waydroid.enable = true;
 
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {
