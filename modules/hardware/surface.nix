@@ -180,22 +180,6 @@
     cpuFreqGovernor = "powersave";
   };
 
-  # --- display ---
-  # SDDM remembers the last session in /var/lib/sddm/state.conf and uses it
-  # instead of DefaultSession. Force X11 unconditionally: kwin_wayland on this
-  # machine starts but produces no output (card1-eDP-1 is not picked up without
-  # additional DRM env vars that do not survive a state.conf override).
-  services.displayManager.defaultSession = lib.mkForce "plasmax11";
-  services.displayManager.sddm.settings = {
-    General = {
-      DefaultSession      = "plasmax11.desktop";
-      RememberLastSession = false;
-    };
-  };
-
-  # i915 Panel Self Refresh causes a blank/black panel on the Surface eDP link.
-  boot.kernelParams = [ "i915.enable_psr=0" ];
-
   # --- misc ---
   # The Surface UEFI shows no boot menu of its own, so keep systemd-boot's short.
   boot.loader.timeout = 2;
