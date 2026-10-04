@@ -2,7 +2,7 @@
 # Names are looked up with `or null`, so a package missing from this nixpkgs is
 # skipped instead of breaking evaluation, and so are packages nixpkgs marks
 # insecure (usually an old bundled Electron, e.g. Obsidian). Skipped on purpose: kdenlive and
-# neochat (needs the insecure olm library), rustdesk (heavy, use the desktop), gnome-pomodoro (pulls GNOME).
+# rustdesk (heavy, use the desktop), gnome-pomodoro (pulls GNOME).
 { pkgs, lib, ... }:
 
 let
