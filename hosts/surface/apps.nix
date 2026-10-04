@@ -1,11 +1,12 @@
 # Study / tablet apps (touch-friendly Kirigami apps where possible).
 # Names are looked up with `or null`, so a package missing from this nixpkgs is
-# skipped instead of breaking evaluation. Skipped on purpose: kdenlive and
+# skipped instead of breaking evaluation, and so are packages nixpkgs marks
+# insecure (usually an old bundled Electron, e.g. Obsidian). Skipped on purpose: kdenlive and
 # rustdesk (heavy, use the desktop), gnome-pomodoro (pulls GNOME).
 { pkgs, lib, ... }:
 
 let
-  pick = set: names: lib.filter (p: p != null) (map (n: set.${n} or null) names);
+  pick = set: names: lib.filter (p: p != null && !(p.meta.insecure or false)) (map (n: set.${n} or null) names);
 in
 {
   environment.systemPackages =
