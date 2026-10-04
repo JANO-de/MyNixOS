@@ -19,15 +19,15 @@
   hardware.nvidia.enable = false;
 
   # 4 GB of RAM / 128 GB disk: keep the closure small and the tablet lean.
-  # GNOME + Wayland instead of niri: built-in on-screen keyboard, auto screen
-  # rotation (iio-sensor-proxy), HiDPI scaling and touch gestures straight
-  # from the settings. No Plasma/KDE, no heavy IDEs/office/gaming runtimes.
+  # Plasma 6 (Wayland): its built-in virtual keyboard arrived in 6.1, auto screen
+  # rotation is fed through iio-sensor-proxy (hardware.sensor.iio below), and the
+  # SDDM greeter is already themed for it. No GNOME, no heavy IDEs/office/gaming
+  # runtimes.
   modules.desktop.niri.enable = false;
-  modules.desktop.plasma.enable = false;
-  modules.desktop.gnome.enable = true;
-  # Themed login screen (catppuccin) even though the session is GNOME: GDM
-  # cannot be themed, SDDM can, and the session itself does not care which
-  # greeter started it. See modules/desktop/greeter.nix.
+  modules.desktop.plasma.enable = true;
+  modules.desktop.gnome.enable = false;
+  # Themed login screen (catppuccin) owned by greeter.nix; SDDM is also what the
+  # Plasma session is built against, so the greeter and the desktop agree.
   modules.desktop.displayManager = "sddm";
   # ...and the password field comes with an on-screen keyboard, so the greeter is
   # not a dead end on a touch-only tablet.
@@ -46,18 +46,28 @@
   modules.programs.zathura.enable = true;
   modules.programs.qol.enable = true;
 
-  # Short press on the bezel button blanks the screen (press again to wake it),
-  # long press asks before powering off. This replaces the old action menu, whose
-  # lock/log-out/suspend/hibernate entries remain reachable from the shell menu.
-  modules.desktop.powerButton.enable = true;
+  # The bezel/ACPI power and volume keys are GNOME-handled by the modules above;
+  # under Plasma they belong to powerdevil (System Settings > Power Management)
+  # and kwin's global shortcuts, so those GNOME-only modules are off. The udev
+  # ID_INPUT_KEYBOARD rule in modules/hardware/surface.nix still makes the
+  # gpio-keys nodes visible to a Wayland compositor, and hardware/surface.nix
+  # documents what happens with the power key.
+  modules.desktop.powerButton.enable = false;
+  modules.desktop.volumeKeys.enable = false;
+  modules.desktop.idleLock.enable = false;
 
-  # The bezel volume buttons, routed via keyd + a GNOME keybinding because
-  # gsd-media-keys crashes on this machine (see modules/desktop/volume-keys.nix).
-  modules.desktop.volumeKeys.enable = true;
+  # Accelerometer/gyro feed for auto screen rotation; Plasma reads it through
+  # iio-sensor-proxy. Harmless without a sensor; enable Auto Rotate in System
+  # Settings > Display and Monitor.
+  hardware.sensor.iio.enable = true;
 
-  # Idle -> login screen (logind), then idle -> suspend (gsd-power). See
-  # modules/desktop/idle-lock.nix for why each piece lives where it does.
-  modules.desktop.idleLock.enable = true;
+  # Qt virtual keyboard also served to the Plasma session, so a text field gets
+  # an on-screen keyboard when no physical keyboard is attached (rendered by
+  # Plasma 6.1+).
+  environment.systemPackages = [
+    pkgs.wl-clipboard
+    pkgs.qt6.qtvirtualkeyboard
+  ];
 
   # The Surface doubles as an extra monitor: moonlight-qt renders a sunshine
   # server's screen (laptop/desktop) fullscreen.
@@ -71,9 +81,9 @@
   #   modules.programs.deskflow.role = "none";
 
   # Tablet: a real login screen, no autologin. SDDM themes the greeter
-  # (catppuccin), and the password prompt is typed with the GNOME on-screen
-  # keyboard, so a lock screen is not a dead end on a touch-only tablet.
-  # The screen still locks automatically on suspend/idle.
+  # (catppuccin) and its Qt on-screen keyboard (greeterOsK) types the password,
+  # so a lock screen is not a dead end on a touch-only tablet.
+  # The screen still locks automatically on suspend/idle (Plasma's kscreenlocker).
 
   networking.hostName = "surface";
 
@@ -142,22 +152,30 @@
   # Waydroid setup for surface
   virtualisation.waydroid.enable = true;
   virtualisation.waydroid.package = pkgs.waydroid-nftables;
-  environment.systemPackages = [ pkgs.wl-clipboard ];
 
   # Home Manager: per-user declarative configuration lives in ../../modules/home
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    # niriEnabled=false skips the niri wayland config (surface runs GNOME);
-    # gnomeEnabled=true pulls the touch-first GNOME tweaks.
+    # niriEnabled=false skips the niri wayland config; gnomeEnabled=false skips
+    # the touch-first GNOME tweaks (the Surface now runs Plasma).
     extraSpecialArgs = {
       inherit inputs;
       theme = import ../../modules/theme.nix;
       niriEnabled = false;
-      gnomeEnabled = true;
+      gnomeEnabled = false;
     };
-    users.jano = import ../../modules/home/default.nix;
+    # users.jano merges the shared home config with tablet/pen extras: the pen
+    # apps used to arrive via the GNOME home module, and are kept here so the
+    # Plasma session still has them (iptsd feeds them pen pressure at the
+    # kernel level).
+    users.jano = lib.mkMerge [
+      (import ../../modules/home/default.nix)
+      {
+        home.packages = [ pkgs.xournalpp pkgs.rnote ];
+      }
+    ];
   };
 
   system.stateVersion = "26.05";

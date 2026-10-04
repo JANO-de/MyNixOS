@@ -8,4 +8,9 @@
 {
   services.xserver.enable = true;
   services.desktopManager.plasma6.enable = config.modules.desktop.plasma.enable;
+
+  # Plasma needs the polkit stack for authorisation dialogs. It used to be
+  # pulled in by the GNOME module; keep the Plasma module self-contained so a
+  # Plasma-only tablet still gets it.
+  security.polkit.enable = lib.mkIf config.modules.desktop.plasma.enable true;
 }

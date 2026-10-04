@@ -150,12 +150,13 @@
     SUBSYSTEM=="input", KERNEL=="event*", KERNELS=="MSHW0040:00", ENV{ID_INPUT_KEYBOARD}="1"
   '';
 
-  # The desktop owns the power key: logind's default action is "poweroff", and a
-  # short press with a thumb on a 700 g tablet should not kill the session.
-  # modules/desktop/power-button.nix grabs the input node and turns a short press
-  # into a screen blank instead; "ignore" also covers the moment before that
-  # daemon has grabbed the device, when "poweroff" would otherwise be live.
-  services.logind.settings.Login.HandlePowerKey = "ignore";
+  # The Plasma session owns the power key: logind's default action routes a
+  # short press through to the session (powerdevil), where the user maps it to
+  # suspend/blank/off in System Settings > Power Management, and a long press
+  # offers an interactive power-off dialog. "poweroff" is also systemd's
+  # default, but it is written out because the pre-Plasma GNOME session kept
+  # "ignore" here (its custom power-button daemon grabbed the node instead).
+  services.logind.settings.Login.HandlePowerKey = "poweroff";
 
   # --- touch ---
   # The Type Cover's trackpad follows the same rules as the other hosts.

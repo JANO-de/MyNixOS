@@ -7,10 +7,10 @@
 # in the session PATH the shell silently falls back to its internal renderer,
 # which is why installing it is all the desktop/laptop need.
 #
-# Hosts without the shell (the Surface runs GNOME) have nothing to drive the
-# daemon, so `image` additionally brings up a service for them. Only one awww
-# daemon may own the layer-shell surfaces of a session, hence the shell hosts
-# never get that service.
+# Hosts without the shell (the Surface runs a full desktop instead) have
+# nothing to drive the daemon, so `image` additionally brings up a service for
+# them. Only one awww daemon may own the layer-shell surfaces of a session,
+# hence the shell hosts never get that service.
 { config, lib, pkgs, ... }:
 
 let
