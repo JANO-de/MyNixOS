@@ -120,9 +120,6 @@
 
   environment.systemPackages = with pkgs; [
     touchegg
-    libwacom-surface
-    kdePackages.maliit-framework
-    kdePackages.maliit-keyboard
     kdePackages.qqc2-desktop-style
     kdePackages.breeze
     kdePackages.breeze-gtk
