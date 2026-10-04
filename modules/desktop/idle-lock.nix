@@ -18,7 +18,7 @@
 #     blanks the screen, long press asks before powering off.
     #
     # modules/desktop/idle-lock.nix deliberately does not touch
-    # services.logind.settings.Login.HandlePowerKey: modules/hardware/surface.nix
+    # services.logind.settings.Login.HandlePowerKey: hosts/surface/hardware.nix
     # keeps it at "ignore" so the shell's menu owns that key, and a short press
     # with a thumb on a 700 g tablet must not be mistaken for a request to power
     # off.

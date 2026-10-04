@@ -9,7 +9,7 @@
 #
 # Two things this deliberately does not do:
 #   - it does not tune Wi-Fi power saving. The Surface's Marvell radio drops
-#     links when it is allowed to idle (see modules/hardware/surface.nix), and a
+#     links when it is allowed to idle (see hosts/surface/hardware.nix), and a
 #     flaky tablet is worse than a few percent of battery.
 #   - it does not run continuously. A long-running powertop is a laptop-mode
 #     battery *saver*, not a tuner, and it would fight the user's choice of

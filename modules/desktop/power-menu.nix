@@ -16,7 +16,7 @@
 # mutter, and mutter is what turns the panel back on when the button is pressed
 # while the screen is black. So the other consumers are told to ignore the key
 # instead -- gsd-power via power-button-action='nothing' below, logind via
-# HandlePowerKey="ignore" in modules/hardware/surface.nix -- and keyd does not
+# HandlePowerKey="ignore" in hosts/surface/hardware.nix -- and keyd does not
 # map it at all.
 #
 # Suspending needs no session, so the daemon does it itself on the system bus.

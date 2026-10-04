@@ -1,2 +1,4 @@
 .vscode/
 result
+result-*
+*.qcow2

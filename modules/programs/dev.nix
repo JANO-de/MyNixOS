@@ -3,10 +3,6 @@
 {
   environment.systemPackages =
     (with pkgs; [
-      neovim
-    wget
-    git
-    curl
     direnv
     cmake
     ninja
@@ -31,7 +27,6 @@
     ### ----- /*/ INIR Dependencies /*/ ----- ###
     
     # --- Core shell / compositor glue ---
-    git                      # needed by scripts/auto-update.sh and check-config-updates.sh (git fetch/pull)
     inotify-tools            # provides `inotifywait`, used by systemd/niri-sync-colors.service
     quickshell              # the actual runtime iNiR's `inir` launcher wraps
     xwayland-satellite       # Xwayland support under niri (non-native apps)

@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [ ../surface/filesystems.nix ];
+
   # Minimal throwaway system to get the SP5 booted so the *real* `surface`
   # config can be built on it (the full 15 GB closure cannot fit the live
   # USB's RAM-backed store). Installed with `nixos-install --flake .#surface-bootstrap`,
@@ -8,7 +10,7 @@
   #   nixos-rebuild switch --flake ~/MyNixOS#surface \
   #     --option extra-substituters http://<desktop-ip>:5000
   #
-  # Same filesystem labels as the `surface` config, so the filesystems stay put.
+  # Shares hosts/surface/filesystems.nix with `surface`, so the filesystems stay put.
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
@@ -35,17 +37,6 @@
     initialPassword = "bde92496e9dbd256";
   };
   users.users.root.initialPassword = "bde92496e9dbd256";
-
-  # Same layout as `surface`: 512MB FAT32 labelled NIXBOOT, rest ext4 NIXROOT.
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/NIXBOOT";
-    fsType = "vfat";
-    options = [ "umask=0077" ];
-  };
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/NIXROOT";
-    fsType = "ext4";
-  };
 
   system.stateVersion = "26.05";
 }

@@ -21,7 +21,7 @@
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Run powertop's --auto-tune once per boot to shorten device autosuspend timeouts and enable runtime power management. Leaves Wi-Fi power saving alone (see modules/hardware/surface.nix).";
+      description = "Run powertop's --auto-tune once per boot to shorten device autosuspend timeouts and enable runtime power management. Leaves Wi-Fi power saving alone (see hosts/surface/hardware.nix).";
     };
   };
 

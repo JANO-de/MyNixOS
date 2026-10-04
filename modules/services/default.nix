@@ -3,10 +3,7 @@
 {
   imports = [
     ./options.nix
-    ./network.nix
-    ./audio.nix
-    ./printing.nix
-    ./ssh.nix
+    ./base.nix
     ./flatpak.nix
     ./autoupgrade.nix
     ./sunshine.nix
