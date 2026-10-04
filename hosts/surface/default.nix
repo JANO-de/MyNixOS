@@ -32,6 +32,10 @@
   # ...and the password field comes with an on-screen keyboard, so the greeter is
   # not a dead end on a touch-only tablet.
   modules.desktop.greeterOsK.enable = true;
+  # TEMPORARY: Plasma Wayland's session compositor (kwin_wayland) starts without
+  # a DRM backend on the SP5, so the desktop is black. Until that is diagnosed,
+  # default the greeter to the X11 session so the tablet stays usable.
+  services.displayManager.sddm.settings.General.Session = "plasmax11";
   modules.programs.heavy.enable = false;
   modules.programs.gaming.enable = false;
   # The XAMPP workbench lives on the laptop (/opt/lampp); the tablet has none.
