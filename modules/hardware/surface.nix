@@ -97,7 +97,7 @@
   services.logind.settings.Login.HandlePowerKey = "poweroff";
 
   # --- display: force X11 (kwin_wayland drove nothing on this panel) ---
-  services.displayManager.defaultSession = "plasmax11";
+  services.displayManager.defaultSession = "plasma";
   services.displayManager.sddm.wayland.enable = false;
   services.displayManager.sddm.settings.Users.RememberLastSession = false;
   systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];
@@ -110,7 +110,6 @@
     naturalScrolling = true;
   };
   hardware.sensor.iio.enable = true;   # auto-rotate
-  services.touchegg.enable = true;     # touch gestures (X11)
 
   # --- dark QML pages fix ---
   environment.sessionVariables = {
@@ -119,7 +118,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    touchegg
     libwacom-surface
     kdePackages.maliit-framework
     kdePackages.maliit-keyboard
@@ -144,4 +142,15 @@
 
   # --- misc ---
   boot.loader.timeout = 2;
+
+  # --- 128GB / 8GB survival ---
+  zramSwap.enable = true;
+  nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 14d"; };
+  nix.settings.auto-optimise-store = true;
+  services.flatpak.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    kdePackages.okular kdePackages.kdeconnect-kde
+    krita xournalpp rnote kando anki
+  ];
 }
