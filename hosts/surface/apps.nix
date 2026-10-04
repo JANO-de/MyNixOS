@@ -9,6 +9,10 @@ let
   pick = set: names: lib.filter (p: p != null && !(p.meta.insecure or false)) (map (n: set.${n} or null) names);
 in
 {
+  permittedInsecurePackages = [
+    "olm-3.2.16"
+  ];
+
   environment.systemPackages =
     pick pkgs [
       "obsidian"     # markdown notes (unfree)
