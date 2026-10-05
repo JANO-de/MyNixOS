@@ -35,7 +35,7 @@
   hardware.nvidia.enable = false;
 
   # --- lean services (the lampp workbench lives on the laptop) ---
-  modules.services.xampp.enable = false;
+  # xampp: off by default (enabled only on laptop)
   modules.services.powertop.enable = true;
   modules.services.smartd.enable = true;
   modules.services.waydroid.enable = true;

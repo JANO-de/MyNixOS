@@ -41,6 +41,7 @@
 
   # Deskflow keyboard/mouse sharing: this machine joins the laptop's server.
   modules.programs.deskflow.role = "client";
+  modules.programs.heavy.enable = true;
   modules.programs.deskflow.serverAddress = "laptop";
 
   system.stateVersion = "26.05";
