@@ -13,7 +13,6 @@ in
     pick pkgs [
       "obsidian"     # markdown notes (unfree)
       "zotero"       # references
-      "neochat"
       "haruna"       # video
       "foliate"      # ebooks
       "libreoffice-qt"

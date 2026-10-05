@@ -12,6 +12,9 @@
   # Power saving is flaky on this chip; keep the radio always on.
   networking.networkmanager.wifi.powersave = false;
 
+  # Phone hotspots often ship a dead DNS relay; always try public DNS first.
+  networking.networkmanager.insertNameservers = [ "1.1.1.1" "8.8.8.8" ];
+
   # The radio ends up soft-blocked after failed activations and nothing clears
   # it; clear it on every boot so it is recoverable without a keyboard.
   systemd.services.rfkill-unblock-wifi = {
@@ -32,6 +35,12 @@
   environment.etc."NetworkManager/conf.d/00-surface-pmf.conf".text = ''
     [connection]
     802-11-wireless-security.pmf=0
+  '';
+
+  # Some hotspots cap packets below 1500 (seen: 1358); a lower MTU avoids stalls.
+  environment.etc."NetworkManager/conf.d/10-wifi-mtu.conf".text = ''
+    [connection]
+    802-11-wireless.mtu=1340
   '';
 
   # --- buttons: power, volume up/down (GPIO keys on ACPI MSHW0040) ---
