@@ -22,6 +22,7 @@ in
     ]
     ++ pick pkgs.kdePackages [
       "kate"
+      "plasma-keyboard"
       "gwenview"
       "elisa"
       "kclock"
