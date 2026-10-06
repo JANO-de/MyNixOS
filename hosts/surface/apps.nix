@@ -7,6 +7,13 @@
 
 let
   pick = set: names: lib.filter (p: p != null && !(p.meta.insecure or false)) (map (n: set.${n} or null) names);
+  nix-software-center = fetchFromForgejo {
+    domain = "git.oss.uzinfocom.uz";
+    owner = "xinux";
+    repo = "software-center";
+    tag = finalAttrs.version;
+    hash = ""; # add shaa
+  };
 in
 {
   environment.systemPackages =
@@ -20,6 +27,11 @@ in
       "libinput"
       "klassy"       # window decoration
     ]
+    # ACM3_Windows.exe is x86_64 while pkgs.wine is built i386-only, so it can
+    # only host 32-bit guests. pkgs.wine64 carries the 64-bit loader (as `wine`,
+    # which would otherwise be shadowed) and its runtime, so this wins the name
+    # collision with pkgs.wine and leaves a `wine` able to run 64-bit guests.
+    ++ [ pkgs.wine64 ]
     ++ pick pkgs.kdePackages [
       "kate"
       "plasma-keyboard"
