@@ -10,15 +10,15 @@ let
 in
 {
   environment.systemPackages =
-  
+
     pick pkgs [
-      inputs.nix-software-center.packages.${stdenv.hostPlatform.system}.default
       "obsidian"     # markdown notes (unfree)
       "zotero"       # references
       "haruna"       # video
       "foliate"      # ebooks
       "libreoffice-qt"
       "brightnessctl"
+      "opencode"
       "libinput"
       "klassy"       # window decoration
     ]

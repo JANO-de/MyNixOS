@@ -15,10 +15,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-software--center = {
-      url = "git+https://git.oss.uzinfocom.uz/xinux/software-center";
-    }
-
     inir.url = "github:snowarch/inir";
 
     opencode-flake.url = "github:noblepayne/opencode-flake";
@@ -41,7 +37,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-software-center, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
