@@ -13,6 +13,9 @@
 
   networking.hostName = "laptop";
 
+  # XAMPP workbench (/opt/lampp) lives only here.
+  modules.services.xampp.enable = true;
+
   # The Surface acts as an extra monitor via this sunshine server + moonlight
   # on the tablet (KMS/pipewire capture under niri).
   modules.services.sunshine.enable = true;

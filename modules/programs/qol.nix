@@ -20,6 +20,7 @@
       fzf
       ncdu
       tmux
+      disktree
       yq-go
       zoxide
     ]
