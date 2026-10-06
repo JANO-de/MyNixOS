@@ -7,17 +7,12 @@
 
 let
   pick = set: names: lib.filter (p: p != null && !(p.meta.insecure or false)) (map (n: set.${n} or null) names);
-  nix-software-center = fetchFromForgejo {
-    domain = "git.oss.uzinfocom.uz";
-    owner = "xinux";
-    repo = "software-center";
-    tag = finalAttrs.version;
-    hash = ""; # add shaa
-  };
 in
 {
   environment.systemPackages =
+  
     pick pkgs [
+      inputs.nix-software-center.packages.${stdenv.hostPlatform.system}.default
       "obsidian"     # markdown notes (unfree)
       "zotero"       # references
       "haruna"       # video
