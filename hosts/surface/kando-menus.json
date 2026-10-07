@@ -209,6 +209,164 @@
                 }
               }
             ]
+          },
+          {
+            "type": "submenu",
+            "name": "Actions",
+            "icon": "bolt",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Close",
+                "icon": "close",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "busctl --user call org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component invokeShortcut s \"Window Close\""
+                }
+              },
+              {
+                "type": "command",
+                "name": "Hide",
+                "icon": "minimize",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "busctl --user call org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component invokeShortcut s \"Window Minimize\""
+                }
+              },
+              {
+                "type": "command",
+                "name": "Desktop",
+                "icon": "desktop_windows",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "busctl --user call org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component invokeShortcut s \"Show Desktop\""
+                }
+              },
+              {
+                "type": "submenu",
+                "name": "Music",
+                "icon": "music_note",
+                "iconTheme": "material-symbols-rounded",
+                "children": [
+                  {
+                    "type": "command",
+                    "name": "Play",
+                    "icon": "play_arrow",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl play"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Stop",
+                    "icon": "stop",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl stop"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Next",
+                    "icon": "skip_next",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl next"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Prev",
+                    "icon": "skip_previous",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl previous"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "submenu",
+                "name": "Volume",
+                "icon": "volume_up",
+                "iconTheme": "material-symbols-rounded",
+                "children": [
+                  {
+                    "type": "command",
+                    "name": "Up",
+                    "icon": "volume_up",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Down",
+                    "icon": "volume_down",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Mute",
+                    "icon": "volume_off",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "submenu",
+                "name": "Screen",
+                "icon": "brightness_6",
+                "iconTheme": "material-symbols-rounded",
+                "children": [
+                  {
+                    "type": "command",
+                    "name": "Brighter",
+                    "icon": "brightness_high",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "brightnessctl set 10%+"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Dimmer",
+                    "icon": "brightness_low",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "brightnessctl set 10%-"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Shot",
+                    "icon": "screenshot",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "spectacle"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "command",
+                "name": "Lock",
+                "icon": "lock",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "loginctl lock-session"
+                }
+              }
+            ]
           }
         ]
       },

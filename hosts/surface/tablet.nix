@@ -108,10 +108,7 @@ in
       '';
     };
   };
-  home-manager.users.jano.xdg.configFile."kando/menu-themes" = {
-    source = ./kando-themes;
-    recursive = true;
-  };
+  home-manager.users.jano.xdg.configFile."kando/menu-themes" = { source = ./kando-themes; recursive = true; };
   environment.sessionVariables.BROWSER = "zen";
   home-manager.users.jano.home.activation.kandoTouch =
     inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -171,5 +168,6 @@ in
     anki
     kando     # touch pie-menu launcher
     lisgd     # touch gestures
+    playerctl
   ];
 }
