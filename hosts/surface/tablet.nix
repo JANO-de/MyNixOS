@@ -170,5 +170,7 @@ in
     lisgd     # touch gestures
     playerctl
     playerctl
+    playerctl
+    playerctl
   ];
 }
