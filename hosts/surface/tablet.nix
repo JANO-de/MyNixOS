@@ -172,5 +172,6 @@ in
     playerctl
     playerctl
     playerctl
+    playerctl
   ];
 }

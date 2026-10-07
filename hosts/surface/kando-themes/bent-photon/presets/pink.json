@@ -1,0 +1,14 @@
+{
+  "colors": {
+    "Highlight": "rgb(236 134 255)",
+    "Lowlight": "rgb(40 42 55)",
+    "Icons": "rgb(236 134 255)",
+    "Text": "rgb(236 134 255)",
+    "Number": "rgba(255 255 255 / 0.35)",
+    "Icons〔Hovered〕": "rgb(40 42 55)",
+    "Text〔Hovered〕": "rgb(40 42 55)",
+    "Number〔Hovered〕": "rgba(40 42 55 / 0.5)",
+    "Canvas": "rgba(67 70 89 / 0.7)",
+    "Dots": "rgba(255 255 255 / 0)"
+  }
+}
