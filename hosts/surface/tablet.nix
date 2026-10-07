@@ -169,5 +169,6 @@ in
     kando     # touch pie-menu launcher
     lisgd     # touch gestures
     playerctl
+    playerctl
   ];
 }
