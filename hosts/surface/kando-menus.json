@@ -7,10 +7,209 @@
         "icon": "apps",
         "iconTheme": "material-symbols-rounded",
         "children": [
-          { "type": "command", "name": "Browser", "icon": "language", "iconTheme": "material-symbols-rounded", "data": { "command": "zen" } },
-          { "type": "command", "name": "Notes", "icon": "edit_note", "iconTheme": "material-symbols-rounded", "data": { "command": "xournalpp" } },
-          { "type": "command", "name": "Files", "icon": "folder", "iconTheme": "material-symbols-rounded", "data": { "command": "dolphin" } },
-          { "type": "command", "name": "Settings", "icon": "settings", "iconTheme": "material-symbols-rounded", "data": { "command": "systemsettings" } }
+          {
+            "type": "command",
+            "name": "Obsidian",
+            "icon": "edit_note",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "obsidian"
+            }
+          },
+          {
+            "type": "command",
+            "name": "Rnote",
+            "icon": "draw",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "rnote"
+            }
+          },
+          {
+            "type": "command",
+            "name": "Browser",
+            "icon": "language",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "zen"
+            }
+          },
+          {
+            "type": "command",
+            "name": "Files",
+            "icon": "folder",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "dolphin"
+            }
+          },
+          {
+            "type": "submenu",
+            "name": "School",
+            "icon": "school",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Classroom",
+                "icon": "class",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "zen --new-window https://classroom.google.com"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Android",
+                "icon": "android",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid show-full-ui"
+                }
+              },
+              {
+                "type": "command",
+                "name": "F-Droid",
+                "icon": "store",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid app launch org.fdroid.fdroid"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Reddit",
+                "icon": "forum",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "zen --new-window https://www.reddit.com"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Dev",
+            "icon": "code",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "VS Code",
+                "icon": "code",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "code"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Alacritty",
+                "icon": "terminal",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "alacritty"
+                }
+              },
+              {
+                "type": "command",
+                "name": "DBeaver",
+                "icon": "database",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "dbeaver"
+                }
+              },
+              {
+                "type": "command",
+                "name": "draw.io",
+                "icon": "schema",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "drawio"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Games",
+            "icon": "sports_esports",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Android",
+                "icon": "android",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid show-full-ui"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Aurora",
+                "icon": "shop",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid app launch com.aurora.store"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Extra",
+            "icon": "more_horiz",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Anki",
+                "icon": "style",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "anki"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Okular",
+                "icon": "picture_as_pdf",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "okular"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Krita",
+                "icon": "brush",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "krita"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Xournal++",
+                "icon": "history_edu",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "xournalpp"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Settings",
+                "icon": "settings",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "systemsettings"
+                }
+              }
+            ]
+          }
         ]
       },
       "shortcut": "",

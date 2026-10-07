@@ -97,13 +97,13 @@ in
       ExecStart = pkgs.writeShellScript "lisgd-start" ''
         for d in /sys/class/input/event*; do
           n=$(cat $d/device/name 2>/dev/null)
-          if echo "$n" | grep -qi touch && ! echo "$n" | grep -qiE 'pen|stylus|pad'; then
+          if echo "$n" | grep -qi 'virtual touchscreen' && ! echo "$n" | grep -qiE 'pen|stylus|pad'; then
             dev=/dev/input/$(basename $d); break
           fi
         done
         [ -n "$dev" ] || exit 1
         exec ${pkgs.lisgd}/bin/lisgd -d "$dev" \
-          -g "1,DU,B,*,R,${pkgs.kando}/bin/kando --menu 'Tablet'" \
+          -g "1,RL,R,*,R,${pkgs.kando}/bin/kando --menu 'Tablet'" \
           -g "1,LR,L,*,R,${pkgs.kdePackages.qttools}/bin/qdbus org.kde.kglobalaccel /component/kwin invokeShortcut Overview"
       '';
     };
