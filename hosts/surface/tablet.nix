@@ -108,7 +108,26 @@ in
       '';
     };
   };
+  home-manager.users.jano.xdg.configFile."kando/menu-themes" = {
+    source = ./kando-themes;
+    recursive = true;
+  };
   environment.sessionVariables.BROWSER = "zen";
+  home-manager.users.jano.home.activation.kandoTouch =
+    inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      f="$HOME/.config/kando/config.json"
+      mkdir -p "$(dirname "$f")"
+      [ -f "$f" ] || echo '{}' > "$f"
+      ${pkgs.jq}/bin/jq '. * {
+        zoomFactor: 1.8,
+        centerDeadZone: 80,
+        dragThreshold: 25,
+        hoverMode: false,
+        enableMarkingMode: false,
+        enableTurboMode: false,
+        ignoreWriteProtectedConfigFiles: true
+      }' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+    '';
   environment.sessionVariables.XCURSOR_SIZE = "36";
   environment.sessionVariables.XCURSOR_THEME = "blank";
   environment.pathsToLink = [ "/share/icons" ];
