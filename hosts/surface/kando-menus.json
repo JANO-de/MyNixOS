@@ -3,7 +3,7 @@
     {
       "root": {
         "type": "submenu",
-        "name": "Example Menu",
+        "name": "Tablet",
         "icon": "apps",
         "iconTheme": "material-symbols-rounded",
         "children": [

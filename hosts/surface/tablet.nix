@@ -103,7 +103,7 @@ in
         done
         [ -n "$dev" ] || exit 1
         exec ${pkgs.lisgd}/bin/lisgd -d "$dev" \
-          -g "1,DU,B,*,R,${pkgs.kando}/bin/kando --menu 'Example Menu'" \
+          -g "1,DU,B,*,R,${pkgs.kando}/bin/kando --menu 'Tablet'" \
           -g "1,LR,L,*,R,${pkgs.kdePackages.qttools}/bin/qdbus org.kde.kglobalaccel /component/kwin invokeShortcut Overview"
       '';
     };
@@ -136,7 +136,7 @@ in
     (makeDesktopItem {
       name = "kando-menu";
       desktopName = "Kando Menu";
-      exec = "${kando}/bin/kando --menu \"Example Menu\"";
+      exec = "${kando}/bin/kando --menu \"Tablet\"";
       icon = "kando";
       categories = [ "Utility" ];
     })
