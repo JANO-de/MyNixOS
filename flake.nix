@@ -16,6 +16,7 @@
     };
 
     inir.url = "github:snowarch/inir";
+    nix-software-center.url = "github:snowfallorg/nix-software-center";
 
     opencode-flake.url = "github:noblepayne/opencode-flake";
 
@@ -37,7 +38,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir, nix-software-center }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

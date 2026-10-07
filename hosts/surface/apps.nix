@@ -3,30 +3,25 @@
 # skipped instead of breaking evaluation, and so are packages nixpkgs marks
 # insecure (usually an old bundled Electron, e.g. Obsidian). Skipped on purpose: kdenlive and
 # rustdesk (heavy, use the desktop), gnome-pomodoro (pulls GNOME).
-{ pkgs, lib, ... }:
+{ pkgs, lib, inputs, ... }:
 
 let
   pick = set: names: lib.filter (p: p != null && !(p.meta.insecure or false)) (map (n: set.${n} or null) names);
 in
 {
   environment.systemPackages =
-
     pick pkgs [
+      "opencode"
       "obsidian"     # markdown notes (unfree)
       "zotero"       # references
       "haruna"       # video
       "foliate"      # ebooks
       "libreoffice-qt"
       "brightnessctl"
-      "opencode"
       "libinput"
       "klassy"       # window decoration
     ]
-    # ACM3_Windows.exe is x86_64 while pkgs.wine is built i386-only, so it can
-    # only host 32-bit guests. pkgs.wine64 carries the 64-bit loader (as `wine`,
-    # which would otherwise be shadowed) and its runtime, so this wins the name
-    # collision with pkgs.wine and leaves a `wine` able to run 64-bit guests.
-    ++ [ pkgs.wine64 ]
+    ++ [ inputs.nix-software-center.packages.${pkgs.stdenv.hostPlatform.system}.nix-software-center ]
     ++ pick pkgs.kdePackages [
       "kate"
       "plasma-keyboard"
