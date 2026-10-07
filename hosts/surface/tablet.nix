@@ -67,6 +67,47 @@ in
     [Windows]
     BorderlessMaximizedWindows=true
   '';
+    # Android-like: a single tap opens files/folders (no double-click).
+  environment.etc."xdg/kdeglobals".text = ''
+    [KDE]
+    SingleClick=true
+  '';
+  # Kando runs in the background from login so the pie menu opens instantly.
+  # Wayland has no app-level global hotkeys: open it with a Plasma shortcut or
+  # the "Kando Menu" launcher (kando --menu "<menu name>").
+  environment.etc."xdg/autostart/kando.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Kando
+    Exec=${pkgs.kando}/bin/kando
+    X-GNOME-Autostart-enabled=true
+  '';
+  # Declarative Kando menus (read-only: edit kando-menus.json, then rebuild).
+  home-manager.users.jano.xdg.configFile."kando/menus.json" = {
+    source = ./kando-menus.json;
+    force = true;
+  };
+
+  # Touch gestures via lisgd (auto-detects the touchscreen, skips the pen).
+  users.users.jano.extraGroups = [ "input" ];
+  systemd.user.services.lisgd = {
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      Restart = "on-failure";
+      ExecStart = pkgs.writeShellScript "lisgd-start" ''
+        for d in /sys/class/input/event*; do
+          n=$(cat $d/device/name 2>/dev/null)
+          if echo "$n" | grep -qi touch && ! echo "$n" | grep -qiE 'pen|stylus|pad'; then
+            dev=/dev/input/$(basename $d); break
+          fi
+        done
+        [ -n "$dev" ] || exit 1
+        exec ${pkgs.lisgd}/bin/lisgd -d "$dev" \
+          -g "1,DU,B,*,R,${pkgs.kando}/bin/kando --menu 'Example Menu'" \
+          -g "1,LR,L,*,R,${pkgs.kdePackages.qttools}/bin/qdbus org.kde.kglobalaccel /component/kwin invokeShortcut Overview"
+      '';
+    };
+  };
   environment.sessionVariables.BROWSER = "zen";
   environment.sessionVariables.XCURSOR_SIZE = "36";
   environment.sessionVariables.XCURSOR_THEME = "blank";
@@ -74,6 +115,31 @@ in
 
   environment.systemPackages = with pkgs; [
     blankCursor
+    (writeShellScriptBin "waydroid-setup" ''
+      set -e
+      sudo waydroid init -f            # vanilla image, no Google apps
+      sudo systemctl restart waydroid-container
+      waydroid session start &
+      sleep 20
+      ${pkgs.curl}/bin/curl -L -o /tmp/F-Droid.apk https://f-droid.org/F-Droid.apk
+      waydroid app install /tmp/F-Droid.apk
+      waydroid show-full-ui &
+      echo "In Android: open F-Droid, search 'Aurora Store', install it."
+    '')
+    (makeDesktopItem {
+      name = "google-classroom";
+      desktopName = "Google Classroom";
+      exec = "zen --new-window https://classroom.google.com";
+      icon = "internet-web-browser";
+      categories = [ "Education" ];
+    })
+    (makeDesktopItem {
+      name = "kando-menu";
+      desktopName = "Kando Menu";
+      exec = "${kando}/bin/kando --menu \"Example Menu\"";
+      icon = "kando";
+      categories = [ "Utility" ];
+    })
     wl-clipboard
     qt6.qtvirtualkeyboard # greeter on-screen keyboard (see modules/desktop/greeter.nix)
 
@@ -85,5 +151,6 @@ in
     krita
     anki
     kando     # touch pie-menu launcher
+    lisgd     # touch gestures
   ];
 }

@@ -6,11 +6,15 @@
 
 {
   # --- display: Panel Self Refresh blanks the eDP output on this panel ---
-  boot.kernelParams = [ "i915.enable_psr=0" ];
+  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES"  ];
 
   # --- wifi: Marvell 88W8997 (mwifiex_pcie) ---
   # Power saving is flaky on this chip; keep the radio always on.
-  networking.networkmanager.wifi.powersave = false;
+    networking.networkmanager.wifi.powersave = false;
+
+  # Regulatory domain: without it mwifiex stays on the world domain and 5 GHz
+  # channels are passive-only / hidden, so hotspots fall back to 2.4 GHz.
+  hardware.wirelessRegulatoryDatabase = true;
 
   # Phone hotspots often ship a dead DNS relay; always try public DNS first.
   networking.networkmanager.insertNameservers = [ "1.1.1.1" "8.8.8.8" ];
@@ -73,6 +77,19 @@
     naturalScrolling = true;
   };
   hardware.sensor.iio.enable = true; # accelerometer -> auto-rotate (iio-sensor-proxy)
+    # --- pen + touch (IPTS, handled by iptsd) ---
+  services.iptsd = {
+    enable = true;
+    config = {
+      Touchscreen = {
+        DisableOnPalm = true;    # no touch while a palm rests on the glass
+        DisableOnStylus = true;  # no touch while the pen is hovering/drawing
+      };
+      Stylus.Disable = false;
+    };
+  };
+  services.udev.packages = [ pkgs.libwacom-surface ];
+  environment.systemPackages = [ pkgs.libwacom-surface ];
 
   # --- storage / security / power ---
   services.fstrim.enable = true;     # TRIM on the 128GB NVMe

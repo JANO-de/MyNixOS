@@ -1,0 +1,23 @@
+{
+  "menus": [
+    {
+      "root": {
+        "type": "submenu",
+        "name": "Example Menu",
+        "icon": "apps",
+        "iconTheme": "material-symbols-rounded",
+        "children": [
+          { "type": "command", "name": "Browser", "icon": "language", "iconTheme": "material-symbols-rounded", "data": { "command": "zen" } },
+          { "type": "command", "name": "Notes", "icon": "edit_note", "iconTheme": "material-symbols-rounded", "data": { "command": "xournalpp" } },
+          { "type": "command", "name": "Files", "icon": "folder", "iconTheme": "material-symbols-rounded", "data": { "command": "dolphin" } },
+          { "type": "command", "name": "Settings", "icon": "settings", "iconTheme": "material-symbols-rounded", "data": { "command": "systemsettings" } }
+        ]
+      },
+      "shortcut": "",
+      "shortcutID": "",
+      "centered": false,
+      "anchored": false
+    }
+  ],
+  "collections": []
+}
