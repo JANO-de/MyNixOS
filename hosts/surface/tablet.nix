@@ -214,37 +214,6 @@ in
         --value=$cur --button=Done:0 \
         | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
     '')
-    playerctl
-    yad
-    (writeShellScriptBin "vol-slider" ''
-      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
-      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
-        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
-        --value=$cur --button=Done:0 \
-        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
-    '')
-    (writeShellScriptBin "bright-slider" ''
-      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
-      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
-        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
-        --value=$cur --button=Done:0 \
-        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
-    '')
-    yad
-    (writeShellScriptBin "vol-slider" ''
-      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
-      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
-        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
-        --value=$cur --button=Done:0 \
-        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
-    '')
-    (writeShellScriptBin "bright-slider" ''
-      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
-      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
-        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
-        --value=$cur --button=Done:0 \
-        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
-    '')
     yad
     (writeShellScriptBin "vol-slider" ''
       cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
@@ -306,6 +275,82 @@ in
         --value=$cur --button=Done:0 \
         | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
     '')
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
+    playerctl
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
     playerctl
     yad
     (writeShellScriptBin "vol-slider" ''
@@ -352,7 +397,37 @@ in
         --value=$cur --button=Done:0 \
         | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
     '')
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
     playerctl
+    yad
+    (writeShellScriptBin "vol-slider" ''
+      cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
+      ${yad}/bin/yad --scale --print-partial --title=Volume --text=Volume \
+        --width=800 --height=140 --center --on-top --min-value=0 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ "$v%"; done
+    '')
+    (writeShellScriptBin "bright-slider" ''
+      cur=$(${brightnessctl}/bin/brightnessctl -m | cut -d, -f4 | tr -d %)
+      ${yad}/bin/yad --scale --print-partial --title=Brightness --text=Brightness \
+        --width=800 --height=140 --center --on-top --min-value=1 --max-value=100 \
+        --value=$cur --button=Done:0 \
+        | while read v; do ${brightnessctl}/bin/brightnessctl set "$v%"; done
+    '')
     yad
     (writeShellScriptBin "vol-slider" ''
       cur=$(${wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | ${gawk}/bin/awk '{printf "%d",$2*100}')
