@@ -260,11 +260,20 @@
                   },
                   {
                     "type": "command",
-                    "name": "Stop",
-                    "icon": "stop",
+                    "name": "Pause",
+                    "icon": "pause",
                     "iconTheme": "material-symbols-rounded",
                     "data": {
-                      "command": "playerctl stop"
+                      "command": "playerctl -a pause"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Toggle",
+                    "icon": "play_pause",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl play-pause"
                     }
                   },
                   {
@@ -295,20 +304,11 @@
                 "children": [
                   {
                     "type": "command",
-                    "name": "Up",
-                    "icon": "volume_up",
+                    "name": "Slider",
+                    "icon": "tune",
                     "iconTheme": "material-symbols-rounded",
                     "data": {
-                      "command": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
-                    }
-                  },
-                  {
-                    "type": "command",
-                    "name": "Down",
-                    "icon": "volume_down",
-                    "iconTheme": "material-symbols-rounded",
-                    "data": {
-                      "command": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-"
+                      "command": "vol-slider"
                     }
                   },
                   {
@@ -330,20 +330,11 @@
                 "children": [
                   {
                     "type": "command",
-                    "name": "Brighter",
-                    "icon": "brightness_high",
+                    "name": "Slider",
+                    "icon": "tune",
                     "iconTheme": "material-symbols-rounded",
                     "data": {
-                      "command": "brightnessctl set 10%+"
-                    }
-                  },
-                  {
-                    "type": "command",
-                    "name": "Dimmer",
-                    "icon": "brightness_low",
-                    "iconTheme": "material-symbols-rounded",
-                    "data": {
-                      "command": "brightnessctl set 10%-"
+                      "command": "bright-slider"
                     }
                   },
                   {
