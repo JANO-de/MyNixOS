@@ -14,7 +14,7 @@ set -euo pipefail
 
 action="${1:-}"
 
-eww_ready() { eww windows >/dev/null 2>&1; }
+eww_ready() { eww list-windows >/dev/null 2>&1; }
 is_open() { [ "$(eww get island-open 2>/dev/null || echo false)" = "true" ]; }
 
 case "$action" in

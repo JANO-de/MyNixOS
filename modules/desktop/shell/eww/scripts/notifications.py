@@ -12,10 +12,19 @@ Runs with the python environment provided by modules/desktop/shell/eww.nix
 
 import asyncio
 import json
+import os
 import sys
 
 from dbus_next.aio import MessageBus
 from dbus_next.service import ServiceInterface, method, signal
+
+
+def bus_address():
+    addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS")
+    if addr:
+        return addr
+    runtime = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
+    return f"unix:path={runtime}/bus"
 
 
 class Notifications(ServiceInterface):
@@ -94,7 +103,7 @@ class Notifications(ServiceInterface):
 
     @method()
     def GetServerInformation(self) -> "ssss":
-        return ("eww-notifications", "MyNixOS", "0.1", "1.2")
+        return ["eww-notifications", "MyNixOS", "0.1", "1.2"]
 
     @signal()
     def NotificationClosed(self, nid: "u", reason: "u") -> "uu":
@@ -102,7 +111,7 @@ class Notifications(ServiceInterface):
 
 
 async def main():
-    bus = await MessageBus().connect()
+    bus = await MessageBus(bus_address=bus_address()).connect()
     iface = Notifications()
     bus.export("/org/freedesktop/Notifications", iface)
     await bus.request_name("org.freedesktop.Notifications")
