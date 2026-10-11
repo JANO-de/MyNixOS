@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# osd — volume / brightness on-screen display for the eww island shell.
+#
+#   osd volume     {up|down|mute}
+#   osd brightness {up|down}
+#
+# Changes the value, updates the OSD variables, shows the window and hides it
+# again after a short delay. Rapid presses restart the hide timer.
+set -euo pipefail
+
+kind="${1:-volume}"
+action="${2:-}"
+sink="@DEFAULT_AUDIO_SINK@"
+pidfile="${XDG_RUNTIME_DIR:-/tmp}/eww-osd.pid"
+
+show() {
+  local label="$1" value="$2" icon="$3"
+  eww update "osd-kind=$label" "osd-value=$value" "osd-icon=$icon" 2>/dev/null || true
+  eww open osd 2>/dev/null || true
+  if [ -f "$pidfile" ]; then
+    kill "$(cat "$pidfile")" 2>/dev/null || true
+  fi
+  ( sleep 1.5; eww close osd 2>/dev/null || true ) &
+  echo "$!" > "$pidfile"
+}
+
+case "$kind" in
+  volume)
+    case "$action" in
+      up)   wpctl set-volume -l 1.0 "$sink" 5%+ ;;
+      down) wpctl set-volume "$sink" 5%- ;;
+      mute) wpctl set-mute "$sink" toggle ;;
+    esac
+    val="$(wpctl get-volume "$sink" | awk '{printf "%d", $2*100}')"
+    icon="VOL"
+    if wpctl get-volume "$sink" | grep -q MUTED; then icon="MUTE"; fi
+    show "Volume" "$val" "$icon"
+    ;;
+  brightness)
+    case "$action" in
+      up)   brightnessctl set 5%+ ;;
+      down) brightnessctl set 5%- ;;
+    esac
+    val="$(brightnessctl -m | cut -d, -f4 | tr -d '%')"
+    show "Brightness" "$val" "BRI"
+    ;;
+  *)
+    echo "usage: osd {volume|brightness} {up|down|mute}" >&2
+    exit 1
+    ;;
+esac

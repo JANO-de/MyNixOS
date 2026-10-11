@@ -35,7 +35,7 @@
     lib = nixpkgs.lib;
     theme = import ./modules/theme.nix;
 
-    # niriEnabled=true: niri + wayle shell; false: no niri (Plasma on the Surface).
+    # niriEnabled=true: niri + eww shell; false: no niri (Plasma on the Surface).
     # Passed explicitly (no module default) so the defaulted-arg probe can't recurse.
     mkHost = { host, niriEnabled ? true, cachyos ? true }: lib.nixosSystem {
       inherit system;

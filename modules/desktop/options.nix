@@ -13,7 +13,7 @@
     enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Run the niri compositor, its wayle shell and the niri-only touch bits (wvkbd OSK, iio-niri rotation). Off for tablets that use GNOME instead.";
+      description = "Run the niri compositor, its eww shell and the niri-only touch bits (wvkbd OSK, iio-niri rotation). Off for tablets that use GNOME instead.";
     };
   };
 

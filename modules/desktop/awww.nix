@@ -1,24 +1,16 @@
 # awww — the Wayland wallpaper daemon.
 #
-# On niri hosts this module only has to make the binary available: the iNiR
-# shell probes for `awww` and `awww-daemon` at startup, defaults
-# `background.backend.provider` to "awww" and, when both are found, starts its
-# own transient daemon and pushes the wallpaper per output. Without the package
-# in the session PATH the shell silently falls back to its internal renderer,
-# which is why installing it is all the desktop/laptop need.
-#
-# Hosts without the shell (the Surface runs a full desktop instead) have
-# nothing to drive the daemon, so `image` additionally brings up a service for
-# them. Only one awww daemon may own the layer-shell surfaces of a session,
-# hence the shell hosts never get that service.
+# The eww island shell does not manage wallpapers, so awww is owned entirely
+# by this module: whenever `image` is set, a user service starts the daemon and
+# applies it (clearing GNOME's own background first when running there). While
+# `image` is null the package is only installed and no daemon runs.
 { config, lib, pkgs, ... }:
 
 let
   cfg = config.modules.desktop.awww;
 
-  shellDrivesAwww = config.modules.desktop.niri.enable;
   wallpaperSet = cfg.image != null;
-  manageService = !shellDrivesAwww && wallpaperSet;
+  manageService = wallpaperSet;
 
   # GNOME paints its desktop background above the background layer, so an awww
   # surface stays hidden until GNOME's own picture is cleared. Skipped while no
@@ -66,7 +58,7 @@ in
       description = ''
         Wallpaper awww should show. While this is null awww is installed but no
         daemon is started and the current wallpaper is left alone; setting it
-        also starts the awww service on hosts that run no iNiR shell (GNOME).
+        starts the awww service too.
       '';
     };
   };

@@ -1,6 +1,6 @@
 # `niriEnabled` comes from the host's `specialArgs` (flake.nix); every host
 # passes it explicitly (no default) so the module-system arg probe can't
-# recurse. The surface host passes niriEnabled=false — that keeps the wayle
+# recurse. The surface host passes niriEnabled=false — that keeps the eww
 # shell module (bar + notifications on niri) off a Plasma tablet. Keep it in
 # sync with the `modules.desktop.niri.enable` option used inside niri.nix.
 { lib, niriEnabled, ... }:

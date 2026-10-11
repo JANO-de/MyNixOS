@@ -41,9 +41,7 @@ input {
 // block found in an include with one from the main config, later keys winning,
 // so a saved override would silently beat this file rather than fail loudly.
 // Keeping one owner avoids that ambiguity. Output settings live only in the
-// optional include at the bottom of this file, which the shell used to manage
-// through the Monitor Manager GUI; the saved profiles replace the old
-// per-location presets:
+// optional include at the bottom of this file:
 //
 //   school  HDMI-A-1 scale 1, position x=0 y=0 (eDP-1 auto-placed to its right)
 //   home    HDMI-A-1 scale 1.5, position x=0 y=0 (4K)
@@ -111,16 +109,12 @@ binds {
     Mod+Return { spawn "alacritty"; }
     Mod+E { spawn "alacritty" "-e" "yazi"; }
 
-    // --- wayle shell (Keybinds routed to the Wayland Elements shell) ---
+    // --- shell (eww island; scripts live in modules/desktop/shell/eww) ---
     Mod+Shift+T { toggle-column-tabbed-display; }
     Super+Tab   { toggle-overview; }
-    Mod+W      { spawn "wayle" "wallpaper" "next"; }
-    Mod+Ctrl+V { toggle-window-floating; }
-    Mod+Comma  { spawn "wayle" "panel" "settings"; }
-    Mod+Ctrl+K { spawn "wayle" "notify" "dnd"; }
-    Mod+Shift+S { spawn "wayle" "panel" "toggle"; }
-    Mod+B      { spawn "zen"; }
-    // --- /wayle ---
+    Mod+Ctrl+V  { toggle-window-floating; }
+    Mod+B       { spawn "zen"; }
+    // --- /shell ---
 
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
@@ -128,10 +122,14 @@ binds {
 
 @TABLET_BINDS@
 
-    //XF86AudioRaiseVolume allow-when-locked=true { spawn "wayle" "audio" "output-volume" "+5"; }
-    //XF86AudioLowerVolume allow-when-locked=true { spawn "wayle" "audio" "output-volume" "-5"; }
-    //XF86AudioMute        allow-when-locked=true { spawn "wayle" "audio" "output-mute"; }
+    // Volume / brightness go through the eww OSD scripts (tray OSD popup).
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "osdctl" "volume" "up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "osdctl" "volume" "down"; }
+    XF86AudioMute        allow-when-locked=true { spawn "osdctl" "volume" "mute"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    XF86MonBrightnessUp   { spawn "osdctl" "brightness" "up"; }
+    XF86MonBrightnessDown { spawn "osdctl" "brightness" "down"; }
 
     XF86AudioPrev         allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioPlay         allow-when-locked=true { spawn-sh "playerctl play-pause"; }
@@ -253,11 +251,10 @@ environment {
 }
 
 // --- Monitor output overrides ---
-// Written by the Monitor Manager GUI formerly shipped with the iNiR shell
-// (modules/desktop/shell/scripts/monitor-manager.py). The blocks above define
-// the declarative defaults; this optional include is evaluated last so saved
-// output blocks override them. `optional=true` keeps the config valid while the
-// file does not exist yet, and niri watches it, so saving live-reloads the
-// compositor.
+// Optional per-machine output blocks (niri writes nothing here by itself). The
+// blocks above define the declarative defaults; this optional include is
+// evaluated last so saved output blocks override them. `optional=true` keeps
+// the config valid while the file does not exist yet, and niri watches it, so
+// saving live-reloads the compositor.
 include optional=true "config.d/15-outputs.kdl"
 // --- /Monitor output overrides ---

@@ -24,11 +24,10 @@
     # DAW (Music)
     ardour
 
-    ### ----- /*/ INIR Dependencies /*/ ----- ###
-    
-    # --- Core shell / compositor glue ---
-    inotify-tools            # provides `inotifywait`, used by systemd/niri-sync-colors.service
-    quickshell              # the actual runtime iNiR's `inir` launcher wraps
+    ### ----- /*/ Wayland session utilities /*/ ----- ###
+
+    # --- Core session glue ---
+    inotify-tools            # provides `inotifywait`, used by a few watchers
     xwayland-satellite       # Xwayland support under niri (non-native apps)
     swaylock
     swayidle
@@ -41,35 +40,12 @@
     xdg-desktop-portal-gtk
     xdg-desktop-portal-gnome
     gnome-keyring
-    fish                    # some of iNiR's scripts shell out to fish specifically
+    fish                    # handy interactive shell (used by a few scripts)
     gum
     uv                       # needed to create the venv in README step 7
     bc
     ripgrep
     jq
-
-    # --- Qt/QML modules — without these, quickshell fails with
-    #     'module "org.kde.X" is not installed' and the bar/background never render ---
-    kdePackages.qt5compat
-    kdePackages.kirigami
-    kdePackages.qtmultimedia   # required for video wallpapers; without it they fall back to a blurry static thumbnail
-    kdePackages.syntax-highlighting
-    kdePackages.kdialog
-    kdePackages.plasma-integration
-    kdePackages.plasma-browser-integration
-    kdePackages.kconfig
-    darkly
-
-    # --- Color theming pipeline ---
-    matugen                          # the actual engine that generates the Material You palette
-    (python3.withPackages (ps: with ps; [
-      pip
-      materialyoucolor
-      pillow
-      evdev
-      tkinter
-      markdown
-    ]))
 
     # --- Screenshots / OCR / screen recording ---
     grim
@@ -88,9 +64,8 @@
     networkmanagerapplet
     pavucontrol
 
-    # --- Fonts the shell's icons/UI actually depend on ---
-    nerd-fonts.jetbrains-mono
-    material-symbols          # the icon font used throughout iNiR's UI — do not remove
+    # --- Fonts ---
+    nerd-fonts.jetbrains-mono # nerd-font glyphs used by the eww island
     alacritty                 # terminal used by niri/config.kdl's Mod+Return bind — required for the shared config to work out of the box
 
     # ===========================================================================
