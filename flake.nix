@@ -15,7 +15,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    inir.url = "github:snowarch/inir";
     nix-software-center.url = "github:snowfallorg/nix-software-center";
 
     opencode-flake.url = "github:noblepayne/opencode-flake";
@@ -30,13 +29,13 @@
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir, nix-software-center }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
     theme = import ./modules/theme.nix;
 
-    # niriEnabled=true: niri + iNiR shell; false: no niri (Plasma on the Surface).
+    # niriEnabled=true: niri + wayle shell; false: no niri (Plasma on the Surface).
     # Passed explicitly (no module default) so the defaulted-arg probe can't recurse.
     mkHost = { host, niriEnabled ? true, cachyos ? true }: lib.nixosSystem {
       inherit system;

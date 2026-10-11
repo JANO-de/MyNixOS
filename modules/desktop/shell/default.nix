@@ -2,6 +2,6 @@
 
 {
   imports = [
-    ./inir.nix
+    ./wayle.nix
   ];
 }

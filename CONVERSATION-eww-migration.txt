@@ -1,0 +1,177 @@
+==============================================================================
+ EWW SHELL MIGRATION — CONVERSATION TRANSCRIPT & WORK STATE
+ (saved so work can continue from the laptop)
+==============================================================================
+
+Repo: /home/jano/Documents/MyNixOS  (flake, branch main, remote
+      git@github.com:JANO-de/MyNixOS.git)
+
+Hosts: laptop, desktop  -> niri session (niriEnabled = true)
+       surface          -> Plasma/GNOME (niriEnabled = false)  ** DO NOT TOUCH **
+
+Goal: replace the current desktop shell with Eww for the niri hosts only
+      (laptop + desktop). Surface must be ignored/unchanged.
+
+------------------------------------------------------------------------------
+ CONVERSATION
+------------------------------------------------------------------------------
+
+USER:
+can you list me all the shells available to nixos, I want it to be optimized
+and use pretty little ram, and as customizable as possible. Written in rust if
+possible
+
+ASSISTANT:
+(list of command-line shells; highlighted Rust ones: Nushell, Ion, Brush,
+ Pebble; lightweight: dash, mksh, yash; customizable: Fish, Zsh, Elvish)
+
+USER:
+Shell for niri nixos I meant
+
+ASSISTANT:
+(list of desktop shells/bars for the niri Wayland compositor, with the Rust
+ ones called out)
+  Rust: Ironbar, Eww
+  Non-Rust: Quickshell (DankMaterialShell, Noctalia, iNiR), Waybar, AGS,
+            Yambar, sfwbar
+  Recommended for Rust + low RAM + customizable: Ironbar or Eww.
+
+USER:
+Eww, change my flake to use Eww and delete other shells
+( IGNORE SURFACE ONLY LAPTOP AND DESKTOP)
+
+ASSISTANT:
+Explored the repo. Current state: the repo already contains an in-progress
+migration AWAY from the iNiR/Quickshell shell TO "wayle" (a Wayland
+Elements shell, home-manager `services.wayle`, package wayle-0.7.0).
+iNiR files are already deleted in the working tree.
+
+Asked a clarifying question about how to scope the Eww setup.
+
+USER (answer):
+I want a very basic bar isle (Like iOS isle) that only shows day and time and
+when hovering with mouse it changes to a little bigger isle with some options
+like settings volume brightness ect all necesary basically. + notification and
+OSD. ALL this I want written in a folder and JUST inside that folder and will
+be connected via one config file to the rest of the config please, so if I want
+to change the code or add widgets i only have to look that folder.
+
+USER (latest):
+save this convo to the flake as a txt so I can continue from the laptop
+(commit and push of course)
+
+------------------------------------------------------------------------------
+ AGREED DESIGN (not implemented yet)
+------------------------------------------------------------------------------
+
+Self-contained folder:
+    modules/desktop/shell/eww/
+        eww.yuck              # island window(s), notifications, OSD, polls
+        eww.scss              # styling (catppuccin, theme placeholders)
+        scripts/island        # expand / collapse / init / mute controller
+        scripts/osd           # volume + brightness OSD controller
+        scripts/notifications.py  # DBus org.freedesktop.Notifications server
+                                  # (python dbus-next) -> feeds eww via stdout
+
+Single connector file:
+    modules/desktop/shell/eww.nix     # THE only file wired to the rest of the
+                                      # config; imports/reads the folder above
+
+Design details:
+  * iOS-style "island" anchored top-center.
+      collapsed: day + time only (small pill)
+      hover     : expands to bigger island with controls (volume slider,
+                  brightness slider, mute, wifi/bluetooth toggles, battery,
+                  media, systray, lock, power). Collapses on mouse leave.
+  * Implemented with ONE `defwindow island` reopened with `--arg expanded=true/
+    false` (window geometry cannot be changed at runtime). A small guard script
+    reads an eww var `island-open` to avoid an onhover/onhoverlost feedback
+    loop. Only `onhover` on the collapsed box and only `onhoverlost` on the
+    expanded box (so closing one window does not trigger the other).
+  * Notifications: python `dbus-next` server owning org.freedesktop.Notifications
+    prints a JSON array (deflisten); eww renders popups; close via
+    `busctl --user call ... CloseNotification u <id>`.
+  * OSD: `osd` window fed by eww vars (osd-kind/osd-value/osd-icon); scripts
+    change wpctl/brightnessctl then show + auto-hide after 1.5s.
+  * Theme: eww.nix substitutes placeholders (@BG@, @SURFACE@, @TEXT@,
+    @SUBTEXT@, @ACCENT@, @FONT@, @SANS@) in eww.scss from modules/theme.nix,
+    and @SCRIPTS@ / @NOTIFY@ paths in eww.yuck.
+  * Deploy: xdg.configFile."eww".source = <folder copied+substituted via
+    pkgs.runCommand>. Wrapper bins (islandctl, osdctl, eww-notify) added to
+    environment.systemPackages for niri keybinds + systemd.
+  * systemd user units: eww (programs.eww.systemd.enable + ExecStartPost
+    `islandctl init`), eww-notifications.
+  * niri config.kdl (HOME, niri-only) keybind updates:
+        remove wayle binds (Mod+W wallpaper, Mod+Comma settings,
+        Mod+Ctrl+K dnd, Mod+Shift+S panel)
+        wire XF86Audio{Raise,Lower}Volume / Mute -> osd volume up/down/mute
+        XF86MonBrightness{Up,Down} -> osd brightness up/down
+
+Cleanup ("delete other shells"):
+  * delete modules/desktop/shell/wayle.nix, import ./eww.nix in shell/default.nix
+  * remove quickshell / iNiR leftovers:
+      modules/home/default.nix   (pkgs.quickshell + materiallyoucolor python)
+      modules/programs/dev.nix   (quickshell, matugen, iNiR python pkg block)
+  * update stale iNiR/wayle comments in:
+      flake.nix, modules/desktop/default.nix, modules/desktop/options.nix,
+      modules/desktop/awww.nix, modules/home/alacritty.nix,
+      modules/home/niri/config.kdl
+  * awww.nix: nothing drives awww anymore (no shell) -> make the awww service
+    start whenever modules.desktop.awww.image is set (currently null everywhere,
+    so behaviour is unchanged for now).
+
+------------------------------------------------------------------------------
+ CURRENT WORKING-TREE STATE (what is committed with this transcript)
+------------------------------------------------------------------------------
+
+Already staged before this commit:
+    A  modules/desktop/shell/wayle.nix
+
+Uncommitted at time of saving:
+    M  flake.lock
+    M  flake.nix
+    M  modules/desktop/default.nix
+    M  modules/desktop/niri.nix
+    M  modules/desktop/options.nix
+    M  modules/desktop/shell/default.nix
+    D  modules/desktop/shell/inir-monitor-manager/patch-inir-registry.py
+    D  modules/desktop/shell/inir.nix
+    D  modules/desktop/shell/modules/inir-deps.nix
+    D  modules/desktop/shell/monitor-manager-settings/MonitorManagerConfig.qml
+    D  modules/desktop/shell/monitor-manager/MonitorManager.qml
+    D  modules/desktop/shell/monitor-manager/MonitorManagerPane.qml
+    D  modules/desktop/shell/monitor-manager/MonitorManagerTheme.qml
+    D  modules/desktop/shell/monitor-manager/qmldir
+    D  modules/desktop/shell/scripts/auto-update.sh
+    D  modules/desktop/shell/scripts/check-config-updates.sh
+    D  modules/desktop/shell/scripts/monitor-manager.py
+    D  modules/desktop/shell/scripts/niri-sync-colors
+    D  modules/desktop/shell/scripts/obsidian-sync-colors
+    D  modules/desktop/shell/scripts/verify-setup.sh
+    M  modules/home/niri/config.kdl
+
+i.e. the repo is mid-migration: iNiR removed, wayle currently the active shell.
+
+------------------------------------------------------------------------------
+ NEXT STEPS (do on the laptop)
+------------------------------------------------------------------------------
+
+1. Create modules/desktop/shell/eww/ with eww.yuck, eww.scss, scripts/*.
+2. Create modules/desktop/shell/eww.nix (single connector module).
+3. Delete modules/desktop/shell/wayle.nix; update shell/default.nix import.
+4. Update niri keybinds in modules/home/niri/config.kdl.
+5. Clean iNiR/quickshell leftovers and comments (see Cleanup above).
+6. `nixos-rebuild build --flake .#laptop` (validates yuck only at runtime via
+   `eww`; nix build validates the option wiring). Then switch and iterate.
+
+Useful facts gathered:
+  * home-manager in use has programs.eww (yuckConfig/scssConfig),
+    programs.eww.systemd.{enable,target}, and services.wayle.
+  * eww widgets: eventbox supports :onhover/:onhoverlost (+ :timeout),
+    defwindow geometry is static (use window args + reopen), `for` iterates
+    JSON arrays, `literal` for dynamic trees.
+  * niri config validates at build time via `niri validate` (home/niri.nix).
+  * dev.nix already installs: brightnessctl, playerctl, wl-clipboard, grim,
+    slurp, nerd-fonts.jetbrains-mono, etc. (wpctl comes via wireplumber).
+
+==============================================================================
