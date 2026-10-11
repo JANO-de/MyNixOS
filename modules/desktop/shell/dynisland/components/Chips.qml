@@ -17,7 +17,7 @@ Flow {
             color: sel ? Theme.primary : Theme.surfaceContainerHigh
             Behavior on color { ColorAnimation { duration: 120 } }
             Text { id: lbl; anchors.centerIn: parent; text: modelData.label; font.pixelSize: 13
-                   color: parent.sel ? Theme.onPrimary : Theme.onSurface }
+                   color: parent.sel ? Theme.primaryFg : Theme.surfaceFg }
             MouseArea { anchors.fill: parent; onClicked: c.picked(modelData.value) }
         }
     }

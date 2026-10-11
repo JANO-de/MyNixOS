@@ -1,6 +1,7 @@
 // =============================================================================
 //  Wallpaper — drawn by the shell itself (no swww/swaybg needed) with a
-//  crossfade. Source: Config.appearance.wallpaper.
+//  crossfade. Source: Config.appearance.wallpaper. Fill mode + dim from Settings.
+//  Right-click on the empty desktop opens DesktopMenu.qml.
 // =============================================================================
 import QtQuick
 import Quickshell
@@ -25,14 +26,28 @@ PanelWindow {
         front.source = current ? "file://" + current : "";
     }
 
-    Image { id: back; anchors.fill: parent; fillMode: Image.PreserveAspectCrop; asynchronous: true
+    readonly property int fill: Config.appearance.wallpaperFill === "fit" ? Image.PreserveAspectFit
+                              : Config.appearance.wallpaperFill === "stretch" ? Image.Stretch : Image.PreserveAspectCrop
+
+    Image { id: back; anchors.fill: parent; fillMode: win.fill; asynchronous: true
             sourceSize.width: win.width; sourceSize.height: win.height }
     Image {
-        id: front; anchors.fill: parent; fillMode: Image.PreserveAspectCrop; asynchronous: true
+        id: front; anchors.fill: parent; fillMode: win.fill; asynchronous: true
         source: win.current ? "file://" + win.current : ""
         sourceSize.width: win.width; sourceSize.height: win.height
         opacity: 0
         onStatusChanged: if (status === Image.Ready) fade.restart()
     }
     NumberAnimation { id: fade; target: front; property: "opacity"; to: 1; duration: 600; easing.type: Easing.OutCubic }
+
+    Rectangle { anchors.fill: parent; color: "black"; opacity: Config.appearance.wallpaperDim }   // dim overlay
+
+    MouseArea {
+        anchors.fill: parent; acceptedButtons: Qt.RightButton
+        onClicked: mouse => {
+            UiState.deskMenuScreen = win.screen.name;
+            UiState.deskMenuX = mouse.x; UiState.deskMenuY = mouse.y;
+            UiState.deskMenuOpen = true;
+        }
+    }
 }

@@ -1,6 +1,8 @@
 // =============================================================================
 //  Config — all settings, persisted to ~/.config/dynisland/config.json
-//  (hot-reloaded if edited by hand, auto-saved when changed from the UI).
+//  (hot-reloaded if edited by hand). Changes apply LIVE; they are written to disk
+//  immediately, EXCEPT while Settings is open (`hold`): then they wait for Save, and
+//  Discard reverts to the file.
 //
 //  TO ADD A SETTING: add `property <type> name: default` in the right
 //  JsonObject below, then read it anywhere as Config.<group>.<name>.
@@ -16,6 +18,12 @@ Singleton {
     readonly property string home: Quickshell.env("HOME")
     readonly property string dir: home + "/.config/dynisland"
     property bool ready: false   // true once the config dir exists
+    property bool hold: false    // Settings open: don't write to disk until save()
+    property bool dirty: false   // live changes not yet written
+    function save() { fv.writeAdapter(); dirty = false }
+    function discard() { fv.reload(); clearT.restart() }
+    // reload() re-emits adapterUpdated for the reverted values; clear the flag after it settles
+    Timer { id: clearT; interval: 300; onTriggered: root.dirty = false }
 
     property alias appearance: adapter.appearance
     property alias island: adapter.island
@@ -34,10 +42,11 @@ Singleton {
     Process { running: true; command: ["mkdir", "-p", root.dir]; onExited: root.ready = true }
 
     FileView {
+        id: fv
         path: root.ready ? root.dir + "/config.json" : ""
         watchChanges: true
         onFileChanged: reload()
-        onAdapterUpdated: writeAdapter()
+        onAdapterUpdated: { if (root.hold) root.dirty = true; else writeAdapter() }
         onLoadFailed: error => { if (error === FileViewError.FileNotFound) writeAdapter() }
 
         adapter: JsonAdapter {
@@ -51,6 +60,10 @@ Singleton {
                 // | scheme-rainbow | scheme-content | scheme-monochrome
                 property string scheme: "scheme-tonal-spot"
                 property string font: "Inter"
+                property string accentOverride: ""    // "" = from wallpaper, or "#rrggbb"
+                property real glassOpacity: 0.6        // dock + widget cards (0.2..1)
+                property string wallpaperFill: "crop"  // crop | fit | stretch
+                property real wallpaperDim: 0          // 0..0.8 black overlay
             }
 
             property JsonObject island: JsonObject {
@@ -69,6 +82,7 @@ Singleton {
                 property bool showWeather: true
                 property string location: ""          // "" = auto by IP, or "Algeciras"
                 property string units: "m"            // m metric, u US
+                property real notifSeconds: 5          // banner time when the app sets none
             }
 
             property JsonObject cava: JsonObject {
@@ -83,17 +97,24 @@ Singleton {
                 property bool enabled: true
                 property bool autoHide: false
                 property bool reserveSpace: false     // push windows up (exclusive zone)
+                property bool trayMenus: true         // right-click menu also lists the app's tray menu
+                property bool windowList: true        // right-click menu lists open windows
+                property int radius: 24               // dock corner radius
+                property bool showRunning: true       // dots under running apps
                 property int iconSize: 52
                 property real magnification: 1.7
                 property int bottomMargin: 10
                 // desktop-entry ids/names, resolved with DesktopEntries.heuristicLookup
-                property var pinned: ["firefox", "kitty", "org.gnome.Nautilus", "discord", "spotify"]
+                property var pinned: ["Alacritty", "zen", "vesktop", "org.gnome.Nautilus"]
             }
 
             property JsonObject widgets: JsonObject {
                 property bool clock: true
                 property bool weather: true
                 property bool media: true
+                property bool system: true            // CPU / RAM / disk
+                property int cardRadius: 28
+                property bool calendar: true
                 property var positions: ({})          // { id: {x, y} }
             }
 

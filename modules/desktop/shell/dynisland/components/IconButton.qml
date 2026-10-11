@@ -16,6 +16,6 @@ Rectangle {
     Behavior on color { ColorAnimation { duration: 120 } }
     Behavior on scale { NumberAnimation { duration: 90 } }
 
-    Icon { anchors.centerIn: parent; name: b.icon; size: b.iconSize; color: b.active ? Theme.onPrimary : "white" }
+    Icon { anchors.centerIn: parent; name: b.icon; size: b.iconSize; color: b.active ? Theme.primaryFg : "white" }
     MouseArea { id: ma; anchors.fill: parent; hoverEnabled: true; onClicked: b.clicked() }
 }

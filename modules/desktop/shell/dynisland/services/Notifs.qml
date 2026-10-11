@@ -7,11 +7,14 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
+import qs.config
 
 Singleton {
     id: root
     property var current: null
     property bool dnd: false
+    property bool hold: false          // true while the pointer is on the island: keeps the banner up
+    onHoldChanged: { if (current) { if (hold) hide.stop(); else hide.restart() } }
     readonly property var list: server.trackedNotifications   // history
 
     function dismiss() { hide.stop(); current = null }
@@ -28,8 +31,9 @@ Singleton {
             n.tracked = true;
             if (root.dnd) return;
             root.current = n;
-            hide.interval = n.expireTimeout > 0 ? n.expireTimeout * 1000 : 5000;
-            hide.restart();
+            hide.interval = n.expireTimeout > 0 ? n.expireTimeout * 1000 : Config.island.notifSeconds * 1000;
+            if (n.actions && n.actions.length > 0) hide.interval = Math.max(hide.interval, 10000);
+            if (root.hold) hide.stop(); else hide.restart();
         }
     }
 }

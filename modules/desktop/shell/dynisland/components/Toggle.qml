@@ -13,7 +13,7 @@ Rectangle {
     Rectangle {
         width: 18; height: 18; radius: 9; y: 4
         x: t.checked ? parent.width - width - 4 : 4
-        color: t.checked ? Theme.onPrimary : Theme.outline
+        color: t.checked ? Theme.primaryFg : Theme.outline
         Behavior on x { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
     }
     MouseArea { anchors.fill: parent; onClicked: t.toggled() }

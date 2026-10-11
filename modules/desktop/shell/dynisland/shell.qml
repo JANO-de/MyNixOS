@@ -1,3 +1,4 @@
+//@ pragma UseQApplication
 // =============================================================================
 //  DynIsland — entry point.  Run with:  qs -c dynisland
 //
@@ -28,6 +29,8 @@ ShellRoot {
     Variants { model: Config.island.enabled ? Quickshell.screens : []; Island {} }
     Variants { model: Config.dock.enabled ? Quickshell.screens : []; Dock {} }
     Variants { model: Quickshell.screens; DesktopWidgets {} }
+
+    Variants { model: Quickshell.screens; DesktopMenu {} }   // right-click menu on the desktop
 
     Settings {}   // single centered overlay, toggled via UiState.settingsOpen
 

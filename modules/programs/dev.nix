@@ -27,8 +27,8 @@
     ### ----- /*/ Wayland session utilities /*/ ----- ###
 
     # --- Core session glue ---
-    inotify-tools            # provides `inotifywait`, used by a few watchers
-    xwayland-satellite       # Xwayland support under niri (non-native apps)
+    inotify-tools
+    xwayland-satellite
     swaylock
     swayidle
     wl-clipboard
@@ -40,9 +40,9 @@
     xdg-desktop-portal-gtk
     xdg-desktop-portal-gnome
     gnome-keyring
-    fish                    # handy interactive shell (used by a few scripts)
+    fish
     gum
-    uv                       # needed to create the venv in README step 7
+    uv
     bc
     ripgrep
     jq
@@ -54,48 +54,61 @@
     tesseract
     wf-recorder
     ffmpeg
-    pulseaudio               # provides `pactl`; needed for wf-recorder's audio mixing — NOT running the pulseaudio daemon, just the CLI
+    pulseaudio
 
     # --- System controls the shell's widgets call ---
     brightnessctl
-    ddcutil                  # external monitor brightness over DDC/CI
+    ddcutil
     upower
     blueman
     networkmanagerapplet
     pavucontrol
 
     # --- Fonts ---
-    nerd-fonts.jetbrains-mono # nerd-font glyphs used by the eww island
-    alacritty                 # terminal used by niri/config.kdl's Mod+Return bind — required for the shared config to work out of the box
+    nerd-fonts.jetbrains-mono
+    alacritty
 
     # ===========================================================================
-    # OPTIONAL — features you may not use. Safe to delete any of these lines.
+    # OPTIONAL
     # ===========================================================================
-    fuzzel                    # app launcher fallback
-    wtype                     # simulated keyboard input, used by a couple of automation features
+    fuzzel
+    wtype
     ydotool
-    geoclue2                  # location for the weather widget
-    fprintd                   # fingerprint unlock — only relevant if your laptop has a sensor
-    libqalculate               # calculator widget backend
-    translate-shell            # translate widget
-    socat                      # used by a couple of IPC helper scripts
-    mission-center              # system monitor GUI, launched from the dashboard
-    lsp-plugins                 # audio effect plugins, only relevant if you use easyeffects/cava
+    geoclue2
+    fprintd
+    libqalculate
+    translate-shell
+    socat
+    mission-center
+    lsp-plugins
     cava
     easyeffects
     mpv
-    mpvScripts.mpris             # media-key/MPRIS integration for the YouTube Music widget
+    mpvScripts.mpris
     yt-dlp
     ])
-    # Heavy Java/IDE toolchain — gated by modules.programs.heavy.enable so lean
-    # tablets (Surface: 4GB RAM, 128GB disk) skip the biggest store hogs:
-    # Android Studio, IntelliJ, Eclipse, extra JDKs and every transitive dep
-    # (jetbrains jdk/jcef alone is ~1.3GB).
     ++ lib.optionals config.modules.programs.heavy.enable (with pkgs; [
       jdk25
       zulu25
       android-studio
       eclipses.eclipse-java
+      pkgs.llama-cpp.override { cudaSupport = true; }
       jetbrains.idea
     ]);
+
+  services.llama-cpp = {
+    enable = true;
+    package = pkgs.llama-cpp.override { cudaSupport = true; };
+    
+    modelsPreset = {
+      "mistral-7b" = {
+        hf-repo = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF";
+        hf-file = "Mistral-7B-Instruct-v0.2.Q4_K_M.gguf";
+        alias = "mistral-7b";
+        temp = "0.7";
+        top-p = "0.95";
+        top-k = "40";
+      };
+    };
+  };
 }

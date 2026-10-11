@@ -5,13 +5,19 @@ import qs.components
 
 Page {
     title: "Desktop widgets"
-    Text { text: "Drag widgets on the desktop to move them."; color: Theme.onSurfaceVariant; font.pixelSize: 12; bottomPadding: 8 }
+    Text { text: "Drag widgets on the desktop to move them."; color: Theme.surfaceFgDim; font.pixelSize: 12; bottomPadding: 8 }
     SettingRow { label: "Clock"
         Toggle { checked: Config.widgets.clock; onToggled: Config.widgets.clock = !Config.widgets.clock } }
     SettingRow { label: "Weather"
         Toggle { checked: Config.widgets.weather; onToggled: Config.widgets.weather = !Config.widgets.weather } }
     SettingRow { label: "Media"
         Toggle { checked: Config.widgets.media; onToggled: Config.widgets.media = !Config.widgets.media } }
+    SettingRow { label: "System monitor"; hint: "CPU, RAM, disk"
+        Toggle { checked: Config.widgets.system; onToggled: Config.widgets.system = !Config.widgets.system } }
+    SettingRow { label: "Calendar"
+        Toggle { checked: Config.widgets.calendar; onToggled: Config.widgets.calendar = !Config.widgets.calendar } }
+    SettingRow { label: "Card corner radius"
+        SSlider { from: 0; to: 44; stepSize: 1; suffix: " px"; value: Config.widgets.cardRadius; onMoved: v => Config.widgets.cardRadius = v } }
     SettingRow { label: "Reset positions"
         Chips { model: [ { label: "Reset", value: "r" } ]; onPicked: v => Config.widgets.positions = ({}) } }
 }

@@ -23,6 +23,8 @@ Page {
         SSlider { from: 560; to: 900; stepSize: 10; suffix: " px"; value: Config.island.fullWidth; onMoved: v => Config.island.fullWidth = v } }
     SettingRow { label: "Expanded height"
         SSlider { from: 180; to: 300; stepSize: 5; suffix: " px"; value: Config.island.fullHeight; onMoved: v => Config.island.fullHeight = v } }
+    SettingRow { label: "Notification time"; hint: "Banner duration when the app sets none"
+        SSlider { from: 2; to: 15; stepSize: 1; suffix: " s"; value: Config.island.notifSeconds; onMoved: v => Config.island.notifSeconds = v } }
     SettingRow { label: "24-hour clock"
         Toggle { checked: Config.island.use24h; onToggled: Config.island.use24h = !Config.island.use24h } }
     SettingRow { label: "Show weather"

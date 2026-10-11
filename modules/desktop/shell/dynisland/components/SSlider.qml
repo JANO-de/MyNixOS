@@ -20,7 +20,7 @@ Item {
         Rectangle { x: parent.width * Math.max(0, Math.min(1, s.frac)) - 8; y: -5; width: 16; height: 16; radius: 8; color: Theme.primary }
     }
     Text { id: lbl; anchors { right: parent.right; verticalCenter: parent.verticalCenter } width: 56
-           horizontalAlignment: Text.AlignRight; color: Theme.onSurfaceVariant; font.pixelSize: 13
+           horizontalAlignment: Text.AlignRight; color: Theme.surfaceFgDim; font.pixelSize: 13
            text: (Math.round(s.value * 100) / 100) + s.suffix }
     MouseArea {
         anchors { fill: tr; topMargin: -10; bottomMargin: -10 }

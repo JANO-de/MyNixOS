@@ -70,6 +70,6 @@ Item {
         }
     }
 
-    Text { visible: fm.count === 0; anchors.centerIn: parent; color: Theme.onSurfaceVariant; font.pixelSize: 13
+    Text { visible: fm.count === 0; anchors.centerIn: parent; color: Theme.surfaceFgDim; font.pixelSize: 13
            text: "No images in " + Config.appearance.wallpaperDir }
 }

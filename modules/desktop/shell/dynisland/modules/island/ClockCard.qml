@@ -24,13 +24,13 @@ ColumnLayout {
                     return new Date(t.getFullYear(), t.getMonth(), t.getDate() - off + index);
                 }
                 readonly property bool today: d.getDate() === Clock.date.getDate() && d.getMonth() === Clock.date.getMonth()
-                width: 30; height: 38; radius: 15; color: today ? Theme.primary : "transparent"
+                width: Math.max(20, Math.min(30, (c.width - 36) / 7)); height: 38; radius: 15; color: today ? Theme.primary : "transparent"   // shrinks to fit the column
                 Column {
                     anchors.centerIn: parent; spacing: 1
                     Text { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatDate(parent.parent.d, "ddd").substring(0, 2)
-                           font.pixelSize: 9; color: parent.parent.today ? Theme.onPrimary : "#88ffffff" }
+                           font.pixelSize: 9; color: parent.parent.today ? Theme.primaryFg : "#88ffffff" }
                     Text { anchors.horizontalCenter: parent.horizontalCenter; text: parent.parent.d.getDate()
-                           font.pixelSize: 13; font.weight: Font.DemiBold; color: parent.parent.today ? Theme.onPrimary : "white" }
+                           font.pixelSize: 13; font.weight: Font.DemiBold; color: parent.parent.today ? Theme.primaryFg : "white" }
                 }
             }
         }
@@ -41,4 +41,7 @@ ColumnLayout {
         Icon { name: Weather.icon; size: 20; color: Theme.primary }
         Text { text: Weather.temp + "  " + Weather.cond; color: "#ddffffff"; font.pixelSize: 13; elide: Text.ElideRight }
     }
+
+    // tray icons (hidden when the tray is empty)
+    TrayStrip { Layout.alignment: Qt.AlignHCenter; Layout.topMargin: 4 }
 }

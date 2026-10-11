@@ -24,8 +24,8 @@ Rectangle {
     y: baseY + (drag.active ? last.y : 0)
     implicitWidth: holder.childrenRect.width + 40
     implicitHeight: holder.childrenRect.height + 36
-    radius: 28
-    color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.55)
+    radius: Config.widgets.cardRadius
+    color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, Config.appearance.glassOpacity)
     border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.12)
 
     Item { id: holder; x: 20; y: 18; width: childrenRect.width; height: childrenRect.height }

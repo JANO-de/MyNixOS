@@ -6,8 +6,9 @@
 //    osd   : volume/brightness bar
 //    notif : notification banner
 //    full  : (hover) media + clock/weather + quick controls
+//    tray  : an app's tray menu (opened from the tray strip), drawn inside the pill
 //
-//  Priority: full > notif > osd > idle.
+//  Priority: tray > notif > full > osd > idle  (a banner stays put while you hover it, so its buttons are clickable).
 //  Input is limited to the pill via `mask`, so the transparent rest of the
 //  window never blocks clicks.
 //
@@ -28,7 +29,7 @@ PanelWindow {
 
     anchors { top: true }                       // top only => centered horizontally
     implicitWidth: cfg.fullWidth + 160          // room for glow + overshoot
-    implicitHeight: cfg.fullHeight + cfg.topMargin + 90
+    implicitHeight: Math.max(cfg.fullHeight, 440) + cfg.topMargin + 90   // tall enough for the tray menu
     color: "transparent"
     exclusiveZone: 0
     WlrLayershell.layer: WlrLayer.Overlay
@@ -39,15 +40,33 @@ PanelWindow {
     // ---- state -----------------------------------------------------------
     property bool hovered: false                // debounced hover (or click-toggled)
     readonly property bool full: hovered || UiState.islandPinned
-    readonly property string mode: full ? "full" : Notifs.current ? "notif" : Osd.active ? "osd" : "idle"
+    readonly property bool trayOpen: UiState.trayStack.length > 0
+    readonly property string mode: trayOpen ? "tray" : Notifs.current ? "notif" : full ? "full" : Osd.active ? "osd" : "idle"
+    onHoveredChanged: Notifs.hold = hovered      // hovering a banner pauses its auto-hide
     onFullChanged: Sys.watching = full          // poll wifi/brightness only while open
 
     readonly property var sizes: ({
         idle:  [cfg.idleWidth + (Media.playing ? 60 : 0), cfg.idleHeight],
         osd:   [330, 54],
-        notif: [430, 88],
-        full:  [cfg.fullWidth, cfg.fullHeight]
+        notif: [430, (Notifs.current && Notifs.current.actions && Notifs.current.actions.length > 0) ? 128 : 88],
+        full:  [cfg.fullWidth, cfg.fullHeight],
+        tray:  [320, UiState.trayHeight]
     })
+
+    // Click anywhere outside the island closes the tray menu (full-screen invisible catcher, alive only while open).
+    LazyLoader {
+        active: win.trayOpen
+        PanelWindow {
+            screen: win.screen
+            anchors { top: true; bottom: true; left: true; right: true }
+            color: "transparent"
+            exclusiveZone: 0
+            WlrLayershell.layer: WlrLayer.Top               // above apps, below the Overlay island
+            WlrLayershell.namespace: "dynisland-tray-dismiss"
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+            MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: UiState.trayStack = [] }
+        }
+    }
 
     Timer { id: openT;  interval: cfg.hoverDelay; onTriggered: win.hovered = true }
     Timer { id: closeT; interval: cfg.closeDelay; onTriggered: win.hovered = false }  // hover guard
@@ -86,5 +105,6 @@ PanelWindow {
         OsdView   { active: win.mode === "osd" }
         NotifView { active: win.mode === "notif" }
         FullView  { active: win.mode === "full" }
+        TrayMenuView { active: win.mode === "tray" }
     }
 }

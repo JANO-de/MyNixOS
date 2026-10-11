@@ -14,6 +14,6 @@ Flickable {
         id: col
         width: p.width - 24
         spacing: 4
-        Text { text: p.title; color: Theme.onSurface; font.pixelSize: 24; font.weight: Font.Bold; bottomPadding: 10 }
+        Text { text: p.title; color: Theme.surfaceFg; font.pixelSize: 24; font.weight: Font.Bold; bottomPadding: 10 }
     }
 }

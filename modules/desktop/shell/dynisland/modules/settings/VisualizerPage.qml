@@ -13,7 +13,8 @@ Page {
     Chips {
         width: parent.width; current: Config.cava.style
         model: [ { label: "Glow line", value: "glow" }, { label: "Bars", value: "bars" }, { label: "Wave", value: "wave" },
-                 { label: "Pulse", value: "pulse" }, { label: "None", value: "none" } ]
+                 { label: "Pulse", value: "pulse" }, { label: "Mirror", value: "mirror" },
+                 { label: "Dots", value: "dots" }, { label: "None", value: "none" } ]
         onPicked: v => Config.cava.style = v
     }
     SettingRow { label: "Rainbow colors"; hint: "Cycle hue instead of the wallpaper accent"
