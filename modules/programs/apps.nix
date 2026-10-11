@@ -9,6 +9,7 @@
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       dissent
+      telegram-desktop
       vesktop
       zapzap
       simplex-chat-desktop
