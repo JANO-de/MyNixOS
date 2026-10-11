@@ -173,7 +173,7 @@ binds {
     Mod+Page_Down      { focus-workspace-down; }
     Mod+Page_Up        { focus-workspace-up; }
     Mod+U              { focus-workspace-down; }
-    Mod+I              { focus-workspace-up; }
+    Mod+U              { focus-workspace-up; }
     Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
     Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
     Mod+Ctrl+U         { move-column-to-workspace-down; }
@@ -236,6 +236,9 @@ binds {
 
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
+
+    Mod+Comma  { spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle"; }
+    Mod+I      { spawn "qs" "-c" "dynisland" "ipc" "call" "island" "toggle"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"

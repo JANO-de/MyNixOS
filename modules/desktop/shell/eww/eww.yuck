@@ -32,7 +32,7 @@
 
 (defpoll volume     :interval "1s"  `v=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{printf "%d", $2*100}'); [ -n "$v" ] || v=0; echo "$v"`)
 (defpoll muted      :interval "1s"  `wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | grep -q MUTED && echo true || echo false`)
-(defpoll brightness :interval "2s"  `b=$(brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%'); [ -n "$b" ] || b=0; echo "$b"`)
+(defpoll brightness :interval "2s"  `b=$(brightnessctl -c backlight -m 2>/dev/null | cut -d, -f4 | tr -d '%'); [ -n "$b" ] || b=0; echo "$b"`)
 (defpoll battery    :interval "30s" `cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -n1`)
 (defpoll media      :interval "2s"  `playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null || true`)
 
@@ -83,10 +83,10 @@
           (label :class "icon bri-label" :text "BRI")
           (scale :class "slider" :value brightness :min 1 :max 100
             :active true
-            :onchange "brightnessctl set {}%")
-          (button :class "chip" :onclick "nmcli radio wifi toggle"
+            :onchange "brightnessctl -c backlight set {}%")
+          (button :class "chip" :onclick "sh -c 'nmcli radio wifi | grep -q enabled && nmcli radio wifi off || nmcli radio wifi on'"
             (label :class "icon" :text "WIFI"))
-          (button :class "chip" :onclick "bluetoothctl power toggle"
+          (button :class "chip" :onclick "sh -c 'bluetoothctl show | grep -q Powered:.yes && bluetoothctl power off || bluetoothctl power on'"
             (label :class "icon" :text "BT"))
           (button :class "chip" :onclick "swaylock -f"
             (label :class "icon" :text "LOCK"))

@@ -38,10 +38,10 @@ case "$kind" in
     ;;
   brightness)
     case "$action" in
-      up)   brightnessctl set 5%+ ;;
-      down) brightnessctl set 5%- ;;
+      up)   brightnessctl -c backlight set 5%+ ;;
+      down) brightnessctl -c backlight set 5%- ;;
     esac
-    val="$(brightnessctl -m | cut -d, -f4 | tr -d '%')"
+    val="$(brightnessctl -c backlight -m | cut -d, -f4 | tr -d '%')"
     show "Brightness" "$val" "BRI"
     ;;
   *)

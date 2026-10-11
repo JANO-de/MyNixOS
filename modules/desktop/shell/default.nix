@@ -2,6 +2,7 @@
 
 {
   imports = [
-    ./eww.nix
+    #./eww.nix
+    ./dynisland
   ];
 }
