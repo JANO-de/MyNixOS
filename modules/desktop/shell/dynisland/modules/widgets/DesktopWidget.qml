@@ -14,6 +14,7 @@ Rectangle {
     property real defX: 80
     property real defY: 120
     default property alias content: holder.data
+    property string panel: ""          // island panel to open on right-click (see UiState.openPanel)
 
     readonly property var saved: Config.widgets.positions[wid]
     readonly property real baseX: saved ? saved.x : defX
@@ -29,6 +30,8 @@ Rectangle {
     border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.12)
 
     Item { id: holder; x: 20; y: 18; width: childrenRect.width; height: childrenRect.height }
+
+    TapHandler { acceptedButtons: Qt.RightButton; enabled: w.panel !== ""; onTapped: UiState.openPanel(w.panel) }
 
     DragHandler {
         id: drag; target: null

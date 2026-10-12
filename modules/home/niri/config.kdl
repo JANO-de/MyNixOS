@@ -109,7 +109,9 @@ binds {
     Mod+Return { spawn "alacritty"; }
     Mod+E { spawn "alacritty" "-e" "yazi"; }
 
-    // --- shell (eww island; scripts live in modules/desktop/shell/eww) ---
+    // --- shell (dynisland: Quickshell island, dock, launcher, lock) ---
+    Mod+Space   { spawn "dynisland" "ipc" "launcher" "toggle"; }
+    Mod+Shift+L { spawn "dynisland" "ipc" "lock" "lock"; }
     Mod+Shift+T { toggle-column-tabbed-display; }
     Super+Tab   { toggle-overview; }
     Mod+Ctrl+V  { toggle-window-floating; }
@@ -122,14 +124,15 @@ binds {
 
 @TABLET_BINDS@
 
-    // Volume / brightness go through the eww OSD scripts (tray OSD popup).
-    XF86AudioRaiseVolume allow-when-locked=true { spawn "osdctl" "volume" "up"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn "osdctl" "volume" "down"; }
-    XF86AudioMute        allow-when-locked=true { spawn "osdctl" "volume" "mute"; }
+    // Volume: the island OSD appears by itself when PipeWire reports the change.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-    XF86MonBrightnessUp   { spawn "osdctl" "brightness" "up"; }
-    XF86MonBrightnessDown { spawn "osdctl" "brightness" "down"; }
+    // Brightness: change it, then tell the island OSD the new value (0 to 1).
+    XF86MonBrightnessUp   { spawn-sh "brightnessctl -q set 5%+; qs -c dynisland ipc call osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
+    XF86MonBrightnessDown { spawn-sh "brightnessctl -q set 5%-; qs -c dynisland ipc call osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
 
     XF86AudioPrev         allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioPlay         allow-when-locked=true { spawn-sh "playerctl play-pause"; }
@@ -237,8 +240,8 @@ binds {
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 
-    Mod+Comma  { spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle"; }
-    Mod+I      { spawn "qs" "-c" "dynisland" "ipc" "call" "island" "toggle"; }
+    Mod+Comma  { spawn "dynisland" "ipc" "settings" "toggle"; }
+    Mod+I      { spawn "dynisland" "ipc" "island" "toggle"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"

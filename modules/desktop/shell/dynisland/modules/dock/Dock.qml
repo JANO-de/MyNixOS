@@ -126,6 +126,7 @@ PanelWindow {
     // Items = pinned apps (recognised ones) first, then running unpinned apps that have a desktop entry.
     readonly property var items: {
         const out = [];
+        if (cfg.launcher) out.push({ key: "@launcher", appId: "@launcher", entry: null, pinned: false, launcher: true });
         for (const id of cfg.pinned) {
             const e = DesktopEntries.heuristicLookup(id);
             if (e && !out.some(o => norm(o.appId) === norm(id))) out.push({ key: id, appId: id, entry: e, pinned: true });
@@ -192,7 +193,7 @@ PanelWindow {
                         item: modelData
                         onPinToggled: id => win.togglePin(id)
                         onMenuRequested: (it, cx) => win.openMenu(it, cx)
-                        idx: index
+                        idx: index - (win.cfg.launcher ? 1 : 0)   // index among apps (launcher button excluded)
                         onReordered: (id, ni) => win.movePinned(id, ni)
                     }
                 }

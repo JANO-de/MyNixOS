@@ -43,6 +43,8 @@ PanelWindow {
         { name: "Visualizer", icon: "graphic_eq",     comp: "VisualizerPage.qml" },
         { name: "Dock",       icon: "dock_to_bottom", comp: "DockPage.qml" },
         { name: "Widgets",    icon: "widgets",        comp: "WidgetsPage.qml" },
+        { name: "Lock screen", icon: "lock",          comp: "LockPage.qml" },
+        { name: "Calendar",   icon: "calendar_month", comp: "CalendarPage.qml" },
         { name: "System",     icon: "terminal",       comp: "SystemPage.qml" }
     ]
 

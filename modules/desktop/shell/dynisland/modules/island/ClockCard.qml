@@ -9,12 +9,15 @@ ColumnLayout {
     id: c
     spacing: 4
 
-    Text { Layout.alignment: Qt.AlignHCenter; text: Clock.time; color: "white"; font.pixelSize: 40; font.weight: Font.Bold }
-    Text { Layout.alignment: Qt.AlignHCenter; text: Clock.dateLong; color: "#bbffffff"; font.pixelSize: 13 }
+    Text { Layout.alignment: Qt.AlignHCenter; text: Clock.time; color: "white"; font.pixelSize: 40; font.weight: Font.Bold
+          TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("clock") } }
+    Text { Layout.alignment: Qt.AlignHCenter; text: Clock.dateLong; color: "#bbffffff"; font.pixelSize: 13
+          TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("calendar") } }
 
     // Week strip, today highlighted (Mon..Sun around the current date)
     Row {
         Layout.alignment: Qt.AlignHCenter; Layout.topMargin: 8; spacing: 6
+        TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("calendar") }   // right-click: month view
         Repeater {
             model: 7
             Rectangle {
@@ -32,6 +35,11 @@ ColumnLayout {
                     Text { anchors.horizontalCenter: parent.horizontalCenter; text: parent.parent.d.getDate()
                            font.pixelSize: 13; font.weight: Font.DemiBold; color: parent.parent.today ? Theme.primaryFg : "white" }
                 }
+                Rectangle {   // has events that day
+                    visible: Agenda.hasEvents(parent.d); width: 4; height: 4; radius: 2
+                    color: parent.today ? Theme.primaryFg : Theme.primary
+                    anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 1 }
+                }
             }
         }
     }
@@ -40,6 +48,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter; Layout.topMargin: 6; spacing: 6; visible: Config.island.showWeather
         Icon { name: Weather.icon; size: 20; color: Theme.primary }
         Text { text: Weather.temp + "  " + Weather.cond; color: "#ddffffff"; font.pixelSize: 13; elide: Text.ElideRight }
+        TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("weather") }   // right-click: forecast
     }
 
     // tray icons (hidden when the tray is empty)

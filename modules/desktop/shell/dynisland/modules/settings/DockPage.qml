@@ -7,6 +7,8 @@ Page {
     title: "Dock"
     SettingRow { label: "Enabled"
         Toggle { checked: Config.dock.enabled; onToggled: Config.dock.enabled = !Config.dock.enabled } }
+    SettingRow { label: "Launcher button"; hint: "NixOS icon that opens the app drawer"
+        Toggle { checked: Config.dock.launcher; onToggled: Config.dock.launcher = !Config.dock.launcher } }
     SettingRow { label: "Auto-hide"
         Toggle { checked: Config.dock.autoHide; onToggled: Config.dock.autoHide = !Config.dock.autoHide } }
     SettingRow { label: "Reserve space"; hint: "Windows won't go under the dock"

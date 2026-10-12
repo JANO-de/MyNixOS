@@ -16,7 +16,7 @@
     btop
     qbittorrent
     nodejs_22
-    inputs.opencode-flake.packages.${pkgs.system}.opencode-avx
+    inputs.opencode-flake.packages.${pkgs.stdenv.hostPlatform.system}.opencode-avx
 
     # UML Designer
     drawio
@@ -92,22 +92,35 @@
       zulu25
       android-studio
       eclipses.eclipse-java
-      pkgs.llama-cpp.override { cudaSupport = true; }
+      (pkgs.llama-cpp.override { vulkanSupport = true; })
       jetbrains.idea
     ]);
 
+  environment.shellAliases.llm = "$HOME/.local/bin/llm";
+
   services.llama-cpp = {
     enable = true;
-    package = pkgs.llama-cpp.override { cudaSupport = true; };
+    package = pkgs.llama-cpp.override { vulkanSupport = true; };
+    extraFlags = [ "--models-max" "1" ];
     
     modelsPreset = {
-      "mistral-7b" = {
-        hf-repo = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF";
-        hf-file = "Mistral-7B-Instruct-v0.2.Q4_K_M.gguf";
-        alias = "mistral-7b";
-        temp = "0.7";
+      "qwen3-8b" = {
+        model = "/var/lib/llama-models/Qwen3-8B-Q4_K_M.gguf";
+        alias = "qwen3-8b";
+        ctx-size = "8192";
+        fit-target = "640";
+        temp = "0.6";
         top-p = "0.95";
-        top-k = "40";
+        top-k = "20";
+      };
+      "qwen3-14b" = {
+        model = "/var/lib/llama-models/Qwen3-14B-Q4_K_M.gguf";
+        alias = "qwen3-14b";
+        ctx-size = "8192";
+        fit-target = "640";
+        temp = "0.6";
+        top-p = "0.95";
+        top-k = "20";
       };
     };
   };

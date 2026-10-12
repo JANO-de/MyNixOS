@@ -45,7 +45,7 @@ PanelWindow {
 
     // ---- Clock
     DesktopWidget {
-        id: clockW; wid: "clock"; defX: 80; defY: 100
+        id: clockW; wid: "clock"; panel: "clock"; defX: 80; defY: 100
         visible: Config.widgets.clock; width: visible ? implicitWidth : 0; height: visible ? implicitHeight : 0
         Column {
             spacing: 2
@@ -56,7 +56,7 @@ PanelWindow {
 
     // ---- Weather
     DesktopWidget {
-        id: weatherW; wid: "weather"; defX: 80; defY: 280
+        id: weatherW; wid: "weather"; panel: "weather"; defX: 80; defY: 280
         visible: Config.widgets.weather; width: visible ? implicitWidth : 0; height: visible ? implicitHeight : 0
         Row {
             spacing: 14
@@ -102,7 +102,7 @@ PanelWindow {
 
     // ---- Calendar (Monday-first month grid; today highlighted)
     DesktopWidget {
-        id: calW; wid: "calendar"; defX: 380; defY: 100
+        id: calW; wid: "calendar"; panel: "calendar"; defX: 380; defY: 100
         visible: Config.widgets.calendar; width: visible ? implicitWidth : 0; height: visible ? implicitHeight : 0
 
         QtObject {
@@ -136,6 +136,11 @@ PanelWindow {
                         color: isToday ? Theme.primary : "transparent"
                         Text { anchors.centerIn: parent; visible: parent.valid; text: parent.day; font.pixelSize: 12
                                color: parent.isToday ? Theme.primaryFg : "#ddffffff" }
+                        Rectangle {   // event dot (Settings > Calendar)
+                            visible: parent.valid && Agenda.hasEvents(new Date(cal.today.getFullYear(), cal.today.getMonth(), parent.day))
+                            width: 4; height: 4; radius: 2; color: parent.isToday ? Theme.primaryFg : Theme.primary
+                            anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 1 }
+                        }
                     }
                 }
             }

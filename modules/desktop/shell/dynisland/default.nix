@@ -13,6 +13,7 @@ let
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
     cava matugen brightnessctl networkmanager curl niri coreutils bash
+    vdirsyncer findutils libnotify wl-clipboard xdg-utils
   ];
 
   # Icon font copied to a fixed path (works regardless of fontconfig/PATH)
@@ -21,8 +22,22 @@ let
     f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Outlined*' | head -1)
     [ -n "$f" ] || { echo "Outlined font not found"; exit 1; }
     cp "$f" $out/icons.ttf
+    chmod u+w $out/icons.ttf
+    # Rename the family to a unique name. Otherwise Qt resolves
+    # "Material Symbols Outlined" to some OTHER installed copy (other version/
+    # cmap) and draws wrong glyphs.
+    python3 - $out/icons.ttf <<'PY'
+import sys
+from fontTools.ttLib import TTFont
+t = TTFont(sys.argv[1])
+for r in t["name"].names:
+    if r.nameID in (1, 16): r.string = "DynIcons"
+    elif r.nameID in (4, 6): r.string = "DynIcons-Regular"
+    elif r.nameID in (2, 17): r.string = "Regular"
+t.save(sys.argv[1])
+PY
     # name -> codepoint map, read from the font's ligature table
-    python3 - "$f" $out/icons.json <<'PY'
+    python3 - $out/icons.ttf $out/icons.json <<'PY'
 import sys, json
 from fontTools.ttLib import TTFont
 t = TTFont(sys.argv[1])
@@ -60,19 +75,25 @@ PY
     export DYN_ICON_MAP=${iconFont}/icons.json
     export QS_ICON_THEME=Papirus-Dark
     export PATH=${lib.makeBinPath runtimeDeps}:$PATH
+    # `start`/`restart` run the REPO copy detached (always your latest files, no rebuild needed).
+    # `stable` runs the Nix-installed copy instead. `ipc` talks to whichever is running.
     case "$1" in
-      start)    $qs kill -c dynisland 2>/dev/null; setsid $qs -c dynisland >/dev/null 2>&1 & ;;
-      stop)     $qs kill -c dynisland ;;
-      restart)  $qs kill -c dynisland 2>/dev/null; sleep 0.5; setsid $qs -c dynisland >/dev/null 2>&1 & ;;
-      dev)      $qs kill -c dynisland 2>/dev/null; exec $qs -p "${repoShell}" ;;
-      settings) $qs -c dynisland ipc call settings toggle ;;
-      log)      $qs log -c dynisland ;;
-      *)        echo "usage: dynisland {start|stop|restart|dev|settings|log}" ;;
+      start|restart) $qs kill -c dynisland 2>/dev/null; $qs kill -p "${repoShell}" 2>/dev/null; sleep 0.5
+                     setsid $qs -p "${repoShell}" >/dev/null 2>&1 & ;;
+      stable)   $qs kill -p "${repoShell}" 2>/dev/null; $qs kill -c dynisland 2>/dev/null; sleep 0.5
+                setsid $qs -c dynisland >/dev/null 2>&1 & ;;
+      stop)     $qs kill -p "${repoShell}" 2>/dev/null; $qs kill -c dynisland 2>/dev/null ;;
+      dev)      $qs kill -c dynisland 2>/dev/null; $qs kill -p "${repoShell}" 2>/dev/null; exec $qs -p "${repoShell}" ;;
+      ipc)      shift; $qs -p "${repoShell}" ipc call "$@" 2>/dev/null || $qs -c dynisland ipc call "$@" ;;
+      settings) "$0" ipc settings toggle ;;
+      launcher) "$0" ipc launcher toggle ;;
+      log)      $qs log -p "${repoShell}" 2>/dev/null || $qs log -c dynisland ;;
+      *)        echo "usage: dynisland {start|restart|stable|stop|dev|ipc <target> <fn>|settings|launcher|log}" ;;
     esac
   '';
 in {
   home-manager.users.jano = {
-    home.packages = (with pkgs; [ quickshell material-symbols inter ]) ++ runtimeDeps ++ [ dynisland ];
+    home.packages = (with pkgs; [ quickshell material-symbols inter nixos-icons ]) ++ runtimeDeps ++ [ dynisland ];
 
     # QML tree lives in ~/.config/quickshell/dynisland (qs -c dynisland)
     xdg.configFile."quickshell/dynisland".source = ./.;

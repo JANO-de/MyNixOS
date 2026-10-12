@@ -8,6 +8,8 @@ import Quickshell
 Singleton {
     id: root
     property bool settingsOpen: false
+    property bool launcherOpen: false   // app drawer (modules/launcher)
+    property bool locked: false         // session lock active (modules/lock)
     property bool islandPinned: false   // keep island expanded (IPC: island toggle)
 
     // desktop right-click menu (opened by the wallpaper window, drawn by DesktopMenu.qml)
@@ -15,6 +17,12 @@ Singleton {
     property string deskMenuScreen: ""
     property real deskMenuX: 0
     property real deskMenuY: 0
+
+    // island panels: "" | clock | weather | calendar | wifi | bluetooth | audio | power | history
+    property string panel: ""
+    property bool panelKeys: false      // a panel needs keyboard input (e.g. Wi-Fi password)
+    function openPanel(name) { trayStack = []; panelKeys = false; panel = (panel === name ? "" : name) }
+    function closePanel() { panel = ""; panelKeys = false }
 
     property var trayStack: []
     property string trayTitle: ""

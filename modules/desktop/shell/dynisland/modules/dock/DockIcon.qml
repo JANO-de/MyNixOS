@@ -36,6 +36,13 @@ Item {
 
     // Try the desktop entry's icon, then the app id in a few spellings, then a generic icon.
     readonly property string iconSrc: {
+        if (ic.item.launcher) {   // NixOS snowflake from the icon theme, generic fallback
+            for (const n of ["nix-snowflake", "nixos", "nix-snowflake-white", "distributor-logo-nixos", "start-here"]) {
+                const p = Quickshell.iconPath(n, true);
+                if (p) return p;
+            }
+            return Quickshell.iconPath("application-x-executable");
+        }
         const id = ic.item.appId || "";
         const names = [ic.item.entry ? ic.item.entry.icon : "", id, id.toLowerCase(), id.split(".").pop().toLowerCase()];
         for (const n of names) {
@@ -83,7 +90,7 @@ Item {
         anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.top; bottomMargin: 10 }
         width: tip.implicitWidth + 20; height: 26; radius: 8; color: Theme.surfaceContainerHigh
         Text { id: tip; anchors.centerIn: parent; color: Theme.surfaceFg; font.pixelSize: 12
-               text: ic.item.entry ? ic.item.entry.name : (ic.item.appId || "") }
+               text: ic.item.launcher ? "Apps" : (ic.item.entry ? ic.item.entry.name : (ic.item.appId || "")) }
     }
 
     SequentialAnimation {   // launch bounce
@@ -111,6 +118,7 @@ Item {
         }
         onClicked: mouse => {
             if (ic.moved) { ic.moved = false; return }   // that was a drag, not a click
+            if (ic.item.launcher) { if (mouse.button === Qt.LeftButton) { UiState.launcherOpen = !UiState.launcherOpen; bounceAnim.start() } return }
             if (mouse.button === Qt.RightButton) { ic.menuRequested(ic.item, ic.mapToItem(null, ic.width / 2, 0).x); return }
             if (mouse.button === Qt.MiddleButton) { if (ic.item.entry) { ic.item.entry.execute(); bounceAnim.start() } return }
             if (ic.running) {   // cycle: focus the window after the focused one

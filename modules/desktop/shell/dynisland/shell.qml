@@ -22,6 +22,8 @@ import qs.modules.island
 import qs.modules.dock
 import qs.modules.widgets
 import qs.modules.settings
+import qs.modules.lock
+import qs.modules.launcher
 
 ShellRoot {
     // One instance per monitor.
@@ -32,10 +34,22 @@ ShellRoot {
 
     Variants { model: Quickshell.screens; DesktopMenu {} }   // right-click menu on the desktop
 
+    LauncherDrawer {}   // app drawer (UiState.launcherOpen)
+    Lock {}       // session lock screen (UiState.locked)
+
     Settings {}   // single centered overlay, toggled via UiState.settingsOpen
 
     // ---- IPC (bind in niri config.kdl, e.g. spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle")
     IpcHandler { target: "settings"; function toggle(): void { UiState.settingsOpen = !UiState.settingsOpen } }
     IpcHandler { target: "island";   function toggle(): void { UiState.islandPinned = !UiState.islandPinned } }
+    IpcHandler { target: "launcher"
+        function toggle(): void { UiState.launcherOpen = !UiState.launcherOpen }
+        function open(): void { UiState.launcherOpen = true }
+        function close(): void { UiState.launcherOpen = false }
+    }
+    IpcHandler { target: "lock"
+        function lock(): void { UiState.locked = true }
+        function unlock(): void { if (Config.system.lockIpcUnlock) UiState.locked = false }   // emergency only
+    }
     IpcHandler { target: "osd";      function show(kind: string, value: real): void { Osd.show(kind, value) } }
 }

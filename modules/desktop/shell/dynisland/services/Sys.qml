@@ -37,7 +37,9 @@ Singleton {
     }
 
     // ---- Power actions (commands are in Config.system)
-    function run(cmd) { Quickshell.execDetached(["sh", "-c", cmd]) }
+    function run(cmd) { if (cmd === "@lock") lock(); else Quickshell.execDetached(["sh", "-c", cmd]) }
+    // built-in lock screen, or the external command if turned off in Settings > System
+    function lock() { if (Config.system.builtinLock) UiState.locked = true; else run(Config.system.lockCmd) }
 
     Timer {
         interval: 3000; repeat: true; triggeredOnStart: true; running: root.watching

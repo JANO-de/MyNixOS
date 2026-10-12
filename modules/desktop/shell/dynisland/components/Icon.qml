@@ -9,8 +9,11 @@ Text {
     property int size: 20
     FontLoader { id: fl; source: Quickshell.env("DYN_ICON_FONT") ? "file://" + Quickshell.env("DYN_ICON_FONT") : "" }
     text: IconMap.map[name] !== undefined ? IconMap.map[name] : name
+    onNameChanged: if (IconMap.map[name] === undefined) IconMap.unknown(name)
+    Component.onCompleted: if (IconMap.map[name] === undefined) IconMap.unknown(name)
+    Connections { target: fl; function onStatusChanged() { if (fl.status !== FontLoader.Ready) console.warn("Icon: font did not load, status", fl.status, "path", Quickshell.env("DYN_ICON_FONT")) } }
     color: "white"
-    font.family: fl.status === FontLoader.Ready ? fl.name : "Material Symbols Outlined"
+    font.family: fl.status === FontLoader.Ready ? fl.name : "DynIcons"
     font.pixelSize: size
     font.hintingPreference: Font.PreferNoHinting
     font.variableAxes: ({ "FILL": 1, "wght": 400, "GRAD": 0, "opsz": 24 })
