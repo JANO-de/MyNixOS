@@ -28,7 +28,7 @@
   options.modules.programs.moonlight = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
       description = "Install moonlight-qt, a fullscreen streaming client. On the Surface it renders a Sunshine server's screen so the tablet doubles as an extra monitor.";
     };
   };
@@ -55,6 +55,7 @@
     enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
+<<<<<<< HEAD
       description = "Install the light terminal QoL toolkit (btop, atuin, zoxide, fzf, eza, bat, delta, tmux, yq).";
     };
   };
@@ -67,3 +68,17 @@
     };
   };
 }
+=======
+      description = "Install the small terminal quality-of-life set (atuin, bat, btop, delta, dust, eza, fzf, ncdu, tmux, yq, zoxide). A few MB each, no GUI, safe on low-RAM hosts.";
+    };
+  };
+
+  options.modules.programs.zathura = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install zathura, the small keyboard-driven PDF viewer (mupdf + poppler backends). Pen-friendly and fast on scanned documents.";
+    };
+  };
+}
+>>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643

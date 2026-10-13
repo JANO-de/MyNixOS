@@ -4,7 +4,7 @@
   options.modules.services.xampp = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Wire up the XAMPP workbench (/opt/lampp): system users, FHS compat layer, per-service systemd units and the xampp-panel launcher. Disable on hosts that never installed /opt/lampp (e.g. the Surface tablet), whose xampp units would otherwise fail at every activation.";
     };
   };
@@ -21,7 +21,27 @@
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
+<<<<<<< HEAD
       description = "Apply PowerTOP autotuning at every boot (CPU governor, WiFi PS, USB autosuspend). Cheapest battery win on Skylake tablets.";
+=======
+      description = "Run powertop's --auto-tune once per boot to shorten device autosuspend timeouts and enable runtime power management. Leaves Wi-Fi power saving alone (see hosts/surface/hardware.nix).";
+    };
+  };
+
+  options.modules.services.smartd = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Run smartd in the background to poll the disks' SMART attributes, with journal and wall notifications. Catches a failing drive before it disappears.";
+    };
+  };
+
+  options.modules.services.waydroid = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable Waydroid, Android in a container on top of the Wayland session (nftables variant). Needs a kernel with binder/IPC support and a Wayland compositor session to attach to.";
+>>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643
     };
   };
 }

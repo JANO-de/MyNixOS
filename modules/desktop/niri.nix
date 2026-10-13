@@ -15,7 +15,7 @@
     # Polkit auth agent for the niri session (no NixOS module exists anymore)
     security.polkit.enable = true;
 
-    # GTK icon theme used by the shell (set via dconf since inir is gone)
+    # GTK icon theme used by the shell (set via dconf)
     programs.dconf.profiles.user.databases = [
       {
         settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark";

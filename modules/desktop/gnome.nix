@@ -10,8 +10,11 @@
 
 {
   config = lib.mkIf config.modules.desktop.gnome.enable {
-    services.desktopManager.gnome.enable = true;
-    services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+
+  # The greeter is chosen by greeter.nix; GDM is the default but a host (e.g.
+  # the Surface tablet) can ask for the themed SDDM instead.
+  services.displayManager.gdm.enable = config.modules.desktop.displayManager == "gdm";
 
     # GNOME needs a policy agent and the Polkit stack (niri's module usually
     # provided it; keep it self-contained here so a niri-less tablet still has
@@ -24,7 +27,22 @@
       {
         settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark";
       }
-    ];
+    ]
+    # Single owner of custom-keybindings: every module that wants a binding
+    # contributes to modules.desktop.customKeybindings, and they are emitted
+    # here as one entry. Writing that gsettings key from two places would make
+    # the later write silently replace the earlier one.
+    ++ lib.optional (
+      config.modules.desktop.customKeybindings != [ ]
+    ) {
+      settings."org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = builtins.toJSON (
+        map (
+          { name, command, binding, ... }: {
+            inherit name command binding;
+          }
+        ) config.modules.desktop.customKeybindings
+      );
+    };
 
     # Accelerometer/gyro feed for auto-rotate. Harmless without a sensor.
     hardware.sensor.iio.enable = true;

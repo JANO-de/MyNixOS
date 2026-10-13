@@ -1,0 +1,25 @@
+window {
+  background-color: alpha(@BG@, 0.85);
+}
+
+button {
+  color: @TEXT@;
+  background-color: transparent;
+  font-family: "@FONT@";
+  font-size: 18px;
+  border: none;
+  border-radius: 16px;
+  margin: 8px;
+  padding: 4px 8px;
+}
+
+button:focus,
+button:hover {
+  background-color: @ACCENT@;
+  color: @BG@;
+}
+
+label {
+  font-family: "@FONT@";
+  font-size: 14px;
+}

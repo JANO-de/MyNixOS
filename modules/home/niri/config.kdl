@@ -39,11 +39,9 @@ input {
 //
 // This file deliberately declares NO `output` blocks. Niri merges an output
 // block found in an include with one from the main config, later keys winning,
-// so Monitor Manager writes here would silently override this file rather than
-// fail loudly. Keeping one owner avoids that ambiguity. Output settings live
-// only in the optional include at the bottom of this file, which the Monitor
-// Manager GUI owns; the saved profiles are what replace the old per-location
-// presets:
+// so a saved override would silently beat this file rather than fail loudly.
+// Keeping one owner avoids that ambiguity. Output settings live only in the
+// optional include at the bottom of this file:
 //
 //   school  HDMI-A-1 scale 1, position x=0 y=0 (eDP-1 auto-placed to its right)
 //   home    HDMI-A-1 scale 1.5, position x=0 y=0 (4K)
@@ -111,21 +109,14 @@ binds {
     Mod+Return { spawn "alacritty"; }
     Mod+E { spawn "alacritty" "-e" "yazi"; }
 
-    // --- iNiR shell (merged from reference niri/config.kdl) ---
-    Mod+W      { spawn "inir" "wallpaperSelector" "toggle"; }   // was: toggle-column-tabbed-display -> Mod+Shift+T
+    // --- shell (dynisland: Quickshell island, dock, launcher, lock) ---
+    Mod+Space   { spawn "dynisland" "ipc" "launcher" "toggle"; }
+    Mod+Shift+L { spawn "dynisland" "ipc" "lock" "lock"; }
     Mod+Shift+T { toggle-column-tabbed-display; }
-    Mod+Space  { spawn "inir" "overview" "toggle"; }
-    Super+Tab  { toggle-overview; }
-    Mod+Shift+W { spawn "inir" "panelFamily" "cycle"; }
-    Mod+V      { spawn "inir" "clipboard" "toggle"; }          // was: toggle-window-floating -> Mod+Ctrl+V
-    Mod+Ctrl+V { toggle-window-floating; }
-    Mod+Comma  { spawn "inir" "settings"; }
-    Mod+Ctrl+M { spawn "inir-monitor-manager"; }
-    Mod+Ctrl+K  { spawn "inir" "cheatsheet" "toggle"; }
-    Mod+Shift+S { spawn "inir" "region" "screenshot"; }
-    Mod+Shift+X { spawn "inir" "region" "ocr"; }
-    Mod+B      { spawn "zen"; }
-    // --- /iNiR ---
+    Super+Tab   { toggle-overview; }
+    Mod+Ctrl+V  { toggle-window-floating; }
+    Mod+B       { spawn "zen"; }
+    // --- /shell ---
 
     Mod+Shift+K { show-hotkey-overlay; }
     Mod+Shift+E { quit; }
@@ -133,13 +124,16 @@ binds {
 
 @TABLET_BINDS@
 
-    //XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
-    //XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
-    //XF86AudioMute        allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
+    // Volume: the island OSD appears by itself when PipeWire reports the change.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-    //XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
-    //XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
+    // Brightness: change it, then tell the island OSD the new value (0 to 1).
+    XF86MonBrightnessUp   { spawn-sh "brightnessctl -q set 5%+; qs -c dynisland ipc call osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
+    XF86MonBrightnessDown { spawn-sh "brightnessctl -q set 5%-; qs -c dynisland ipc call osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
+
     XF86AudioPrev         allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioPlay         allow-when-locked=true { spawn-sh "playerctl play-pause"; }
     XF86AudioPause        allow-when-locked=true { spawn-sh "playerctl pause"; }
@@ -155,7 +149,7 @@ binds {
     Mod+H     { focus-column-left; }
     Mod+J     { focus-window-down; }
     Mod+K     { focus-window-up; }
-    Mod+L     { focus-column-right; }
+    Mod+Y     { focus-column-right; }
 
     Mod+Ctrl+Left  { move-column-left; }
     Mod+Ctrl+Down  { move-window-down; }
@@ -182,7 +176,7 @@ binds {
     Mod+Page_Down      { focus-workspace-down; }
     Mod+Page_Up        { focus-workspace-up; }
     Mod+U              { focus-workspace-down; }
-    Mod+I              { focus-workspace-up; }
+    Mod+L              { focus-workspace-up; }
     Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
     Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
     Mod+Ctrl+U         { move-column-to-workspace-down; }
@@ -245,21 +239,16 @@ binds {
 
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
+
+    Mod+Comma  { spawn "dynisland" "ipc" "settings" "toggle"; }
+    Mod+I      { spawn "dynisland" "ipc" "island" "toggle"; }
 }
 
 spawn-at-startup "polkit-gnome-authentication-agent-1"
 
-// Allows notification actions and window activation from Noctalia
+// Allows notification actions and window activation from the shell
 debug {
     honor-xdg-activation-with-invalid-serial
-}
-
-// --- iNiR shell hooks (from reference niri/config.kdl) ---
-// iNiR's wallpaper/background layers must sit in the backdrop layer, behind
-// every window, or the desktop art won't render at all.
-layer-rule {
-    match namespace="^quickshell:(iiBackdrop|wBackdrop)$"
-    place-within-backdrop true
 }
 
 environment {
@@ -267,12 +256,11 @@ environment {
     QT_IMAGEIO_MAXALLOC "0"
 }
 
-// --- Monitor Manager ---
-// Written by the Monitor Manager GUI (see modules/desktop/shell/scripts/
-// monitor-manager.py). The blocks above define the declarative defaults; this
-// optional include is evaluated last so the GUI's output blocks override them.
-// `optional=true` keeps the config valid while the file does not exist yet, and
-// niri watches it, so saving from the GUI live-reloads the compositor.
+// --- Monitor output overrides ---
+// Optional per-machine output blocks (niri writes nothing here by itself). The
+// blocks above define the declarative defaults; this optional include is
+// evaluated last so saved output blocks override them. `optional=true` keeps
+// the config valid while the file does not exist yet, and niri watches it, so
+// saving live-reloads the compositor.
 include optional=true "config.d/15-outputs.kdl"
-// --- /Monitor Manager ---
-// --- /iNiR ---
+// --- /Monitor output overrides ---

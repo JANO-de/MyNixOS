@@ -3,14 +3,14 @@
 {
   imports = [
     ./options.nix
-    ./network.nix
-    ./audio.nix
-    ./printing.nix
-    ./ssh.nix
+    ./base.nix
     ./flatpak.nix
     ./autoupgrade.nix
     ./sunshine.nix
     ./powertop.nix
     ./xampp.nix
+    ./powertop.nix
+    ./smartd.nix
+    ./waydroid.nix
   ];
 }

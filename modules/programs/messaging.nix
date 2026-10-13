@@ -3,7 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     dissent
-    legcord
+    vesktop
     zapzap
     simplex-chat-desktop
   ];

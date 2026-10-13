@@ -7,5 +7,7 @@
     ./user.nix
     ./fonts.nix
     ./shell.nix
+    ./locale.nix
+    ./home-manager.nix
   ];
 }

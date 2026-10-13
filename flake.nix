@@ -9,13 +9,13 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-  
+
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    inir.url = "github:snowarch/inir";
+    nix-software-center.url = "github:snowfallorg/nix-software-center";
 
     opencode-flake.url = "github:noblepayne/opencode-flake";
 
@@ -28,63 +28,36 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
 
-  nixConfig = {
-    extra-substituters = [
-      "https://attic.xuyh0120.win/lantian"
-    ];
-    extra-trusted-public-keys = [
-      "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
-    ];
-  };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, inir }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
     theme = import ./modules/theme.nix;
+
+    # niriEnabled=true: niri + eww shell; false: no niri (Plasma on the Surface).
+    # Passed explicitly (no module default) so the defaulted-arg probe can't recurse.
+    mkHost = { host, niriEnabled ? true, cachyos ? true }: lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit inputs theme niriEnabled; };
+      modules = [
+        inputs.home-manager.nixosModules.home-manager
+        ./hosts/${host}/default.nix
+      ]
+      # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
+      ++ lib.optional cachyos ({ ... }: { nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ]; });
+    };
   in
   {
     nixosConfigurations = {
-      laptop = lib.nixosSystem {
-        inherit system;
-        # niriEnabled=true: niri+iNiR shell (also the module-system default, but
-        # passed explicitly so the defaulted-arg probe doesn't recurse).
-        specialArgs = { inherit inputs theme; niriEnabled = true; };
-        modules = [
-          inputs.home-manager.nixosModules.home-manager
-          # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
-          ({ ... }: { nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ]; })
-          ./hosts/laptop/default.nix
-        ];
-      };
+      laptop = mkHost { host = "laptop"; };
+      desktop = mkHost { host = "desktop"; };
 
-      desktop = lib.nixosSystem {
-        inherit system;
-        # niriEnabled=true: niri+iNiR shell (also the module-system default, but
-        # passed explicitly so the defaulted-arg probe doesn't recurse).
-        specialArgs = { inherit inputs theme; niriEnabled = true; };
-        modules = [
-          inputs.home-manager.nixosModules.home-manager
-          # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
-          ({ ... }: { nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ]; })
-          ./hosts/desktop/default.nix
-        ];
-      };
-
-      # Microsoft Surface Pro 5 (i5 / 4GB / 128GB).
+      # Microsoft Surface Pro 5 (i5 / 8GB / 128GB), Plasma 6 on Wayland.
       # Deliberately NO CachyOS overlay: the Surface relies on nixos-hardware's
       # linux-surface patched kernel (SAM/IPTS/thermald) + the in-tree Marvell
-      # mwifiex wifi driver. The CachyOS kernel would drop all of that.
-      surface = lib.nixosSystem {
-        inherit system;
-        # niriEnabled=false selects the GNOME desktop over the niri+iNiR shell
-        # (see modules/desktop/default.nix).
-        specialArgs = { inherit inputs theme; niriEnabled = false; };
-        modules = [
-          inputs.home-manager.nixosModules.home-manager
-          ./hosts/surface/default.nix
-        ];
-      };
+      # mwifiex wifi driver; the CachyOS kernel would drop all of that.
+      surface = mkHost { host = "surface"; niriEnabled = false; cachyos = false; };
 
       # Live USB image used to install `surface` (and to rescue it). Same GNOME
       # installer as upstream, plus nixos-hardware's Surface support (patched

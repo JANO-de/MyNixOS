@@ -1,11 +1,9 @@
-{ config, lib, ... }:
+{ ... }:
 
 {
   imports = [
     ./options.nix
+    ./base.nix
     ./nvidia.nix
-    ./bluetooth.nix
-    ./firmware.nix
-    ./input.nix
   ];
 }

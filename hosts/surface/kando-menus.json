@@ -1,0 +1,371 @@
+{
+  "menus": [
+    {
+      "root": {
+        "type": "submenu",
+        "name": "Tablet",
+        "icon": "apps",
+        "iconTheme": "material-symbols-rounded",
+        "children": [
+          {
+            "type": "command",
+            "name": "Obsidian",
+            "icon": "edit_note",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "obsidian"
+            }
+          },
+          {
+            "type": "command",
+            "name": "Rnote",
+            "icon": "draw",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "rnote"
+            }
+          },
+          {
+            "type": "command",
+            "name": "Browser",
+            "icon": "language",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "zen"
+            }
+          },
+          {
+            "type": "command",
+            "name": "Files",
+            "icon": "folder",
+            "iconTheme": "material-symbols-rounded",
+            "data": {
+              "command": "dolphin"
+            }
+          },
+          {
+            "type": "submenu",
+            "name": "School",
+            "icon": "school",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Classroom",
+                "icon": "class",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "zen --new-window https://classroom.google.com"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Android",
+                "icon": "android",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid show-full-ui"
+                }
+              },
+              {
+                "type": "command",
+                "name": "F-Droid",
+                "icon": "store",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid app launch org.fdroid.fdroid"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Reddit",
+                "icon": "forum",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "zen --new-window https://www.reddit.com"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Dev",
+            "icon": "code",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "VS Code",
+                "icon": "code",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "code"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Alacritty",
+                "icon": "terminal",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "alacritty"
+                }
+              },
+              {
+                "type": "command",
+                "name": "DBeaver",
+                "icon": "database",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "dbeaver"
+                }
+              },
+              {
+                "type": "command",
+                "name": "draw.io",
+                "icon": "schema",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "drawio"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Games",
+            "icon": "sports_esports",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Android",
+                "icon": "android",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid show-full-ui"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Aurora",
+                "icon": "shop",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "waydroid app launch com.aurora.store"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Extra",
+            "icon": "more_horiz",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Anki",
+                "icon": "style",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "anki"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Okular",
+                "icon": "picture_as_pdf",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "okular"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Krita",
+                "icon": "brush",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "krita"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Xournal++",
+                "icon": "history_edu",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "xournalpp"
+                }
+              },
+              {
+                "type": "command",
+                "name": "Settings",
+                "icon": "settings",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "systemsettings"
+                }
+              }
+            ]
+          },
+          {
+            "type": "submenu",
+            "name": "Actions",
+            "icon": "bolt",
+            "iconTheme": "material-symbols-rounded",
+            "children": [
+              {
+                "type": "command",
+                "name": "Close",
+                "icon": "close",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "busctl --user call org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component invokeShortcut s \"Window Close\""
+                }
+              },
+              {
+                "type": "command",
+                "name": "Hide",
+                "icon": "minimize",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "busctl --user call org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component invokeShortcut s \"Window Minimize\""
+                }
+              },
+              {
+                "type": "command",
+                "name": "Desktop",
+                "icon": "desktop_windows",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "busctl --user call org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component invokeShortcut s \"Show Desktop\""
+                }
+              },
+              {
+                "type": "submenu",
+                "name": "Music",
+                "icon": "music_note",
+                "iconTheme": "material-symbols-rounded",
+                "children": [
+                  {
+                    "type": "command",
+                    "name": "Play",
+                    "icon": "play_arrow",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl play"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Pause",
+                    "icon": "pause",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl -a pause"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Toggle",
+                    "icon": "play_pause",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl play-pause"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Next",
+                    "icon": "skip_next",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl next"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Prev",
+                    "icon": "skip_previous",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "playerctl previous"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "submenu",
+                "name": "Volume",
+                "icon": "volume_up",
+                "iconTheme": "material-symbols-rounded",
+                "children": [
+                  {
+                    "type": "command",
+                    "name": "Slider",
+                    "icon": "tune",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "vol-slider"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Mute",
+                    "icon": "volume_off",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "submenu",
+                "name": "Screen",
+                "icon": "brightness_6",
+                "iconTheme": "material-symbols-rounded",
+                "children": [
+                  {
+                    "type": "command",
+                    "name": "Slider",
+                    "icon": "tune",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "bright-slider"
+                    }
+                  },
+                  {
+                    "type": "command",
+                    "name": "Shot",
+                    "icon": "screenshot",
+                    "iconTheme": "material-symbols-rounded",
+                    "data": {
+                      "command": "spectacle"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "command",
+                "name": "Lock",
+                "icon": "lock",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "loginctl lock-session"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "shortcut": "",
+      "shortcutID": "",
+      "centered": false,
+      "anchored": false
+    }
+  ],
+  "collections": []
+}
