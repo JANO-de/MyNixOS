@@ -8,7 +8,6 @@
     allowedTCPPorts = [ 80 443 ];
     allowedUDPPortRanges = [
       { from = 4000; to = 4007; }
-      { from = 40000; to = 44345; }
       { from = 8000; to = 8010; }
     ];
   };  

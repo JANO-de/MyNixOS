@@ -9,11 +9,6 @@
   # Power saving is flaky on this chip; keep the radio always on.
   networking.networkmanager.wifi.powersave = false;
 
-<<<<<<< HEAD
-  # mwifiex fails the EAPOL 4-way handshake when the AP enforces PMF (802.11w)
-  # or negotiates it in a WPA2/WPA3 transition: it associates, sends EAPOL to
-  # the AP and drops immediately. Default PMF OFF for every connection.
-=======
   # The radio ends up soft-blocked after failed activations and nothing clears
   # it; clear it on every boot so it is recoverable without a keyboard.
   systemd.services.rfkill-unblock-wifi = {
@@ -31,16 +26,11 @@
 
   # mwifiex fails the EAPOL handshake when the AP enforces PMF (802.11w):
   # default PMF OFF for every connection.
->>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643
   environment.etc."NetworkManager/conf.d/00-surface-pmf.conf".text = ''
     [connection]
     802-11-wireless-security.pmf=0
   '';
 
-<<<<<<< HEAD
-  # --- touch ---
-  # The Type Cover's trackpad follows the same rules as the other hosts.
-=======
   # --- Aula_1CFGS: internet only via Squid proxy, must not take the default route ---
   # 192.168.8.1 answers DHCP/DNS but forwards nothing; the only way out is the
   # proxy on :8080 (3128 returns ERR_ACCESS_DENIED). The dispatcher below sets
@@ -115,7 +105,6 @@
   boot.kernelParams = [ "i915.enable_psr=0" ];
 
   # --- touch / tablet ---
->>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643
   services.libinput.touchpad = {
     tapping = true;
     naturalScrolling = true;

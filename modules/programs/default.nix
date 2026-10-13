@@ -14,7 +14,5 @@
     ./zathura.nix
     ./gaming.nix
     ./file-manager.nix
-    ./qol.nix
-    ./reading.nix
   ];
 }

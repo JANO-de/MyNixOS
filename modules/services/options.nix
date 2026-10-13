@@ -21,9 +21,6 @@
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-<<<<<<< HEAD
-      description = "Apply PowerTOP autotuning at every boot (CPU governor, WiFi PS, USB autosuspend). Cheapest battery win on Skylake tablets.";
-=======
       description = "Run powertop's --auto-tune once per boot to shorten device autosuspend timeouts and enable runtime power management. Leaves Wi-Fi power saving alone (see hosts/surface/hardware.nix).";
     };
   };
@@ -41,7 +38,6 @@
       type = lib.types.bool;
       default = false;
       description = "Enable Waydroid, Android in a container on top of the Wayland session (nftables variant). Needs a kernel with binder/IPC support and a Wayland compositor session to attach to.";
->>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643
     };
   };
 }

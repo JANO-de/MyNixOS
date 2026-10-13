@@ -1,22 +1,5 @@
 { config, pkgs, lib, ... }:
 
-<<<<<<< HEAD
-# QoL CLI toolkit — tiny closures, terminal-first: sysmon, history search,
-# fuzzy find, faster ls/cat/diff, tmux and a YAML swiss-army knife.
-{
-  environment.systemPackages = lib.optionals config.modules.programs.qol.enable (with pkgs; [
-    btop
-    atuin
-    zoxide
-    fzf
-    eza
-    bat
-    delta
-    tmux
-    yq
-  ]);
-}
-=======
 # Small terminal quality-of-life: better listing/search/history than the stock
 # coreutils set, lightweight process and disk inspection, and JSON/yaml
 # handling. Every one of these is a few MB and none of them needs a GUI, so
@@ -43,4 +26,3 @@
     ]
   );
 }
->>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643

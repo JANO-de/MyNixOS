@@ -29,11 +29,6 @@
     # GNOME asks before suspending when on battery; a tablet should just sleep.
     "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "suspend";
     "org/gnome/settings-daemon/plugins/power".sleep-inactive-battery-type = "suspend";
-
-    # Power rocker / key → show the system power dialog (Shut Down, Restart,
-    # Log Out, Suspend) instead of instantly suspending.
-    "org/gnome/settings-daemon/plugins/power".power-button-action = "interactive";
-    "org/gnome/settings-daemon/plugins/power".power-button-key = "interactive";
   };
 
   # GNOME Software (pw) UI dependency path convenience.

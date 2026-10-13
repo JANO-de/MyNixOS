@@ -55,20 +55,6 @@
     enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-<<<<<<< HEAD
-      description = "Install the light terminal QoL toolkit (btop, atuin, zoxide, fzf, eza, bat, delta, tmux, yq).";
-    };
-  };
-
-  options.modules.programs.reading = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Install zathura (mupdf + PS plugins) as a light PDF viewer.";
-    };
-  };
-}
-=======
       description = "Install the small terminal quality-of-life set (atuin, bat, btop, delta, dust, eza, fzf, ncdu, tmux, yq, zoxide). A few MB each, no GUI, safe on low-RAM hosts.";
     };
   };
@@ -81,4 +67,3 @@
     };
   };
 }
->>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643

@@ -1,24 +1,5 @@
 { config, pkgs, lib, ... }:
 
-<<<<<<< HEAD
-# PowerTOP auto-tuning: applies CPU governor / WiFi PS / USB autosuspend
-# tweaks at every boot. Cheap battery win on the Skylake SP5, no daemon
-# footprint (one-shot per boot). Opt-in per host.
-{
-  config = lib.mkIf config.modules.services.powertop.enable {
-    environment.systemPackages = [ pkgs.powertop ];
-
-    systemd.services.powertop = {
-      description = "PowerTOP auto-tune";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${pkgs.powertop}/bin/powertop --auto-tune";
-      };
-    };
-  };
-}
-=======
 # powertop's automatic tuning, applied once per boot.
 #
 # `--auto-tune` is the cheap battery win on this hardware: it shortens the
@@ -49,4 +30,3 @@
     };
   };
 }
->>>>>>> bb95542e9e6c1400db55d062a5cf70c50aedc643
