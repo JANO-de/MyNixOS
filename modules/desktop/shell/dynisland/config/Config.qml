@@ -29,7 +29,7 @@ Singleton {
     function applySaved(text) {
         try {
             const j = JSON.parse(text);
-            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "calendar"]) {
+            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "server", "calendar"]) {
                 if (!j[sec]) continue;
                 for (const k in j[sec]) root[sec][k] = j[sec][k];
             }
@@ -52,6 +52,7 @@ Singleton {
     property alias widgets: adapter.widgets
     property alias lock: adapter.lock
     property alias system: adapter.system
+    property alias server: adapter.server
     property alias calendar: adapter.calendar
 
     // Positions is a plain object: reassign it whole so change signals fire.
@@ -166,6 +167,21 @@ Singleton {
                 property string rebootCmd: "systemctl reboot"
                 property string shutdownCmd: "systemctl poweroff"
                 property string suspendCmd: "systemctl suspend"
+            }
+
+            // Server mode (services/Server.qml, Settings > Server)
+            property JsonObject server: JsonObject {
+                property bool lockOnEnter: true       // lock the session when entering
+                property bool screensOff: true        // niri: power off monitors (input wakes them)
+                property bool ledsOff: true           // run ledsOffCmd / ledsOnCmd
+                property bool tailscale: true         // tailscale up/down with the mode
+                property bool ssh: true               // Tailscale SSH (no sshd needed)
+                property bool serve: true             // publish the llama.cpp web UI on the tailnet (HTTPS)
+                property int port: 8080               // llama.cpp port
+                property bool startLlama: true        // systemctl start <llamaUnit> when entering
+                property string llamaUnit: "llama-cpp"
+                property string ledsOffCmd: "openrgb --save-profile dynisland-prev; openrgb --color 000000"
+                property string ledsOnCmd: "openrgb --profile dynisland-prev"
             }
 
             property JsonObject calendar: JsonObject {

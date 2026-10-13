@@ -45,8 +45,16 @@ Item {
                 Text { text: Clocks.tRunning ? Clocks.fmt(Clocks.tLeft, false) : Clocks.fmt(Clocks.swMs, false)
                        color: Theme.primary; font.pixelSize: 13; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
+            // server mode badge
             Row {
-                visible: Media.playing && Config.cava.style !== "none" && !Clocks.active
+                visible: Server.active && !Clocks.active
+                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                spacing: 4
+                Icon { name: "dns"; size: 15; color: Theme.primary }
+                Text { text: "Server"; color: Theme.primary; font.pixelSize: 13; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+            }
+            Row {
+                visible: Media.playing && Config.cava.style !== "none" && !Clocks.active && !Server.active
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
                 spacing: 2
                 Repeater {
@@ -59,7 +67,7 @@ Item {
                 }
             }
             Row {
-                visible: !(Media.playing && Config.cava.style !== "none") && Config.island.showWeather && !Clocks.active
+                visible: !(Media.playing && Config.cava.style !== "none") && Config.island.showWeather && !Clocks.active && !Server.active
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
                 spacing: 4
                 Icon { name: Weather.icon; size: 16; color: "#ddffffff" }

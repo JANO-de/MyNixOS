@@ -57,7 +57,7 @@ PanelWindow {
     })
     readonly property var panelSizes: ({
         clock: [400, 330], weather: [460, 360], calendar: [480, 450], wifi: [400, 440],
-        bluetooth: [400, 420], audio: [420, 400], power: [440, 170], history: [440, 470]
+        bluetooth: [400, 420], audio: [420, 400], power: [480, Server.active ? 215 : 170], history: [440, 470]
     })
 
     // Click anywhere outside the island closes the tray menu (full-screen invisible catcher, alive only while open).

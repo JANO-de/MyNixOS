@@ -9,6 +9,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.config
+import qs.services
 
 Singleton {
     id: root
@@ -17,7 +18,7 @@ Singleton {
     property real level: 0
 
     Process {
-        running: Config.cava.enabled && Config.cava.style !== "none"
+        running: Config.cava.enabled && Config.cava.style !== "none" && !Server.active   // paused in server mode
         command: ["cava", "-p", Quickshell.shellPath("cava.conf")]
         stdout: SplitParser {
             onRead: line => {   // one frame per line: "12;40;99;...;"

@@ -45,6 +45,7 @@ PanelWindow {
         { name: "Widgets",    icon: "widgets",        comp: "WidgetsPage.qml" },
         { name: "Lock screen", icon: "lock",          comp: "LockPage.qml" },
         { name: "Calendar",   icon: "calendar_month", comp: "CalendarPage.qml" },
+        { name: "Server",     icon: "dns",            comp: "ServerPage.qml" },
         { name: "System",     icon: "terminal",       comp: "SystemPage.qml" }
     ]
 

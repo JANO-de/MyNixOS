@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.config
+import qs.services
 
 Singleton {
     id: root
@@ -32,7 +33,7 @@ Singleton {
     onUsChanged: fetchDetail.running = true
     onLocChanged: { fetch.running = true; fetchDetail.running = true }
 
-    Timer { interval: 1800000; repeat: true; running: true; triggeredOnStart: true; onTriggered: { fetch.running = true; fetchDetail.running = true } }
+    Timer { interval: 1800000; repeat: true; running: !Server.active; triggeredOnStart: true; onTriggered: { fetch.running = true; fetchDetail.running = true } }
     Process {
         id: fetch
         command: ["curl", "-sf", "--max-time", "10",

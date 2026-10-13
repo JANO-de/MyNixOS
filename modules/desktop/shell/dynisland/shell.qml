@@ -29,8 +29,8 @@ ShellRoot {
     // One instance per monitor.
     Variants { model: Quickshell.screens; Wallpaper {} }
     Variants { model: Config.island.enabled ? Quickshell.screens : []; Island {} }
-    Variants { model: Config.dock.enabled ? Quickshell.screens : []; Dock {} }
-    Variants { model: Quickshell.screens; DesktopWidgets {} }
+    Variants { model: Config.dock.enabled && !Server.active ? Quickshell.screens : []; Dock {} }   // off in server mode
+    Variants { model: Server.active ? [] : Quickshell.screens; DesktopWidgets {} }   // off in server mode
 
     Variants { model: Quickshell.screens; DesktopMenu {} }   // right-click menu on the desktop
 
@@ -50,6 +50,11 @@ ShellRoot {
     IpcHandler { target: "lock"
         function lock(): void { UiState.locked = true }
         function unlock(): void { if (Config.system.lockIpcUnlock) UiState.locked = false }   // emergency only
+    }
+    IpcHandler { target: "server"
+        function toggle(): void { Server.toggle() }
+        function enable(): void { Server.enable() }
+        function disable(): void { Server.disable() }
     }
     IpcHandler { target: "osd";      function show(kind: string, value: real): void { Osd.show(kind, value) } }
 }

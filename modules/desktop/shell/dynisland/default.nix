@@ -13,7 +13,7 @@ let
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
     cava matugen brightnessctl networkmanager curl niri coreutils bash
-    vdirsyncer findutils libnotify wl-clipboard xdg-utils
+    vdirsyncer findutils libnotify wl-clipboard xdg-utils tailscale openrgb
   ];
 
   # Icon font copied to a fixed path (works regardless of fontconfig/PATH)
@@ -87,11 +87,34 @@ PY
       ipc)      shift; $qs -p "${repoShell}" ipc call "$@" 2>/dev/null || $qs -c dynisland ipc call "$@" ;;
       settings) "$0" ipc settings toggle ;;
       launcher) "$0" ipc launcher toggle ;;
+      server)   "$0" ipc server toggle ;;
       log)      $qs log -p "${repoShell}" 2>/dev/null || $qs log -c dynisland ;;
       *)        echo "usage: dynisland {start|restart|stable|stop|dev|ipc <target> <fn>|settings|launcher|log}" ;;
     esac
   '';
 in {
+  # ---- Server mode, system side (UNTESTED) -------------------------------------
+  # Tailscale daemon idles disconnected; the shell runs `tailscale up/down` with Server mode.
+  # --operator lets user jano run tailscale without sudo.
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;                       # UDP 41641: direct connections (relays work without it)
+    extraSetFlags = [ "--operator=jano" ];
+  };
+  # OpenRGB: no daemon, the shell just calls the CLI (needs i2c for motherboard/RAM LEDs)
+  hardware.i2c.enable = true;
+  services.udev.packages = [ pkgs.openrgb ];
+  environment.systemPackages = [ pkgs.openrgb ];
+  users.users.jano.extraGroups = [ "i2c" ];
+  # let jano start llama-cpp.service from the shell without a password prompt
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.freedesktop.systemd1.manage-units" &&
+          action.lookup("unit") == "llama-cpp.service" &&
+          subject.user == "jano") { return polkit.Result.YES; }
+    });
+  '';
+
   home-manager.users.jano = {
     home.packages = (with pkgs; [ quickshell material-symbols inter nixos-icons ]) ++ runtimeDeps ++ [ dynisland ];
 
@@ -108,7 +131,7 @@ in {
       Service = {
         ExecStart = "${pkgs.quickshell}/bin/qs -c dynisland";
         Restart = "on-failure";
-        Environment = [ "DYN_ICON_FONT=${iconFont}/icons.ttf" "DYN_ICON_MAP=${iconFont}/icons.json" "QS_ICON_THEME=Papirus-Dark" "XDG_DATA_DIRS=/run/current-system/sw/share:/etc/profiles/per-user/jano/share:%h/.nix-profile/share" "PATH=${lib.makeBinPath runtimeDeps}:/run/current-system/sw/bin" ];
+        Environment = [ "DYN_ICON_FONT=${iconFont}/icons.ttf" "DYN_ICON_MAP=${iconFont}/icons.json" "QS_ICON_THEME=Papirus-Dark" "XDG_DATA_DIRS=/run/current-system/sw/share:/etc/profiles/per-user/jano/share:%h/.nix-profile/share" "PATH=${lib.makeBinPath runtimeDeps}:/run/wrappers/bin:/run/wrappers/bin:/run/current-system/sw/bin" ];
       };
       Install.WantedBy = [ "graphical-session.target" ];
     };

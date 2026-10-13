@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.config
+import qs.services
 import "ics.js" as Ics
 
 // Agenda: calendar events (see docs/calendar-sync.md).
@@ -96,7 +97,7 @@ Singleton {
 
     Timer {
         interval: Math.max(5, root.cfg.syncMinutes) * 60000
-        repeat: true; running: root.cfg.enabled; triggeredOnStart: true
+        repeat: true; running: root.cfg.enabled && !Server.active; triggeredOnStart: true
         onTriggered: root.sync()
     }
     // sources edited in Settings -> resync soon
