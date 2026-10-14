@@ -12,6 +12,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import Quickshell.Services.SystemTray
 import qs.config
 import qs.services
@@ -22,6 +23,24 @@ PanelWindow {
     required property var modelData
     screen: modelData
     readonly property var cfg: Config.dock
+    property var wsList: []
+    readonly property string outName: win.screen ? win.screen.name : ""
+    readonly property bool dodgeHidden: {
+        const ws = wsList.find(x => x.output === outName && x.is_active);
+        if (!ws) return false;
+        const zone = win.screen.height - (cfg.iconSize * cfg.magnification + 50 + cfg.bottomMargin);
+        return Niri.windows.some(w => {
+            if (w.workspace_id !== ws.id || !w.layout) return false;
+            const l = w.layout, p = l.tile_pos_in_workspace_view || [0, 0];
+            const row = l.pos_in_scrolling_layout ? l.pos_in_scrolling_layout[1] : 1;
+            return row > 1 || p[1] + l.tile_size[1] > zone;
+        });
+    }
+    Process {
+        id: wsProc; command: ["niri", "msg", "-j", "workspaces"]
+        stdout: StdioCollector { onStreamFinished: { try { win.wsList = JSON.parse(text) } catch (e) {} } }
+    }
+    Timer { interval: 500; repeat: true; running: cfg.visibility === "dodge"; onTriggered: wsProc.running = true }
 
     // ---- right-click menu state ----
     property var menuItem: null      // the dock item the menu belongs to (null = closed)
@@ -38,7 +57,7 @@ PanelWindow {
     implicitWidth: Math.max(400, row.baseWidth + cfg.iconSize * 3 + 120)
     implicitHeight: cfg.iconSize * cfg.magnification + 70 + cfg.bottomMargin + 380   // extra room for the context menu (it scrolls beyond this)
     color: "transparent"
-    exclusiveZone: cfg.reserveSpace && !cfg.autoHide ? bg.height + cfg.bottomMargin * 2 : 0
+    exclusiveZone: cfg.visibility === "always" && cfg.reserveSpace && !cfg.autoHide ? bg.height + cfg.bottomMargin * 2 : 0
     WlrLayershell.layer: win.menuItem ? WlrLayer.Overlay : WlrLayer.Top   // Overlay while the menu is open: stays above the click catcher
     WlrLayershell.namespace: "dynisland-dock"
     mask: Region { item: hit }
@@ -157,7 +176,7 @@ PanelWindow {
             x: win.menuItem ? 0 : bg.x - 10
             width: win.menuItem ? parent.width : bg.width + 20
             height: win.menuItem ? parent.height
-                  : (win.cfg.autoHide && !hh.hovered ? 6 : win.cfg.iconSize * win.cfg.magnification + 50 + win.cfg.bottomMargin)
+                  : (bg.hidden ? 6 : win.cfg.iconSize * win.cfg.magnification + 50 + win.cfg.bottomMargin)
             anchors.bottom: parent.bottom
         }
 
@@ -166,7 +185,17 @@ PanelWindow {
 
         Rectangle {
             id: bg
-            readonly property bool hidden: win.cfg.autoHide && !hh.hovered
+            readonly property bool hidden: _isHidden()
+            function _isHidden() {
+                if (cfg.visibility === "always") return false;
+                if (cfg.visibility === "autohide") return !hh.hovered;
+                // dodge: hide while a window overlaps the dock area;
+                // fall back to autohide if niri geometry unsupported
+                if (cfg.visibility === "dodge") {
+                    return win.dodgeHidden && !hh.hovered;
+                }
+                return false;
+            }
             anchors.horizontalCenter: parent.horizontalCenter
             y: hidden ? parent.height + 20 : parent.height - height - win.cfg.bottomMargin
             Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }

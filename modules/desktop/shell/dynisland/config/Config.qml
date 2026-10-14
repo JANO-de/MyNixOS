@@ -113,6 +113,7 @@ Singleton {
                 property string location: ""          // "" = auto by IP, or "Algeciras"
                 property string units: "m"            // m metric, u US
                 property real notifSeconds: 5          // banner time when the app sets none
+                property string visibility: "always"  // always | autohide | dodge
             }
 
             property JsonObject cava: JsonObject {
@@ -128,6 +129,7 @@ Singleton {
                 property bool launcher: true          // first dock icon: opens the app drawer
                 property bool autoHide: false
                 property bool reserveSpace: false     // push windows up (exclusive zone)
+                property string visibility: "always"  // always | autohide | dodge
                 property bool trayMenus: true         // right-click menu also lists the app's tray menu
                 property bool windowList: true        // right-click menu lists open windows
                 property int radius: 24               // dock corner radius

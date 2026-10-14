@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../modules/services/qmlcamp
     ./hardware-configuration.nix
     ../../modules/core
     ../../modules/hardware

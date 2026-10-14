@@ -18,6 +18,7 @@
 // =============================================================================
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import qs.config
 import qs.services
@@ -36,7 +37,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "dynisland"
     WlrLayershell.keyboardFocus: UiState.panelKeys ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None   // typing in a panel (Wi-Fi password)
-    mask: Region { item: pill }
+    mask: Region { item: pill; Region { item: edge } }
 
     // ---- state -----------------------------------------------------------
     property bool hovered: false                // debounced hover (or click-toggled)
@@ -60,6 +61,30 @@ PanelWindow {
         bluetooth: [400, 420], audio: [420, 400], power: [480, Server.active ? 215 : 170], history: [440, 470]
     })
 
+    // ---- visibility behavior --------------------------------------------
+    property var wsList: []
+    readonly property string outName: win.screen ? win.screen.name : ""
+    readonly property bool crowded: {
+        const ws = wsList.find(x => x.output === outName && x.is_active);
+        return !!ws && Niri.windows.some(w => w.workspace_id === ws.id && !w.is_floating);
+    }
+    Process {
+        id: wsProc; command: ["niri", "msg", "-j", "workspaces"]
+        stdout: StdioCollector { onStreamFinished: { try { win.wsList = JSON.parse(text) } catch (e) {} } }
+    }
+    Timer { interval: 500; repeat: true; running: cfg.visibility === "dodge"; onTriggered: wsProc.running = true }
+    property bool hidden: _isHidden()
+    function _isHidden() {
+        if (cfg.visibility === "always") return false;
+        if (cfg.visibility === "autohide") return !hovered && openT.interval > 0 && !openT.running;
+        // dodge: hide while a window overlaps the island area;
+        // fall back to autohide if niri geometry unsupported
+        if (cfg.visibility === "dodge") {
+            return win.crowded && !hovered && openT.interval > 0 && !openT.running;
+        }
+        return false;
+    }
+
     // Click anywhere outside the island closes the tray menu (full-screen invisible catcher, alive only while open).
     LazyLoader {
         active: win.trayOpen || win.panelOpen
@@ -75,13 +100,24 @@ PanelWindow {
         }
     }
 
+    Item {   // hot strip: keeps a hover/input area at the screen edge while the pill is hidden
+        id: edge
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 0; width: 320; height: 4
+        HoverHandler {
+            onHoveredChanged: {
+                if (hovered) { closeT.stop(); openT.restart() }
+                else if (win.hovered) closeT.restart()
+            }
+        }
+    }
     Timer { id: openT;  interval: cfg.hoverDelay; onTriggered: win.hovered = true }
     Timer { id: closeT; interval: cfg.closeDelay; onTriggered: win.hovered = false }  // hover guard
 
     Rectangle {
         id: pill
         x: (win.width - width) / 2
-        y: cfg.topMargin
+        y: hidden ? -height : cfg.topMargin
         width: win.sizes[win.mode][0]
         height: win.sizes[win.mode][1]
         radius: Math.min(height / 2, cfg.fullRadius)

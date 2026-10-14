@@ -34,4 +34,8 @@ Page {
     SettingRow { label: "Units"
         Chips { current: Config.island.units; model: [ { label: "°C", value: "m" }, { label: "°F", value: "u" } ]
                 onPicked: v => Config.island.units = v } }
+    SettingRow { label: "Visibility"
+        Chips { current: Config.island.visibility
+                model: [ { label: "Always", value: "always" }, { label: "Auto-hide", value: "autohide" }, { label: "Dodge", value: "dodge" } ]
+                onPicked: v => Config.island.visibility = v } }
 }
