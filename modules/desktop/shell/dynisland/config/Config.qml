@@ -99,6 +99,7 @@ Singleton {
             property JsonObject island: JsonObject {
                 property bool enabled: true
                 property bool expandOnHover: true     // false = click to expand
+                property string behavior: "always"    // always | autohide | dodge (hide while a window is on this screen's workspace)
                 property int hoverDelay: 60           // ms before expanding
                 property int closeDelay: 350          // ms hover guard before collapsing
                 property int topMargin: 8
@@ -127,7 +128,8 @@ Singleton {
             property JsonObject dock: JsonObject {
                 property bool enabled: true
                 property bool launcher: true          // first dock icon: opens the app drawer
-                property bool autoHide: false
+                property bool autoHide: false         // legacy: same as behavior "autohide"
+                property string behavior: "always"    // always | autohide | dodge (hide while a window is on this screen's workspace)
                 property bool reserveSpace: false     // push windows up (exclusive zone)
                 property string visibility: "always"  // always | autohide | dodge
                 property bool trayMenus: true         // right-click menu also lists the app's tray menu

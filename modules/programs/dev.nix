@@ -8,21 +8,13 @@
     ninja
     pkg-config
     vscodium
-    kdePackages.kate
     neovide
-    godot
     qt6.qt5compat
     pkgs.gowall
     btop
     qbittorrent
     nodejs_22
     inputs.opencode-flake.packages.${pkgs.stdenv.hostPlatform.system}.opencode-avx
-
-    # UML Designer
-    drawio
-
-    # DAW (Music)
-    ardour
 
     ### ----- /*/ Wayland session utilities /*/ ----- ###
 
@@ -80,9 +72,7 @@
     translate-shell
     socat
     mission-center
-    lsp-plugins
     cava
-    easyeffects
     mpv
     mpvScripts.mpris
     yt-dlp
@@ -90,10 +80,8 @@
     ++ lib.optionals config.modules.programs.heavy.enable (with pkgs; [
       jdk25
       zulu25
-      android-studio
       eclipses.eclipse-java
       (pkgs.llama-cpp.override { vulkanSupport = true; })
-      jetbrains.idea
     ]);
 
   environment.shellAliases.llm = "$HOME/.local/bin/llm";

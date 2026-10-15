@@ -12,6 +12,7 @@
   ];
 
   networking.hostName = "laptop";
+  modules.programs.gaming.enable = false; # TEMP: steam hash mismatch
 
   # XAMPP workbench (/opt/lampp) lives only here.
   modules.services.xampp.enable = true;

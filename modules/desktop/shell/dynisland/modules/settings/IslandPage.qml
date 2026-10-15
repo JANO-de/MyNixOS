@@ -7,6 +7,9 @@ Page {
     title: "Island"
     SettingRow { label: "Enabled"
         Toggle { checked: Config.island.enabled; onToggled: Config.island.enabled = !Config.island.enabled } }
+    SettingRow { label: "Visibility"; hint: "Only the idle pill hides; notifications, volume and panels still appear. Hover the top edge to show it"
+        Chips { model: [{ label: "Always show", value: "always" }, { label: "Auto-hide", value: "autohide" }, { label: "Dodge windows", value: "dodge" }]
+            current: Config.island.behavior; onPicked: v => Config.island.behavior = v } }
     SettingRow { label: "Expand on hover"; hint: "Off = click the island to expand"
         Toggle { checked: Config.island.expandOnHover; onToggled: Config.island.expandOnHover = !Config.island.expandOnHover } }
     SettingRow { label: "Hover delay"

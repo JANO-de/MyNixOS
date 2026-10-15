@@ -43,6 +43,7 @@
   # Deskflow keyboard/mouse sharing: this machine joins the laptop's server.
   modules.programs.deskflow.role = "client";
   modules.programs.heavy.enable = true;
+  modules.programs.gaming.enable = false; # debloat
   modules.programs.deskflow.serverAddress = "laptop";
 
 #   modules.programs.simpmusic.enable = true;
