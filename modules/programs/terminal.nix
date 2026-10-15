@@ -1,7 +1,7 @@
 # Terminal + CLI essentials. Small and GUI-free, so the lean (Surface) set
 # imports it too. `atuin`/`zoxide` need a shell-rc init line to become
 # automatic; the binaries are installed here so that choice stays in the rc.
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   environment.systemPackages =
@@ -30,5 +30,8 @@
       ncdu
       tmux
       yq-go
-    ]);
+    ])
+    ++ lib.optionals config.modules.programs.qol.enable [
+      inputs.forge.packages.${pkgs.stdenv.hostPlatform.system}.forge
+    ];
 }

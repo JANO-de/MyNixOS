@@ -26,6 +26,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Forge terminal UI for OpenCode
+    forge = {
+      url = "path:/home/jano/Proyectos/Forge";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # CachyOS kernel — release branch = CI-built & cached on their Attic.
     # Do NOT override its nixpkgs input (patches/kernel must stay in sync).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
@@ -36,7 +42,7 @@
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
