@@ -61,7 +61,7 @@ in {
     enable = true;
     settings = {
       server_name    = fqdn;
-      public_baseurl = "https://${fqdn}";
+      public_baseurl = "https://${fqdn}:8448";
       listeners = [{
         port           = 8008;
         bind_addresses = [ "127.0.0.1" ];
