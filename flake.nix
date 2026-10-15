@@ -19,6 +19,13 @@
 
     opencode-flake.url = "github:noblepayne/opencode-flake";
 
+    # SimpMusic desktop client, built from the local checkout so patches in
+    # ./patches and the Nix work in flake.nix stay the ones being tested.
+    simpmusic = {
+      url = "path:/home/jano/Documents/SimpMusic";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # CachyOS kernel — release branch = CI-built & cached on their Attic.
     # Do NOT override its nixpkgs input (patches/kernel must stay in sync).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
@@ -29,7 +36,7 @@
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

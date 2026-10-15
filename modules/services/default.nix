@@ -11,5 +11,6 @@
     ./powertop.nix
     ./smartd.nix
     ./waydroid.nix
+    ./matrix.nix
   ];
 }

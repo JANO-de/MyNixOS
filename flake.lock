@@ -271,7 +271,25 @@
         "nixpkgs": "nixpkgs_4",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "opencode-flake": "opencode-flake",
+        "simpmusic": "simpmusic",
         "zen-browser": "zen-browser"
+      }
+    },
+    "simpmusic": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792014163,
+        "narHash": "sha256-1d0+2zPk8k6AIRlduviZ9ntLPlN7x7geaA8RJz0Zuo8=",
+        "path": "/home/jano/Documents/SimpMusic",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/jano/Documents/SimpMusic",
+        "type": "path"
       }
     },
     "systems": {

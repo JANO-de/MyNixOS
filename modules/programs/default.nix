@@ -9,6 +9,7 @@
     ./terminal.nix
     ./dev.nix
     ./apps.nix
+    ./simpmusic.nix
     ./deskflow.nix
     ./moonlight.nix
     ./zathura.nix

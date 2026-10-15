@@ -45,5 +45,7 @@
   modules.programs.heavy.enable = true;
   modules.programs.deskflow.serverAddress = "laptop";
 
+#   modules.programs.simpmusic.enable = true;
+
   system.stateVersion = "26.05";
 }
