@@ -26,4 +26,6 @@
   #   modules.programs.deskflow.role = "client"; modules.programs.deskflow.serverAddress = "desktop";
 
   system.stateVersion = "26.05";
+  modules.programs.deskflow.role = "server";
+  networking.firewall.allowedTCPPorts = [ 24800 ];
 }

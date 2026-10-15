@@ -65,4 +65,6 @@
   nix.settings.auto-optimise-store = true;
 
   system.stateVersion = "26.05";
+  modules.programs.deskflow.role = "client";
+  modules.programs.deskflow.serverAddress = "laptop";
 }
