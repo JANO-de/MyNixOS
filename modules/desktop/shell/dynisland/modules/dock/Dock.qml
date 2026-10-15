@@ -23,31 +23,10 @@ PanelWindow {
     required property var modelData
     screen: modelData
     readonly property var cfg: Config.dock
-<<<<<<< HEAD
-    property var wsList: []
-    readonly property string outName: win.screen ? win.screen.name : ""
-    readonly property bool dodgeHidden: {
-        const ws = wsList.find(x => x.output === outName && x.is_active);
-        if (!ws) return false;
-        const zone = win.screen.height - (cfg.iconSize * cfg.magnification + 50 + cfg.bottomMargin);
-        return Niri.windows.some(w => {
-            if (w.workspace_id !== ws.id || !w.layout) return false;
-            const l = w.layout, p = l.tile_pos_in_workspace_view || [0, 0];
-            const row = l.pos_in_scrolling_layout ? l.pos_in_scrolling_layout[1] : 1;
-            return row > 1 || p[1] + l.tile_size[1] > zone;
-        });
-    }
-    Process {
-        id: wsProc; command: ["niri", "msg", "-j", "workspaces"]
-        stdout: StdioCollector { onStreamFinished: { try { win.wsList = JSON.parse(text) } catch (e) {} } }
-    }
-    Timer { interval: 500; repeat: true; running: cfg.visibility === "dodge"; onTriggered: wsProc.running = true }
-=======
     // visibility: always | autohide | dodge (the old autoHide toggle still counts as autohide)
     readonly property string mode: cfg.behavior !== "always" ? cfg.behavior : (cfg.autoHide ? "autohide" : "always")
     readonly property bool dodging: mode === "dodge" && Niri.busy(win.screen ? win.screen.name : "")
     readonly property bool hideNow: (mode === "autohide" || dodging) && !hh.hovered && win.menuItem === null
->>>>>>> 8d2caf7 (Fixes)
 
     // ---- right-click menu state ----
     property var menuItem: null      // the dock item the menu belongs to (null = closed)
@@ -64,11 +43,7 @@ PanelWindow {
     implicitWidth: Math.max(400, row.baseWidth + cfg.iconSize * 3 + 120)
     implicitHeight: cfg.iconSize * cfg.magnification + 70 + cfg.bottomMargin + 380   // extra room for the context menu (it scrolls beyond this)
     color: "transparent"
-<<<<<<< HEAD
-    exclusiveZone: cfg.visibility === "always" && cfg.reserveSpace && !cfg.autoHide ? bg.height + cfg.bottomMargin * 2 : 0
-=======
     exclusiveZone: cfg.reserveSpace && mode === "always" ? bg.height + cfg.bottomMargin * 2 : 0
->>>>>>> 8d2caf7 (Fixes)
     WlrLayershell.layer: win.menuItem ? WlrLayer.Overlay : WlrLayer.Top   // Overlay while the menu is open: stays above the click catcher
     WlrLayershell.namespace: "dynisland-dock"
     mask: Region { item: hit }
@@ -187,11 +162,7 @@ PanelWindow {
             x: win.menuItem ? 0 : bg.x - 10
             width: win.menuItem ? parent.width : bg.width + 20
             height: win.menuItem ? parent.height
-<<<<<<< HEAD
-                  : (bg.hidden ? 6 : win.cfg.iconSize * win.cfg.magnification + 50 + win.cfg.bottomMargin)
-=======
                   : (win.hideNow ? 6 : win.cfg.iconSize * win.cfg.magnification + 50 + win.cfg.bottomMargin)
->>>>>>> 8d2caf7 (Fixes)
             anchors.bottom: parent.bottom
         }
 
@@ -200,21 +171,7 @@ PanelWindow {
 
         Rectangle {
             id: bg
-<<<<<<< HEAD
-            readonly property bool hidden: _isHidden()
-            function _isHidden() {
-                if (cfg.visibility === "always") return false;
-                if (cfg.visibility === "autohide") return !hh.hovered;
-                // dodge: hide while a window overlaps the dock area;
-                // fall back to autohide if niri geometry unsupported
-                if (cfg.visibility === "dodge") {
-                    return win.dodgeHidden && !hh.hovered;
-                }
-                return false;
-            }
-=======
             readonly property bool hidden: win.hideNow
->>>>>>> 8d2caf7 (Fixes)
             anchors.horizontalCenter: parent.horizontalCenter
             y: hidden ? parent.height + 20 : parent.height - height - win.cfg.bottomMargin
             Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
