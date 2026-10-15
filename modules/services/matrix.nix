@@ -39,7 +39,6 @@ in {
       sslCertificate    = "${certDir}/cert.pem";
       sslCertificateKey = "${certDir}/key.pem";
       listen = [
-        { addr = "0.0.0.0"; port = 443;  ssl = true; }
         { addr = "0.0.0.0"; port = 8448; ssl = true; }
       ];
       locations."~ ^(/_matrix|/_synapse/client)" = {
@@ -107,5 +106,5 @@ in {
     };
   };
 
-  networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 443 8448 ];
+  networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 8448 ];
 }
