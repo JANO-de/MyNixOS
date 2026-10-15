@@ -6,5 +6,6 @@
     vesktop
     zapzap
     simplex-chat-desktop
+    element-desktop
   ];
 }
