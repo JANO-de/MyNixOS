@@ -12,7 +12,7 @@
   options.modules.programs.gaming = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false; # debloat: no Steam/Prism/Heroic. Set true on a host to bring them back
       description = "Install gaming apps (Steam, Prism Launcher, Heroic, GameScope) and their runtimes. Disable for low-RAM/small-disk machines to keep the store small enough for a live-USB installer.";
     };
   };

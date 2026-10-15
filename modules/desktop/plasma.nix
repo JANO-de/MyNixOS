@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 # Plasma 6 desktop.
 #
@@ -12,5 +12,11 @@
   # Plasma needs the polkit stack for authorisation dialogs. It used to be
   # pulled in by the GNOME module; keep the Plasma module self-contained so a
   # Plasma-only tablet still gets it.
+  # Debloat: drop optional KDE apps/wallpapers the niri session never opens.
+  # (excludePackages only filters Plasma's OPTIONAL list; the session itself is untouched.)
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    kate okular gwenview spectacle elisa khelpcenter krdp kdepim-runtime plasma-workspace-wallpapers
+  ];
+
   security.polkit.enable = lib.mkIf config.modules.desktop.plasma.enable true;
 }

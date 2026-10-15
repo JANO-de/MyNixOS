@@ -45,6 +45,9 @@ PanelWindow {
     readonly property bool trayOpen: UiState.trayStack.length > 0
     readonly property bool panelOpen: UiState.panel !== ""
     readonly property string mode: trayOpen ? "tray" : panelOpen ? "panel" : Notifs.current ? "notif" : full ? "full" : Osd.active ? "osd" : "idle"
+    // visibility: always | autohide | dodge. Only the idle pill hides; banners, OSD, panels and hover always show.
+    readonly property bool dodging: cfg.behavior === "dodge" && Niri.busy(win.screen ? win.screen.name : "")
+    readonly property bool hideNow: (cfg.behavior === "autohide" || dodging) && mode === "idle" && !hovered && !ph.hovered
     onHoveredChanged: Notifs.hold = hovered      // hovering a banner pauses its auto-hide
     onFullChanged: Sys.watching = full          // poll wifi/brightness only while open
 
@@ -117,7 +120,12 @@ PanelWindow {
     Rectangle {
         id: pill
         x: (win.width - width) / 2
+<<<<<<< HEAD
         y: hidden ? -height : cfg.topMargin
+=======
+        y: win.hideNow ? 4 - height : cfg.topMargin     // hidden = only a 4 px sliver stays (hover it to reveal)
+        Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+>>>>>>> 8d2caf7 (Fixes)
         width: win.sizes[win.mode][0]
         height: win.sizes[win.mode][1]
         radius: Math.min(height / 2, cfg.fullRadius)
@@ -130,6 +138,7 @@ PanelWindow {
         Behavior on width  { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
         Behavior on height { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
 
+        HoverHandler { id: ph }   // always on: reveals a hidden island
         HoverHandler {
             enabled: cfg.expandOnHover
             onHoveredChanged: {

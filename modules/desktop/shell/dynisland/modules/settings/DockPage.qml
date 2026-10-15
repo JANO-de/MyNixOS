@@ -9,10 +9,17 @@ Page {
         Toggle { checked: Config.dock.enabled; onToggled: Config.dock.enabled = !Config.dock.enabled } }
     SettingRow { label: "Launcher button"; hint: "NixOS icon that opens the app drawer"
         Toggle { checked: Config.dock.launcher; onToggled: Config.dock.launcher = !Config.dock.launcher } }
+<<<<<<< HEAD
     SettingRow { label: "Visibility"
         Chips { current: Config.dock.visibility
                 model: [ { label: "Always", value: "always" }, { label: "Auto-hide", value: "autohide" }, { label: "Dodge", value: "dodge" } ]
                 onPicked: v => { Config.dock.visibility = v; Config.dock.autoHide = v === "autohide" } } }
+=======
+    SettingRow { label: "Visibility"; hint: "Dodge = hides while a window is on the screen's workspace (hover the bottom edge to show it)"
+        Chips { model: [{ label: "Always show", value: "always" }, { label: "Auto-hide", value: "autohide" }, { label: "Dodge windows", value: "dodge" }]
+            current: Config.dock.behavior !== "always" ? Config.dock.behavior : (Config.dock.autoHide ? "autohide" : "always")
+            onPicked: v => { Config.dock.behavior = v; Config.dock.autoHide = false } } }
+>>>>>>> 8d2caf7 (Fixes)
     SettingRow { label: "Reserve space"; hint: "Windows won't go under the dock"
         Toggle { checked: Config.dock.reserveSpace; onToggled: Config.dock.reserveSpace = !Config.dock.reserveSpace } }
     SettingRow { label: "Tray menu in right-click"; hint: "Mute, status, quit... from the app's tray icon"
