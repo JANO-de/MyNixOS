@@ -8,6 +8,7 @@
     ../../modules/hardware
     ../../modules/hardware/elements-drive.nix
     ../../modules/services
+    ../../modules/services/matrix.nix
     ../../modules/desktop
     ../../modules/programs # full set
   ];
