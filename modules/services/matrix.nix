@@ -80,9 +80,6 @@ in {
       };
       enable_registration                = false;
       allow_public_rooms_over_federation = false;
-      app_service_config_files = [
-        "/var/lib/mautrix-whatsapp/whatsapp-registration.yaml"
-      ];
     };
     extraConfigFiles = [ "/var/lib/matrix-synapse/secrets.yaml" ];
   };
