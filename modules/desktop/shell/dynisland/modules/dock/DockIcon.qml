@@ -33,6 +33,7 @@ Item {
                                  * Math.exp(-Math.pow(mouseX - slot, 2) / (2 * sigma * sigma))
     readonly property var wins: Niri.windowsFor(item.appId)
     readonly property bool running: wins.length > 0
+    readonly property bool focused: wins.length > 0 && wins.some(w => w.is_focused)
 
     // Try the desktop entry's icon, then the app id in a few spellings, then a generic icon.
     readonly property string iconSrc: {
@@ -56,6 +57,14 @@ Item {
     width: base * mag; height: base * mag
     Behavior on width { enabled: ic.mouseX < -5000; NumberAnimation { duration: 140 } }   // smooth only when leaving
 
+    Rectangle {   // hover / focused tile behind the icon
+        anchors { fill: parent; margins: -5 }
+        radius: Math.min(width, height) * 0.28
+        color: ma.containsMouse ? "#26ffffff" : (ic.focused ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.22) : "transparent")
+        border.width: ma.containsMouse || ic.focused ? 1 : 0
+        border.color: ic.focused ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.5) : "#30ffffff"
+        Behavior on color { ColorAnimation { duration: 120 } }
+    }
     Image {
         id: img
         anchors.fill: parent
@@ -76,9 +85,10 @@ Item {
             Rectangle {
                 required property int index
                 readonly property var w: ic.wins[index]
-                width: 5; height: 5; radius: 2.5
-                color: Theme.surfaceFg
-                opacity: w && w.is_focused ? 1 : 0.45
+                width: w && w.is_focused ? 14 : 5; height: 4; radius: 2   // focused window = longer pill
+                Behavior on width { NumberAnimation { duration: 140 } }
+                color: w && w.is_focused ? Theme.primary : Theme.surfaceFg
+                opacity: w && w.is_focused ? 1 : 0.5
                 MouseArea { anchors { fill: parent; margins: -3 } onClicked: if (parent.w) Niri.focus(parent.w.id) }
             }
         }
@@ -88,7 +98,8 @@ Item {
     Rectangle {
         visible: ma.containsMouse; opacity: visible ? 1 : 0
         anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.top; bottomMargin: 10 }
-        width: tip.implicitWidth + 20; height: 26; radius: 8; color: Theme.surfaceContainerHigh
+        width: tip.implicitWidth + 22; height: 28; radius: 10; color: Theme.surfaceContainerHigh
+        border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.14)
         Text { id: tip; anchors.centerIn: parent; color: Theme.surfaceFg; font.pixelSize: 12
                text: ic.item.launcher ? "Apps" : (ic.item.entry ? ic.item.entry.name : (ic.item.appId || "")) }
     }

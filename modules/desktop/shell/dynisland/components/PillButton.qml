@@ -12,7 +12,7 @@ Rectangle {
     opacity: enabled ? 1 : 0.4
     color: filled ? (ma.containsMouse ? Qt.lighter(Theme.primary, 1.1) : Theme.primary)
                   : (ma.containsMouse ? Theme.surfaceContainerHigh : "transparent")
-    border.width: filled ? 0 : 1; border.color: Theme.outline
+    border.width: 1; border.color: filled ? Qt.lighter(Theme.primary, 1.3) : Theme.outline
     scale: ma.pressed ? 0.96 : 1
     Behavior on color { ColorAnimation { duration: 100 } }
     Behavior on scale { NumberAnimation { duration: 80 } }

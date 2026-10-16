@@ -5,6 +5,7 @@ import qs.components
 
 Page {
     title: "Dock"
+    DockPreview {}
     SettingRow { label: "Enabled"
         Toggle { checked: Config.dock.enabled; onToggled: Config.dock.enabled = !Config.dock.enabled } }
     SettingRow { label: "Launcher button"; hint: "NixOS icon that opens the app drawer"
@@ -21,6 +22,8 @@ Page {
         Toggle { checked: Config.dock.windowList; onToggled: Config.dock.windowList = !Config.dock.windowList } }
     SettingRow { label: "Running indicators"; hint: "Dots under open apps"
         Toggle { checked: Config.dock.showRunning; onToggled: Config.dock.showRunning = !Config.dock.showRunning } }
+    SettingRow { label: "Media player"; hint: "Now-playing card with controls, shown while something plays"
+        Toggle { checked: Config.dock.media; onToggled: Config.dock.media = !Config.dock.media } }
     SettingRow { label: "Corner radius"
         SSlider { from: 0; to: 40; stepSize: 1; suffix: " px"; value: Config.dock.radius; onMoved: v => Config.dock.radius = v } }
     SettingRow { label: "Icon size"

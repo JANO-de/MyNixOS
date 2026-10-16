@@ -29,7 +29,7 @@ Singleton {
     function applySaved(text) {
         try {
             const j = JSON.parse(text);
-            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "server", "calendar"]) {
+            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "server", "calendar", "profile"]) {
                 if (!j[sec]) continue;
                 for (const k in j[sec]) root[sec][k] = j[sec][k];
             }
@@ -54,6 +54,7 @@ Singleton {
     property alias system: adapter.system
     property alias server: adapter.server
     property alias calendar: adapter.calendar
+    property alias profile: adapter.profile
 
     // Positions is a plain object: reassign it whole so change signals fire.
     function setWidgetPos(id, x, y) {
@@ -136,6 +137,8 @@ Singleton {
                 property bool windowList: true        // right-click menu lists open windows
                 property int radius: 24               // dock corner radius
                 property bool showRunning: true       // dots under running apps
+                property bool media: true             // now-playing card inside the dock
+                property string unpinMode: "autohide" // mode the pin button switches to when unpinned: autohide | dodge
                 property int iconSize: 52
                 property real magnification: 1.7
                 property int bottomMargin: 10
@@ -151,6 +154,15 @@ Singleton {
                 property int cardRadius: 28
                 property bool calendar: true
                 property var positions: ({})          // { id: {x, y} }
+            }
+
+            // profile card in Settings (sidebar header + Profile page)
+            property JsonObject profile: JsonObject {
+                property string name: ""                              // "" = login name
+                property string description: ""
+                property string imageDir: root.home + "/Pictures/Profile"   // folder the pickers list
+                property string avatar: ""                            // full path, "" = none
+                property string banner: ""                            // full path, "" = none
             }
 
             // cards shown on the lock screen (Settings > Desktop widgets)

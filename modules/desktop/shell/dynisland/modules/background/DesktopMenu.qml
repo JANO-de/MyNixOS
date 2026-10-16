@@ -74,7 +74,7 @@ Scope {
                 width: 340; height: subCol.implicitHeight + 24
                 radius: 26; color: Theme.surfaceContainer
                 MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons }   // swallow clicks
-                Column { id: subCol; x: 12; y: 12; width: parent.width - 24; spacing: 2 }
+                Column { id: subCol; objectName: "plainCol"; x: 12; y: 12; width: parent.width - 24; spacing: 2 }
             }
 
             FolderListModel {

@@ -5,6 +5,7 @@ import qs.components
 
 Page {
     title: "Island"
+    IslandPreview {}
     SettingRow { label: "Enabled"
         Toggle { checked: Config.island.enabled; onToggled: Config.island.enabled = !Config.island.enabled } }
     SettingRow { label: "Visibility"; hint: "Only the idle pill hides; notifications, volume and panels still appear. Hover the top edge to show it"

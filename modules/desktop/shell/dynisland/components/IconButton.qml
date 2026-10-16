@@ -12,6 +12,7 @@ Rectangle {
 
     implicitWidth: diameter; implicitHeight: diameter; radius: diameter / 2
     color: active ? Theme.primary : (ma.containsMouse ? "#3affffff" : "#22ffffff")
+    border.width: 1; border.color: active ? Qt.lighter(Theme.primary, 1.3) : "#44ffffff"
     scale: ma.pressed ? 0.92 : 1
     Behavior on color { ColorAnimation { duration: 120 } }
     Behavior on scale { NumberAnimation { duration: 90 } }

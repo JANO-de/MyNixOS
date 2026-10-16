@@ -91,6 +91,7 @@ PanelWindow {
         height: win.sizes[win.mode][1]
         radius: Math.min(height / 2, cfg.fullRadius)
         color: "black"
+        border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.2)   // same outline as the dock
         // "pulse" cava style: the whole island breathes with the bass
         scale: Config.cava.style === "pulse" ? 1 + Math.min(1, Cava.level * Config.cava.sensitivity) * 0.05 : 1
         Behavior on scale { NumberAnimation { duration: 60 } }
@@ -111,6 +112,21 @@ PanelWindow {
 
         // behind the pill
         GlowRing { z: -1 }
+        Rectangle {   // soft drop shadow (same as the dock)
+            z: -2; radius: parent.radius + 2; color: "#40000000"; opacity: win.hideNow ? 0 : 1
+            anchors { fill: parent; leftMargin: -3; rightMargin: -3; topMargin: 8; bottomMargin: -8 }
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+        }
+        // glass sheen + inner highlight (behind content)
+        Rectangle {
+            anchors.fill: parent; radius: parent.radius
+            gradient: Gradient {
+                GradientStop { position: 0; color: "#1cffffff" }
+                GradientStop { position: 0.55; color: "transparent" }
+            }
+        }
+        Rectangle { anchors { fill: parent; margins: 1 } radius: Math.max(0, parent.radius - 1)
+                    color: "transparent"; border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.05) }
         // inside the pill (behind content)
         Visualizer {}
 

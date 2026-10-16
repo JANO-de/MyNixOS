@@ -39,8 +39,13 @@ PanelWindow {
     // Lists the entries of the current tray (sub)menu. Empty when trayStack is empty.
     QsMenuOpener { id: trayOpener; menu: win.trayStack.length ? win.trayStack[win.trayStack.length - 1] : null }
 
+    // media card (+ separator) width, animated in/out; shifts the icons left so everything stays centered
+    readonly property bool showMedia: cfg.media && Media.player !== null
+    property real mw: showMedia ? 272 : 0
+    Behavior on mw { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+
     anchors { bottom: true }
-    implicitWidth: Math.max(400, row.baseWidth + cfg.iconSize * 3 + 120)
+    implicitWidth: Math.max(400, row.baseWidth + cfg.iconSize * 3 + 120 + 272)
     implicitHeight: cfg.iconSize * cfg.magnification + 70 + cfg.bottomMargin + 380   // extra room for the context menu (it scrolls beyond this)
     color: "transparent"
     exclusiveZone: cfg.reserveSpace && mode === "always" ? bg.height + cfg.bottomMargin * 2 : 0
@@ -154,7 +159,7 @@ PanelWindow {
 
         // Mouse x relative to window center. HoverHandler is passive: clicks still reach the icons.
         HoverHandler { id: hh }
-        readonly property real mouseX: hh.hovered ? hh.point.position.x - width / 2 : -10000
+        readonly property real mouseX: hh.hovered ? hh.point.position.x - width / 2 + win.mw / 2 : -10000
 
         // hit area for the input mask (dock body, or a thin strip when hidden)
         Item {
@@ -169,6 +174,11 @@ PanelWindow {
         // click anywhere else (while the menu is open) closes it
         MouseArea { anchors.fill: parent; enabled: win.menuItem !== null; acceptedButtons: Qt.AllButtons; onClicked: win.menuItem = null }
 
+        Rectangle {   // soft drop shadow under the dock (follows bg, slides away with it)
+            x: bg.x - 3; y: bg.y + 8; width: bg.width + 6; height: bg.height; radius: bg.radius + 2
+            color: "#38000000"; opacity: bg.hidden ? 0 : 1
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+        }
         Rectangle {
             id: bg
             readonly property bool hidden: win.hideNow
@@ -176,16 +186,26 @@ PanelWindow {
             y: hidden ? parent.height + 20 : parent.height - height - win.cfg.bottomMargin
             Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
 
-            width: row.width + 28
+            width: row.width + 28 + win.mw
             height: win.cfg.iconSize + 22
             radius: win.cfg.radius
             color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, Config.appearance.glassOpacity)
-            border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.14)
+            border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.2)
+
+            Rectangle {   // glass sheen + inner highlight
+                anchors.fill: parent; radius: parent.radius
+                gradient: Gradient {
+                    GradientStop { position: 0; color: "#1cffffff" }
+                    GradientStop { position: 0.55; color: "transparent" }
+                }
+            }
+            Rectangle { anchors { fill: parent; margins: 1 } radius: Math.max(0, parent.radius - 1)
+                        color: "transparent"; border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.05) }
 
             Row {
                 id: row
                 spacing: 10
-                anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 11 }
+                anchors { horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: -win.mw / 2; bottom: parent.bottom; bottomMargin: 11 }
                 readonly property real baseWidth: win.items.length * (win.cfg.iconSize + spacing)
                 Repeater {
                     model: win.items
@@ -202,6 +222,33 @@ PanelWindow {
                         onReordered: (id, ni) => win.movePinned(id, ni)
                     }
                 }
+            }
+
+            // separator + now-playing card, right of the icons
+            Rectangle { visible: win.mw > 1; opacity: win.mw / 272; width: 1; height: win.cfg.iconSize * 0.6; color: "#44ffffff"
+                        anchors { left: row.right; leftMargin: 10; verticalCenter: mediaCard.verticalCenter } }
+            DockMedia {
+                id: mediaCard
+                visible: win.mw > 1; opacity: win.mw / 272
+                height: win.cfg.iconSize
+                anchors { left: row.right; leftMargin: 22; bottom: parent.bottom; bottomMargin: 11 }
+            }
+        }
+
+        // ---- pin button: pinned = always visible; unpinned = auto-hide/dodge (hover the bottom edge still reveals it)
+        IconButton {
+            id: pinBtn
+            readonly property bool pinned: win.mode === "always"
+            icon: "keep"; active: pinned; diameter: 28; iconSize: 16
+            z: 5
+            anchors { right: bg.right; rightMargin: 8; bottom: bg.top; bottomMargin: 6 }
+            opacity: hh.hovered ? 1 : 0
+            enabled: opacity > 0.5
+            Behavior on opacity { NumberAnimation { duration: 150 } }
+            onClicked: {
+                if (pinned) Config.dock.behavior = Config.dock.unpinMode === "dodge" ? "dodge" : "autohide";
+                else { Config.dock.unpinMode = win.mode; Config.dock.behavior = "always" }
+                Config.dock.autoHide = false;
             }
         }
 
