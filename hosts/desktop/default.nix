@@ -47,6 +47,9 @@
   modules.programs.gaming.enable = false; # debloat
   modules.programs.deskflow.serverAddress = "laptop";
 
+  # End4-pc nixos port enable
+  modules.desktop.end4pc.enable = false;
+
 #   modules.programs.simpmusic.enable = true;
 
   system.stateVersion = "26.05";

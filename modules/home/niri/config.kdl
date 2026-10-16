@@ -271,3 +271,12 @@ environment {
 // saving live-reloads the compositor.
 include optional=true "config.d/15-outputs.kdl"
 // --- /Monitor output overrides ---
+
+// --- end4-pC shell (only present when modules.desktop.end4pc.enable) ---
+// Binds in the included files override the ones above (later include wins).
+// qssettings/* is written by the shell's own settings page (writable dir).
+include optional=true "config.d/20-end4pc.kdl"
+include optional=true "qssettings/outputs.kdl"
+include optional=true "qssettings/autostart.kdl"
+include optional=true "qssettings/binds.kdl"
+// --- /end4-pC ---

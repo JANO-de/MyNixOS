@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "end4-pc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792014493,
+        "narHash": "sha256-a1sbp/0Xr9Gi0kjgbjabyg4FTr8J3ssgOOkKqvO8bSg=",
+        "owner": "pctrade",
+        "repo": "end4-pC",
+        "rev": "8fbb6716cba628a13103e665e9538021683a7250",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pctrade",
+        "repo": "end4-pC",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -60,11 +76,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792162419,
-        "narHash": "sha256-Z6njh5FvPdTVbzW6Tsij7O5L67/oCbLLKdoBDScbP/o=",
+        "lastModified": 1792181643,
+        "narHash": "sha256-maevvyAzhiAuKdUkt6rwHI5/bgeZjyW0CExEtziYjSU=",
         "owner": "JANO-de",
         "repo": "Forge-TUI",
-        "rev": "5b7bd397bef67b36577b6c748fb2544dfdb314f2",
+        "rev": "6f4bbdbe1c6ece3cfd4d8be4757bf282a6352b28",
         "type": "github"
       },
       "original": {
@@ -303,6 +319,7 @@
     },
     "root": {
       "inputs": {
+        "end4-pc": "end4-pc",
         "forge": "forge",
         "home-manager": "home-manager",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
