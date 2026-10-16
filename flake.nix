@@ -22,13 +22,13 @@
     # SimpMusic desktop client, built from the local checkout so patches in
     # ./patches and the Nix work in flake.nix stay the ones being tested.
     simpmusic = {
-      url = "path:/home/jano/Documents/SimpMusic";
+      url = "path:/home/jano/Proyectos/SimpMusic";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Forge terminal UI for OpenCode
     forge = {
-      url = "path:/home/jano/Proyectos/Forge";
+      url = "github:JANO-de/Forge-TUI";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

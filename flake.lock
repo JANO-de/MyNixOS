@@ -60,14 +60,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1792150627,
-        "narHash": "sha256-aAjv/CvKqElSuYUnfSO0RDwBdD7x3ZuoSCwbNlxfM48=",
-        "path": "/home/jano/Proyectos/Forge",
-        "type": "path"
+        "lastModified": 1792162419,
+        "narHash": "sha256-Z6njh5FvPdTVbzW6Tsij7O5L67/oCbLLKdoBDScbP/o=",
+        "owner": "JANO-de",
+        "repo": "Forge-TUI",
+        "rev": "5b7bd397bef67b36577b6c748fb2544dfdb314f2",
+        "type": "github"
       },
       "original": {
-        "path": "/home/jano/Proyectos/Forge",
-        "type": "path"
+        "owner": "JANO-de",
+        "repo": "Forge-TUI",
+        "type": "github"
       }
     },
     "home-manager": {
@@ -319,13 +322,13 @@
         ]
       },
       "locked": {
-        "lastModified": 1792014163,
-        "narHash": "sha256-1d0+2zPk8k6AIRlduviZ9ntLPlN7x7geaA8RJz0Zuo8=",
-        "path": "/home/jano/Documents/SimpMusic",
+        "lastModified": 1792096495,
+        "narHash": "sha256-idMb+B3w50VpxuiMrGQ5S4QXaNm7HeoZOKnW31KXIRo=",
+        "path": "/home/jano/Proyectos/SimpMusic",
         "type": "path"
       },
       "original": {
-        "path": "/home/jano/Documents/SimpMusic",
+        "path": "/home/jano/Proyectos/SimpMusic",
         "type": "path"
       }
     },
