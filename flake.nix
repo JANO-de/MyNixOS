@@ -53,7 +53,7 @@
     mkHost = { host, niriEnabled ? true, cachyos ? true }: lib.nixosSystem {
       inherit system;
       specialArgs = { inherit inputs theme niriEnabled; };
-      modules = [
+      modules = [ forge.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
         ./hosts/${host}/default.nix
       ]

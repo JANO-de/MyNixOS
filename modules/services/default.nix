@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./keychron.nix
     ./options.nix
     ./base.nix
     ./flatpak.nix

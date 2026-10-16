@@ -112,4 +112,5 @@
       };
     };
   };
+  programs.forge.enable = true;
 }
