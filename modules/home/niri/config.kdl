@@ -138,8 +138,8 @@ binds {
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
     // Brightness: change it, then tell the island OSD the new value (0 to 1).
-    XF86MonBrightnessUp   { spawn-sh "brightnessctl -q set 5%+; qs -c dynisland ipc call osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
-    XF86MonBrightnessDown { spawn-sh "brightnessctl -q set 5%-; qs -c dynisland ipc call osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
+    XF86MonBrightnessUp   { spawn-sh "brightnessctl -q set 5%+; dynisland ipc osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
+    XF86MonBrightnessDown { spawn-sh "brightnessctl -q set 5%-; dynisland ipc osd show brightness $(brightnessctl -m | cut -d, -f4 | tr -d '%' | awk '{print $1/100}')"; }
 
     XF86AudioPrev         allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioPlay         allow-when-locked=true { spawn-sh "playerctl play-pause"; }
@@ -147,7 +147,7 @@ binds {
     XF86AudioNext         allow-when-locked=true { spawn-sh "playerctl next"; }
     XF86AudioStop         allow-when-locked=true { spawn-sh "playerctl stop"; }
 
-    Mod+Q repeat=false { close-window; }
+    Mod+W repeat=false { close-window; }   // was Mod+Q (now the quick-settings pulldown)
 
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
