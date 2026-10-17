@@ -8,7 +8,9 @@ import Quickshell
 Singleton {
     id: root
     property bool settingsOpen: false
-    property bool quickOpen: false      // quick-settings pulldown (modules/island/QuickPull)
+    property bool quickOpen: false      // quick-settings blob (modules/island/QuickPull)
+    property bool quickPinned: false    // opened by keybind: stays until toggled/click-outside
+    property real pillW: 200            // island pill width (primary screen), blob anchors to its right edge
     property bool launcherOpen: false   // app drawer (modules/launcher)
     property bool locked: false         // session lock active (modules/lock)
     property bool islandPinned: false   // keep island expanded (IPC: island toggle)

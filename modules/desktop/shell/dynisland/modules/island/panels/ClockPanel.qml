@@ -6,8 +6,8 @@ import qs.components
 
 PanelFrame {
     id: p
-    title: tab === 0 ? "Stopwatch" : "Timer"; icon: tab === 0 ? "timer" : "hourglass_empty"
-    property int tab: Clocks.tRunning && !Clocks.swRunning ? 1 : 0
+    title: tab === 0 ? "Stopwatch" : tab === 1 ? "Timer" : "Pomodoro"; icon: tab === 0 ? "timer" : tab === 1 ? "hourglass_empty" : "local_cafe"
+    property int tab: Pomodoro.running ? 2 : Clocks.tRunning && !Clocks.swRunning ? 1 : 0
 
     Column {
         anchors.fill: parent; spacing: 12
@@ -15,11 +15,11 @@ PanelFrame {
         Row {
             spacing: 8
             Repeater {
-                model: ["Stopwatch", "Timer"]
+                model: ["Stopwatch", "Timer", "Pomodoro"]
                 Rectangle {
                     required property string modelData
                     required property int index
-                    width: 96; height: 30; radius: 15
+                    width: 90; height: 30; radius: 15
                     color: p.tab === index ? Theme.primary : "#18ffffff"
                     Text { anchors.centerIn: parent; text: modelData; font.pixelSize: 13
                            color: p.tab === index ? Theme.primaryFg : "white" }
@@ -32,7 +32,7 @@ PanelFrame {
         Text {
             width: parent.width; horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 52; font.weight: Font.Bold; font.family: "monospace"; color: "white"
-            text: p.tab === 0 ? Clocks.fmt(Clocks.swMs, true) : Clocks.fmt(Clocks.tLeft, false)
+            text: p.tab === 0 ? Clocks.fmt(Clocks.swMs, true) : p.tab === 1 ? Clocks.fmt(Clocks.tLeft, false) : Pomodoro.fmt(Pomodoro.leftMs)
         }
 
         // ---- stopwatch controls
@@ -79,6 +79,15 @@ PanelFrame {
                          onClicked: Clocks.tToggle() }
             PillButton { label: "+1m"; enabled: !Clocks.tRunning; onClicked: Clocks.tSet(Clocks.tDuration + 60000) }
             PillButton { label: "Reset"; icon: "restart_alt"; onClicked: Clocks.tReset() }
+        }
+        // ---- pomodoro
+        Text { visible: p.tab === 2; width: parent.width; horizontalAlignment: Text.AlignHCenter; color: "#bbffffff"; font.pixelSize: 13
+               text: Pomodoro.label + "  ·  session " + (Pomodoro.done + 1) }
+        Row {
+            visible: p.tab === 2; anchors.horizontalCenter: parent.horizontalCenter; spacing: 10
+            PillButton { label: Pomodoro.running ? "Pause" : "Start"; icon: Pomodoro.running ? "pause" : "play_arrow"; filled: true; onClicked: Pomodoro.toggle() }
+            PillButton { label: "Skip"; icon: "skip_next"; onClicked: Pomodoro.skip() }
+            PillButton { label: "Reset"; icon: "restart_alt"; onClicked: Pomodoro.reset() }
         }
         Rectangle {   // timer progress
             visible: p.tab === 1; width: parent.width; height: 6; radius: 3; color: "#22ffffff"

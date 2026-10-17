@@ -43,9 +43,10 @@ ShellRoot {
 
     // ---- IPC (bind in niri config.kdl, e.g. spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle")
     IpcHandler { target: "settings"; function toggle(): void { UiState.settingsOpen = !UiState.settingsOpen } }
-    IpcHandler { target: "quick";    function toggle(): void { UiState.quickOpen = !UiState.quickOpen } }
+    IpcHandler { target: "quick";    function toggle(): void { if (UiState.quickOpen) { UiState.quickOpen = false; UiState.quickPinned = false } else { UiState.quickPinned = true; UiState.quickOpen = true } } }
     IpcHandler { target: "tools"
         function emoji(): void { UiState.openPanel("emoji") }
+        function clipboard(): void { UiState.openPanel("clipboard") }
         function color(): void { Sys.pickColor() }
     }
     IpcHandler { target: "island";   function toggle(): void { UiState.islandPinned = !UiState.islandPinned } }

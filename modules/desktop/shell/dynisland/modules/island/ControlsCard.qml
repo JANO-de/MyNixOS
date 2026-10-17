@@ -10,6 +10,7 @@ import qs.components
 ColumnLayout {
     id: c
     spacing: 8
+    property bool inPull: false          // true in the quick-settings pulldown: shows the extra toggle row
     readonly property var audio: Pipewire.defaultAudioSink ? Pipewire.defaultAudioSink.audio : null
 
     RowLayout {
@@ -24,6 +25,7 @@ ColumnLayout {
         IconButton { diameter: 38; icon: "settings"; onClicked: UiState.settingsOpen = true }
     }
     RowLayout {
+        visible: c.inPull   // pulldown-only row
         spacing: 8
         IconButton { diameter: 32; iconSize: 17; icon: "nightlight"; active: Sys.nightLight; onClicked: Sys.toggleNightLight()
                      tip: Sys.nightLight ? "Night light: on" : "Night light: off" }
@@ -33,6 +35,9 @@ ColumnLayout {
                      tip: Sys.recording ? "Stop screen recording" : "Record screen (pick area)" }
         IconButton { diameter: 32; iconSize: 17; icon: "center_focus_strong"; active: Sys.focusMode; onClicked: Sys.toggleFocus()
                      tip: Sys.focusMode ? "Focus mode: on (DND + dim)" : "Focus mode: off" }
+        IconButton { visible: Sys.powerProfile !== ""; diameter: 32; iconSize: 17
+                     icon: Sys.powerProfile === "performance" ? "speed" : (Sys.powerProfile === "power-saver" ? "battery_saver" : "balance")
+                     active: Sys.powerProfile !== "balanced"; onClicked: Sys.cyclePowerProfile(); tip: "Power profile: " + Sys.powerProfile }
         IconButton { diameter: 32; iconSize: 17; icon: "content_paste"; onClicked: UiState.openPanel("clipboard"); tip: "Clipboard history" }
     }
     ValueSlider {

@@ -20,6 +20,7 @@ import qs.components
 
 PanelWindow {
     id: win
+    visible: !(Sys.focusMode && Config.system.focusHide)   // Focus mode hides it
     required property var modelData
     screen: modelData
     readonly property var cfg: Config.dock

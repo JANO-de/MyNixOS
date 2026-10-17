@@ -13,7 +13,7 @@ let
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
     cava matugen brightnessctl networkmanager curl niri coreutils bash
-    vdirsyncer findutils libnotify wl-clipboard hyprpicker gammastep wf-recorder xdg-utils tailscale openrgb
+    vdirsyncer findutils libnotify wl-clipboard hyprpicker gammastep wf-recorder power-profiles-daemon xdg-utils tailscale openrgb
   ];
 
   # Icon font copied to a fixed path (works regardless of fontconfig/PATH)
@@ -101,6 +101,8 @@ in {
     openFirewall = true;                       # UDP 41641: direct connections (relays work without it)
     extraSetFlags = [ "--operator=jano" ];
   };
+  # Power profiles (Sys.cyclePowerProfile -> powerprofilesctl)
+  services.power-profiles-daemon.enable = lib.mkDefault true;
   # OpenRGB: no daemon, the shell just calls the CLI (needs i2c for motherboard/RAM LEDs)
   hardware.i2c.enable = true;
   services.udev.packages = [ pkgs.openrgb ];

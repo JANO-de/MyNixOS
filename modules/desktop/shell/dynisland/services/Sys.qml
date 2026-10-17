@@ -65,6 +65,27 @@ Singleton {
     }
     function pickColor() { pickProc.running = false; pickProc.running = true }
 
+    // ---- Power profile (power-profiles-daemon): cycles the profiles it reports
+    property string powerProfile: ""      // "" = daemon unavailable -> button hidden
+    property var _profiles: []
+    Process {
+        id: ppGet; command: ["powerprofilesctl", "get"]
+        stdout: SplitParser { onRead: l => { const t = l.trim(); if (t !== "") root.powerProfile = t } }
+    }
+    Process {
+        id: ppList; command: ["sh", "-c", "powerprofilesctl list | sed -n 's/^[* ] \\([a-z-]*\\):$/\\1/p'"]
+        stdout: SplitParser { onRead: l => { if (l.trim() !== "") root._profiles = root._profiles.concat([l.trim()]) } }
+    }
+    function refreshPowerProfile() { _profiles = []; ppList.running = false; ppList.running = true; ppGet.running = false; ppGet.running = true }
+    function cyclePowerProfile() {
+        if (_profiles.length < 2) return;
+        const n = _profiles[(_profiles.indexOf(powerProfile) + 1) % _profiles.length];
+        powerProfile = n;
+        Quickshell.execDetached(["powerprofilesctl", "set", n]);
+        Activities.push("power", "Power: " + n, "bolt", 1, "#ffb300", 3)
+    }
+    Component.onCompleted: refreshPowerProfile()
+
     // ---- Idle inhibit ("keep awake"): holds a systemd-inhibit process while on
     property bool inhibit: false
     Process { id: inhibitProc; command: ["systemd-inhibit", "--what=idle:sleep", "--who=dynisland", "--why=user requested", "sleep", "infinity"] }

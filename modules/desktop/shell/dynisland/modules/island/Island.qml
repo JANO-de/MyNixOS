@@ -105,6 +105,7 @@ PanelWindow {
         Behavior on width  { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
         Behavior on height { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
 
+        Binding { target: UiState; property: "pillW"; value: pill.width; when: win.screen === Quickshell.screens[0] }
         HoverHandler { id: ph }   // always on: reveals a hidden island
         HoverHandler {
             enabled: cfg.expandOnHover

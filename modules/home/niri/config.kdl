@@ -123,6 +123,10 @@ binds {
     Super+Tab   { toggle-overview; }
     Mod+Ctrl+V  { toggle-window-floating; }
     Mod+B       { spawn "zen"; }
+    Mod+Q       { spawn "dynisland" "ipc" "quick" "toggle"; }
+    Mod+V       { spawn "dynisland" "ipc" "tools" "clipboard"; }
+    Mod+Ctrl+E  { spawn "dynisland" "ipc" "tools" "emoji"; }
+    Mod+Shift+C { spawn "dynisland" "ipc" "tools" "color"; }
     // --- /shell ---
 
     Mod+Shift+K { show-hotkey-overlay; }
