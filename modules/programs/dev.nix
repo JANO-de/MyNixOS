@@ -1,5 +1,10 @@
 { config, pkgs, lib, inputs, ... }:
-
+let
+  # Keeps only the extensions that exist in this nixpkgs, so a wrong/missing name can't break the build.
+  pick = paths: lib.concatMap (p:
+    let v = lib.attrByPath (lib.splitString "." p) null pkgs.vscode-extensions;
+    in lib.optional (v != null) v) paths;
+in
 {
   environment.systemPackages =
     (with pkgs; [
@@ -9,11 +14,35 @@
     pkg-config
     (vscode-with-extensions.override {
       vscode = vscodium;
-      vscodeExtensions = [
-        vscode-extensions.continue.continue
-        vscode-extensions.enkia.tokyo-night
+      vscodeExtensions = pick [
+        # AI + theme
+        "continue.continue" "enkia.tokyo-night"
+        # Java
+        "redhat.java" "vscjava.vscode-java-debug" "vscjava.vscode-java-test"
+        "vscjava.vscode-maven" "vscjava.vscode-gradle" "vscjava.vscode-java-dependency"
+        # Python
+        "ms-python.python" "ms-python.debugpy" "charliermarsh.ruff"
+        # C/C++
+        "llvm-vs-code-extensions.vscode-clangd" "vadimcn.vscode-lldb"
+        "ms-vscode.cmake-tools" "twxs.cmake"
+        # Web / data
+        "esbenp.prettier-vscode" "dbaeumer.vscode-eslint" "ritwickdey.liveserver"
+        "formulahendry.auto-rename-tag" "christian-kohler.path-intellisense"
+        "bradlc.vscode-tailwindcss" "mechatroner.rainbow-csv"
+        "redhat.vscode-xml" "redhat.vscode-yaml" "tamasfe.even-better-toml"
+        # SQL / DB
+        "mtxr.sqltools"
+        # Nix
+        "jnoortheen.nix-ide" "mkhl.direnv"
+        # Git / quality of life
+        "eamodio.gitlens" "mhutchie.git-graph" "usernamehw.errorlens"
+        "editorconfig.editorconfig" "gruntfuggly.todo-tree"
+        "streetsidesoftware.code-spell-checker" "yzhang.markdown-all-in-one"
+        "pkief.material-icon-theme" "ms-ceintl.vscode-language-pack-es"
       ];
     })
+    # Tools the extensions call (language servers, compilers, formatters)
+    nixd nixfmt clang-tools gcc gdb python3 ruff maven gradle
     neovide
     qt6.qt5compat
     pkgs.gowall
@@ -96,7 +125,7 @@
     enable = true;
     package = pkgs.llama-cpp.override { vulkanSupport = true; };
     extraFlags = [ "--models-max" "1" ];
-    
+
     modelsPreset = {
       "qwen3-8b" = {
         model = "/var/lib/llama-models/Qwen3-8B-Q4_K_M.gguf";
