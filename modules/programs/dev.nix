@@ -25,11 +25,12 @@ in
         # C/C++
         "llvm-vs-code-extensions.vscode-clangd" "vadimcn.vscode-lldb"
         "ms-vscode.cmake-tools" "twxs.cmake"
-        # Web / data
+        # Web / data + QML
         "esbenp.prettier-vscode" "dbaeumer.vscode-eslint" "ritwickdey.liveserver"
         "formulahendry.auto-rename-tag" "christian-kohler.path-intellisense"
         "bradlc.vscode-tailwindcss" "mechatroner.rainbow-csv"
         "redhat.vscode-xml" "redhat.vscode-yaml" "tamasfe.even-better-toml"
+        "theqtcompany.qt-qml" "delgan.qml-format"
         # SQL / DB
         "mtxr.sqltools"
         # Nix
