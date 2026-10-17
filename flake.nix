@@ -32,9 +32,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # end4-pC Quickshell shell (source only; used by modules/desktop/shell/end4pc.nix)
-    end4-pc = { url = "github:pctrade/end4-pC"; flake = false; };
-
     # CachyOS kernel — release branch = CI-built & cached on their Attic.
     # Do NOT override its nixpkgs input (patches/kernel must stay in sync).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
@@ -45,7 +42,7 @@
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, end4-pc }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

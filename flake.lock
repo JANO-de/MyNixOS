@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "end4-pc": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1792014493,
-        "narHash": "sha256-a1sbp/0Xr9Gi0kjgbjabyg4FTr8J3ssgOOkKqvO8bSg=",
-        "owner": "pctrade",
-        "repo": "end4-pC",
-        "rev": "8fbb6716cba628a13103e665e9538021683a7250",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pctrade",
-        "repo": "end4-pC",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -319,7 +303,6 @@
     },
     "root": {
       "inputs": {
-        "end4-pc": "end4-pc",
         "forge": "forge",
         "home-manager": "home-manager",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
