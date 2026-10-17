@@ -22,6 +22,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.config
 import qs.services
+import qs.components
 
 PanelWindow {
     id: win
@@ -52,7 +53,7 @@ PanelWindow {
     readonly property bool dodging: cfg.behavior === "dodge" && Niri.busy(win.screen ? win.screen.name : "")
     readonly property bool hideNow: (cfg.behavior === "autohide" || dodging) && mode === "idle" && !hovered && !ph.hovered
     onHoveredChanged: Notifs.hold = hovered      // hovering a banner pauses its auto-hide
-    onFullChanged: Sys.watching = full          // poll wifi/brightness only while open
+    onFullChanged: { Sys.watching = full; if (!full) UiState.quickPage = false }          // poll wifi/brightness only while open
 
     readonly property var sizes: ({
         idle:  [cfg.idleWidth + (Media.playing ? 60 : 0), cfg.idleHeight],
@@ -105,7 +106,6 @@ PanelWindow {
         Behavior on width  { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
         Behavior on height { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
 
-        Binding { target: UiState; property: "pillW"; value: pill.width; when: win.screen === Quickshell.screens[0] }
         HoverHandler { id: ph }   // always on: reveals a hidden island
         HoverHandler {
             enabled: cfg.expandOnHover
@@ -144,5 +144,19 @@ PanelWindow {
         FullView  { active: win.mode === "full" }
         TrayMenuView { active: win.mode === "tray" }
         PanelView { active: win.mode === "panel" }
+
+        // chevron peeking at the right edge of the expanded island: flips the right column to the quick toggles
+        Item {
+            visible: Config.system.quickPull && win.mode === "full"
+            anchors { right: parent.right; rightMargin: 3; verticalCenter: parent.verticalCenter }
+            width: 18; height: 28
+            Icon { anchors.centerIn: parent; name: UiState.quickPage ? "chevron_left" : "chevron_right"; size: 18
+                   color: qm.containsMouse || UiState.quickPage ? "white" : "#80ffffff"
+                   Behavior on color { ColorAnimation { duration: 140 } } }
+            MouseArea { id: qm; anchors.fill: parent; hoverEnabled: true
+                        onClicked: UiState.quickPage = !UiState.quickPage
+                        onEntered: qT.restart(); onExited: qT.stop() }
+            Timer { id: qT; interval: 220; onTriggered: UiState.quickPage = true }
+        }
     }
 }

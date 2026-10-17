@@ -35,7 +35,6 @@ ShellRoot {
 
     Variants { model: Quickshell.screens; DesktopMenu {} }   // right-click menu on the desktop
 
-    QuickPull {}   // quick-settings pulldown (UiState.quickOpen)
     LauncherDrawer {}   // app drawer (UiState.launcherOpen)
     Lock {}       // session lock screen (UiState.locked)
 
@@ -43,7 +42,7 @@ ShellRoot {
 
     // ---- IPC (bind in niri config.kdl, e.g. spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle")
     IpcHandler { target: "settings"; function toggle(): void { UiState.settingsOpen = !UiState.settingsOpen } }
-    IpcHandler { target: "quick";    function toggle(): void { if (UiState.quickOpen) { UiState.quickOpen = false; UiState.quickPinned = false } else { UiState.quickPinned = true; UiState.quickOpen = true } } }
+    IpcHandler { target: "quick";    function toggle(): void { const on = UiState.islandPinned && UiState.quickPage; UiState.islandPinned = !on; UiState.quickPage = !on } }
     IpcHandler { target: "tools"
         function emoji(): void { UiState.openPanel("emoji") }
         function clipboard(): void { UiState.openPanel("clipboard") }

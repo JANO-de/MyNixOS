@@ -19,7 +19,7 @@ ColumnLayout {
             Icon { anchors.centerIn: parent; name: Activities.current ? Activities.current.icon : "bolt"; size: 10; color: "white" } }
         Text { text: Activities.current ? Activities.current.label : ""; color: "#ddffffff"; font.pixelSize: 12; elide: Text.ElideRight
                Layout.maximumWidth: 130 }
-        MouseArea { anchors.fill: parent; onClicked: UiState.islandPinned = true }
+        TapHandler { onTapped: UiState.islandPinned = true }
     }
 
     // Week strip, today highlighted (Mon..Sun around the current date)

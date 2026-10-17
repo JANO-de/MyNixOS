@@ -19,7 +19,8 @@ let
   # Icon font copied to a fixed path (works regardless of fontconfig/PATH)
   iconFont = pkgs.runCommand "dynisland-icon-font" { nativeBuildInputs = [ (pkgs.python3.withPackages (p: [ p.fonttools ])) ]; } ''
     mkdir -p $out
-    f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Outlined*' | head -1)
+    f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Rounded*' | head -1)   # Rounded = smoother glyphs
+    [ -n "$f" ] || f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Outlined*' | head -1)
     [ -n "$f" ] || { echo "Outlined font not found"; exit 1; }
     cp "$f" $out/icons.ttf
     chmod u+w $out/icons.ttf
