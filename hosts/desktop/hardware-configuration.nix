@@ -8,7 +8,7 @@
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "sdhci_pci" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
-  boot.kernelParams = [ "memtest=17" ];
+  boot.kernelParams = [ "memmap=32K$0x39a908000" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
