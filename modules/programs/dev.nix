@@ -9,7 +9,10 @@
     pkg-config
     (vscode-with-extensions.override {
       vscode = vscodium;
-      vscodeExtensions = [ vscode-extensions.continue.continue ];
+      vscodeExtensions = [
+        vscode-extensions.continue.continue
+        vscode-extensions.enkia.tokyo-night
+      ];
     })
     neovide
     qt6.qt5compat
