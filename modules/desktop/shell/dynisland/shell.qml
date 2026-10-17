@@ -57,4 +57,9 @@ ShellRoot {
         function disable(): void { Server.disable() }
     }
     IpcHandler { target: "osd";      function show(kind: string, value: real): void { Osd.show(kind, value) } }
+    IpcHandler { target: "activity"
+        function push(id: string, label: string, icon: string, progress: real, color: string, ttl: real): void { Activities.push(id, label, icon, progress, color, ttl) }
+        function clear(id: string): void { Activities.clear(id) }
+        function clearAll(): void { Activities.clearAll() }
+    }
 }

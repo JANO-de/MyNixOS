@@ -93,6 +93,12 @@ Singleton {
                 property string font: "Inter"
                 property string accentOverride: ""    // "" = from wallpaper, or "#rrggbb"
                 property real glassOpacity: 0.6        // dock + widget cards (0.2..1)
+                // shared glass look for dock / island / settings — see services/Glass.qml
+                property string glassPreset: "default" // default | ios | minimal | vibrant | frosted | custom
+                property real glassOutline: 0.2         // custom preset only; 0..0.5
+                property real glassSheen: 0.11          // custom preset only; 0..0.3
+                property real glassShadow: 0.25         // custom preset only; 0..0.6
+                property real glassTint: 0              // custom preset only; 0..1, mixes accent into the glass
                 property string wallpaperFill: "crop"  // crop | fit | stretch
                 property real wallpaperDim: 0          // 0..0.8 black overlay
             }

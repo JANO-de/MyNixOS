@@ -14,12 +14,12 @@ Item {
         id: bg
         anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 6 }
         width: row.width + 28 + (Config.dock.media ? 150 : 0); height: ico + 22
-        radius: Config.dock.radius * k + 4
+        radius: Config.dock.radius * k + 4 + Glass.radiusBoost * k
         color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, Config.appearance.glassOpacity)
-        border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.2)
+        border.width: 1; border.color: Glass.outline
         Behavior on width { NumberAnimation { duration: 160 } }
         Rectangle { anchors.fill: parent; radius: parent.radius
-                    gradient: Gradient { GradientStop { position: 0; color: "#1cffffff" } GradientStop { position: 0.55; color: "transparent" } } }
+                    gradient: Gradient { GradientStop { position: 0; color: Glass.sheenTop } GradientStop { position: Glass.sheenStop; color: "transparent" } } }
         Row {
             id: row; spacing: 8
             anchors { left: parent.left; leftMargin: 14; bottom: parent.bottom; bottomMargin: 11 }

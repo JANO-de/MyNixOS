@@ -5,6 +5,7 @@ import qs.components
 
 Page {
     title: "Desktop widgets"
+    WidgetsPreview {}
     Text { text: "Drag widgets on the desktop to move them."; color: Theme.surfaceFgDim; font.pixelSize: 12; bottomPadding: 8 }
     SettingRow { label: "Clock"
         Toggle { checked: Config.widgets.clock; onToggled: Config.widgets.clock = !Config.widgets.clock } }

@@ -7,6 +7,7 @@ import qs.components
 
 Page {
     title: "Visualizer (cava)"
+    VisualizerPreview {}
     SettingRow { label: "Enabled"; hint: "Runs the cava process"
         Toggle { checked: Config.cava.enabled; onToggled: Config.cava.enabled = !Config.cava.enabled } }
     SettingRow { label: "Style" }

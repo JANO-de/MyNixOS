@@ -67,7 +67,7 @@ PY
   '';
 
   # Repo path used by `dynisland dev`
-  repoShell = "$HOME/Documents/MyNixOS/modules/desktop/shell/dynisland/shell.qml";
+  repoShell = "$HOME/Proyectos/MyNixOS/modules/desktop/shell/dynisland/shell.qml";
 
   dynisland = pkgs.writeShellScriptBin "dynisland" ''
     qs=${pkgs.quickshell}/bin/qs

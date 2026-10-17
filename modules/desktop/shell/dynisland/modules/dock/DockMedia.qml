@@ -15,7 +15,7 @@ ClippingRectangle {
     width: 250
     radius: Math.min(18, height / 2.4)
     color: Theme.surfaceContainer
-    border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.14)
+    border.width: 1; border.color: Glass.outline
 
     // blurred background: a tiny decode of the cover, scaled up smoothly
     Image {

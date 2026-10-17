@@ -53,10 +53,10 @@ PanelWindow {
     ]
 
     Rectangle {
-        anchors.fill: parent; radius: 28; color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.95)
-        border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.2)   // same glass look as dock / island
+        anchors.fill: parent; radius: 28 + Glass.radiusBoost; color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.95)
+        border.width: 1; border.color: Glass.outline
         Rectangle { anchors.fill: parent; radius: parent.radius
-                    gradient: Gradient { GradientStop { position: 0; color: "#16ffffff" } GradientStop { position: 0.4; color: "transparent" } } }
+                    gradient: Gradient { GradientStop { position: 0; color: Glass.sheenTop } GradientStop { position: 0.4; color: "transparent" } } }
         focus: true
         Keys.onEscapePressed: win.requestClose()
 

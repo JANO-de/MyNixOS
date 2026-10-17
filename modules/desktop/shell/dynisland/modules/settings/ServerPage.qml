@@ -6,6 +6,18 @@ import qs.components
 
 Page {
     title: "Server"
+    Rectangle {   // status strip
+        width: parent.width; height: 44; radius: 14
+        color: Server.active ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.18) : Qt.rgba(1,1,1,0.06)
+        border.width: 1; border.color: Server.active ? Theme.primary : Glass.outline
+        Row { anchors { left: parent.left; leftMargin: 14; verticalCenter: parent.verticalCenter } spacing: 8
+            Rectangle { width: 9; height: 9; radius: 4.5; anchors.verticalCenter: parent.verticalCenter
+                        color: Server.active ? Theme.primary : "#777" }
+            Text { text: Server.active ? "Server mode is on" : "Server mode is off"; color: "white"; font.pixelSize: 13; font.weight: Font.Medium
+                   anchors.verticalCenter: parent.verticalCenter }
+        }
+    }
+    Item { width: 1; height: 8 }
     SettingRow { label: "Server mode"; hint: Server.status + (Server.active ? "  ·  llama.cpp " + (Server.llamaUp ? "up" : "down") : "")
         PillButton { label: Server.active ? "Turn off" : "Turn on"; icon: "dns"; filled: !Server.active; onClicked: Server.toggle() } }
     SettingRow { label: "Lock on enter"; hint: "Lock the session first, so touching the PC shows the lock screen"

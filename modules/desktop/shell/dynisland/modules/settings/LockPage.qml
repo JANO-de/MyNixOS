@@ -38,7 +38,7 @@ Page {
         y: Math.max(0, Math.min(parent.height - height, fy * parent.height + (drag.active ? d.y : 0) - height / 2))
         radius: 10
         color: shown ? Qt.rgba(1, 1, 1, 0.28) : Qt.rgba(1, 1, 1, 0.08)
-        border.width: 1; border.color: shown ? Theme.primary : "#55ffffff"
+        border.width: 1; border.color: shown ? Theme.primary : Glass.outline
         opacity: shown ? 1 : 0.55
         Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -68,7 +68,7 @@ Page {
         id: board
         property real sc: width / pg.sw            // screen px -> board px
         width: Math.min(parent.width, 640); height: width * pg.sh / pg.sw
-        radius: 14; color: "#222"; clip: true
+        radius: 14; color: "#222"; clip: true; border.width: 1; border.color: Glass.outline
 
         Image {
             anchors.fill: parent; asynchronous: true; fillMode: Image.PreserveAspectCrop

@@ -44,7 +44,10 @@ PanelWindow {
     readonly property bool full: hovered || UiState.islandPinned
     readonly property bool trayOpen: UiState.trayStack.length > 0
     readonly property bool panelOpen: UiState.panel !== ""
-    readonly property string mode: trayOpen ? "tray" : panelOpen ? "panel" : Notifs.current ? "notif" : full ? "full" : Osd.active ? "osd" : "idle"
+    readonly property bool hasActivity: Activities.current !== null
+    readonly property string mode: trayOpen ? "tray" : panelOpen ? "panel" : Notifs.current ? "notif"
+        : (hasActivity && full) ? "activityFull" : (hasActivity && !full) ? "activity"
+        : full ? "full" : Osd.active ? "osd" : "idle"
     // visibility: always | autohide | dodge. Only the idle pill hides; banners, OSD, panels and hover always show.
     readonly property bool dodging: cfg.behavior === "dodge" && Niri.busy(win.screen ? win.screen.name : "")
     readonly property bool hideNow: (cfg.behavior === "autohide" || dodging) && mode === "idle" && !hovered && !ph.hovered
@@ -53,6 +56,8 @@ PanelWindow {
 
     readonly property var sizes: ({
         idle:  [cfg.idleWidth + (Media.playing ? 60 : 0), cfg.idleHeight],
+        activity: [Math.min(320, cfg.idleWidth + 70), cfg.idleHeight + (Activities.list.length > 1 ? 8 : 0)],
+        activityFull: [cfg.fullWidth, cfg.fullHeight],
         osd:   [330, 54],
         notif: [430, (Notifs.current && Notifs.current.actions && Notifs.current.actions.length > 0) ? 128 : 88],
         full:  [cfg.fullWidth, cfg.fullHeight],
@@ -89,9 +94,9 @@ PanelWindow {
         Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
         width: win.sizes[win.mode][0]
         height: win.sizes[win.mode][1]
-        radius: Math.min(height / 2, cfg.fullRadius)
+        radius: Math.min(height / 2, cfg.fullRadius + Glass.radiusBoost)
         color: "black"
-        border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.2)   // same outline as the dock
+        border.width: 1; border.color: Glass.outline
         // "pulse" cava style: the whole island breathes with the bass
         scale: Config.cava.style === "pulse" ? 1 + Math.min(1, Cava.level * Config.cava.sensitivity) * 0.05 : 1
         Behavior on scale { NumberAnimation { duration: 60 } }
@@ -113,7 +118,7 @@ PanelWindow {
         // behind the pill
         GlowRing { z: -1 }
         Rectangle {   // soft drop shadow (same as the dock)
-            z: -2; radius: parent.radius + 2; color: "#40000000"; opacity: win.hideNow ? 0 : 1
+            z: -2; radius: parent.radius + 2; color: Glass.shadowColor; opacity: win.hideNow ? 0 : 1
             anchors { fill: parent; leftMargin: -3; rightMargin: -3; topMargin: 8; bottomMargin: -8 }
             Behavior on opacity { NumberAnimation { duration: 200 } }
         }
@@ -121,16 +126,18 @@ PanelWindow {
         Rectangle {
             anchors.fill: parent; radius: parent.radius
             gradient: Gradient {
-                GradientStop { position: 0; color: "#1cffffff" }
-                GradientStop { position: 0.55; color: "transparent" }
+                GradientStop { position: 0; color: Glass.sheenTop }
+                GradientStop { position: Glass.sheenStop; color: "transparent" }
             }
         }
         Rectangle { anchors { fill: parent; margins: 1 } radius: Math.max(0, parent.radius - 1)
-                    color: "transparent"; border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.05) }
+                    color: "transparent"; border.width: 1; border.color: Glass.innerHighlight }
         // inside the pill (behind content)
         Visualizer {}
 
         IdleView  { active: win.mode === "idle" }
+        ActivityView { active: win.mode === "activity" }
+        ActivityFullView { active: win.mode === "activityFull" }
         OsdView   { active: win.mode === "osd" }
         NotifView { active: win.mode === "notif" }
         FullView  { active: win.mode === "full" }

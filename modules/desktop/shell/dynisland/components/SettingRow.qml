@@ -14,7 +14,7 @@ Item {
     Rectangle {   // tile background (same glass language as dock / island)
         visible: r.tile; anchors { fill: parent; topMargin: 3; bottomMargin: 3 } radius: 16
         color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.7)
-        border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.1)
+        border.width: 1; border.color: Glass.outline
     }
     Column {   // label wraps to a new line before it reaches the controls
         id: lab

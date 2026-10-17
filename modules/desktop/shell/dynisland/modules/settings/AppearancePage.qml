@@ -25,6 +25,20 @@ Page {
         Field { text: Config.appearance.accentOverride; placeholder: "#6fd0b4"; onAccepted: t => Config.appearance.accentOverride = t.trim() } }
     SettingRow { label: "Glass opacity"; hint: "Dock and widget cards"
         SSlider { from: 0.2; to: 1; stepSize: 0.05; value: Config.appearance.glassOpacity; onMoved: v => Config.appearance.glassOpacity = v } }
+
+    Text { text: "Style"; color: Theme.surfaceFgDim; font.pixelSize: 12; topPadding: 10; bottomPadding: 4 }
+    SettingRow { label: "Glass preset"; hint: "Shared look for the dock, island and this settings window" }
+    Chips { width: parent.width; current: Config.appearance.glassPreset
+            model: Glass.presetList
+            onPicked: v => Config.appearance.glassPreset = v }
+    SettingRow { label: "Outline"; visible: Config.appearance.glassPreset === "custom"
+        SSlider { from: 0; to: 0.5; stepSize: 0.02; value: Config.appearance.glassOutline; onMoved: v => Config.appearance.glassOutline = v } }
+    SettingRow { label: "Sheen"; visible: Config.appearance.glassPreset === "custom"
+        SSlider { from: 0; to: 0.3; stepSize: 0.02; value: Config.appearance.glassSheen; onMoved: v => Config.appearance.glassSheen = v } }
+    SettingRow { label: "Shadow"; visible: Config.appearance.glassPreset === "custom"
+        SSlider { from: 0; to: 0.6; stepSize: 0.02; value: Config.appearance.glassShadow; onMoved: v => Config.appearance.glassShadow = v } }
+    SettingRow { label: "Accent tint"; hint: "Mixes the accent color into the glass"; visible: Config.appearance.glassPreset === "custom"
+        SSlider { from: 0; to: 1; stepSize: 0.05; value: Config.appearance.glassTint; onMoved: v => Config.appearance.glassTint = v } }
     SettingRow { label: "Wallpaper fit" }
     Chips { width: parent.width; current: Config.appearance.wallpaperFill
             model: [ { label: "Fill (crop)", value: "crop" }, { label: "Fit", value: "fit" }, { label: "Stretch", value: "stretch" } ]

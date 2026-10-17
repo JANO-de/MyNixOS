@@ -176,7 +176,7 @@ PanelWindow {
 
         Rectangle {   // soft drop shadow under the dock (follows bg, slides away with it)
             x: bg.x - 3; y: bg.y + 8; width: bg.width + 6; height: bg.height; radius: bg.radius + 2
-            color: "#38000000"; opacity: bg.hidden ? 0 : 1
+            color: Glass.shadowColor; opacity: bg.hidden ? 0 : 1
             Behavior on opacity { NumberAnimation { duration: 200 } }
         }
         Rectangle {
@@ -188,19 +188,19 @@ PanelWindow {
 
             width: row.width + 28 + win.mw
             height: win.cfg.iconSize + 22
-            radius: win.cfg.radius
+            radius: win.cfg.radius + Glass.radiusBoost
             color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, Config.appearance.glassOpacity)
-            border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.2)
+            border.width: 1; border.color: Glass.outline
 
-            Rectangle {   // glass sheen + inner highlight
+            Rectangle {   // glass sheen + inner highlight (shared look: see services/Glass.qml)
                 anchors.fill: parent; radius: parent.radius
                 gradient: Gradient {
-                    GradientStop { position: 0; color: "#1cffffff" }
-                    GradientStop { position: 0.55; color: "transparent" }
+                    GradientStop { position: 0; color: Glass.sheenTop }
+                    GradientStop { position: Glass.sheenStop; color: "transparent" }
                 }
             }
             Rectangle { anchors { fill: parent; margins: 1 } radius: Math.max(0, parent.radius - 1)
-                        color: "transparent"; border.width: 1; border.color: Qt.rgba(1, 1, 1, 0.05) }
+                        color: "transparent"; border.width: 1; border.color: Glass.innerHighlight }
 
             Row {
                 id: row
