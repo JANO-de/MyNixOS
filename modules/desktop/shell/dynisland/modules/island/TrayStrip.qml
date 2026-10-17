@@ -10,13 +10,24 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import qs.services
 
-Row {
-    id: strip
-    spacing: 8
+Flickable {
+    id: fl
     visible: SystemTray.items.values.length > 0
-    height: 22
+    implicitWidth: Math.min(strip.width, 150); height: 22
+    contentWidth: strip.width; contentHeight: 22
+    clip: true; boundsBehavior: Flickable.StopAtBounds
+    Behavior on contentX { enabled: !fl.moving; NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
+    WheelHandler {
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onWheel: e => { const d = e.angleDelta.y || e.angleDelta.x
+            fl.contentX = Math.max(0, Math.min(Math.max(0, fl.contentWidth - fl.width), fl.contentX - d / 2)) }
+    }
 
-    Repeater {
+    Row {
+        id: strip
+        spacing: 8
+
+        Repeater {
         model: SystemTray.items
         Item {
             id: cell
@@ -44,5 +55,6 @@ Row {
                 }
             }
         }
+    }
     }
 }

@@ -7,9 +7,11 @@
     cmake
     ninja
     pkg-config
-    vscodium
+    (vscode-with-extensions.override {
+      vscode = vscodium;
+      vscodeExtensions = [ vscode-extensions.continue.continue ];
+    })
     neovide
-    antigravity # Ide for learning
     qt6.qt5compat
     pkgs.gowall
     btop

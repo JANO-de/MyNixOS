@@ -206,8 +206,10 @@ PanelWindow {
             Row {
                 id: row
                 spacing: 10
-                anchors { horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: -win.mw / 2; bottom: parent.bottom; bottomMargin: 11 }
+                property real panX: 0   // wheel pan, clamped once the bar is wider than the screen
+                anchors { horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: -win.mw / 2 + panX; bottom: parent.bottom; bottomMargin: 11 }
                 readonly property real baseWidth: win.items.length * (win.cfg.iconSize + spacing)
+                Behavior on panX { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
                 Repeater {
                     model: win.items
                     DockIcon {
@@ -221,6 +223,14 @@ PanelWindow {
                         onMenuRequested: (it, cx) => win.openMenu(it, cx)
                         idx: index - (win.cfg.launcher ? 1 : 0)   // index among apps (launcher button excluded)
                         onReordered: (id, ni) => win.movePinned(id, ni)
+                    }
+                }
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    onWheel: e => {
+                        const over = Math.max(0, row.baseWidth - win.screen.width + 120); if (over <= 0) return
+                        const d = e.angleDelta.y || e.angleDelta.x
+                        row.panX = Math.max(-over, Math.min(over, row.panX - d / 2))
                     }
                 }
             }

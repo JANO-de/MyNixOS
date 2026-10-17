@@ -23,14 +23,6 @@ Item {
            horizontalAlignment: Text.AlignRight; color: Theme.surfaceFgDim; font.pixelSize: 13
            text: (Math.round(s.value * 100) / 100) + s.suffix }
     property real wheelAcc: 0
-    WheelHandler {
-        onWheel: e => {
-            s.wheelAcc += e.angleDelta.y / 120
-            const n = Math.trunc(s.wheelAcc); if (n === 0) return
-            s.wheelAcc -= n
-            s.moved(Math.max(s.from, Math.min(s.to, s.value + n * s.stepSize)))
-        }
-    }
     MouseArea {
         anchors { fill: tr; topMargin: -10; bottomMargin: -10 }
         function set(x) {
@@ -40,5 +32,15 @@ Item {
         }
         onPressed: mouse => set(mouse.x)
         onPositionChanged: mouse => { if (pressed) set(mouse.x) }
+    }
+    MouseArea {   // wheel only (clicks fall through to the drag area below); accepts the event so a parent Flickable doesn't scroll
+        anchors.fill: parent; acceptedButtons: Qt.NoButton
+        onWheel: wheel => {
+            s.wheelAcc += wheel.angleDelta.y / 120
+            const n = Math.trunc(s.wheelAcc); wheel.accepted = true
+            if (n === 0) return
+            s.wheelAcc -= n
+            s.moved(Math.max(s.from, Math.min(s.to, s.value + n * s.stepSize)))
+        }
     }
 }

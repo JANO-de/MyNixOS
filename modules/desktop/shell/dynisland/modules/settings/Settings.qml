@@ -66,8 +66,20 @@ PanelWindow {
             radius: 28; color: "transparent"
             Rectangle { width: 1; anchors { top: parent.top; bottom: parent.bottom; right: parent.right; topMargin: 24; bottomMargin: 24 }
                         color: Theme.outline; opacity: 0.3 }   // flat sidebar, hairline separator
+            Flickable {
+                id: sideFl
+                anchors { fill: parent; margins: 16; topMargin: 28 }
+                contentHeight: col.height; clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                Behavior on contentY { enabled: !sideFl.moving; NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    onWheel: e => { const d = e.angleDelta.y || e.angleDelta.x
+                        sideFl.contentY = Math.max(0, Math.min(Math.max(0, sideFl.contentHeight - sideFl.height), sideFl.contentY - d / 2)) }
+                }
             Column {
-                anchors { fill: parent; margins: 16; topMargin: 28 } spacing: 6
+                id: col
+                width: parent.width; spacing: 6
                 Item {   // profile row: click opens the Profile page
                     width: parent.width; height: 76
                     Rectangle {
@@ -110,6 +122,7 @@ PanelWindow {
                         MouseArea { id: ma; anchors.fill: parent; hoverEnabled: true; onClicked: win.page = index }
                     }
                 }
+            }
             }
         }
 

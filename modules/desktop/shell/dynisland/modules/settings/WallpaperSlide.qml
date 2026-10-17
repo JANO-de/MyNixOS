@@ -65,8 +65,16 @@ Item {
             MouseArea { anchors.fill: parent; onClicked: { lv.currentIndex = d.index; Wall.set(d.filePath) } }
         }
 
+        property bool userScroll: false
+        onCurrentIndexChanged: if (userScroll) applyTmr.restart()
+        Timer {   // apply once the snap settles, so scrolling past images doesn't thrash matugen
+            id: applyTmr; interval: 220
+            onTriggered: { if (lv.currentIndex >= 0) Wall.set(fm.get(lv.currentIndex, "filePath")); lv.userScroll = false }
+        }
         WheelHandler {
-            onWheel: e => { lv.currentIndex = Math.max(0, Math.min(lv.count - 1, lv.currentIndex + (e.angleDelta.y < 0 ? 1 : -1))) }
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: e => { lv.userScroll = true
+                lv.currentIndex = Math.max(0, Math.min(lv.count - 1, lv.currentIndex + (e.angleDelta.y < 0 ? 1 : -1))) }
         }
     }
 
