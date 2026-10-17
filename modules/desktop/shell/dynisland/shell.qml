@@ -26,6 +26,7 @@ import qs.modules.lock
 import qs.modules.launcher
 
 ShellRoot {
+    Component.onCompleted: Clip.items   // instantiate so the clipboard watcher starts at login
     // One instance per monitor.
     Variants { model: Quickshell.screens; Wallpaper {} }
     Variants { model: Config.island.enabled ? Quickshell.screens : []; Island {} }
@@ -34,6 +35,7 @@ ShellRoot {
 
     Variants { model: Quickshell.screens; DesktopMenu {} }   // right-click menu on the desktop
 
+    QuickPull {}   // quick-settings pulldown (UiState.quickOpen)
     LauncherDrawer {}   // app drawer (UiState.launcherOpen)
     Lock {}       // session lock screen (UiState.locked)
 
@@ -41,6 +43,11 @@ ShellRoot {
 
     // ---- IPC (bind in niri config.kdl, e.g. spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle")
     IpcHandler { target: "settings"; function toggle(): void { UiState.settingsOpen = !UiState.settingsOpen } }
+    IpcHandler { target: "quick";    function toggle(): void { UiState.quickOpen = !UiState.quickOpen } }
+    IpcHandler { target: "tools"
+        function emoji(): void { UiState.openPanel("emoji") }
+        function color(): void { Sys.pickColor() }
+    }
     IpcHandler { target: "island";   function toggle(): void { UiState.islandPinned = !UiState.islandPinned } }
     IpcHandler { target: "launcher"
         function toggle(): void { UiState.launcherOpen = !UiState.launcherOpen }

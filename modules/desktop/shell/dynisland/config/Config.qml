@@ -185,6 +185,19 @@ Singleton {
                 property string pamService: "login"      // file in /etc/pam.d used to check the password
                 property bool lockIpcUnlock: true        // allow `ipc call lock unlock` (emergency; turn off when stable)
                 property string lockCmd: "swaylock -f"   // used only if builtinLock is off
+                property string screenshotDir: root.home + "/Pictures/Screenshots"
+                // %f = full output path (dir + auto filename). Default: grim+slurp region picker, saved as PNG.
+                property string screenshotCmd: "mkdir -p '" + root.home + "/Pictures/Screenshots' && g=\"$(slurp)\" && [ -n \"$g\" ] && grim -g \"$g\" %f"
+                property int nightLightTemp: 4000   // gammastep color temp when on
+                property string recordDir: root.home + "/Videos/Recordings"
+                property real focusDim: 0.45        // wallpaper dim while Focus mode is on
+                property bool clipWatch: true          // record clipboard history (cliphist)
+                property int clipMax: 50              // max clipboard entries kept
+                property bool clipImages: true         // also store copied images
+                property string colorFormat: "hex"     // color picker output: hex | rgb | hsl | hsv | cmyk
+                property bool emojiClose: true         // close the emoji panel after picking one
+                property int emojiRecent: 16           // how many recent emoji to show first
+                property bool quickPull: true          // allow the quick-settings pulldown (IPC: quick toggle)
                 property string logoutCmd: "niri msg action quit --skip-confirmation"
                 property string rebootCmd: "systemctl reboot"
                 property string shutdownCmd: "systemctl poweroff"

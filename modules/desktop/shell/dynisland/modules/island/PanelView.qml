@@ -20,7 +20,7 @@ Item {
 
     readonly property var files: ({
         clock: "ClockPanel", weather: "WeatherPanel", calendar: "CalendarPanel", wifi: "WifiPanel",
-        bluetooth: "BluetoothPanel", audio: "AudioPanel", power: "PowerPanel", history: "HistoryPanel"
+        bluetooth: "BluetoothPanel", audio: "AudioPanel", power: "PowerPanel", history: "HistoryPanel", clipboard: "ClipboardPanel"
     })
     Loader {
         anchors.fill: parent

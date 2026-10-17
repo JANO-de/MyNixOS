@@ -14,6 +14,14 @@ Page {
     SettingRow { label: "Emergency unlock via IPC"; hint: "qs ipc call lock unlock. Turn off once the lock works"
         Toggle { checked: Config.system.lockIpcUnlock; onToggled: Config.system.lockIpcUnlock = !Config.system.lockIpcUnlock } }
     SettingRow { label: "Lock command" ; Field { text: Config.system.lockCmd; onAccepted: t => Config.system.lockCmd = t } }
+    SettingRow { label: "Screenshot folder"; Field { text: Config.system.screenshotDir; onAccepted: t => Config.system.screenshotDir = t } }
+    SettingRow { label: "Recording folder"; Field { text: Config.system.recordDir; onAccepted: t => Config.system.recordDir = t } }
+    SettingRow { label: "Night light temperature"; hint: "Lower = warmer. Applied while the night light button is on"
+        SSlider { from: 2500; to: 6500; stepSize: 100; suffix: "K"; value: Config.system.nightLightTemp; onMoved: v => Config.system.nightLightTemp = v } }
+    SettingRow { label: "Focus mode dim"; hint: "Wallpaper darkening while Focus mode is on"
+        SSlider { from: 0; to: 0.8; stepSize: 0.05; value: Config.system.focusDim; onMoved: v => Config.system.focusDim = v } }
+    SettingRow { label: "Screenshot command"; hint: "%f = file path to save to (region picker by default)"
+        Field { implicitWidth: 320; text: Config.system.screenshotCmd; onAccepted: t => Config.system.screenshotCmd = t } }
     SettingRow { label: "Logout command"; Field { text: Config.system.logoutCmd; onAccepted: t => Config.system.logoutCmd = t } }
     SettingRow { label: "Suspend command"; Field { text: Config.system.suspendCmd; onAccepted: t => Config.system.suspendCmd = t } }
     SettingRow { label: "Reboot command"; Field { text: Config.system.rebootCmd; onAccepted: t => Config.system.rebootCmd = t } }

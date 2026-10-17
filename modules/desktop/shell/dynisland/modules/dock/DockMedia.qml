@@ -47,12 +47,12 @@ ClippingRectangle {
             id: ctl
             anchors.verticalCenter: parent.verticalCenter
             spacing: 4
-            IconButton { icon: "skip_previous"; diameter: 28; iconSize: 18; enabled: !!(Media.player && Media.player.canGoPrevious)
-                         opacity: enabled ? 1 : 0.4; onClicked: Media.player.previous() }
+            IconButton { icon: "skip_previous"; diameter: 28; iconSize: 18
+                         opacity: Media.player ? 1 : 0.4; onClicked: if (Media.player) Media.player.previous() }
             IconButton { icon: Media.playing ? "pause" : "play_arrow"; active: true; diameter: 32; iconSize: 20
-                         onClicked: Media.player.togglePlaying() }
-            IconButton { icon: "skip_next"; diameter: 28; iconSize: 18; enabled: !!(Media.player && Media.player.canGoNext)
-                         opacity: enabled ? 1 : 0.4; onClicked: Media.player.next() }
+                         onClicked: if (Media.player) Media.player.togglePlaying() }
+            IconButton { icon: "skip_next"; diameter: 28; iconSize: 18
+                         opacity: Media.player ? 1 : 0.4; onClicked: if (Media.player) Media.player.next() }
         }
     }
 }

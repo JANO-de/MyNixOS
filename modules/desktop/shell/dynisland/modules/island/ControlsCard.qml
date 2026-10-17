@@ -20,7 +20,20 @@ ColumnLayout {
                       TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("bluetooth") } }   // right-click: device list
         IconButton { diameter: 38; icon: Notifs.dnd ? "notifications_off" : "notifications"; active: Notifs.dnd; onClicked: Notifs.dnd = !Notifs.dnd
                       TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("history") } }   // right-click: history
+        IconButton { diameter: 38; icon: "photo_camera"; onClicked: Sys.screenshot() }
         IconButton { diameter: 38; icon: "settings"; onClicked: UiState.settingsOpen = true }
+    }
+    RowLayout {
+        spacing: 8
+        IconButton { diameter: 32; iconSize: 17; icon: "nightlight"; active: Sys.nightLight; onClicked: Sys.toggleNightLight()
+                     tip: Sys.nightLight ? "Night light: on" : "Night light: off" }
+        IconButton { diameter: 32; iconSize: 17; icon: Sys.inhibit ? "visibility" : "visibility_off"; active: Sys.inhibit; onClicked: Sys.toggleInhibit()
+                     tip: Sys.inhibit ? "Keep awake: on (screen won't sleep)" : "Keep awake: off" }
+        IconButton { diameter: 32; iconSize: 17; icon: Sys.recording ? "stop_circle" : "fiber_manual_record"; active: Sys.recording; onClicked: Sys.toggleRecording()
+                     tip: Sys.recording ? "Stop screen recording" : "Record screen (pick area)" }
+        IconButton { diameter: 32; iconSize: 17; icon: "center_focus_strong"; active: Sys.focusMode; onClicked: Sys.toggleFocus()
+                     tip: Sys.focusMode ? "Focus mode: on (DND + dim)" : "Focus mode: off" }
+        IconButton { diameter: 32; iconSize: 17; icon: "content_paste"; onClicked: UiState.openPanel("clipboard"); tip: "Clipboard history" }
     }
     ValueSlider {
         Layout.fillWidth: true
@@ -37,6 +50,8 @@ ColumnLayout {
     Item { Layout.fillHeight: true }
     RowLayout {
         spacing: 8
+        IconButton { diameter: 32; iconSize: 17; icon: "mood"; onClicked: UiState.openPanel("emoji"); tip: "Emoji picker" }
+        IconButton { diameter: 32; iconSize: 17; icon: "colorize"; onClicked: Sys.pickColor(); tip: Sys.lastColor !== "" ? "Pick color (last " + Sys.lastColor + ")" : "Color picker" }
         IconButton { diameter: 32; iconSize: 17; icon: "lock"; onClicked: Sys.lock() }
         IconButton { diameter: 32; iconSize: 17; icon: "logout"; onClicked: Sys.run(Config.system.logoutCmd) }
         IconButton { diameter: 32; iconSize: 17; icon: "power_settings_new"; onClicked: UiState.openPanel("power") }   // lock / logout / suspend / reboot / shutdown

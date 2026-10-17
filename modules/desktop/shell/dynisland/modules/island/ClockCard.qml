@@ -11,8 +11,16 @@ ColumnLayout {
 
     Text { Layout.alignment: Qt.AlignHCenter; text: Clock.time; color: "white"; font.pixelSize: 40; font.weight: Font.Bold
           TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("clock") } }
-    Text { Layout.alignment: Qt.AlignHCenter; text: Clock.dateLong; color: "#bbffffff"; font.pixelSize: 13
+    Text { Layout.alignment: Qt.AlignHCenter; visible: !Activities.current; text: Clock.dateLong; color: "#bbffffff"; font.pixelSize: 13
           TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("calendar") } }
+    RowLayout {   // live activity shown where the date would be, to save space
+        Layout.alignment: Qt.AlignHCenter; visible: !!Activities.current; spacing: 6
+        Rectangle { width: 16; height: 16; radius: 8; color: Activities.current && Activities.current.color ? Activities.current.color : Theme.primary
+            Icon { anchors.centerIn: parent; name: Activities.current ? Activities.current.icon : "bolt"; size: 10; color: "white" } }
+        Text { text: Activities.current ? Activities.current.label : ""; color: "#ddffffff"; font.pixelSize: 12; elide: Text.ElideRight
+               Layout.maximumWidth: 130 }
+        MouseArea { anchors.fill: parent; onClicked: UiState.islandPinned = true }
+    }
 
     // Week strip, today highlighted (Mon..Sun around the current date)
     Row {

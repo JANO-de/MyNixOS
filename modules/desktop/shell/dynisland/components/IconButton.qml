@@ -1,5 +1,6 @@
 // Round icon button. `active` paints it with the theme accent.
 import QtQuick
+import QtQuick.Controls.Basic
 import qs.services
 
 Rectangle {
@@ -8,7 +9,11 @@ Rectangle {
     property bool active: false
     property int iconSize: 20
     property int diameter: 40
+    property string tip: ""
     signal clicked()
+    ToolTip.visible: tip !== "" && ma.containsMouse
+    ToolTip.text: tip
+    ToolTip.delay: 400
 
     implicitWidth: diameter; implicitHeight: diameter; radius: diameter / 2
     color: active ? Theme.primary : (ma.containsMouse ? "#3affffff" : "#22ffffff")

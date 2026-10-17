@@ -13,7 +13,7 @@ let
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
     cava matugen brightnessctl networkmanager curl niri coreutils bash
-    vdirsyncer findutils libnotify wl-clipboard xdg-utils tailscale openrgb
+    vdirsyncer findutils libnotify wl-clipboard hyprpicker gammastep wf-recorder xdg-utils tailscale openrgb
   ];
 
   # Icon font copied to a fixed path (works regardless of fontconfig/PATH)

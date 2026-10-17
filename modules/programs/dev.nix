@@ -9,6 +9,7 @@
     pkg-config
     vscodium
     neovide
+    antigravity # Ide for learning
     qt6.qt5compat
     pkgs.gowall
     btop
