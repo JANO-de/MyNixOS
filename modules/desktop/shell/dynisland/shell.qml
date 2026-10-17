@@ -26,7 +26,7 @@ import qs.modules.lock
 import qs.modules.launcher
 
 ShellRoot {
-    Component.onCompleted: Clip.items   // instantiate so the clipboard watcher starts at login
+    Component.onCompleted: { Usb.ready; Updates.ready; Clip.items } //  // instantiate so the clipboard watcher starts at login
     // One instance per monitor.
     Variants { model: Quickshell.screens; Wallpaper {} }
     Variants { model: Config.island.enabled ? Quickshell.screens : []; Island {} }
@@ -47,6 +47,7 @@ ShellRoot {
         function emoji(): void { UiState.openPanel("emoji") }
         function clipboard(): void { UiState.openPanel("clipboard") }
         function color(): void { Sys.pickColor() }
+        function note(): void { UiState.openPanel("note") }
     }
     IpcHandler { target: "island";   function toggle(): void { UiState.islandPinned = !UiState.islandPinned } }
     IpcHandler { target: "launcher"

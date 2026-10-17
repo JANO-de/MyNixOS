@@ -85,7 +85,7 @@ Scope {
                 onStatusChanged: if (status === FolderListModel.Ready) lv.syncIndex()
             }
             function curIndex() {
-                for (let i = 0; i < fm.count; i++) if (fm.get(i, "filePath") === Config.appearance.wallpaper) return i;
+                for (let i = 0; i < fm.count; i++) if (fm.get(i, "filePath") === Wall.currentPath) return i;
                 return 0;
             }
 
@@ -118,12 +118,32 @@ Scope {
                             model: fm
                             function syncIndex() { positionViewAtIndex(win.curIndex(), ListView.Beginning) }
                             Component.onCompleted: syncIndex()
+                            property bool userScroll: false
+                            readonly property real maxX: Math.max(0, contentWidth - width)
+                            Behavior on contentX { enabled: !lv.moving && !lv.dragging; NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+                            onDraggingChanged: if (dragging) userScroll = true
+                            onContentXChanged: if (userScroll) applyTmr.restart()
+                            Timer {   // apply the wallpaper under the strip's center once scrolling settles a bit
+                                id: applyTmr; interval: 220
+                                onTriggered: {
+                                    const i = lv.indexAt(lv.contentX + lv.width / 2, 1);
+                                    if (i >= 0) { const f = fm.get(i, "filePath"); if (f && f !== Wall.currentPath) Wall.set(f) }
+                                    lv.userScroll = false
+                                }
+                            }
+                            WheelHandler {   // wheel/touchpad scrolls the strip sideways, smoothly
+                                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                                onWheel: e => {
+                                    const d = e.pixelDelta.x !== 0 || e.pixelDelta.y !== 0 ? (e.pixelDelta.x || e.pixelDelta.y) : (e.angleDelta.y || e.angleDelta.x) * 0.75
+                                    lv.userScroll = true
+                                    lv.contentX = Math.max(0, Math.min(lv.maxX, lv.contentX - d))
+                                }
+                            }
                             delegate: Item {
                                 id: d
                                 required property string filePath
-                                readonly property bool active: filePath === Config.appearance.wallpaper
-                                width: active ? 150 : 62; height: lv.height
-                                Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                                readonly property bool active: filePath === Wall.currentPath
+                                width: 90; height: lv.height   // fixed width so the center item does not jump while scrolling
                                 ClippingRectangle {
                                     anchors.fill: parent; radius: 18; color: Theme.surfaceContainerHigh
                                     Image { anchors.fill: parent; source: "file://" + d.filePath; asynchronous: true
@@ -134,7 +154,7 @@ Scope {
                                     anchors.centerIn: parent
                                     Icon { anchors.centerIn: parent; name: "check"; size: 24; color: Theme.primaryFg }
                                 }
-                                MouseArea { anchors.fill: parent; onClicked: Config.appearance.wallpaper = d.filePath }
+                                MouseArea { anchors.fill: parent; onClicked: Wall.set(d.filePath) }
                             }
                         }
                         Text { visible: fm.count === 0; anchors.centerIn: parent; color: Theme.surfaceFgDim; font.pixelSize: 13
@@ -156,7 +176,7 @@ Scope {
                         icon: "wallpaper"; label: "Change wallpaper"
                         onHoveredChanged: if (hovered) win.sub = ""
                         onClicked: {   // next image in the folder
-                            if (fm.count > 0) Config.appearance.wallpaper = fm.get((win.curIndex() + 1) % fm.count, "filePath");
+                            if (fm.count > 0) Wall.set(fm.get((win.curIndex() + 1) % fm.count, "filePath"));
                             lv.syncIndex();
                         }
                     }

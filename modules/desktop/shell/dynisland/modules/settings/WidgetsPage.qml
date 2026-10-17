@@ -17,6 +17,10 @@ Page {
         Toggle { checked: Config.widgets.system; onToggled: Config.widgets.system = !Config.widgets.system } }
     SettingRow { label: "Calendar"
         Toggle { checked: Config.widgets.calendar; onToggled: Config.widgets.calendar = !Config.widgets.calendar } }
+    SettingRow { label: "Recent files"; hint: "From recently-used.xbel"
+        Toggle { checked: Config.widgets.recent; onToggled: Config.widgets.recent = !Config.widgets.recent } }
+    SettingRow { label: "File shelf"; hint: "Drop files on it, drag them out again"
+        Toggle { checked: Config.widgets.fileShelf; onToggled: Config.widgets.fileShelf = !Config.widgets.fileShelf } }
     SettingRow { label: "Card corner radius"
         SSlider { from: 0; to: 44; stepSize: 1; suffix: " px"; value: Config.widgets.cardRadius; onMoved: v => Config.widgets.cardRadius = v } }
     SettingRow { label: "Reset positions"

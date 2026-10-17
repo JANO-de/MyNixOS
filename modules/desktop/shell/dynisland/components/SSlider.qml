@@ -22,6 +22,15 @@ Item {
     Text { id: lbl; anchors { right: parent.right; verticalCenter: parent.verticalCenter } width: 56
            horizontalAlignment: Text.AlignRight; color: Theme.surfaceFgDim; font.pixelSize: 13
            text: (Math.round(s.value * 100) / 100) + s.suffix }
+    property real wheelAcc: 0
+    WheelHandler {
+        onWheel: e => {
+            s.wheelAcc += e.angleDelta.y / 120
+            const n = Math.trunc(s.wheelAcc); if (n === 0) return
+            s.wheelAcc -= n
+            s.moved(Math.max(s.from, Math.min(s.to, s.value + n * s.stepSize)))
+        }
+    }
     MouseArea {
         anchors { fill: tr; topMargin: -10; bottomMargin: -10 }
         function set(x) {

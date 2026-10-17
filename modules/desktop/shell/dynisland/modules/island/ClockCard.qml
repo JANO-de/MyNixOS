@@ -5,8 +5,12 @@ import qs.config
 import qs.services
 import qs.components
 
-ColumnLayout {
+Item {
     id: c
+    clip: true
+    implicitWidth: 0; implicitHeight: 0   // never pushes the neighbouring columns
+ColumnLayout {
+    anchors.fill: parent
     spacing: 4
 
     Text { Layout.alignment: Qt.AlignHCenter; text: Clock.time; color: "white"; font.pixelSize: 40; font.weight: Font.Bold
@@ -35,7 +39,7 @@ ColumnLayout {
                     return new Date(t.getFullYear(), t.getMonth(), t.getDate() - off + index);
                 }
                 readonly property bool today: d.getDate() === Clock.date.getDate() && d.getMonth() === Clock.date.getMonth()
-                width: Math.max(20, Math.min(30, (c.width - 36) / 7)); height: 38; radius: 15; color: today ? Theme.primary : "transparent"   // shrinks to fit the column
+                width: Math.max(20, Math.min(30, (c.width - 36) / 7)); height: 38; radius: 15; color: today ? Weather.tint : "transparent"   // shrinks to fit the column
                 Column {
                     anchors.centerIn: parent; spacing: 1
                     Text { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatDate(parent.parent.d, "ddd").substring(0, 2)
@@ -53,12 +57,20 @@ ColumnLayout {
     }
 
     RowLayout {
-        Layout.alignment: Qt.AlignHCenter; Layout.topMargin: 6; spacing: 6; visible: Config.island.showWeather
-        Icon { name: Weather.icon; size: 20; color: Theme.primary }
-        Text { text: Weather.temp + "  " + Weather.cond; color: "#ddffffff"; font.pixelSize: 13; elide: Text.ElideRight }
+        Layout.fillWidth: true; Layout.topMargin: 6; spacing: 6; visible: Config.island.showWeather
+        Icon { name: Weather.icon; size: 20; color: Weather.tint; Layout.alignment: Qt.AlignVCenter }
+        Text { Layout.fillWidth: true; text: Weather.temp + "  " + Weather.cond; color: "#ddffffff"; font.pixelSize: 13
+               wrapMode: Text.WordWrap; maximumLineCount: 2; elide: Text.ElideRight; horizontalAlignment: Text.AlignHCenter }
         TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("weather") }   // right-click: forecast
     }
 
     // tray icons (hidden when the tray is empty)
     TrayStrip { Layout.alignment: Qt.AlignHCenter; Layout.topMargin: 4 }
+    Row {   // update indicator: flake.lock is old; click = run the update in a terminal
+        Layout.alignment: Qt.AlignHCenter; visible: Updates.pending; spacing: 4
+        Icon { name: "system_update_alt"; size: 14; color: Weather.tint }
+        Text { text: "Update available"; color: "#ccffffff"; font.pixelSize: 11 }
+        TapHandler { onTapped: Updates.run() }
+    }
+}
 }

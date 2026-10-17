@@ -21,6 +21,19 @@ Singleton {
         return "sunny";
     }
     readonly property string icon: iconFor(cond)
+    // accent shifted toward the weather (Config.island.weatherAccent)
+    readonly property color hue: {
+        switch (icon) {
+        case "thunderstorm": return "#ba68c8";
+        case "weather_snowy": return "#b3e5fc";
+        case "rainy": return "#64b5f6";
+        case "foggy": return "#b0bec5";
+        case "cloud": return "#90a4ae";
+        case "partly_cloudy_day": return "#ffd54f";
+        default: return "#ffb74d";
+        }
+    }
+    readonly property color tint: Config.island.weatherAccent ? Qt.tint(Theme.primary, Qt.rgba(hue.r, hue.g, hue.b, 0.6)) : Theme.primary
 
     // Forecast detail for the weather panel (wttr.in j1 JSON). null until loaded.
     //   { place, feels, humidity, wind, windDir, pressure, uv, hours: [{time, temp, cond, rain}], days: [{date, hi, lo, cond}] }

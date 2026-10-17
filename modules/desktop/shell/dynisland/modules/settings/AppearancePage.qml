@@ -12,6 +12,9 @@ Page {
     SettingRow { label: "Wallpaper folder"; hint: "Images are listed in the slide above"
         Field { text: Config.appearance.wallpaperDir; onAccepted: t => Config.appearance.wallpaperDir = t } }
 
+    SettingRow { label: "Wallpaper per workspace"; hint: "Picking a wallpaper sets it for the active niri workspace only"
+        Toggle { checked: Config.appearance.perWorkspace; onToggled: Config.appearance.perWorkspace = !Config.appearance.perWorkspace } }
+
     SettingRow { label: "Dark mode"
         Toggle { checked: Config.appearance.darkMode; onToggled: Config.appearance.darkMode = !Config.appearance.darkMode } }
 

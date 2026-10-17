@@ -14,7 +14,7 @@ Item {
     height: Config.island.fullHeight - 40
     opacity: active ? 1 : 0
     visible: opacity > 0.01
-    Behavior on opacity { NumberAnimation { duration: 180 } }
+    Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
     ColumnLayout {
         anchors.fill: parent; spacing: 10

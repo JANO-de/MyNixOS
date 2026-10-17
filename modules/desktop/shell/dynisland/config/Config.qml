@@ -101,6 +101,8 @@ Singleton {
                 property real glassTint: 0              // custom preset only; 0..1, mixes accent into the glass
                 property string wallpaperFill: "crop"  // crop | fit | stretch
                 property real wallpaperDim: 0          // 0..0.8 black overlay
+                property bool perWorkspace: false      // different wallpaper per niri workspace
+                property var wsWallpapers: ({})        // { "<workspace name or index>": "/path.jpg" }
             }
 
             property JsonObject island: JsonObject {
@@ -122,6 +124,7 @@ Singleton {
                 property string units: "m"            // m metric, u US
                 property real notifSeconds: 5          // banner time when the app sets none
                 property string visibility: "always"  // always | autohide | dodge
+                property bool weatherAccent: true      // tint the clock card accent by the weather
             }
 
             property JsonObject cava: JsonObject {
@@ -159,6 +162,9 @@ Singleton {
                 property bool system: true            // CPU / RAM / disk
                 property int cardRadius: 28
                 property bool calendar: true
+                property bool recent: true            // recent files widget
+                property bool fileShelf: true         // drag-and-drop file shelf widget
+                property var shelfItems: ([])         // file paths on the shelf
                 property var positions: ({})          // { id: {x, y} }
             }
 
@@ -202,6 +208,12 @@ Singleton {
                 property string rebootCmd: "systemctl reboot"
                 property string shutdownCmd: "systemctl poweroff"
                 property string suspendCmd: "systemctl suspend"
+                property string noteFile: root.home + "/Documents/quick-note.md"   // quick note panel
+                property bool usbNotify: true          // notify when drives connect / mount / disconnect
+                property bool updateCheck: true        // show an indicator when flake.lock is old
+                property int updateDays: 7             // days before flake.lock counts as outdated
+                property string flakeDir: root.home + "/Proyectos/MyNixOS"
+                property string updateCmd: "cd ~/Proyectos/MyNixOS && nix flake update && sudo nixos-rebuild switch --flake .#desktop; echo; read -rp 'Done. Press Enter to close '"
             }
 
             // Server mode (services/Server.qml, Settings > Server)

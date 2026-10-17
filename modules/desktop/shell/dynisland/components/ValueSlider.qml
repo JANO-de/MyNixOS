@@ -19,6 +19,7 @@ Item {
             color: Theme.primary
         }
     }
+    WheelHandler { onWheel: e => s.moved(Math.max(0, Math.min(1, s.value + (e.angleDelta.y / 120) * 0.03))) }   // 3% per notch, proportional on touchpads
     MouseArea {
         anchors { fill: track; topMargin: -10; bottomMargin: -10 }
         function set(x) { s.moved(Math.max(0, Math.min(1, x / width))) }

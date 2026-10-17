@@ -16,7 +16,9 @@ Item {
     anchors.fill: parent
     opacity: active ? 1 : 0
     visible: opacity > 0.01
-    Behavior on opacity { NumberAnimation { duration: 180 } }
+    scale: active ? 1 : 0.95   // content settles in as the pill morphs
+    Behavior on scale { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
     // ---- header: back / close + app name
     Item {

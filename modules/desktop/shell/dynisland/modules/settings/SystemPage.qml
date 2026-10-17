@@ -26,6 +26,15 @@ Page {
     SettingRow { label: "Suspend command"; Field { text: Config.system.suspendCmd; onAccepted: t => Config.system.suspendCmd = t } }
     SettingRow { label: "Reboot command"; Field { text: Config.system.rebootCmd; onAccepted: t => Config.system.rebootCmd = t } }
     SettingRow { label: "Shutdown command"; Field { text: Config.system.shutdownCmd; onAccepted: t => Config.system.shutdownCmd = t } }
+    SettingRow { label: "Drive notifications"; hint: "Connected, mounted, unmounted, removed"
+        Toggle { checked: Config.system.usbNotify; onToggled: Config.system.usbNotify = !Config.system.usbNotify } }
+    SettingRow { label: "Update indicator"; hint: "Shows when flake.lock is older than the days below"
+        Toggle { checked: Config.system.updateCheck; onToggled: Config.system.updateCheck = !Config.system.updateCheck } }
+    SettingRow { label: "Update after"; SSlider { from: 1; to: 30; stepSize: 1; suffix: " days"; value: Config.system.updateDays; onMoved: v => Config.system.updateDays = v } }
+    SettingRow { label: "Flake folder"; Field { implicitWidth: 260; text: Config.system.flakeDir; onAccepted: t => Config.system.flakeDir = t } }
+    SettingRow { label: "Update command"; hint: "Run in the terminal above when the indicator is clicked"
+        Field { implicitWidth: 320; text: Config.system.updateCmd; onAccepted: t => Config.system.updateCmd = t } }
+    SettingRow { label: "Quick note file"; Field { implicitWidth: 260; text: Config.system.noteFile; onAccepted: t => Config.system.noteFile = t } }
     SettingRow { label: "Config file"; hint: Config.dir + "/config.json"
         PillButton { label: "Open folder"; icon: "folder_open"; onClicked: Quickshell.execDetached(["xdg-open", Config.dir]) } }
     SettingRow { label: "Reload shell"; hint: "Restarts all windows (unsaved changes are kept in memory only)"

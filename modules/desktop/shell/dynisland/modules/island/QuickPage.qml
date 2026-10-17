@@ -21,5 +21,8 @@ GridLayout {
                 tip: "Power profile: " + Sys.powerProfile }
     QuickTile { icon: "assignment"; label: "Clipboard"; onClicked: UiState.openPanel("clipboard"); tip: "Clipboard history" }
     QuickTile { icon: "sentiment_satisfied"; label: "Emoji"; onClicked: UiState.openPanel("emoji"); tip: "Emoji picker" }
+    QuickTile { icon: "edit_note"; label: "Note"; onClicked: UiState.openPanel("note"); tip: "Quick note" }
+    QuickTile { visible: Updates.pending; icon: "system_update_alt"; label: "Update"; onClicked: Updates.run()
+                tip: "flake.lock is " + Math.floor(Updates.ageDays) + " days old: click to update" }
     QuickTile { icon: "colorize"; label: "Color"; onClicked: Sys.pickColor(); tip: Sys.lastColor !== "" ? "Pick color (last " + Sys.lastColor + ")" : "Color picker" }
 }

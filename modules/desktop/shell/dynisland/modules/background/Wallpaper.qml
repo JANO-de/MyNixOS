@@ -19,7 +19,7 @@ PanelWindow {
     WlrLayershell.namespace: "dynisland-wallpaper"
     color: Theme.surface
 
-    readonly property string current: Config.appearance.wallpaper
+    readonly property string current: Wall.pathFor(win.screen ? win.screen.name : "")
     onCurrentChanged: {
         back.source = front.source;   // old image stays underneath while the new one fades in
         front.opacity = 0;

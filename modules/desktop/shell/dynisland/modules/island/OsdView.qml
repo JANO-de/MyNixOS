@@ -9,7 +9,7 @@ Item {
     anchors.fill: parent
     opacity: active ? 1 : 0
     visible: opacity > 0.01
-    Behavior on opacity { NumberAnimation { duration: 150 } }
+    Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
     readonly property string glyph: Osd.kind === "brightness" ? "brightness_6"
         : (Osd.value <= 0 ? "volume_off" : Osd.value < 0.4 ? "volume_down" : "volume_up")

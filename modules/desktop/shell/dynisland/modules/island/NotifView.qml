@@ -15,7 +15,7 @@ Item {
     anchors.fill: parent
     opacity: active ? 1 : 0
     visible: opacity > 0.01
-    Behavior on opacity { NumberAnimation { duration: 150 } }
+    Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
     // behind everything: click anywhere dismisses (buttons sit above and take their own clicks)
     MouseArea { anchors.fill: parent; onClicked: Notifs.dismiss() }

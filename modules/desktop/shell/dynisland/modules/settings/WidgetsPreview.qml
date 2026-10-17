@@ -31,10 +31,12 @@ Rectangle {
         Mini { visible: Config.widgets.media;    ico: "music_note";     label: "Media" }
         Mini { visible: Config.widgets.system;   ico: "monitor_heart";  label: "System" }
         Mini { visible: Config.widgets.calendar; ico: "calendar_month"; label: "Calendar" }
+        Mini { visible: Config.widgets.recent;   ico: "history";        label: "Recent" }
+        Mini { visible: Config.widgets.fileShelf; ico: "inventory_2";   label: "Shelf" }
     }
     Text {   // outside the Flow: positioners ignore/complain about anchors on their children
         anchors.centerIn: parent
-        visible: !Config.widgets.clock && !Config.widgets.weather && !Config.widgets.media && !Config.widgets.system && !Config.widgets.calendar
+        visible: !Config.widgets.clock && !Config.widgets.weather && !Config.widgets.media && !Config.widgets.system && !Config.widgets.calendar && !Config.widgets.recent && !Config.widgets.fileShelf
         text: "No widgets enabled"; color: "#88ffffff"; font.pixelSize: 12
     }
 }

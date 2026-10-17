@@ -13,7 +13,9 @@ Item {
     height: Config.island.fullHeight - 40
     opacity: active ? 1 : 0
     visible: opacity > 0.01
-    Behavior on opacity { NumberAnimation { duration: 180 } }
+    scale: active ? 1 : 0.95   // content settles in as the pill morphs
+    Behavior on scale { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
     RowLayout {
         anchors.fill: parent; spacing: 12
@@ -29,13 +31,13 @@ Item {
                 width: parent.width; height: parent.height
                 x: UiState.quickPage ? -width - 20 : 0; opacity: UiState.quickPage ? 0 : 1; visible: !UiState.quickPage
                 Behavior on x { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
             }
             QuickPage {
                 width: parent.width; anchors.verticalCenter: parent.verticalCenter
                 x: UiState.quickPage ? 0 : parent.width + 20; opacity: UiState.quickPage ? 1 : 0; visible: UiState.quickPage
                 Behavior on x { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
             }
         }
     }

@@ -17,7 +17,7 @@ Text {
     font.pixelSize: size
     font.hintingPreference: Font.PreferNoHinting
     font.variableAxes: ({ "FILL": 1, "wght": 400, "GRAD": 0, "opsz": 24 })
-    renderType: Text.QtRendering
+    renderType: Text.NativeRendering
     verticalAlignment: Text.AlignVCenter
     horizontalAlignment: Text.AlignHCenter
 }

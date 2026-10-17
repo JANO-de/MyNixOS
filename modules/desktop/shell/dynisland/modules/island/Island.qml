@@ -103,8 +103,8 @@ PanelWindow {
         Behavior on scale { NumberAnimation { duration: 60 } }
 
         // Spring-ish morph, like iOS
-        Behavior on width  { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
-        Behavior on height { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
+        Behavior on width  { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.7 } }
+        Behavior on height { NumberAnimation { duration: cfg.animMs; easing.type: Easing.OutBack; easing.overshoot: 0.7 } }
 
         HoverHandler { id: ph }   // always on: reveals a hidden island
         HoverHandler {
@@ -121,7 +121,7 @@ PanelWindow {
         Rectangle {   // soft drop shadow (same as the dock)
             z: -2; radius: parent.radius + 2; color: Glass.shadowColor; opacity: win.hideNow ? 0 : 1
             anchors { fill: parent; leftMargin: -3; rightMargin: -3; topMargin: 8; bottomMargin: -8 }
-            Behavior on opacity { NumberAnimation { duration: 200 } }
+            Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
         }
         // glass sheen + inner highlight (behind content)
         Rectangle {

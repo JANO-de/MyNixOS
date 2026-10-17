@@ -20,10 +20,21 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Bottom
     WlrLayershell.namespace: "dynisland-widgets"
-    mask: Region { Region { item: clockW } Region { item: weatherW } Region { item: mediaW } Region { item: sysW } Region { item: calW } }
+    mask: Region { Region { item: clockW } Region { item: weatherW } Region { item: mediaW } Region { item: sysW } Region { item: calW } Region { item: recentW } Region { item: shelfW } }
 
     // Poll CPU/RAM only while the system widget is shown
     Binding { target: Stats; property: "watching"; value: Config.widgets.system }
+    Binding { target: Recent; property: "watching"; value: Config.widgets.recent }
+
+    function fileIcon(n) {
+        const e = n.substring(n.lastIndexOf(".") + 1).toLowerCase();
+        if (["png", "jpg", "jpeg", "webp", "gif", "svg"].indexOf(e) >= 0) return "image";
+        if (["mp4", "mkv", "webm", "mov"].indexOf(e) >= 0) return "movie";
+        if (["mp3", "flac", "ogg", "wav", "m4a"].indexOf(e) >= 0) return "music_note";
+        if (e === "pdf") return "picture_as_pdf";
+        if (["zip", "tar", "xz", "gz", "7z", "rar"].indexOf(e) >= 0) return "folder_zip";
+        return "description";
+    }
 
     // Reusable labelled usage bar (QML inline component: define once, instantiate many times)
     component StatBar: Item {
@@ -145,6 +156,88 @@ PanelWindow {
                     }
                 }
             }
+        }
+    }
+
+    // ---- Recent files (click = open, from recently-used.xbel)
+    DesktopWidget {
+        id: recentW; wid: "recent"; defX: 380; defY: 400
+        visible: Config.widgets.recent; width: visible ? implicitWidth : 0; height: visible ? implicitHeight : 0
+        Column {
+            spacing: 4
+            Text { text: "Recent files"; color: "white"; font.pixelSize: 16; font.weight: Font.DemiBold; bottomPadding: 4 }
+            Text { visible: Recent.items.length === 0; text: "Nothing yet"; color: "#99ffffff"; font.pixelSize: 12 }
+            Repeater {
+                model: Recent.items.slice(0, 6)
+                Rectangle {
+                    required property var modelData
+                    width: 230; height: 28; radius: 10; color: rh.hovered ? "#22ffffff" : "transparent"
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                    Row {
+                        anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 6 } spacing: 8
+                        Icon { name: win.fileIcon(modelData.name); size: 16; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                        Text { width: 190; elide: Text.ElideMiddle; text: modelData.name; color: "#eeffffff"; font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter }
+                    }
+                    HoverHandler { id: rh }
+                    TapHandler { onTapped: Quickshell.execDetached(["xdg-open", modelData.path]) }
+                }
+            }
+        }
+    }
+
+    // ---- File shelf: drop files here, click to open, drag out to copy, right-click to remove
+    DesktopWidget {
+        id: shelfW; wid: "shelf"; defX: 680; defY: 100
+        visible: Config.widgets.fileShelf; width: visible ? implicitWidth : 0; height: visible ? implicitHeight : 0
+        function add(urls) {
+            const cur = Config.widgets.shelfItems.slice();
+            for (const u of urls) {
+                let p = u.toString().replace(/^file:\/\//, "");
+                try { p = decodeURIComponent(p) } catch (e) {}
+                if (cur.indexOf(p) < 0) cur.push(p);
+            }
+            Config.widgets.shelfItems = cur;
+        }
+        function remove(p) { Config.widgets.shelfItems = Config.widgets.shelfItems.filter(x => x !== p) }
+        Column {
+            spacing: 4
+            Row {
+                spacing: 8
+                Text { text: "Shelf"; color: "white"; font.pixelSize: 16; font.weight: Font.DemiBold; bottomPadding: 4 }
+                Text { visible: Config.widgets.shelfItems.length > 0; text: "clear"; color: "#99ffffff"; font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
+                       TapHandler { onTapped: Config.widgets.shelfItems = [] } }
+            }
+            Rectangle {
+                visible: Config.widgets.shelfItems.length === 0
+                width: 230; height: 54; radius: 14; color: shelfDrop.containsDrag ? "#22ffffff" : "transparent"
+                border.width: 1; border.color: "#44ffffff"
+                Text { anchors.centerIn: parent; text: "Drop files here"; color: "#99ffffff"; font.pixelSize: 12 }
+            }
+            Repeater {
+                model: Config.widgets.shelfItems
+                Rectangle {
+                    id: row
+                    required property string modelData
+                    readonly property string nm: modelData.substring(modelData.lastIndexOf("/") + 1)
+                    width: 230; height: 28; radius: 10; color: sh.hovered ? "#22ffffff" : "transparent"
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                    Drag.active: dg.active; Drag.dragType: Drag.Automatic; Drag.supportedActions: Qt.CopyAction
+                    Drag.mimeData: ({ "text/uri-list": "file://" + modelData })
+                    Row {
+                        anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 6 } spacing: 8
+                        Icon { name: win.fileIcon(row.nm); size: 16; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                        Text { width: 190; elide: Text.ElideMiddle; text: row.nm; color: "#eeffffff"; font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter }
+                    }
+                    HoverHandler { id: sh }
+                    DragHandler { id: dg; target: null }
+                    TapHandler { onTapped: Quickshell.execDetached(["xdg-open", row.modelData]) }
+                    TapHandler { acceptedButtons: Qt.RightButton; onTapped: shelfW.remove(row.modelData) }
+                }
+            }
+        }
+        DropArea {
+            id: shelfDrop; parent: shelfW; anchors.fill: shelfW; z: -1
+            onDropped: drop => { if (drop.hasUrls) shelfW.add(drop.urls); drop.accept() }
         }
     }
 }

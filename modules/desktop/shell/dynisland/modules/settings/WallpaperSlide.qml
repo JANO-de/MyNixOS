@@ -26,7 +26,7 @@ Item {
     // center the carousel on the active wallpaper
     function syncIndex() {
         for (let i = 0; i < fm.count; i++)
-            if (fm.get(i, "filePath") === Config.appearance.wallpaper) { lv.currentIndex = i; return }
+            if (fm.get(i, "filePath") === Wall.currentPath) { lv.currentIndex = i; return }
     }
 
     ListView {
@@ -45,7 +45,7 @@ Item {
             required property string filePath
             required property int index
             readonly property bool cur: ListView.isCurrentItem
-            readonly property bool active: filePath === Config.appearance.wallpaper
+            readonly property bool active: filePath === Wall.currentPath
             width: 260; height: lv.height
             Rectangle {
                 anchors.centerIn: parent
@@ -62,7 +62,7 @@ Item {
                 Icon { visible: d.active; name: "check_circle"; size: 26; color: Theme.primary
                        anchors { right: parent.right; top: parent.top; margins: 8 } }
             }
-            MouseArea { anchors.fill: parent; onClicked: { lv.currentIndex = d.index; Config.appearance.wallpaper = d.filePath } }
+            MouseArea { anchors.fill: parent; onClicked: { lv.currentIndex = d.index; Wall.set(d.filePath) } }
         }
 
         WheelHandler {

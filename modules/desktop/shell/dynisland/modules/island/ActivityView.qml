@@ -13,7 +13,7 @@ Item {
     anchors.fill: parent
     opacity: active ? 1 : 0
     visible: opacity > 0.01
-    Behavior on opacity { NumberAnimation { duration: 150 } }
+    Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
     readonly property var a: Activities.current
 
     RowLayout {
