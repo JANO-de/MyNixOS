@@ -113,7 +113,7 @@ Singleton {
                 property int idleWidth: 250
                 property int idleHeight: 38
                 property int fullWidth: 700
-                property int fullHeight: 210
+                property int fullHeight: 234
                 property int fullRadius: 34
                 property int animMs: 420              // morph animation length
                 property bool use24h: true

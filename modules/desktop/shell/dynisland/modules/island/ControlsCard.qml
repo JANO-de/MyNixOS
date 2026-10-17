@@ -12,15 +12,16 @@ ColumnLayout {
     spacing: 8
     readonly property var audio: Pipewire.defaultAudioSink ? Pipewire.defaultAudioSink.audio : null
 
+    Item { Layout.preferredHeight: 10 }
     RowLayout {
         Layout.alignment: Qt.AlignHCenter; spacing: 6
         IconButton { diameter: 30; iconSize: 16; icon: Sys.wifiOn ? "signal_wifi_4_bar" : "wifi_off"; active: Sys.wifiOn; onClicked: Sys.toggleWifi()
                       TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("wifi") } }   // right-click: network list
         IconButton { diameter: 30; iconSize: 16; icon: Sys.btOn ? "bluetooth_connected" : "bluetooth_disabled"; active: Sys.btOn; onClicked: Sys.toggleBt()
                       TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("bluetooth") } }   // right-click: device list
-        IconButton { diameter: 30; iconSize: 16; icon: Notifs.dnd ? "do_not_disturb_on" : "notifications_off"; active: Notifs.dnd; onClicked: Notifs.dnd = !Notifs.dnd
+        IconButton { diameter: 30; iconSize: 16; icon: Notifs.dnd ? "notifications_off" : "notifications"; active: Notifs.dnd; onClicked: Notifs.dnd = !Notifs.dnd
                       TapHandler { acceptedButtons: Qt.RightButton; onTapped: UiState.openPanel("history") } }   // right-click: history
-        IconButton { diameter: 30; iconSize: 16; icon: "screenshot_monitor"; onClicked: Sys.screenshot() }
+        IconButton { diameter: 30; iconSize: 16; icon: "photo_camera"; onClicked: Sys.screenshot() }
     }
     ValueSlider {
         Layout.fillWidth: true
@@ -38,10 +39,9 @@ ColumnLayout {
     RowLayout {
         Layout.alignment: Qt.AlignHCenter; spacing: 6
         IconButton { diameter: 30; iconSize: 16; icon: "tune"; onClicked: UiState.settingsOpen = true }
-        IconButton { diameter: 30; iconSize: 16; icon: "sentiment_satisfied"; onClicked: UiState.openPanel("emoji"); tip: "Emoji picker" }
-        IconButton { diameter: 30; iconSize: 16; icon: "colorize"; onClicked: Sys.pickColor(); tip: Sys.lastColor !== "" ? "Pick color (last " + Sys.lastColor + ")" : "Color picker" }
-        IconButton { diameter: 30; iconSize: 16; icon: "screen_lock_portrait"; onClicked: Sys.lock() }
-        IconButton { diameter: 30; iconSize: 16; icon: "exit_to_app"; onClicked: Sys.run(Config.system.logoutCmd) }
-        IconButton { diameter: 30; iconSize: 16; icon: "power_off"; onClicked: UiState.openPanel("power") }   // lock / logout / suspend / reboot / shutdown
+        IconButton { diameter: 30; iconSize: 16; icon: "lock"; onClicked: Sys.lock() }
+        IconButton { diameter: 30; iconSize: 16; icon: "logout"; onClicked: Sys.run(Config.system.logoutCmd) }
+        IconButton { diameter: 30; iconSize: 16; icon: "power_settings_new"; onClicked: UiState.openPanel("power") }   // lock / logout / suspend / reboot / shutdown
     }
+    Item { Layout.preferredHeight: 10 }
 }

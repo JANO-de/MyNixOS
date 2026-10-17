@@ -149,8 +149,8 @@ PanelWindow {
         Item {
             visible: Config.system.quickPull && win.mode === "full"
             anchors { right: parent.right; rightMargin: 3; verticalCenter: parent.verticalCenter }
-            width: 18; height: 28
-            Icon { anchors.centerIn: parent; name: UiState.quickPage ? "chevron_left" : "chevron_right"; size: 18
+            width: 18; height: 18
+            Text { anchors.centerIn: parent; text: UiState.quickPage ? "\u2039" : "\u203a"; font.pixelSize: 18; font.bold: true
                    color: qm.containsMouse || UiState.quickPage ? "white" : "#80ffffff"
                    Behavior on color { ColorAnimation { duration: 140 } } }
             MouseArea { id: qm; anchors.fill: parent; hoverEnabled: true

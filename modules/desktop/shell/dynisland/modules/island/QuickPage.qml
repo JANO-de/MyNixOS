@@ -20,4 +20,6 @@ GridLayout {
                 label: Sys.powerProfile === "performance" ? "Perf" : (Sys.powerProfile === "power-saver" ? "Saver" : "Balanced")
                 tip: "Power profile: " + Sys.powerProfile }
     QuickTile { icon: "assignment"; label: "Clipboard"; onClicked: UiState.openPanel("clipboard"); tip: "Clipboard history" }
+    QuickTile { icon: "sentiment_satisfied"; label: "Emoji"; onClicked: UiState.openPanel("emoji"); tip: "Emoji picker" }
+    QuickTile { icon: "colorize"; label: "Color"; onClicked: Sys.pickColor(); tip: Sys.lastColor !== "" ? "Pick color (last " + Sys.lastColor + ")" : "Color picker" }
 }
