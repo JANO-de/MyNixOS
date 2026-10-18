@@ -49,6 +49,7 @@ PanelWindow {
         { name: "Calendar",   icon: "calendar_month", comp: "CalendarPage.qml" },
         { name: "Server",     icon: "dns",            comp: "ServerPage.qml" },
         { name: "System",     icon: "terminal",       comp: "SystemPage.qml" },
+        { name: "AI",         icon: "smart_toy",      comp: "AIPage.qml" },
         { name: "Profile",    icon: "person",         comp: "ProfilePage.qml", hidden: true }   // opened from the sidebar header
     ]
 

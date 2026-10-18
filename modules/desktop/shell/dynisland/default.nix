@@ -12,60 +12,80 @@
 let
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
-    cava matugen brightnessctl networkmanager curl niri coreutils bash
-    vdirsyncer findutils libnotify wl-clipboard hyprpicker gammastep wf-recorder power-profiles-daemon xdg-utils tailscale openrgb
+    cava
+    matugen
+    brightnessctl
+    networkmanager
+    curl
+    niri
+    coreutils
+    bash
+    vdirsyncer
+    findutils
+    libnotify
+    wl-clipboard
+    hyprpicker
+    gammastep
+    wf-recorder
+    power-profiles-daemon
+    xdg-utils
+    tailscale
+    openrgb
   ];
 
   # Icon font copied to a fixed path (works regardless of fontconfig/PATH)
-  iconFont = pkgs.runCommand "dynisland-icon-font" { nativeBuildInputs = [ (pkgs.python3.withPackages (p: [ p.fonttools ])) ]; } ''
-    mkdir -p $out
-    f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Rounded*' | head -1)   # Rounded = smoother glyphs
-    [ -n "$f" ] || f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Outlined*' | head -1)
-    [ -n "$f" ] || { echo "Outlined font not found"; exit 1; }
-    cp "$f" $out/icons.ttf
-    chmod u+w $out/icons.ttf
-    # Rename the family to a unique name. Otherwise Qt resolves
-    # "Material Symbols Outlined" to some OTHER installed copy (other version/
-    # cmap) and draws wrong glyphs.
-    python3 - $out/icons.ttf <<'PY'
-import sys
-from fontTools.ttLib import TTFont
-t = TTFont(sys.argv[1])
-for r in t["name"].names:
-    if r.nameID in (1, 16): r.string = "DynIcons"
-    elif r.nameID in (4, 6): r.string = "DynIcons-Regular"
-    elif r.nameID in (2, 17): r.string = "Regular"
-t.save(sys.argv[1])
-PY
-    # name -> codepoint map, read from the font's ligature table
-    python3 - $out/icons.ttf $out/icons.json <<'PY'
-import sys, json
-from fontTools.ttLib import TTFont
-t = TTFont(sys.argv[1])
-cmap = t.getBestCmap()
-g2c = {}
-for c, g in cmap.items():
-    g2c.setdefault(g, c)
-ch = {g: chr(c) for c, g in cmap.items() if c < 0x80}
-out = {}
-for lk in t["GSUB"].table.LookupList.Lookup:
-    for st in lk.SubTable:
-        st = getattr(st, "ExtSubTable", st)
-        if not hasattr(st, "ligatures"):
-            continue
-        for first, ligs in st.ligatures.items():
-            for l in ligs:
-                try:
-                    name = "".join(ch[c] for c in [first] + list(l.Component))
-                except KeyError:
+  iconFont =
+    pkgs.runCommand "dynisland-icon-font"
+      { nativeBuildInputs = [ (pkgs.python3.withPackages (p: [ p.fonttools ])) ]; }
+      ''
+            mkdir -p $out
+            f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Rounded*' | head -1)   # Rounded = smoother glyphs
+            [ -n "$f" ] || f=$(find ${pkgs.material-symbols} \( -name '*.ttf' -o -name '*.otf' \) -iname '*Outlined*' | head -1)
+            [ -n "$f" ] || { echo "Outlined font not found"; exit 1; }
+            cp "$f" $out/icons.ttf
+            chmod u+w $out/icons.ttf
+            # Rename the family to a unique name. Otherwise Qt resolves
+            # "Material Symbols Outlined" to some OTHER installed copy (other version/
+            # cmap) and draws wrong glyphs.
+            python3 - $out/icons.ttf <<'PY'
+        import sys
+        from fontTools.ttLib import TTFont
+        t = TTFont(sys.argv[1])
+        for r in t["name"].names:
+            if r.nameID in (1, 16): r.string = "DynIcons"
+            elif r.nameID in (4, 6): r.string = "DynIcons-Regular"
+            elif r.nameID in (2, 17): r.string = "Regular"
+        t.save(sys.argv[1])
+        PY
+            # name -> codepoint map, read from the font's ligature table
+            python3 - $out/icons.ttf $out/icons.json <<'PY'
+        import sys, json
+        from fontTools.ttLib import TTFont
+        t = TTFont(sys.argv[1])
+        cmap = t.getBestCmap()
+        g2c = {}
+        for c, g in cmap.items():
+            g2c.setdefault(g, c)
+        ch = {g: chr(c) for c, g in cmap.items() if c < 0x80}
+        out = {}
+        for lk in t["GSUB"].table.LookupList.Lookup:
+            for st in lk.SubTable:
+                st = getattr(st, "ExtSubTable", st)
+                if not hasattr(st, "ligatures"):
                     continue
-                cp = g2c.get(l.LigGlyph)
-                if cp is not None and cp >= 0xE000:
-                    out.setdefault(name, chr(cp))
-assert len(out) > 1000, len(out)
-json.dump(out, open(sys.argv[2], "w"))
-PY
-  '';
+                for first, ligs in st.ligatures.items():
+                    for l in ligs:
+                        try:
+                            name = "".join(ch[c] for c in [first] + list(l.Component))
+                        except KeyError:
+                            continue
+                        cp = g2c.get(l.LigGlyph)
+                        if cp is not None and cp >= 0xE000:
+                            out.setdefault(name, chr(cp))
+        assert len(out) > 1000, len(out)
+        json.dump(out, open(sys.argv[2], "w"))
+        PY
+      '';
 
   # Repo path used by `dynisland dev`
   repoShell = "$HOME/Proyectos/MyNixOS/modules/desktop/shell/dynisland/shell.qml";
@@ -93,13 +113,14 @@ PY
       *)        echo "usage: dynisland {start|restart|stable|stop|dev|ipc <target> <fn>|settings|launcher|log}" ;;
     esac
   '';
-in {
+in
+{
   # ---- Server mode, system side (UNTESTED) -------------------------------------
   # Tailscale daemon idles disconnected; the shell runs `tailscale up/down` with Server mode.
   # --operator lets user jano run tailscale without sudo.
   services.tailscale = {
     enable = true;
-    openFirewall = true;                       # UDP 41641: direct connections (relays work without it)
+    openFirewall = true; # UDP 41641: direct connections (relays work without it)
     extraSetFlags = [ "--operator=jano" ];
   };
   # Power profiles (Sys.cyclePowerProfile -> powerprofilesctl)
@@ -119,7 +140,15 @@ in {
   '';
 
   home-manager.users.jano = {
-    home.packages = (with pkgs; [ quickshell material-symbols inter nixos-icons ]) ++ runtimeDeps ++ [ dynisland ];
+    home.packages =
+      (with pkgs; [
+        quickshell
+        material-symbols
+        inter
+        nixos-icons
+      ])
+      ++ runtimeDeps
+      ++ [ dynisland ];
 
     # QML tree lives in ~/.config/quickshell/dynisland (qs -c dynisland)
     xdg.configFile."quickshell/dynisland".source = ./.;
@@ -134,7 +163,13 @@ in {
       Service = {
         ExecStart = "${pkgs.quickshell}/bin/qs -c dynisland";
         Restart = "on-failure";
-        Environment = [ "DYN_ICON_FONT=${iconFont}/icons.ttf" "DYN_ICON_MAP=${iconFont}/icons.json" "QS_ICON_THEME=Papirus-Dark" "XDG_DATA_DIRS=/run/current-system/sw/share:/etc/profiles/per-user/jano/share:%h/.nix-profile/share" "PATH=${lib.makeBinPath runtimeDeps}:/run/wrappers/bin:/run/wrappers/bin:/run/current-system/sw/bin" ];
+        Environment = [
+          "DYN_ICON_FONT=${iconFont}/icons.ttf"
+          "DYN_ICON_MAP=${iconFont}/icons.json"
+          "QS_ICON_THEME=Papirus-Dark"
+          "XDG_DATA_DIRS=/run/current-system/sw/share:/etc/profiles/per-user/jano/share:%h/.nix-profile/share"
+          "PATH=${lib.makeBinPath runtimeDeps}:/run/wrappers/bin:/etc/profiles/per-user/jano/bin:%h/.nix-profile/bin:/run/current-system/sw/bin"
+        ];
       };
       Install.WantedBy = [ "graphical-session.target" ];
     };

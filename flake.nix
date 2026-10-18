@@ -40,11 +40,10 @@
     # IPTS touch, Marvell wifi firmware, thermald, surface-control).
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
-    claude-desktop = {
-      url = "github:k3d3/claude-desktop-linux-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
+    # Native Claude Desktop (Electron) wrapper for Linux.
+    # Not made to follow our nixpkgs: it still uses the now-removed
+    # `nodePackages` top-level attr, so it needs its own pinned nixpkgs.
+    claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
   };
 
 

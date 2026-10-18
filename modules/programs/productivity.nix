@@ -4,6 +4,7 @@
   environment.systemPackages =
     (with pkgs; [
       obsidian
+      evince
       wl-screenrec
       thunderbird
     ])

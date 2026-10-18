@@ -127,6 +127,8 @@ binds {
     Mod+V       { spawn "dynisland" "ipc" "tools" "clipboard"; }
     Mod+Ctrl+E  { spawn "dynisland" "ipc" "tools" "emoji"; }
     Mod+Shift+C { spawn "dynisland" "ipc" "tools" "color"; }
+    Alt+Space { spawn "qs" "-c" "dynisland" "ipc" "call" "spotlight" "toggle"; }
+    Mod+A     { spawn "qs" "-c" "dynisland" "ipc" "call" "ai" "toggle"; }
     // --- /shell ---
 
     Mod+Shift+K { show-hotkey-overlay; }

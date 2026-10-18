@@ -24,7 +24,7 @@ Item {
         anchors.fill: parent; anchors.margins: -g.pad
         opacity: Math.min(1, (0.25 + g.lv * 0.9) * Config.cava.glowStrength)
         layer.enabled: g.visible
-        layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 36 }
+        layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 20 }
         Rectangle {
             anchors.fill: parent; anchors.margins: g.pad - 2
             radius: g.parent.radius + 2; color: "transparent"

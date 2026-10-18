@@ -24,6 +24,8 @@ import qs.modules.widgets
 import qs.modules.settings
 import qs.modules.lock
 import qs.modules.launcher
+import qs.modules.spotlight
+import qs.modules.ai
 
 ShellRoot {
     Component.onCompleted: { Usb.ready; Updates.ready; Clip.items } //  // instantiate so the clipboard watcher starts at login
@@ -36,6 +38,8 @@ ShellRoot {
     Variants { model: Quickshell.screens; DesktopMenu {} }   // right-click menu on the desktop
 
     LauncherDrawer {}   // app drawer (UiState.launcherOpen)
+    Spotlight {}        // centered search bar, macOS Alt+Space style (UiState.spotlightOpen)
+    AIChat {}           // AI chat panel (UiState.aiOpen)
     Lock {}       // session lock screen (UiState.locked)
 
     Settings {}   // single centered overlay, toggled via UiState.settingsOpen
@@ -50,6 +54,16 @@ ShellRoot {
         function note(): void { UiState.openPanel("note") }
     }
     IpcHandler { target: "island";   function toggle(): void { UiState.islandPinned = !UiState.islandPinned } }
+    IpcHandler { target: "spotlight"
+        function toggle(): void { UiState.spotlightOpen = !UiState.spotlightOpen }
+        function open(): void { UiState.spotlightOpen = true }
+        function close(): void { UiState.spotlightOpen = false }
+    }
+    IpcHandler { target: "ai"
+        function toggle(): void { UiState.aiOpen = !UiState.aiOpen }
+        function open(): void { UiState.aiOpen = true }
+        function close(): void { UiState.aiOpen = false }
+    }
     IpcHandler { target: "launcher"
         function toggle(): void { UiState.launcherOpen = !UiState.launcherOpen }
         function open(): void { UiState.launcherOpen = true }

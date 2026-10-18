@@ -10,6 +10,8 @@ Singleton {
     property bool settingsOpen: false
     property bool quickPage: false      // island's right column shows the quick toggles page (QuickPage.qml)
     property bool launcherOpen: false   // app drawer (modules/launcher)
+    property bool spotlightOpen: false  // centered search bar (modules/spotlight)
+    property bool aiOpen: false         // AI chat panel (modules/ai)
     property bool locked: false         // session lock active (modules/lock)
     property bool islandPinned: false   // keep island expanded (IPC: island toggle)
 

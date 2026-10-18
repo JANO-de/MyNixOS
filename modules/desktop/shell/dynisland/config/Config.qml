@@ -29,7 +29,7 @@ Singleton {
     function applySaved(text) {
         try {
             const j = JSON.parse(text);
-            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "server", "calendar", "profile"]) {
+            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "server", "calendar", "profile", "ai"]) {
                 if (!j[sec]) continue;
                 for (const k in j[sec]) root[sec][k] = j[sec][k];
             }
@@ -183,6 +183,12 @@ Singleton {
                 property bool weather: true
                 property bool calendar: true          // next events
                 property var positions: ({})          // { id: {x, y} } card CENTER as 0..1 fractions of the screen
+            }
+
+            property JsonObject ai: JsonObject {
+                property string apiKey: ""                 // Anthropic API key (sk-ant-...). Stored in ~/.config/dynisland/config.json
+                property string model: "claude-sonnet-4-6"
+                property string systemPrompt: ""            // optional, sent as the system message
             }
 
             property JsonObject system: JsonObject {
