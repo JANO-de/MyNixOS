@@ -38,7 +38,8 @@ Singleton {
         for (let i = 0; i < list.length; i++) if (list[i].id === Config.ai.provider) return list[i];
         return list.length ? list[0] : null;
     }
-    readonly property var modelInfo: provider ? H.resolveModel(provider, Config.ai.model) : null
+    property var detectedCtx: ({})                 // providerId -> context size read from the server (llama.cpp /props)
+    readonly property var modelInfo: provider ? H.resolveModel(provider, Config.ai.model, detectedCtx[provider.id] || 0) : null
     readonly property var modelList: {            // configured + fetched, unique
         const out = [];
         if (!provider) return out;
@@ -164,6 +165,12 @@ Singleton {
         property string provId: ""
         stdout: StdioCollector { onStreamFinished: root.onModels(bg.provId, text) }
     }
+    Process {
+        id: props
+        property string provId: ""
+        stdout: StdioCollector { onStreamFinished: root.onProps(props.provId, text) }
+    }
+    Process { id: keyProc; onExited: root.fetchModels() }
     Process { id: clip }
     Process { id: rm }
 
@@ -587,6 +594,7 @@ Singleton {
         bg.environment = keyEnv(p);
         bg.command = ["bash", "-c", H.RUNNER, "bash", H.SH_HTTP, "GET", H.endpoint(p, "models"), H.authHeaderFormat(p)].concat(H.baseHeaders(p, []));
         bg.running = true;
+        fetchProps();
     }
     function onModels(provId, text) {
         const r = H.splitHttp(H.splitExit(text).out);
@@ -596,9 +604,59 @@ Singleton {
         m[provId] = ids;
         remoteModels = m;
     }
+    // llama.cpp: ask the running server for its actual loaded context size (GET /props)
+    function fetchProps() {
+        const p = provider;
+        if (!p || p.flavor !== "llamacpp" || props.running) return;
+        props.provId = p.id;
+        props.command = ["bash", "-c", H.RUNNER, "bash", H.SH_HTTP, "GET", H.propsUrl(p), ""];
+        props.running = true;
+    }
+    function onProps(provId, text) {
+        const n = H.parseProps(H.splitHttp(H.splitExit(text).out).body);
+        if (n > 0) { const m = Object.assign({}, detectedCtx); m[provId] = n; detectedCtx = m }
+    }
+
+    // ======================================================================= provider presets / keys / editing
+    readonly property var presetList: H.PRESETS.map(pr => ({ label: (hasProvider(pr.id) ? "\u2713 " : "+ ") + pr.name, value: pr.id }))
+    function hasProvider(id) { return (cfg.providers || []).some(p => p.id === id) }
+    function keyHint(p) { const pr = p ? H.preset(p.id) : null; return pr && pr.keyUrl ? "Get a key at " + pr.keyUrl : "" }
+    function saveCfg() { cfgFile.setText(JSON.stringify(cfg, null, 2)) }
+    function addPreset(id) {
+        const pr = H.preset(id);
+        if (!pr) return;
+        if (hasProvider(id)) { setProvider(id); return }
+        cfg = Object.assign({}, cfg, { providers: (cfg.providers || []).concat([H.providerFromPreset(pr)]) });
+        saveCfg();
+        setProvider(id);
+        info = "Added " + pr.name + "." + (pr.noKey ? "" : " Paste its API key in Settings > AI (get one at " + pr.keyUrl + ").");
+    }
+    // key -> ~/.config/dynisland/keys/<id>.key (mode 600), wired into that provider's apiKeyCmd
+    function saveKey(provId, key) {
+        key = (key || "").trim();
+        if (!key) return;
+        keyProc.environment = { AI_KEYVAL: key };
+        keyProc.command = ["bash", "-c", "umask 077; d=\"$HOME/.config/dynisland/keys\"; mkdir -p \"$d\" && printf %s \"$AI_KEYVAL\" > \"$d/$1.key\"", "bash", provId];
+        keyProc.running = true;
+        const list = (cfg.providers || []).map(p => {
+            if (p.id !== provId || p.apiKey || p.apiKeyCmd) return p;
+            return Object.assign({}, p, { apiKeyCmd: "cat " + H.keyFile(provId) });
+        });
+        cfg = Object.assign({}, cfg, { providers: list });
+        saveCfg();
+        info = "Key saved to " + H.keyFile(provId);
+    }
+    // opens in a terminal editor ($VISUAL, $EDITOR, else the first of nvim/vim/hx/micro/nano found)
+    function editFile(path) {
+        const script = "for e in \"$VISUAL\" \"$EDITOR\" nvim vim hx micro nano; do if [ -n \"$e\" ] && command -v \"$e\" >/dev/null 2>&1; then exec \"$e\" \"$1\"; fi; done; echo 'No terminal editor found. Set $EDITOR.'; read -r _";
+        Quickshell.execDetached([Config.system.terminal, "-e", "bash", "-c", script, "bash", path]);
+    }
+    function editJson() { editFile(Config.dir + "/ai.json") }
+    function editMemory() { editFile(H.expandHome(cfg.memoryFile || "~/.config/dynisland/AI.md", Config.home)) }
+    function openJsonExternal() { Quickshell.execDetached(["xdg-open", Config.dir + "/ai.json"]) }
     function setModel(id) {
         Config.ai.model = id; picker = "";
-        const mi = H.resolveModel(provider, id);
+        const mi = H.resolveModel(provider, id, detectedCtx[provider.id] || 0);
         info = "Model: " + id + (mi.thinking === "off" && Config.ai.thinking !== "off" && provider.kind === "anthropic" ? " (this model has no extended thinking)" : "");
     }
     function setProvider(id) {

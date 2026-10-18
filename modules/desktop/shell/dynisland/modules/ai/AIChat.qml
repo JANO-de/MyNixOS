@@ -94,6 +94,71 @@ LazyLoader {
         function cycle(list, cur) { return list[(list.indexOf(cur) + 1) % list.length] }
 
         // ---- reusable bits ----------------------------------------------------------------------
+        // A little guy that dances while the model is thinking/writing/running a tool.
+        component Dancer: Item {
+            id: dn
+            property bool active: false
+            property int beat: 290
+            readonly property color skin: "#e8895f"
+            readonly property color ink: "#4a2416"
+            width: 44; height: 48
+            opacity: active ? 1 : 0; scale: active ? 1 : 0.6; transformOrigin: Item.Bottom
+            visible: opacity > 0.01
+            Behavior on opacity { NumberAnimation { duration: 220 } }
+            Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack } }
+            Item {
+                id: fig; width: parent.width; height: parent.height
+                SequentialAnimation on y {
+                    running: dn.active; loops: Animation.Infinite
+                    NumberAnimation { from: 0; to: -6; duration: dn.beat; easing.type: Easing.OutQuad }
+                    NumberAnimation { from: -6; to: 0; duration: dn.beat; easing.type: Easing.InQuad }
+                }
+                Rectangle {   // legs, alternating
+                    x: 13; y: 37; width: 7; height: 9; radius: 2; color: dn.ink; transformOrigin: Item.Top
+                    SequentialAnimation on rotation {
+                        running: dn.active; loops: Animation.Infinite
+                        NumberAnimation { from: -16; to: 16; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                        NumberAnimation { from: 16; to: -16; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                    }
+                }
+                Rectangle {
+                    x: 25; y: 37; width: 7; height: 9; radius: 2; color: dn.ink; transformOrigin: Item.Top
+                    SequentialAnimation on rotation {
+                        running: dn.active; loops: Animation.Infinite
+                        NumberAnimation { from: 16; to: -16; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                        NumberAnimation { from: -16; to: 16; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                    }
+                }
+                Rectangle {   // body sways
+                    x: 7; y: 12; width: 31; height: 27; radius: 8; color: dn.skin; transformOrigin: Item.Bottom
+                    SequentialAnimation on rotation {
+                        running: dn.active; loops: Animation.Infinite
+                        NumberAnimation { from: -7; to: 7; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                        NumberAnimation { from: 7; to: -7; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                    }
+                    Rectangle { x: 8; y: 9; width: 4; height: 6; radius: 2; color: dn.ink }
+                    Rectangle { x: 19; y: 9; width: 4; height: 6; radius: 2; color: dn.ink }
+                    Rectangle { x: 12; y: 18; width: 7; height: 3.5; radius: 1.5; color: dn.ink }
+                }
+                Rectangle {   // arms wave
+                    x: 1; y: 19; width: 6; height: 15; radius: 3; color: dn.skin; transformOrigin: Item.Top
+                    SequentialAnimation on rotation {
+                        running: dn.active; loops: Animation.Infinite
+                        NumberAnimation { from: 35; to: -80; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                        NumberAnimation { from: -80; to: 35; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                    }
+                }
+                Rectangle {
+                    x: 37; y: 19; width: 6; height: 15; radius: 3; color: dn.skin; transformOrigin: Item.Top
+                    SequentialAnimation on rotation {
+                        running: dn.active; loops: Animation.Infinite
+                        NumberAnimation { from: -35; to: 80; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                        NumberAnimation { from: 80; to: -35; duration: dn.beat * 2; easing.type: Easing.InOutSine }
+                    }
+                }
+            }
+        }
+
         component Chip: Rectangle {
             id: chip
             property string text: ""
@@ -555,6 +620,19 @@ LazyLoader {
                     }
                 }
             }
+        }
+
+        // top right of the card: dances while the model thinks, writes, or runs a tool
+        Dancer {
+            id: dancer
+            anchors { bottom: card.top; right: card.right; rightMargin: 26; bottomMargin: -4 }
+            active: AI.busy && AI.phase !== ""
+            beat: AI.phase === "tools" ? 190 : 290
+        }
+        Text {
+            anchors { verticalCenter: dancer.verticalCenter; right: dancer.left; rightMargin: 8 }
+            visible: dancer.active
+            text: win.status(); color: win.dim; font.pixelSize: 12
         }
     }
 }

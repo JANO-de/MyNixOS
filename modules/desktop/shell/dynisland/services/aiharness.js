@@ -212,16 +212,20 @@ function defaultPricing(modelId) {   // USD per million tokens — estimates, ov
     if (/sonnet/.test(m)) return { "in": 3, out: 15 };
     return null;
 }
-function resolveModel(provider, id) {
+function resolveModel(provider, id, detectedCtx) {
     var e = modelEntry(provider, id), kind = provider.kind || "openai";
     return {
         id: id, kind: kind,
-        context: e.context || provider.context || (kind === "anthropic" ? 200000 : 32768),
+        context: e.context || provider.context || detectedCtx || (kind === "anthropic" ? 200000 : 32768),
         maxTokens: e.maxTokens || provider.maxTokens || (kind === "anthropic" ? 16000 : 0),
         thinking: kind === "anthropic" ? thinkMode(id, e) : (e.thinking || "off"),
         pricing: e.pricing || provider.pricing || (kind === "anthropic" ? defaultPricing(id) : null),
         toolMode: e.toolMode || provider.toolMode || "native",
         reasoning: e.reasoning || provider.reasoning || autoReasoning(id),
+        // native (non-Anthropic) reasoning models that accept OpenAI's `reasoning_effort` body field
+        // (o-series, gpt-5, Gemini 2.5, Grok reasoning, DeepSeek-reasoner, ...). Opt-in per provider/model.
+        reasoningEffort: e.reasoningEffort !== undefined ? !!e.reasoningEffort
+            : (provider.reasoningEffort !== undefined ? !!provider.reasoningEffort : false),
         extraBody: Object.assign({}, provider.extraBody || {}, e.extraBody || {}),
         local: !!provider.local
     };
@@ -511,21 +515,31 @@ function anthropicRequest(st) {
     return { body: body, beta: beta };
 }
 
-function toOpenAIMessages(system, messages) {
+// Some OpenAI-compatible servers (Mistral's chat/completions) require tool-call ids
+// to match a strict ^[a-zA-Z0-9]{9}$ format; Anthropic ids ("toolu_...") don't fit,
+// so when idFormat is "alnum9" every id crossing the boundary is hashed to one deterministically
+// (same input -> same output, so a call's id and its later tool_result still match).
+function hashId(id) {
+    var h1 = 5381, h2 = 52711, i, c;
+    for (i = 0; i < id.length; i++) { c = id.charCodeAt(i); h1 = ((h1 * 33) ^ c) >>> 0; h2 = ((h2 * 31) + c) >>> 0; }
+    return (h1.toString(36) + h2.toString(36) + "000000000").slice(0, 9);
+}
+function toOpenAIMessages(system, messages, idFormat) {
+    var mapId = idFormat === "alnum9" ? hashId : function (x) { return x; };
     var out = [{ role: "system", content: system }];
     messages.forEach(function (m) {
         if (m.role === "assistant") {
             var text = textOf(m.blocks), calls = toolUses(m.blocks);
             var o = { role: "assistant", content: text || (calls.length ? null : "") };
             if (calls.length) o.tool_calls = calls.map(function (c) {
-                return { id: c.id, type: "function", "function": { name: c.name, arguments: JSON.stringify(c.input || {}) } };
+                return { id: mapId(c.id), type: "function", "function": { name: c.name, arguments: JSON.stringify(c.input || {}) } };
             });
             if (o.content === "" && !o.tool_calls) return;
             out.push(o);
         } else {
             var results = m.blocks.filter(function (b) { return b.type === "tool_result"; });
             results.forEach(function (r) {
-                out.push({ role: "tool", tool_call_id: r.tool_use_id, content: clip(typeof r.content === "string" ? r.content : JSON.stringify(r.content), 100000) || "(no output)" });
+                out.push({ role: "tool", tool_call_id: mapId(r.tool_use_id), content: clip(typeof r.content === "string" ? r.content : JSON.stringify(r.content), 100000) || "(no output)" });
             });
             var t = textOf(m.blocks);
             if (t) out.push({ role: "user", content: t });
@@ -537,12 +551,14 @@ function toOpenAIMessages(system, messages) {
 function openaiRequest(st) {
     var mdl = st.model;
     var body = { model: mdl.id, stream: true, stream_options: { include_usage: true },
-                 messages: toOpenAIMessages(st.system, st.messages) };
+                 messages: toOpenAIMessages(st.system, st.messages, st.provider && st.provider.idFormat) };
     if (st.provider && st.provider.streamUsage === false) delete body.stream_options;   // server rejects stream_options
     if (st.tools && st.tools.length) {
         body.tools = st.tools.map(function (t) { return { type: "function", "function": { name: t.name, description: t.description, parameters: t.input_schema } }; });
     }
     if (mdl.maxTokens) body[st.maxTokensField || "max_tokens"] = mdl.maxTokens;
+    // o-series/gpt-5/Gemini-2.5/Grok-reasoning/DeepSeek-reasoner: ask for the chosen thinking level
+    if (mdl.reasoningEffort && st.level && st.level !== "off") body.reasoning_effort = st.level;
     for (var k in mdl.extraBody) body[k] = mdl.extraBody[k];
     return { body: body, beta: [] };
 }
@@ -559,6 +575,51 @@ function buildRequest(st) {
         level: st.level, mcp: native ? st.mcp : [], cache: st.cache, maxTokensField: st.provider.maxTokensField
     };
     return st.provider.kind === "anthropic" ? anthropicRequest(req) : openaiRequest(req);
+}
+
+// ---------------------------------------------------------------------------
+//  Provider presets (Settings > AI > Add provider). `models` is just a
+//  starting list — the real list is fetched live from each server.
+// ---------------------------------------------------------------------------
+var PRESETS = [
+    { id: "openai", name: "OpenAI (GPT)", kind: "openai", baseUrl: "https://api.openai.com/v1", keyUrl: "platform.openai.com/api-keys",
+      models: ["gpt-4o", "gpt-4o-mini", "o3", "o4-mini"], context: 128000, reasoningEffort: true },
+    { id: "gemini", name: "Google Gemini", kind: "openai", baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai", keyUrl: "aistudio.google.com/apikey",
+      models: ["gemini-2.5-pro", "gemini-2.5-flash"], context: 1000000, reasoningEffort: true },
+    { id: "xai", name: "xAI (Grok)", kind: "openai", baseUrl: "https://api.x.ai/v1", keyUrl: "console.x.ai",
+      models: ["grok-4"], context: 256000, reasoningEffort: true },
+    { id: "mistral", name: "Mistral", kind: "openai", baseUrl: "https://api.mistral.ai/v1", keyUrl: "console.mistral.ai/api-keys",
+      models: ["mistral-large-latest", "codestral-latest", "mistral-small-latest"], context: 128000,
+      idFormat: "alnum9", streamUsage: false },
+    { id: "groq", name: "Groq (Llama and others)", kind: "openai", baseUrl: "https://api.groq.com/openai/v1", keyUrl: "console.groq.com/keys",
+      models: ["llama-3.3-70b-versatile"], context: 128000 },
+    { id: "together", name: "Together (Llama and others)", kind: "openai", baseUrl: "https://api.together.xyz/v1", keyUrl: "api.together.ai/settings/api-keys",
+      models: ["meta-llama/Llama-3.3-70B-Instruct-Turbo"], context: 128000 },
+    { id: "deepseek", name: "DeepSeek", kind: "openai", baseUrl: "https://api.deepseek.com/v1", keyUrl: "platform.deepseek.com/api_keys",
+      models: ["deepseek-chat", "deepseek-reasoner"], context: 64000, reasoningEffort: true },
+    { id: "openrouter", name: "OpenRouter (everything)", kind: "openai", baseUrl: "https://openrouter.ai/api/v1", keyUrl: "openrouter.ai/keys",
+      models: [], context: 128000 },
+    { id: "ollama", name: "Ollama (local)", kind: "openai", local: true, baseUrl: "http://localhost:11434/v1", models: [], context: 16384, noKey: true },
+    { id: "llamacpp", name: "llama.cpp (local)", kind: "openai", flavor: "llamacpp", local: true, baseUrl: "http://localhost:8080/v1", models: [], noKey: true },
+    { id: "lmstudio", name: "LM Studio (local)", kind: "openai", local: true, baseUrl: "http://localhost:1234/v1", models: [], noKey: true }
+];
+function preset(id) { for (var i = 0; i < PRESETS.length; i++) if (PRESETS[i].id === id) return PRESETS[i]; return null; }
+// A fresh ai.json provider entry built from a preset.
+function providerFromPreset(p) {
+    var o = {};
+    for (var k in p) if (k !== "keyUrl" && k !== "noKey") o[k] = p[k];
+    if (!p.noKey) o.apiKeyCmd = "";
+    return o;
+}
+function keyFile(id) { return "~/.config/dynisland/keys/" + id + ".key"; }
+
+// llama.cpp server: GET <base minus /v1>/props -> actual loaded context size.
+function propsUrl(provider) { return String(provider.baseUrl || "").replace(/\/+$/, "").replace(/\/v1$/, "") + "/props"; }
+function parseProps(text) {
+    var j;
+    try { j = JSON.parse(text); } catch (e) { return 0; }
+    var g = j.default_generation_settings || {};
+    return +(g.n_ctx || j.n_ctx || 0) || 0;
 }
 
 // ---------------------------------------------------------------------------

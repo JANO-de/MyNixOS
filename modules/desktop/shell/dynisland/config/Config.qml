@@ -55,6 +55,7 @@ Singleton {
     property alias server: adapter.server
     property alias calendar: adapter.calendar
     property alias profile: adapter.profile
+    property alias ai: adapter.ai
 
     // Positions is a plain object: reassign it whole so change signals fire.
     function setWidgetPos(id, x, y) {
