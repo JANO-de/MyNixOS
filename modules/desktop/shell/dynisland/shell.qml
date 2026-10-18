@@ -63,6 +63,8 @@ ShellRoot {
         function toggle(): void { UiState.aiOpen = !UiState.aiOpen }
         function open(): void { UiState.aiOpen = true }
         function close(): void { UiState.aiOpen = false }
+        function ask(text: string): void { UiState.aiOpen = true; AI.send(text) }   // e.g. bind: ipc call ai ask "summarize my clipboard"
+        function newchat(): void { AI.newSession(); UiState.aiOpen = true }
     }
     IpcHandler { target: "launcher"
         function toggle(): void { UiState.launcherOpen = !UiState.launcherOpen }
