@@ -40,7 +40,7 @@
     # IPTS touch, Marvell wifi firmware, thermald, surface-control).
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
-    inputs.claude-desktop = {
+    claude-desktop = {
       url = "github:k3d3/claude-desktop-linux-flake";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
