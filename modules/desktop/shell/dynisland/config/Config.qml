@@ -195,7 +195,7 @@ Singleton {
                 property string approve: "ask"              // ask = confirm edits+commands | edits = confirm commands only | auto = never ask
                 property int maxTurns: 25                   // max tool rounds per message
                 property string cwd: ""                     // working directory for tools ("" = home)
-                property bool showThinking: true            // show the model's reasoning in the chat
+                property bool showThinking: false           // show the model's reasoning in the chat
                 property bool resumeLast: true              // reopen the most recent chat on start
             }
 

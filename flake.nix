@@ -44,10 +44,13 @@
     # Not made to follow our nixpkgs: it still uses the now-removed
     # `nodePackages` top-level attr, so it needs its own pinned nixpkgs.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
+
+    ## Denial
+    denial.url = "github:mumuxiao722/denial-arm64-builder";
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, denial, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

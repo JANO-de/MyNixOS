@@ -328,9 +328,11 @@ LazyLoader {
             // -------- sessions sidebar
             Rectangle {
                 id: side
-                visible: AI.sidebar
+                visible: width > 0
+                z: 2; clip: true
                 anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
-                width: visible ? 240 : 0
+                width: AI.sidebar ? 240 : 0
+                Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutQuad } }
                 color: Qt.rgba(0, 0, 0, 0.18)
                 topLeftRadius: 22; bottomLeftRadius: 22
                 Column {
@@ -372,6 +374,7 @@ LazyLoader {
             // -------- main column
             ColumnLayout {
                 id: main
+                z: 1; clip: true
                 anchors { left: side.right; right: parent.right; top: parent.top; bottom: parent.bottom; margins: 16 }
                 spacing: 10
 
@@ -380,7 +383,6 @@ LazyLoader {
                     Layout.fillWidth: true; implicitHeight: 32
                     Row {
                         anchors.verticalCenter: parent.verticalCenter; spacing: 8
-                        IconButton { diameter: 30; iconSize: 17; icon: "menu"; flat: true; active: AI.sidebar; tip: "Chats"; onClicked: AI.sidebar = !AI.sidebar }
                         Text { text: AI.title || "New chat"; color: "white"; font.pixelSize: 15; font.bold: true; width: Math.max(60, main.width - 560); elide: Text.ElideRight; anchors.verticalCenter: parent.verticalCenter }
                     }
                     Row {
@@ -400,6 +402,7 @@ LazyLoader {
                             onClicked: Config.ai.approve = win.cycle(["ask", "edits", "auto"], Config.ai.approve)
                         }
                         IconButton { diameter: 28; iconSize: 16; icon: "compress"; tip: "Compact: summarize the chat to free context"; onClicked: AI.compact() }
+                        IconButton { diameter: 28; iconSize: 16; icon: "menu"; flat: true; active: AI.sidebar; tip: "Chats"; onClicked: AI.sidebar = !AI.sidebar }
                         IconButton { diameter: 28; iconSize: 16; icon: "add"; tip: "New chat (Ctrl+N)"; onClicked: AI.newSession() }
                         IconButton { diameter: 28; iconSize: 16; icon: "close"; onClicked: win.close() }
                     }
@@ -412,14 +415,27 @@ LazyLoader {
                     radius: 14; color: Theme.surfaceContainerHigh; border.width: 1; border.color: "#22ffffff"; clip: true
                     Column {
                         id: pcol; x: 12; y: 12; width: parent.width - 24; spacing: 8
-                        Row {
-                            visible: AI.providers.length > 1; spacing: 6
-                            Repeater {
-                                model: AI.providers
-                                delegate: Chip {
-                                    required property var modelData
-                                    text: modelData.name || modelData.id; active: !!AI.provider && modelData.id === AI.provider.id
-                                    onClicked: AI.setProvider(modelData.id)
+                        Flickable {
+                            id: provScroll
+                            visible: AI.providers.length > 1
+                            width: parent.width; height: provRow.height; contentWidth: provRow.width
+                            clip: true; boundsBehavior: Flickable.StopAtBounds
+                            flickableDirection: Flickable.HorizontalFlick
+                            WheelHandler {
+                                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                                onWheel: event => provScroll.contentX = Math.max(0, Math.min(provScroll.contentWidth - provScroll.width,
+                                                                                               provScroll.contentX - event.angleDelta.y))
+                            }
+                            Row {
+                                id: provRow
+                                spacing: 6
+                                Repeater {
+                                    model: AI.providers
+                                    delegate: Chip {
+                                        required property var modelData
+                                        text: modelData.name || modelData.id; active: !!AI.provider && modelData.id === AI.provider.id
+                                        onClicked: AI.setProvider(modelData.id)
+                                    }
                                 }
                             }
                         }

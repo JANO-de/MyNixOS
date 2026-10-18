@@ -263,7 +263,11 @@ Singleton {
         chat.running = true;
     }
 
-    function onLine(line) { if (stream && stream.feed(line)) dirty = true }
+    function onLine(line) {
+        if (!(stream && stream.feed(line))) return;
+        dirty = true;
+        if (H.isRunaway(stream)) { info = "Stopped: the model got stuck repeating itself."; stop() }
+    }
     function refreshLive() {
         if (!stream) return;
         liveBlocks = H.liveDisplay(stream.blocks.filter(Boolean), xmlMode);
@@ -618,7 +622,14 @@ Singleton {
     }
 
     // ======================================================================= provider presets / keys / editing
-    readonly property var presetList: H.PRESETS.map(pr => ({ label: (hasProvider(pr.id) ? "\u2713 " : "+ ") + pr.name, value: pr.id }))
+    readonly property var presetList: H.PRESETS.map(pr => ({ label: pr.name, value: pr.id, icon: pr.icon || "smart_toy", added: hasProvider(pr.id) }))
+    function providerIcon(p) {                    // provider -> icon name, for the picker grid and the status row
+        if (!p) return "smart_toy";
+        if (p.icon) return p.icon;
+        if (p.id === "anthropic" || p.kind === "anthropic") return "auto_awesome";
+        const pr = H.preset(p.id);
+        return (pr && pr.icon) || "smart_toy";
+    }
     function hasProvider(id) { return (cfg.providers || []).some(p => p.id === id) }
     function keyHint(p) { const pr = p ? H.preset(p.id) : null; return pr && pr.keyUrl ? "Get a key at " + pr.keyUrl : "" }
     function saveCfg() { cfgFile.setText(JSON.stringify(cfg, null, 2)) }

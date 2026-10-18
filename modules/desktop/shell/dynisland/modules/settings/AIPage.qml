@@ -18,10 +18,10 @@ Page {
         PillButton { implicitHeight: 34; label: "Reload ai.json"; icon: "refresh"; onClicked: { AI.reloadCfg(); AI.fetchModels() } }
         PillButton { implicitHeight: 34; label: "Edit JSON"; icon: "code"; onClicked: AI.editJson() }
     }
-    SettingRow { label: "Provider"; hint: "Providers come from ai.json. Switch inside the chat with /provider."
-        Chips { model: AI.providers.map(p => ({ label: p.name || p.id, value: p.id })); current: Config.ai.provider; onPicked: v => AI.setProvider(v) } }
-    SettingRow { label: "Add provider"; hint: "OpenAI, Gemini, Grok, Mistral, Groq/Together (Llama), DeepSeek, OpenRouter, Ollama, llama.cpp, LM Studio \u2014 all go through the same harness as Claude."
-        Chips { model: AI.presetList; current: ""; onPicked: v => AI.addPreset(v) } }
+    SettingRow { label: "Provider"; hint: "Providers come from ai.json. Switch inside the chat with /provider."; wide: true
+        GridPicker { model: AI.providers.map(p => ({ label: p.name || p.id, value: p.id, icon: AI.providerIcon(p) })); current: Config.ai.provider; onPicked: v => AI.setProvider(v) } }
+    SettingRow { label: "Add provider"; hint: "OpenAI, Gemini, Grok, Mistral, Groq/Together (Llama), DeepSeek, OpenRouter, Ollama, llama.cpp, LM Studio \u2014 all go through the same harness as Claude."; wide: true
+        GridPicker { model: AI.presetList; current: ""; onPicked: v => AI.addPreset(v) } }
     SettingRow { visible: !!AI.provider && AI.keyHint(AI.provider) !== ""
         label: "API key for " + (AI.provider ? (AI.provider.name || AI.provider.id) : ""); hint: AI.keyHint(AI.provider)
         Field { implicitWidth: 320; placeholder: "sk-..."; onAccepted: t => { if (t.trim()) { AI.saveKey(Config.ai.provider, t.trim()); text = "" } } } }

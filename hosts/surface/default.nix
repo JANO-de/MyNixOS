@@ -27,6 +27,8 @@
     ./tablet.nix
     ./dev.nix
     ./apps.nix
+    ./denial.nix
+    ./droidloom.nix
   ];
 
   networking.hostName = "surface";
@@ -38,7 +40,7 @@
   # xampp: off by default (enabled only on laptop)
   modules.services.powertop.enable = true;
   modules.services.smartd.enable = true;
-  modules.services.waydroid.enable = true;
+  modules.services.waydroid.enable = false;
 
   # --- memory: 8GB RAM / 128GB disk ---
   # Keep zram below half of RAM (overrides modules/core/base.nix), plus an 8GB
