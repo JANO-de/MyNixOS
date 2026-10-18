@@ -44,6 +44,15 @@ let
       pipewire zlib
     ];
 
+    # These are Android/bionic-side libs (binder, netd, classpath-compat),
+    # resolved at runtime inside droidloom's own Android cell/image, not via
+    # the host glibc dynamic linker. Safe to let autoPatchelf skip them.
+    autoPatchelfIgnoreMissingDeps = [
+      "libcutils.so" "liblog.so" "libutils.so" "libapexsupport.so"
+      "libvndksupport.so" "libc++.so" "libstd.dylib.so" "libbase.so"
+      "libbpf.so" "libnetdutils.so" "libnetworkstats.so" "libstatssocket.so"
+    ];
+
     installPhase = ''
       mkdir -p $out x
       for p in ${runtimePkg} ${imagePkg}; do
