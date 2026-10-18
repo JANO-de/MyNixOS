@@ -1,6 +1,18 @@
 {
   description = "MyNixOS configuration";
 
+  # Required for Denial's engine cache hit: a flake's nixConfig is only
+  # honored when that flake is built directly (not when it's used as an
+  # input), so this has to live here rather than only in denial.nix's
+  # nix.settings. Without this, the first build can miss the cache and
+  # try to build the Flutter engine from source (48+ GiB scratch space).
+  nixConfig = {
+    extra-substituters = [ "https://denial.cachix.org" ];
+    extra-trusted-public-keys = [
+      "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
@@ -46,7 +58,10 @@
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
     ## Denial
-    denial.url = "github:mumuxiao722/denial-arm64-builder";
+    # Deliberately NOT following our nixpkgs here: the Denial docs say doing
+    # so changes the engine cache key, so you'd lose the binary cache hit
+    # and build the Flutter engine from source instead.
+    denial.url = "github:denialwm/denial";
   };
 
 
