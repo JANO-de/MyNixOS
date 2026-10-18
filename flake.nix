@@ -39,10 +39,16 @@
     # Hardware enablement for the Surface (linux-surface patched kernel,
     # IPTS touch, Marvell wifi firmware, thermald, surface-control).
     nixos-hardware.url = "github:NixOS/nixos-hardware";
+
+    inputs.claude-desktop = {
+      url = "github:k3d3/claude-desktop-linux-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;

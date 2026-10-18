@@ -8,8 +8,34 @@
     ninja
     pkg-config
     vscodium
+    inputs.claude-desktop.packages.${system}.claude-desktop-with-fhs
+    (pkgs.symlinkJoin {
+      name = "qtcreator";
+      paths = [ pkgs.qtcreator ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        rm -f $out/share/applications/*qtcreator*.desktop
+        wrapProgram $out/bin/qtcreator \
+          --unset QT_QPA_PLATFORMTHEME \
+          --prefix XDG_DATA_DIRS : "..."
+      '';
+    })
+    (pkgs.makeDesktopItem {
+      name = "qtcreator-nix";
+      desktopName = "Qt Creator (nix-shell)";
+      exec = "nix-shell /home/jano/Proyectos/Intro-to-QML/shell.nix --run qtcreator";
+      terminal = false;
+    })
     # Tools the extensions call (language servers, compilers, formatters)
-    nixd nixfmt clang-tools gcc gdb python3 ruff maven gradle
+    nixd 
+    nixfmt 
+    clang-tools 
+    gcc 
+    gdb 
+    python3 
+    ruff 
+    maven 
+    gradle
     neovide
     qt6.qt5compat
     pkgs.gowall
@@ -87,7 +113,15 @@
     ]);
 
   environment.shellAliases.llm = "$HOME/.local/bin/llm";
-
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [ stdenv.cc.cc.lib zlib openssl ];
+  programs.dconf.enable = true;
+  environment.sessionVariables.XDG_DATA_DIRS = [
+    "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
+    "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
+  ];
+  environment.shellAliases.qtc = "nix-shell ~/Proyectos/Intro-to-QML/shell.nix --run qtcreator";
+  
   services.llama-cpp = {
     enable = true;
     package = pkgs.llama-cpp.override { vulkanSupport = true; };
