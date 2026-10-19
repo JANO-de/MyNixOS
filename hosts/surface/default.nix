@@ -5,15 +5,16 @@
 #   filesystems.nix   disk layout by label (shared with surface-bootstrap)
 #   hardware.nix      SP5 quirks: wifi, buttons, panel, power
 #   network-aula.nix  school-network proxy dispatcher
-#   tablet.nix        Plasma session, greeter, pen/touch apps
-#   dev.nix           DAM toolkit (VS Code, JDK 21, Maven, DBeaver)
-#   apps.nix          study apps (Obsidian, Zotero, KDE Kirigami apps, Syncthing)
+#   tablet.nix        Plasma/SDDM session, greeter OSK, touch cursor
 { config, pkgs, lib, inputs, ... }:
 
 {
   imports = [
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
+
+    # Denial Wayland session (substituter configured in flake.nix nixConfig).
+    inputs.denial.nixosModules.default
 
     ../../modules/core
     ../../modules/hardware
@@ -25,16 +26,21 @@
     ./hardware.nix
     ./network-aula.nix
     ./tablet.nix
-    ./dev.nix
-    ./apps.nix
-    ./denial.nix
-    ./droidloom.nix
   ];
 
   networking.hostName = "surface";
 
+  # Denial session, selectable at the SDDM login screen (Plasma stays default).
+  programs.denial.enable = true;
+
   # Intel HD 620 only.
   hardware.nvidia.enable = false;
+
+  # Deploys build here and push to the Surface over SSH (see flake mkHost
+  # usage). Those paths are unsigned, so the Surface's Nix rejects them with
+  # "lacks a signature by a trusted key" unless the copying user is trusted.
+  # Same as hosts/desktop/default.nix.
+  nix.settings.trusted-users = [ "root" "jano" ];
 
   # --- lean services (the lampp workbench lives on the laptop) ---
   # xampp: off by default (enabled only on laptop)

@@ -15,6 +15,12 @@
 
   networking.hostName = "desktop";
 
+  # Without this, custom substituters (e.g. from a flake's nixConfig) are
+  # silently ignored for this user's builds -- the daemon just rebuilds
+  # from source instead of erroring, which is easy to miss until a build
+  # that should take minutes takes hours.
+  nix.settings.trusted-users = [ "root" "jano" ];
+
   # Freshly formatted internal data drives (ext4). "nofail" keeps boot snappy
   # even if a drive is missing, "noatime" avoids needless write traffic.
   fileSystems."/mnt/data" = {

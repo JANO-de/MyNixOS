@@ -8,6 +8,12 @@
   # --- display: Panel Self Refresh blanks the eDP output on this panel ---
   boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES"  ];
 
+  # Use the iHD VA-API driver (intel-media-driver), the right one for Kaby
+  # Lake (HD 620). As a side effect this drops nixos-hardware's legacy
+  # intel-vaapi-driver (i965) and its intel-ocl (legacy OpenCL, Gen8-), whose
+  # upstream source URL now returns 403 and fails the whole system build.
+  hardware.intelgpu.vaapiDriver = "intel-media-driver";
+
   # --- wifi: Marvell 88W8997 (mwifiex_pcie) ---
   # Power saving is flaky on this chip; keep the radio always on.
     networking.networkmanager.wifi.powersave = false;

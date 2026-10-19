@@ -1,16 +1,13 @@
 {
   description = "MyNixOS configuration";
 
-  # Required for Denial's engine cache hit: a flake's nixConfig is only
-  # honored when that flake is built directly (not when it's used as an
-  # input), so this has to live here rather than only in denial.nix's
-  # nix.settings. Without this, the first build can miss the cache and
-  # try to build the Flutter engine from source (48+ GiB scratch space).
+  # Denial's Cachix cache, so its prebuilt engine is pulled instead of built
+  # from source. A flake's nixConfig is ignored when the flake is only used as
+  # an input, so it has to live here (the top-level flake); pass
+  # --accept-flake-config to nixos-rebuild for it to take effect.
   nixConfig = {
     extra-substituters = [ "https://denial.cachix.org" ];
-    extra-trusted-public-keys = [
-      "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo="
-    ];
+    extra-trusted-public-keys = [ "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo=" ];
   };
 
   inputs = {
@@ -57,15 +54,13 @@
     # `nodePackages` top-level attr, so it needs its own pinned nixpkgs.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
-    ## Denial
-    # Deliberately NOT following our nixpkgs here: the Denial docs say doing
-    # so changes the engine cache key, so you'd lose the binary cache hit
-    # and build the Flutter engine from source instead.
+    # Denial compositor. Deliberately NOT made to follow our nixpkgs: doing so
+    # changes its engine cache key and forces a full source build.
     denial.url = "github:denialwm/denial";
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, denial, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop, denial }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
@@ -73,9 +68,9 @@
 
     # niriEnabled=true: niri + eww shell; false: no niri (Plasma on the Surface).
     # Passed explicitly (no module default) so the defaulted-arg probe can't recurse.
-    mkHost = { host, niriEnabled ? true, cachyos ? true }: lib.nixosSystem {
+    mkHost = { host, niriEnabled ? true, cachyos ? true, denialEnabled ? false }: lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit inputs theme niriEnabled; };
+      specialArgs = { inherit inputs theme niriEnabled denialEnabled; };
       modules = [ forge.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
         ./hosts/${host}/default.nix
@@ -93,7 +88,7 @@
       # Deliberately NO CachyOS overlay: the Surface relies on nixos-hardware's
       # linux-surface patched kernel (SAM/IPTS/thermald) + the in-tree Marvell
       # mwifiex wifi driver; the CachyOS kernel would drop all of that.
-      surface = mkHost { host = "surface"; niriEnabled = false; cachyos = false; };
+      surface = mkHost { host = "surface"; niriEnabled = false; cachyos = false; denialEnabled = true; };
 
       # Live USB image used to install `surface` (and to rescue it). Same GNOME
       # installer as upstream, plus nixos-hardware's Surface support (patched
