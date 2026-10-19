@@ -192,6 +192,15 @@
               },
               {
                 "type": "command",
+                "name": "Aseprite",
+                "icon": "palette",
+                "iconTheme": "material-symbols-rounded",
+                "data": {
+                  "command": "aseprite"
+                }
+              },
+              {
+                "type": "command",
                 "name": "Xournal++",
                 "icon": "history_edu",
                 "iconTheme": "material-symbols-rounded",

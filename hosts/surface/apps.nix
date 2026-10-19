@@ -16,6 +16,7 @@ in
       "zotero"       # references
       "haruna"       # video
       "foliate"      # ebooks
+      "koreader"     # ebooks 2
       "libreoffice-qt"
       "brightnessctl"
       "libinput"
@@ -43,6 +44,6 @@ in
     dataDir = "/home/jano";
     openDefaultPorts = true;
   };
-
+  programs.appimage = { enable = true; binfmt = true; };
   nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
 }
