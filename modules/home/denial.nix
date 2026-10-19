@@ -1,7 +1,7 @@
 # Declarative Denial settings (Surface only, gated by `denialEnabled` =
 # config.programs.denial.enable in ../core/home-manager.nix).
 #
-# Seeded into ~/.config/denial/settings.json. Denial tolerates partial
+# Enforced into ~/.config/denial/settings.json. Denial tolerates partial
 # documents: any field omitted here falls back to its built-in default
 # (compositor/src/bin/deniald/settings.rs, parse_document). The values below
 # are tuned to cut GPU load on the Surface's Intel HD 620 at 2736x1824:
@@ -12,10 +12,11 @@
 # symlinks (read_settings_file -> symlink_metadata().file_type().is_symlink()
 # -> SettingsError::Path). That error propagates out of startup and main()
 # calls std::process::abort(), which is the SIGABRT at session start that
-# produced the login loop/drkonqi storm. We instead copy a regular file in
-# place via an activation hook. Denial rewrites this file at runtime, so we
-# only (re)place it when it is missing or still a store symlink; a real file
-# the user has since edited is left untouched.
+# produced the login loop/drkonqi storm. We instead write a regular file with
+# an activation hook. This is declarative-authoritative: whenever the on-disk
+# file differs from the JSON below (including Denial's own runtime
+# normalization, e.g. its added `revision` field), the previous file is saved
+# to settings.json.backup and replaced.
 { pkgs, lib, denialEnabled, ... }:
 
 let
@@ -41,11 +42,17 @@ in
 {
   home.activation.denialSettings = lib.mkIf denialEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     settingsPath="$HOME/.config/denial/settings.json"
-    if [ ! -e "$settingsPath" ] || [ -L "$settingsPath" ]; then
+    sourcePath=${settingsFile}
+    if [ -L "$settingsPath" ]; then
+      run rm -f "$settingsPath"
+    fi
+    if ! cmp -s "$sourcePath" "$settingsPath" 2>/dev/null; then
+      if [ -e "$settingsPath" ]; then
+        run cp -f "$settingsPath" "$settingsPath.backup"
+      fi
       run mkdir -p "$HOME/.config/denial"
       run chmod 700 "$HOME/.config/denial"
-      run rm -f "$settingsPath"
-      run install -m 600 ${settingsFile} "$settingsPath"
+      run install -m 600 "$sourcePath" "$settingsPath"
     fi
   '');
 }
