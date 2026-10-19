@@ -68,9 +68,9 @@
 
     # niriEnabled=true: niri + eww shell; false: no niri (Plasma on the Surface).
     # Passed explicitly (no module default) so the defaulted-arg probe can't recurse.
-    mkHost = { host, niriEnabled ? true, cachyos ? true }: lib.nixosSystem {
+    mkHost = { host, niriEnabled ? true, cachyos ? true, denialEnabled ? false }: lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit inputs theme niriEnabled; };
+      specialArgs = { inherit inputs theme niriEnabled denialEnabled; };
       modules = [ forge.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
         ./hosts/${host}/default.nix
@@ -88,7 +88,7 @@
       # Deliberately NO CachyOS overlay: the Surface relies on nixos-hardware's
       # linux-surface patched kernel (SAM/IPTS/thermald) + the in-tree Marvell
       # mwifiex wifi driver; the CachyOS kernel would drop all of that.
-      surface = mkHost { host = "surface"; niriEnabled = false; cachyos = false; };
+      surface = mkHost { host = "surface"; niriEnabled = false; cachyos = false; denialEnabled = true; };
 
       # Live USB image used to install `surface` (and to rescue it). Same GNOME
       # installer as upstream, plus nixos-hardware's Surface support (patched

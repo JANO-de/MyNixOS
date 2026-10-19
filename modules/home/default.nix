@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, lib, niriEnabled, gnomeEnabled, ... }:
+{ config, pkgs, inputs, lib, niriEnabled, gnomeEnabled, denialEnabled, ... }:
 
 {
   home.username = "jano";
@@ -13,7 +13,9 @@
   # niriEnabled=false, e.g. the GNOME Surface).
   ++ lib.optional niriEnabled ./niri.nix
   # Tablet / touch-first GNOME tweaks (Surface). 
-  ++ lib.optional gnomeEnabled ./gnome.nix;
+  ++ lib.optional gnomeEnabled ./gnome.nix
+  # Declarative Denial settings, only where the compositor is enabled.
+  ++ lib.optional denialEnabled ./denial.nix;
 
   home.packages = [
     pkgs.jq
