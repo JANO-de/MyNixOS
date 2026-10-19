@@ -15,7 +15,7 @@
 
   networking.hostName = "desktop";
 
-  # Without this, custom substituters (e.g. Denial's Cachix cache) are
+  # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds -- the daemon just rebuilds
   # from source instead of erroring, which is easy to miss until a build
   # that should take minutes takes hours.

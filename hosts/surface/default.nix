@@ -13,6 +13,9 @@
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
+    # Denial Wayland session (substituter configured in flake.nix nixConfig).
+    inputs.denial.nixosModules.default
+
     ../../modules/core
     ../../modules/hardware
     ../../modules/services
@@ -27,8 +30,17 @@
 
   networking.hostName = "surface";
 
+  # Denial session, selectable at the SDDM login screen (Plasma stays default).
+  programs.denial.enable = true;
+
   # Intel HD 620 only.
   hardware.nvidia.enable = false;
+
+  # Deploys build here and push to the Surface over SSH (see flake mkHost
+  # usage). Those paths are unsigned, so the Surface's Nix rejects them with
+  # "lacks a signature by a trusted key" unless the copying user is trusted.
+  # Same as hosts/desktop/default.nix.
+  nix.settings.trusted-users = [ "root" "jano" ];
 
   # --- lean services (the lampp workbench lives on the laptop) ---
   # xampp: off by default (enabled only on laptop)

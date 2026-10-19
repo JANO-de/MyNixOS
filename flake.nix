@@ -1,6 +1,15 @@
 {
   description = "MyNixOS configuration";
 
+  # Denial's Cachix cache, so its prebuilt engine is pulled instead of built
+  # from source. A flake's nixConfig is ignored when the flake is only used as
+  # an input, so it has to live here (the top-level flake); pass
+  # --accept-flake-config to nixos-rebuild for it to take effect.
+  nixConfig = {
+    extra-substituters = [ "https://denial.cachix.org" ];
+    extra-trusted-public-keys = [ "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo=" ];
+  };
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
@@ -44,10 +53,14 @@
     # Not made to follow our nixpkgs: it still uses the now-removed
     # `nodePackages` top-level attr, so it needs its own pinned nixpkgs.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
+
+    # Denial compositor. Deliberately NOT made to follow our nixpkgs: doing so
+    # changes its engine cache key and forces a full source build.
+    denial.url = "github:denialwm/denial";
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop, denial }@inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
