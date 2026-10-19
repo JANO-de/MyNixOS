@@ -33,6 +33,77 @@
   # Denial session, selectable at the SDDM login screen (Plasma stays default).
   programs.denial.enable = true;
 
+  # Local tablet patches to Denial (all live in ./patches):
+  #  - status bar: the always-on drag strip scales with the viewport
+  #    (colorOsShadeScaleForViewport), so on this 2736x1824 panel its opaque hit
+  #    region grows to ~260px and swallows taps meant for the top launcher rows.
+  #    Rebuild it translucent + pointer-transparent so taps fall through while
+  #    vertical drags still open/close the shade.
+  #  - shell OSK: add a number row, Left/Right arrows, Tab, Esc, forward Delete,
+  #    a Ctrl+V paste key, ñ on the letter rows and an emoji/Spanish layer.
+  #  - compositor: commit shell-keyboard text through text-input-v3 so the OSK
+  #    can type arbitrary Unicode (accents, emoji). Terminals and Xwayland have
+  #    no text-input session and keep the US keycode fallback.
+  programs.denial.package =
+    let
+      patchedShell = pkgs.denial.dartShell.override {
+        # The Flutter builder unpacks by source name (sourceRoot is
+        # "source/dart_shell"), so this must be called "source".
+        src = pkgs.runCommand "source"
+          { nativeBuildInputs = [ pkgs.patch ]; }
+          ''
+            cp -a ${pkgs.denial.dartShell.src} $out
+            chmod -R u+w $out
+            patch -p1 -d $out --no-backup-if-mismatch \
+              < ${./patches/denial-status-bar-tap.patch}
+            patch -p1 -d $out --no-backup-if-mismatch \
+              < ${./patches/denial-osk-gboard.patch}
+          '';
+      };
+      patchedCompositor = pkgs.callPackage (inputs.denial.outPath + "/nix/compositor.nix") {
+        src = pkgs.runCommand "source"
+          { nativeBuildInputs = [ pkgs.patch ]; }
+          ''
+            cp -a ${inputs.denial.outPath} $out
+            chmod -R u+w $out
+            patch -p1 -d $out --no-backup-if-mismatch \
+              < ${./patches/denial-unicode-text.patch}
+          '';
+        version = pkgs.denial.version;
+        buildIdentity = "nix.surface-unicode";
+      };
+    in
+    (pkgs.runCommand "denial-patched"
+      { }
+      ''
+        cp -a ${pkgs.denial} $out
+        chmod -R u+w $out
+        rm -rf $out/lib/denial/flutter
+        cp -a ${patchedShell} $out/lib/denial/flutter
+        # Swap the compositor for the Unicode-capable build.
+        rm -f $out/bin/deniald
+        cp ${patchedCompositor}/bin/deniald $out/bin/deniald
+        # denial-session resolves the bundle relative to its own path, so point
+        # the session entry point (and its siblings) at this rebuilt package.
+        substituteInPlace $out/share/wayland-sessions/denial.desktop \
+          --replace-fail '${pkgs.denial}' "$out"
+        # The makeWrapper launcher hardcodes the original .denial-session-wrapped
+        # path; without this it would exec the unpatched compositor/bundle even
+        # though the .desktop points at this package.
+        substituteInPlace $out/bin/denial-session \
+          --replace-fail '${pkgs.denial}' "$out"
+        # The launcher hard-fails when `systemctl --user cat denial-session.target`
+        # fails. On a cold boot the user manager is only just spawned by the
+        # session and may not have scanned /etc/systemd/user yet, so the check
+        # races and bounces the first login. The target merely groups the session
+        # services, so warn instead of aborting the session.
+        substituteInPlace $out/bin/.denial-session-wrapped \
+          --replace-fail \
+            "die 'denial-session.target is not available to the systemd user manager'" \
+            "printf 'denial-session: warning: denial-session.target not visible to the user manager yet; continuing' >&2"
+      '')
+    // { providedSessions = [ "denial" ]; };
+
   # Intel HD 620 only.
   hardware.nvidia.enable = false;
 

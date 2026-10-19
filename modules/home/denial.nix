@@ -1,11 +1,13 @@
 # Declarative Denial settings (Surface only, gated by `denialEnabled` =
 # config.programs.denial.enable in ../core/home-manager.nix).
 #
-# Enforced into ~/.config/denial/settings.json. Denial tolerates partial
-# documents: any field omitted here falls back to its built-in default
-# (compositor/src/bin/deniald/settings.rs, parse_document). The values below
-# are tuned to cut GPU load on the Surface's Intel HD 620 at 2736x1824:
-# glass blur/refraction off, opaque panels/cards, reduced animations.
+# The JSON lives in ./denial-settings.json so the settings app's output can be
+# exported straight back into the repo (see `denial-settings-export` below).
+# Denial tolerates partial documents: any field omitted here falls back to its
+# built-in default (compositor/src/bin/deniald/settings.rs, parse_document).
+# The values shipped here are tuned to cut GPU load on the Surface's Intel
+# HD 620 at 2736x1824: glass blur/refraction off, opaque panels/cards, reduced
+# animations.
 #
 # NB: this must NOT be an `xdg.configFile` entry. Home Manager materializes
 # those as symlinks into /nix/store, and deniald's settings loader refuses
@@ -20,24 +22,35 @@
 { pkgs, lib, denialEnabled, ... }:
 
 let
-  settings = builtins.toJSON {
-    version = 28;
-    appearance = {
-      transparencyMode = "off";
-      backdropBlurLevel = "shitty";
-      panelOpacity = 1.0;
-      cardOpacity = 1.0;
-      focusedWindowOpacity = 1.0;
-      unfocusedWindowOpacity = 1.0;
-      cornerRadiusScale = 0.4;
-      focusedWindowBorderEnabled = false;
-    };
-    animations = {
-      durationScale = 0.5;
-      windowCloseEffect = "fade";
-    };
+  settingsFile = pkgs.writeText "denial-settings.json"
+    (builtins.readFile ./denial-settings.json);
+
+  # Run on the Surface after changing something in denial-settings:
+  #   denial-settings-export            # print current settings as JSON
+  #   denial-settings-export PATH       # write them to PATH (e.g. a repo
+  #                                     # checkout available on this machine)
+  # Then copy the result over modules/home/denial-settings.json and rebuild.
+  denialSettingsExport = pkgs.writeShellApplication {
+    name = "denial-settings-export";
+    runtimeInputs = [ pkgs.coreutils pkgs.jq ];
+    text = ''
+      src="''${XDG_CONFIG_HOME:-$HOME/.config}/denial/settings.json"
+      if [ ! -f "$src" ]; then
+        echo "denial-settings-export: no settings file at $src" >&2
+        exit 1
+      fi
+      if [ "$#" -eq 0 ]; then
+        jq . "$src"
+        exit 0
+      fi
+      dest="$1"
+      mkdir -p "$(dirname "$dest")"
+      tmp="$(mktemp "$dest.XXXXXX")"
+      jq . "$src" > "$tmp"
+      mv "$tmp" "$dest"
+      echo "denial-settings-export: wrote $dest" >&2
+    '';
   };
-  settingsFile = pkgs.writeText "denial-settings.json" settings;
 in
 {
   home.activation.denialSettings = lib.mkIf denialEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -55,4 +68,6 @@ in
       run install -m 600 "$sourcePath" "$settingsPath"
     fi
   '');
+
+  home.packages = lib.mkIf denialEnabled [ denialSettingsExport ];
 }

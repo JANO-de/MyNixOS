@@ -1,0 +1,49 @@
+diff -ruN a/compositor/src/bin/deniald/wayland_frontend/input.rs b/compositor/src/bin/deniald/wayland_frontend/input.rs
+--- a/compositor/src/bin/deniald/wayland_frontend/input.rs	1970-01-01 01:00:01.000000000 +0100
++++ b/compositor/src/bin/deniald/wayland_frontend/input.rs	2026-10-19 18:10:36.595779798 +0200
+@@ -328,6 +328,16 @@
+             true
+         }
+         super::super::wire::KeyboardCommand::Text(text) => {
++            // Prefer the text-input protocol so the shell keyboard is
++            // layout-independent and can send any Unicode text. Terminals and
++            // Xwayland clients have no text-input-v3 session and fall back to
++            // the US keycode table below.
++            {
++                let frontend = state.wayland.as_mut().expect("missing Wayland frontend");
++                if frontend.text_input.commit_text(text) {
++                    return true;
++                }
++            }
+             let mut delivered = false;
+             for character in text.chars() {
+                 let Some(stroke) = shell_text_key_stroke(character) else {
+diff -ruN a/compositor/src/bin/deniald/wayland_frontend/text_input.rs b/compositor/src/bin/deniald/wayland_frontend/text_input.rs
+--- a/compositor/src/bin/deniald/wayland_frontend/text_input.rs	1970-01-01 01:00:01.000000000 +0100
++++ b/compositor/src/bin/deniald/wayland_frontend/text_input.rs	2026-10-19 18:10:35.422785555 +0200
+@@ -884,6 +884,25 @@
+         true
+     }
+ 
++    /// Commit text through the focused text-input-v3 client.
++    ///
++    /// This is layout-independent and accepts arbitrary Unicode (accented
++    /// letters, emoji), unlike the US keycode table used by the shell keyboard.
++    /// Returns false when no text-input client is active so callers can fall
++    /// back to key injection for terminals and Xwayland.
++    pub(super) fn commit_text(&mut self, text: &str) -> bool {
++        let Some((id, serial)) = self.sessions.active_serial() else {
++            return false;
++        };
++        let Some(resource) = self.resource(&id) else {
++            self.sessions.remove(&id);
++            return false;
++        };
++        resource.commit_string(Some(text.to_owned()));
++        resource.done(serial);
++        true
++    }
++
+     pub(super) fn apply_input_method(
+         &mut self,
+         id: &ObjectId,

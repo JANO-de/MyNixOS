@@ -1,0 +1,299 @@
+--- a/plugins/denial_desktop/lib/src/widgets/osk/shell_osk_panel.dart
++++ b/plugins/denial_desktop/lib/src/widgets/osk/shell_osk_panel.dart
+@@ -143,6 +143,7 @@
+       _OskLayer.letters => _letterRows,
+       _OskLayer.numbers => _numberRows,
+       _OskLayer.symbols => _extraSymbolRows,
++      _OskLayer.emoji => _emojiRows,
+     };
+   }
+ 
+@@ -198,6 +199,12 @@
+           _shiftEnabled = false;
+           _ctrlArmed = false;
+         });
++      case _OskControl.emoji:
++        setState(() {
++          _layer = _OskLayer.emoji;
++          _shiftEnabled = false;
++          _ctrlArmed = false;
++        });
+       case _OskControl.space:
+         _sendKeyOrText(
+           textIntent: ShellOskKeyIntent.space(ctrl: _ctrlArmed),
+@@ -211,6 +218,18 @@
+         _sendKey(ShellOskKeyIntent.key('Up', ctrl: _ctrlArmed));
+       case _OskControl.arrowDown:
+         _sendKey(ShellOskKeyIntent.key('Down', ctrl: _ctrlArmed));
++      case _OskControl.arrowLeft:
++        _sendKey(ShellOskKeyIntent.key('Left', ctrl: _ctrlArmed));
++      case _OskControl.arrowRight:
++        _sendKey(ShellOskKeyIntent.key('Right', ctrl: _ctrlArmed));
++      case _OskControl.tab:
++        _sendKey(ShellOskKeyIntent.key('Tab', ctrl: _ctrlArmed));
++      case _OskControl.escape:
++        _sendKey(ShellOskKeyIntent.key('Escape', ctrl: _ctrlArmed));
++      case _OskControl.delete:
++        _sendKey(ShellOskKeyIntent.key('Delete', ctrl: _ctrlArmed));
++      case _OskControl.paste:
++        _sendKey(const ShellOskKeyIntent.key('v', ctrl: true));
+     }
+   }
+ 
+@@ -587,18 +606,25 @@
+   }
+ }
+ 
+-enum _OskLayer { letters, numbers, symbols }
++enum _OskLayer { letters, numbers, symbols, emoji }
+ 
+ enum _OskControl {
+   shift,
+   symbols,
+   extraSymbols,
+   letters,
++  emoji,
+   space,
+   backspace,
+   enter,
+   arrowUp,
+   arrowDown,
++  arrowLeft,
++  arrowRight,
++  tab,
++  escape,
++  delete,
++  paste,
+ }
+ 
+ class _OskRowData {
+@@ -652,6 +678,18 @@
+     if (control == _OskControl.letters) {
+       return l10n.oskLettersKey;
+     }
++    if (control == _OskControl.escape) {
++      return 'Esc';
++    }
++    if (control == _OskControl.tab) {
++      return 'Tab';
++    }
++    if (control == _OskControl.delete) {
++      return 'Del';
++    }
++    if (control == _OskControl.paste) {
++      return 'Paste';
++    }
+     return outputText(shiftEnabled: shiftEnabled);
+   }
+ 
+@@ -664,11 +702,18 @@
+       _OskControl.symbols => l10n.oskNumbersAndSymbols,
+       _OskControl.extraSymbols => l10n.oskMoreSymbols,
+       _OskControl.letters => l10n.oskLetters,
++      _OskControl.emoji => 'Emoji',
+       _OskControl.space => l10n.oskSpace,
+       _OskControl.backspace => l10n.oskBackspace,
+       _OskControl.enter => l10n.oskEnter,
+       _OskControl.arrowUp => l10n.oskArrowUp,
+       _OskControl.arrowDown => l10n.oskArrowDown,
++      _OskControl.arrowLeft => 'Left',
++      _OskControl.arrowRight => 'Right',
++      _OskControl.tab => 'Tab',
++      _OskControl.escape => 'Escape',
++      _OskControl.delete => 'Delete',
++      _OskControl.paste => 'Paste',
+       null => labelText(
+         shiftEnabled: shiftEnabled,
+         ctrlArmed: false,
+@@ -686,6 +731,12 @@
+         _OskControl.enter => 'Return',
+         _OskControl.arrowUp => 'Up',
+         _OskControl.arrowDown => 'Down',
++        _OskControl.arrowLeft => 'Left',
++        _OskControl.arrowRight => 'Right',
++        _OskControl.tab => 'Tab',
++        _OskControl.escape => 'Escape',
++        _OskControl.delete => 'Delete',
++        _OskControl.paste => 'v',
+         _ => null,
+       };
+     }
+@@ -729,6 +780,18 @@
+ 
+ const _letterRows = [
+   _OskRowData([
++    _OskKeySpec.text('1'),
++    _OskKeySpec.text('2'),
++    _OskKeySpec.text('3'),
++    _OskKeySpec.text('4'),
++    _OskKeySpec.text('5'),
++    _OskKeySpec.text('6'),
++    _OskKeySpec.text('7'),
++    _OskKeySpec.text('8'),
++    _OskKeySpec.text('9'),
++    _OskKeySpec.text('0'),
++  ]),
++  _OskRowData([
+     _OskKeySpec.text('q'),
+     _OskKeySpec.text('w'),
+     _OskKeySpec.text('e'),
+@@ -750,7 +813,8 @@
+     _OskKeySpec.text('j'),
+     _OskKeySpec.text('k'),
+     _OskKeySpec.text('l'),
+-  ], sideInset: 28),
++    _OskKeySpec.text('ñ'),
++  ]),
+   _OskRowData([
+     _OskKeySpec.control(
+       _OskControl.shift,
+@@ -771,18 +835,77 @@
+     ),
+   ]),
+   _OskRowData([
+-    _OskKeySpec.control(_OskControl.symbols, flex: 17),
+-    _OskKeySpec.text(',', flex: 10),
++    _OskKeySpec.control(_OskControl.symbols, flex: 15),
++    _OskKeySpec.text(',', flex: 8),
+     _OskKeySpec.control(
+       _OskControl.space,
+       icon: Icons.space_bar_rounded,
+-      flex: 46,
++      flex: 30,
++    ),
++    _OskKeySpec.control(
++      _OskControl.paste,
++      icon: Icons.content_paste_rounded,
++      flex: 12,
++    ),
++    _OskKeySpec.text('.', flex: 8),
++    _OskKeySpec.control(
++      _OskControl.emoji,
++      icon: Icons.emoji_emotions_outlined,
++      flex: 10,
+     ),
+-    _OskKeySpec.text('.', flex: 10),
+     _OskKeySpec.control(
+       _OskControl.enter,
+       icon: Icons.keyboard_return_rounded,
+-      flex: 17,
++      flex: 16,
++    ),
++  ]),
++];
++
++const _emojiRows = [
++  _OskRowData([
++    _OskKeySpec.text('á'),
++    _OskKeySpec.text('é'),
++    _OskKeySpec.text('í'),
++    _OskKeySpec.text('ó'),
++    _OskKeySpec.text('ú'),
++  ], sideInset: 24),
++  _OskRowData([
++    _OskKeySpec.text('ü'),
++    _OskKeySpec.text('ñ'),
++    _OskKeySpec.text('¿'),
++    _OskKeySpec.text('¡'),
++    _OskKeySpec.text('€'),
++  ], sideInset: 24),
++  _OskRowData([
++    _OskKeySpec.text('😀'),
++    _OskKeySpec.text('😂'),
++    _OskKeySpec.text('❤️'),
++    _OskKeySpec.text('👍'),
++    _OskKeySpec.text('😢'),
++  ], sideInset: 24),
++  _OskRowData([
++    _OskKeySpec.text('😡'),
++    _OskKeySpec.text('🎉'),
++    _OskKeySpec.text('🔥'),
++    _OskKeySpec.text('✅'),
++    _OskKeySpec.text('❌'),
++  ], sideInset: 24),
++  _OskRowData([
++    _OskKeySpec.control(_OskControl.letters, flex: 14),
++    _OskKeySpec.control(
++      _OskControl.space,
++      icon: Icons.space_bar_rounded,
++      flex: 40,
++    ),
++    _OskKeySpec.control(
++      _OskControl.backspace,
++      icon: Icons.backspace_rounded,
++      flex: 14,
++    ),
++    _OskKeySpec.control(
++      _OskControl.enter,
++      icon: Icons.keyboard_return_rounded,
++      flex: 14,
+     ),
+   ]),
+ ];
+@@ -829,26 +952,36 @@
+     ),
+   ]),
+   _OskRowData([
+-    _OskKeySpec.control(_OskControl.letters, flex: 17),
++    _OskKeySpec.control(_OskControl.letters, flex: 14),
++    _OskKeySpec.control(
++      _OskControl.arrowLeft,
++      icon: Icons.keyboard_arrow_left_rounded,
++      flex: 9,
++    ),
+     _OskKeySpec.control(
+       _OskControl.arrowUp,
+       icon: Icons.keyboard_arrow_up_rounded,
+-      flex: 10,
++      flex: 9,
+     ),
+     _OskKeySpec.control(
+       _OskControl.space,
+       icon: Icons.space_bar_rounded,
+-      flex: 46,
++      flex: 28,
+     ),
+     _OskKeySpec.control(
+       _OskControl.arrowDown,
+       icon: Icons.keyboard_arrow_down_rounded,
+-      flex: 10,
++      flex: 9,
++    ),
++    _OskKeySpec.control(
++      _OskControl.arrowRight,
++      icon: Icons.keyboard_arrow_right_rounded,
++      flex: 9,
+     ),
+     _OskKeySpec.control(
+       _OskControl.enter,
+       icon: Icons.keyboard_return_rounded,
+-      flex: 17,
++      flex: 14,
+     ),
+   ]),
+ ];
+@@ -879,6 +1012,24 @@
+     ),
+   ]),
+   _OskRowData([
++    _OskKeySpec.control(
++      _OskControl.tab,
++      icon: Icons.keyboard_tab_rounded,
++      flex: 14,
++    ),
++    _OskKeySpec.control(_OskControl.escape, flex: 14),
++    _OskKeySpec.control(
++      _OskControl.delete,
++      icon: Icons.delete_outline_rounded,
++      flex: 14,
++    ),
++    _OskKeySpec.control(
++      _OskControl.paste,
++      icon: Icons.content_paste_rounded,
++      flex: 14,
++    ),
++  ], sideInset: 48),
++  _OskRowData([
+     _OskKeySpec.control(_OskControl.letters, flex: 17),
+     _OskKeySpec.text(',', flex: 10),
+     _OskKeySpec.control(

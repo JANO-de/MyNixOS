@@ -48,6 +48,17 @@ in
   systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];
   services.displayManager.sddm.wayland.enable = false;
 
+  # SDDM X11 touch fix: ensure input devices are available to the greeter
+  services.xserver.enable = true;
+  services.sddm = {
+    enable = true;
+    displayServer = "x11";
+    extraConfig = ''
+      [General]
+      InputMethod=qtvirtualkeyboard
+    '';
+  };
+
   # Electron/Chromium apps use Wayland natively.
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";

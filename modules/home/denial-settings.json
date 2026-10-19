@@ -1,0 +1,22 @@
+{
+  "version": 28,
+  "keyboard": {
+    "layouts": [
+      { "layout": "es", "variant": "" }
+    ]
+  },
+  "appearance": {
+    "transparencyMode": "off",
+    "backdropBlurLevel": "shitty",
+    "panelOpacity": 1.0,
+    "cardOpacity": 1.0,
+    "focusedWindowOpacity": 1.0,
+    "unfocusedWindowOpacity": 1.0,
+    "cornerRadiusScale": 0.4,
+    "focusedWindowBorderEnabled": false
+  },
+  "animations": {
+    "durationScale": 0.5,
+    "windowCloseEffect": "fade"
+  }
+}
