@@ -27,7 +27,7 @@
     ./tablet.nix
     ./dev.nix
     ./apps.nix
-    ./denial.nix
+    #./denial.nix
     ./droidloom.nix
   ];
 
