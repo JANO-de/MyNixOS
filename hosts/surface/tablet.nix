@@ -53,6 +53,8 @@ in
     NIXOS_OZONE_WL = "1";
     XCURSOR_SIZE = "36";
     XCURSOR_THEME = "blank";
+    # Touch-first tablet: use Denial's mobile shell instead of the desktop one.
+    DENIAL_SHELL_PROFILE = "mobile";
   };
   # Link the blank cursor theme so XCURSOR_THEME resolves.
   environment.pathsToLink = [ "/share/icons" ];
