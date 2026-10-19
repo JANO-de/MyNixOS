@@ -42,21 +42,17 @@ in
     displayManager = "sddm";
     greeterOsK.enable = true;
   };
-  services.displayManager.defaultSession = "plasma";
+  services.displayManager.defaultSession = "denial";
   # SDDM prefers the last-used session over defaultSession; forget it every
   # boot so a stale Plasma X11 choice can never override Wayland.
   systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];
-  services.displayManager.sddm.wayland.enable = false;
 
-  # SDDM X11 touch fix: ensure input devices are available to the greeter
+  # SDDM X11 touch fix (greeter OSK settings live in modules/desktop/greeter.nix;
+  # do not redefine settings.General here, it conflicts).
   services.xserver.enable = true;
-  services.sddm = {
+  services.displayManager.sddm = {
     enable = true;
-    displayServer = "x11";
-    extraConfig = ''
-      [General]
-      InputMethod=qtvirtualkeyboard
-    '';
+    wayland.enable = false;
   };
 
   # Electron/Chromium apps use Wayland natively.

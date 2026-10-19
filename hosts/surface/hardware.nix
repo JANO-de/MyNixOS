@@ -2,7 +2,7 @@
 # nixos-hardware's microsoft-surface-pro-intel, which already provides the
 # linux-surface kernel, iptsd, redistributable firmware, thermald,
 # surface-control and S0ix sleep.
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   # --- display: Panel Self Refresh blanks the eDP output on this panel ---
@@ -94,6 +94,8 @@
       Stylus.Disable = false;
     };
   };
+  # iptsd hangs on stop (SIGKILL after default 90s timeout); shorten it.
+  systemd.services."iptsd@".serviceConfig.TimeoutStopSec = lib.mkForce "5s";
   services.udev.packages = [ pkgs.libwacom-surface ];
   environment.systemPackages = [ pkgs.libwacom-surface ];
 

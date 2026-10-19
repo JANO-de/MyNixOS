@@ -70,4 +70,19 @@ in
   '');
 
   home.packages = lib.mkIf denialEnabled [ denialSettingsExport ];
+
+  # Declarative display scale. A store symlink here is treated by Denial's
+  # launcher as declarative input (copied to ~/.local/state/denial/outputs.conf).
+  # Scale 2 (not 1.5): most clients ignore wp_fractional_scale and render blurry/cropped.
+  xdg.configFile."denial/outputs.conf" = lib.mkIf denialEnabled {
+    text = ''
+      eDP-1=0,0
+      mode=eDP-1,2736,1824,59959
+      scale=eDP-1,2
+      primary=eDP-1
+    '';
+  };
+
+  # gtk.enable owns ~/.gtkrc-2.0; stop stale .backup files from blocking activation.
+  gtk.gtk2.force = lib.mkIf denialEnabled true;
 }
