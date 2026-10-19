@@ -5,9 +5,7 @@
 #   filesystems.nix   disk layout by label (shared with surface-bootstrap)
 #   hardware.nix      SP5 quirks: wifi, buttons, panel, power
 #   network-aula.nix  school-network proxy dispatcher
-#   tablet.nix        Plasma session, greeter, pen/touch apps
-#   dev.nix           DAM toolkit (VS Code, JDK 21, Maven, DBeaver)
-#   apps.nix          study apps (Obsidian, Zotero, KDE Kirigami apps, Syncthing)
+#   tablet.nix        Plasma/SDDM session, greeter OSK, touch cursor
 { config, pkgs, lib, inputs, ... }:
 
 {
@@ -25,10 +23,6 @@
     ./hardware.nix
     ./network-aula.nix
     ./tablet.nix
-    ./dev.nix
-    ./apps.nix
-    #./denial.nix
-    ./droidloom.nix
   ];
 
   networking.hostName = "surface";
