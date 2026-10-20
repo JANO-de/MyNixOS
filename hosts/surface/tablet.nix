@@ -38,6 +38,7 @@ in
   # login screen is not a dead end without the Type Cover. The greeter itself
   # stays on X11, which is the reliable path on this panel.
   modules.desktop = {
+    chronosTerminal.enable = true;
     niri.enable = true;
     displayManager = "sddm";
     greeterOsK.enable = true;
