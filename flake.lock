@@ -5,11 +5,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1792525799,
-        "narHash": "sha256-wnc8YrgXlPDhIIAAsC6j87b13Pf05VA5FCUAZBBuS58=",
+        "lastModified": 1792530659,
+        "narHash": "sha256-w5Nsp/FmBt7ZBRJ/JZHV3UxR0iCe/ClRrmOW9fmQv1o=",
         "ref": "refs/heads/main",
-        "rev": "2577886471cafc143e5dfe12fbaa8864601d3ee7",
-        "revCount": 2981,
+        "rev": "c9282839e60aafe63b9ec4aa2aa730f56ffb3f2a",
+        "revCount": 2983,
         "type": "git",
         "url": "file:///home/jano/Proyectos/niri"
       },

@@ -94,9 +94,22 @@
       Stylus.Disable = false;
     };
   };
+  # iptsd@ is bound to dev-hidraw0.device, which flaps/never forms on this
+  # box, so systemd stops the service <1s after start. Drop the device binding
+  # and keep it running; Restart covers a real hidraw re-creation.
   # iptsd hangs on stop (SIGKILL after default 90s timeout); shorten it.
-  systemd.services."iptsd@".serviceConfig.TimeoutStopSec = lib.mkForce "5s";
-  systemd.services."iptsd@".restartIfChanged = false;
+  systemd.services."iptsd@" = {
+    restartIfChanged = false;
+    unitConfig = {
+      BindsTo = lib.mkForce "";          # empty value clears the inherited BindsTo=%i.device
+      StopWhenUnneeded = lib.mkForce "no";
+    };
+    serviceConfig = {
+      TimeoutStopSec = lib.mkForce "5s";
+      Restart = lib.mkForce "on-failure";
+      RestartSec = lib.mkForce "1s";
+    };
+  };
   services.udev.packages = [ pkgs.libwacom-surface ];
   environment.systemPackages = [ pkgs.libwacom-surface ];
 
