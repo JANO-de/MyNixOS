@@ -5,17 +5,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1792530659,
-        "narHash": "sha256-w5Nsp/FmBt7ZBRJ/JZHV3UxR0iCe/ClRrmOW9fmQv1o=",
+        "lastModified": 1792534289,
+        "narHash": "sha256-9mZaPVl9rFpcazxxeLVQ0KNkWpFwkUy4RkzPmqY2+rs=",
         "ref": "refs/heads/main",
-        "rev": "c9282839e60aafe63b9ec4aa2aa730f56ffb3f2a",
-        "revCount": 2983,
+        "rev": "cef03f30551f849add9f5c6fa7804696588c0857",
+        "revCount": 2986,
         "type": "git",
-        "url": "file:///home/jano/Proyectos/niri"
+        "url": "file:///home/jano/Proyectos/chronos"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/jano/Proyectos/niri"
+        "url": "file:///home/jano/Proyectos/chronos"
       }
     },
     "claude-desktop": {
