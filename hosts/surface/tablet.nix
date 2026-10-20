@@ -1,7 +1,7 @@
 # Plasma 6 (Wayland) tablet session: login screen, on-screen keyboard and a
 # hidden cursor so a touch-only Surface can be logged into and used. Auto-rotate
 # (iio) and the udev button rules live in hardware.nix.
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
   # Fully transparent cursor theme: every cursor name Adwaita knows points at
@@ -38,11 +38,12 @@ in
   # login screen is not a dead end without the Type Cover. The greeter itself
   # stays on X11, which is the reliable path on this panel.
   modules.desktop = {
-    niri.enable = false;
+    niri.enable = true;
     displayManager = "sddm";
     greeterOsK.enable = true;
   };
-  services.displayManager.defaultSession = "denial";
+  programs.niri.package = inputs.chronos.packages.${pkgs.system}.niri;
+  services.displayManager.defaultSession = "niri";
   # SDDM prefers the last-used session over defaultSession; forget it every
   # boot so a stale Plasma X11 choice can never override Wayland.
   systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];

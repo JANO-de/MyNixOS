@@ -2,11 +2,13 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   config = lib.mkIf config.modules.desktop.niri.enable {
     programs.niri = {
       enable = true;
+      package = inputs.chronos.packages.${pkgs.system}.niri;
     };
 
     # Electron apps (vscode, discord, ...) run natively on Wayland
