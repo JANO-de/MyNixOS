@@ -6,7 +6,7 @@
 
 {
   # --- display: Panel Self Refresh blanks the eDP output on this panel ---
-  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES"  ];
+  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES" "systemd.log_level=debug" ];
 
   # Use the iHD VA-API driver (intel-media-driver), the right one for Kaby
   # Lake (HD 620). As a side effect this drops nixos-hardware's legacy
