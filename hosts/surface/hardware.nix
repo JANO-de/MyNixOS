@@ -88,14 +88,15 @@
     enable = true;
     config = {
       Touchscreen = {
-        DisableOnPalm = true;    # no touch while a palm rests on the glass
-        DisableOnStylus = true;  # no touch while the pen is hovering/drawing
+        DisableOnPalm = false;    # no touch while a palm rests on the glass
+        DisableOnStylus = false;  # no touch while the pen is hovering/drawing
       };
       Stylus.Disable = false;
     };
   };
   # iptsd hangs on stop (SIGKILL after default 90s timeout); shorten it.
   systemd.services."iptsd@".serviceConfig.TimeoutStopSec = lib.mkForce "5s";
+  systemd.services."iptsd@".restartIfChanged = false;
   services.udev.packages = [ pkgs.libwacom-surface ];
   environment.systemPackages = [ pkgs.libwacom-surface ];
 

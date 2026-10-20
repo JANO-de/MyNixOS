@@ -42,7 +42,6 @@ in
     displayManager = "sddm";
     greeterOsK.enable = true;
   };
-  programs.niri.package = inputs.chronos.packages.${pkgs.system}.niri;
   services.displayManager.defaultSession = "niri";
   # SDDM prefers the last-used session over defaultSession; forget it every
   # boot so a stale Plasma X11 choice can never override Wayland.

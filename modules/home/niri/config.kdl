@@ -32,6 +32,11 @@ input {
     focus-follows-mouse
 }
 
+// Hide the pointer after 1 s without pointer activity (touch-only Surface).
+cursor {
+    hide-after-inactive-ms 1000
+}
+
 // --- Monitor output configuration ---
 // HDMI-A-1 is shared between two monitors: the 4K at home and the 1920x1080 at
 // school. No mode is declared here on purpose, so niri picks the native mode of
