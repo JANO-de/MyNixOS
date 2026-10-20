@@ -1,5 +1,8 @@
 {
   "version": 28,
+  "layout": {
+    "windowLayout": "scrolling"
+  },
   "keyboard": {
     "layouts": [
       { "layout": "es", "variant": "" }

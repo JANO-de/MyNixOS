@@ -44,6 +44,9 @@
   #  - compositor: commit shell-keyboard text through text-input-v3 so the OSK
   #    can type arbitrary Unicode (accents, emoji). Terminals and Xwayland have
   #    no text-input session and keep the US keycode fallback.
+  #    (The 900x620 Settings bug was NOT a compositor/Dart bug — see
+  #    HANDOFF-denial-surface-current.md session 6. Diagnostic patches removed;
+  #    settingsApp no longer needs its own override.)
   programs.denial.package =
     let
       patchedShell = pkgs.denial.dartShell.override {
@@ -68,9 +71,11 @@
             chmod -R u+w $out
             patch -p1 -d $out --no-backup-if-mismatch \
               < ${./patches/denial-unicode-text.patch}
+            patch -p1 -d $out --no-backup-if-mismatch \
+              < ${./patches/denial-mobile-bottom-inset.patch}
           '';
         version = pkgs.denial.version;
-        buildIdentity = "nix.surface-unicode";
+        buildIdentity = "nix.surface-unicode-inset";
       };
     in
     (pkgs.runCommand "denial-patched"
@@ -80,6 +85,8 @@
         chmod -R u+w $out
         rm -rf $out/lib/denial/flutter
         cp -a ${patchedShell} $out/lib/denial/flutter
+        # settingsApp is left as plain pkgs.denial's own build — no patch
+        # needed there anymore, see comment above.
         # Swap the compositor for the Unicode-capable build.
         rm -f $out/bin/deniald
         cp ${patchedCompositor}/bin/deniald $out/bin/deniald
@@ -101,6 +108,14 @@
           --replace-fail \
             "die 'denial-session.target is not available to the systemd user manager'" \
             "printf 'denial-session: warning: denial-session.target not visible to the user manager yet; continuing' >&2"
+        # These .desktop files were substituted at plain pkgs.denial's own
+        # build time (Exec=/TryExec= point into pkgs.denial's store path), so
+        # the cp -a above carries stale paths unless we fix them too — this
+        # was the root cause of Settings launching unpatched code.
+        substituteInPlace $out/share/applications/dev.denial.Settings.desktop \
+          --replace-fail '${pkgs.denial}' "$out"
+        substituteInPlace $out/share/applications/dev.denial.Welcome.desktop \
+          --replace-fail '${pkgs.denial}' "$out"
       '')
     // { providedSessions = [ "denial" ]; };
 
