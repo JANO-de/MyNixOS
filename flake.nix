@@ -46,7 +46,7 @@
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
     # Chronos compositor
-    chronos.url = "git+file:///home/jano/Proyectos/niri";
+    chronos.url = "git+file:///home/jano/Proyectos/chronos";
   };
 
 
