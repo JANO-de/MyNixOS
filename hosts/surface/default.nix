@@ -71,8 +71,6 @@
             chmod -R u+w $out
             patch -p1 -d $out --no-backup-if-mismatch \
               < ${./patches/denial-unicode-text.patch}
-            patch -p1 -d $out --no-backup-if-mismatch \
-              < ${./patches/denial-mobile-bottom-inset.patch}
           '';
         version = pkgs.denial.version;
         buildIdentity = "nix.surface-unicode-inset";
