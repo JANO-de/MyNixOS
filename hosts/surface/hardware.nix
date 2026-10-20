@@ -89,7 +89,7 @@
     config = {
       Touchscreen = {
         DisableOnPalm = false;    # no touch while a palm rests on the glass
-        DisableOnStylus = false;  # no touch while the pen is hovering/drawing
+        DisableOnStylus = true;  # no touch while the pen is hovering/drawing
       };
       Stylus.Disable = false;
     };
