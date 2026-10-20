@@ -61,7 +61,8 @@ in
     XCURSOR_SIZE = "36";
     XCURSOR_THEME = "blank";
     # Touch-first tablet: default to desktop shell; mobile can be toggled from shade if needed.
-    DENIAL_SHELL_PROFILE = "desktop";
+      DENIAL_SHELL_PROFILE = "mobile";
+      DENIAL_FORCE_TOUCH_GESTURES = "1";
   };
   # Link the blank cursor theme so XCURSOR_THEME resolves.
   environment.pathsToLink = [ "/share/icons" ];
