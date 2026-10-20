@@ -6,7 +6,7 @@
 
 {
   # --- display: Panel Self Refresh blanks the eDP output on this panel ---
-  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES" "systemd.log_level=debug" ];
+  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES" ];
 
   # Use the iHD VA-API driver (intel-media-driver), the right one for Kaby
   # Lake (HD 620). As a side effect this drops nixos-hardware's legacy
@@ -72,6 +72,7 @@
   # Mark the GPIO button nodes as keyboards so the compositor doesn't drop them.
   services.udev.extraRules = ''
     SUBSYSTEM=="input", KERNEL=="event*", KERNELS=="MSHW0040:00", ENV{ID_INPUT_KEYBOARD}="1"
+    SUBSYSTEM=="hidraw", ACTION=="change", KERNELS=="*045E:001F*", TAG+="systemd"
   '';
 
   # Plasma owns the power key (powerdevil); long press offers power-off.
