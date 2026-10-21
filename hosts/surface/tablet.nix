@@ -39,6 +39,7 @@ in
   # stays on X11, which is the reliable path on this panel.
   modules.desktop = {
     chronosTerminal.enable = true;
+    chronosTerminal.defaultMode = "field";
     niri.enable = true;
     displayManager = "sddm";
     greeterOsK.enable = true;

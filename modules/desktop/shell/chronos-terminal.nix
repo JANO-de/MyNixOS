@@ -27,6 +27,7 @@ in
 {
   options.modules.desktop.chronosTerminal.enable =
     lib.mkEnableOption "Chronos Terminal shell (replaces dynisland autostart)";
+  options.modules.desktop.chronosTerminal.defaultMode = lib.mkOption { type = lib.types.enum [ "office" "field" ]; default = "office"; description = "Shell mode at login: office or field."; };
 
   config = lib.mkIf cfg.enable {
     fonts.packages = [ pkgs.ibm-plex pkgs.departure-mono ];
@@ -49,6 +50,7 @@ in
           ExecStart = "${pkgs.quickshell}/bin/qs -p ${shellStore}";
           Restart = "on-failure";
           Environment = [
+            "CHRONOS_MODE=${cfg.defaultMode}"
             "XDG_DATA_DIRS=/run/current-system/sw/share:/etc/profiles/per-user/jano/share:%h/.nix-profile/share"
             "PATH=${binPath}:/run/wrappers/bin:/etc/profiles/per-user/jano/bin:/run/current-system/sw/bin"
           ];
