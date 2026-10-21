@@ -29,7 +29,7 @@ in
     lib.mkEnableOption "Chronos Terminal shell (replaces dynisland autostart)";
 
   config = lib.mkIf cfg.enable {
-    fonts.packages = [ pkgs.ibm-plex ];
+    fonts.packages = [ pkgs.ibm-plex pkgs.departure-mono ];
     services.udev.packages = [ pkgs.brightnessctl ];
     users.users.jano.extraGroups = [ "video" ];
 
