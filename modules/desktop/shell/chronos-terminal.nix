@@ -30,9 +30,11 @@ in
 
   config = lib.mkIf cfg.enable {
     fonts.packages = [ pkgs.ibm-plex ];
+    services.udev.packages = [ pkgs.brightnessctl ];
+    users.users.jano.extraGroups = [ "video" ];
 
     home-manager.users.jano = {
-      home.packages = [ pkgs.quickshell chronosShell ];
+      home.packages = [ pkgs.quickshell chronosShell pkgs.brightnessctl ];
 
       # only one shell autostarts
       systemd.user.services.dynisland.Install.WantedBy = lib.mkForce [ ];
