@@ -104,11 +104,12 @@
     unitConfig = {
       BindsTo = lib.mkForce "";          # empty value clears the inherited BindsTo=%i.device
       StopWhenUnneeded = lib.mkForce "no";
+      StartLimitIntervalSec = lib.mkForce 0; # never give up: the IPTS device needs a few seconds after boot
     };
     serviceConfig = {
       TimeoutStopSec = lib.mkForce "5s";
       Restart = lib.mkForce "on-failure";
-      RestartSec = lib.mkForce "1s";
+      RestartSec = lib.mkForce "3s";
     };
   };
   services.udev.packages = [ pkgs.libwacom-surface ];
