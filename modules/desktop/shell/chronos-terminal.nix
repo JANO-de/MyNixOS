@@ -34,8 +34,8 @@ in
     users.users.jano.extraGroups = [ "video" ];
 
     home-manager.users.jano = {
-      home.packages = [ pkgs.quickshell chronosShell pkgs.brightnessctl ];
-
+      home.packages = [ pkgs.quickshell chronosShell pkgs.brightnessctl pkgs.wtype ];
+      
       # only one shell autostarts
       systemd.user.services.dynisland.Install.WantedBy = lib.mkForce [ ];
 
