@@ -5,11 +5,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1792537227,
-        "narHash": "sha256-xKa6vs0fYq729B+itMj0PRw0XLqOudACFfP1dkqgi+I=",
+        "lastModified": 1792585554,
+        "narHash": "sha256-canePC822bRF7olYLfi9YLJFu2Gh4zZw5H8oOhdfYTY=",
         "ref": "refs/heads/main",
-        "rev": "85d4d90ab885bd2837dbeffd2ce3ae021e864e1d",
-        "revCount": 2987,
+        "rev": "416237f27cdf99ccc2397967cbf28939c1eb3019",
+        "revCount": 2996,
         "type": "git",
         "url": "file:///home/jano/Proyectos/chronos"
       },
