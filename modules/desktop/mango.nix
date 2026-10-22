@@ -195,7 +195,11 @@ in
             "${mod}+CTRL,${toString i},tag,${toString i}"
           ]) tags
           ++ shellBinds;
-
+        # Mouse binds
+        mousebind = [
+          "${mod},btn_left,moveresize,curmove"
+          "${mod},btn_right,moveresize,curresize"
+        ];
         # media keys: also work on the lock screen
         bindl = [
           "NONE,XF86AudioRaiseVolume,spawn,${wpctl} set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"

@@ -1,4 +1,4 @@
-# Desktop session: which compositor runs (mango | niri), which shell sits on top
+# Desktop session: which compositor runs (mango | niri | hyprland), which shell sits on top
 # (dynisland | chronos), the SDDM login screen (optional on-screen keyboard for
 # touch-only devices) and the Wayland session basics every host shares.
 #
@@ -23,15 +23,16 @@ in
   imports = [
     ./mango.nix
     ./niri.nix
+    ./hyprland.nix
     ./shell/dynisland
     ./shell/chronos.nix
   ];
 
   options.modules.desktop = {
     session = lib.mkOption {
-      type = lib.types.enum [ "mango" "niri" ];
+      type = lib.types.enum [ "mango" "niri" "hyprland" ];
       default = "mango";
-      description = "Compositor started by the login screen. 'niri' is the chronos fork (Surface).";
+      description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see HYPRLAND_PLAN.md).";
     };
     shell = lib.mkOption {
       type = lib.types.enum [ "dynisland" "chronos" ];
@@ -58,7 +59,8 @@ in
           then "${oskTheme}/${theme}"
           else "sddm-astronaut-theme";
       };
-      services.displayManager.defaultSession = cfg.session;
+      services.displayManager.defaultSession =
+        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
       # SDDM prefers the last-used session over defaultSession; forget it every
       # boot so a stale choice (e.g. an old Plasma/niri entry) can never win.
       systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];

@@ -4,7 +4,8 @@
 - Hosts: `desktop`, `laptop`, `surface`.
 - `desktop` and `laptop`: mango + dynisland.
 - `surface`: mango + dynisland (tablet experiment). This is a Surface-only override and should stay local to that host unless explicitly reverted.
-- The laptop rebuilt and switched successfully. No rebuild of the desktop or the Surface has been seen.
+- The laptop rebuilt and switched successfully. The desktop boots again (login hang fixed, see Done). The Surface has not been rebuilt with Hyprland yet.
+- **Direction:** Hyprland on the Surface (iOS look, Android mechanics, DeX-like desktop mode). Plan and file list: `HYPRLAND_PLAN.md`. Niri is the fallback.
 
 ## Done
 - Portal conflict: removed the `Inhibit` line in `modules/desktop/mango.nix`.
@@ -15,12 +16,20 @@
   - Other themes: `astronaut`, `black_hole`, `japanese_aesthetic`, `cyberpunk`, `post-apocalyptic_hacker`, `pixel_sakura_static`, and the animated `pixel_sakura`, `hyprland_kath`, `jake_the_dog`.
   - Preview screenshots: `https://github.com/Keyitdev/screenshots/blob/master/sddm-astronaut-theme/master/<theme>.png`
 
+- Desktop login hang (SDDM "no screens found"): `hardware.nix` applied the laptop's PRIME bus IDs to the desktop, a single GTX 1060 with no iGPU. PRIME is now laptop-only; NVIDIA is per host (desktop Pascal: `legacy_580`, `open = false`; laptop RTX 3050 could use a newer driver, untested).
+- Elements drive: `nofail` alone still fails `nixos-rebuild switch` when the drive is absent; `x-systemd.automount` avoids it. Same UUID on both machines, so only one at a time.
+- Hyprland step 1 written, untested: `modules/desktop/hyprland.nix` + `hyprland.lua`, `hyprland-step1.patch` (flake input, session enum, dynisland PATH, Surface boot entry `hyprland`).
+
+## Latest progress
+- Fixed the stale DynIsland/Niri assumptions by preferring the Mango path in the shell logout command and by adding a compositor-aware WM settings page (`WMPage.qml`) that detects the active session (`MangoWM` vs `niri`).
+- Added the 1920x1080 portrait monitor rule for the desktop host: Mango uses `rr:1` (90° CCW), matching the physical desk setup.
+- Kept the repo configuration host-aware: the desktop/laptop default remains mango + dynisland, and the 90° rotation is encoded in `modules.desktop.mango.monitorRules` instead of leaking into other hosts.
+
 ## Open
-- **Logout button:** `~/.config/dynisland/config.json` has the old niri `logoutCmd`. Set it to `mmsg dispatch quit` (stop dynisland first), then check `rg niri ~/.config/dynisland/*.json` for other leftovers. Not confirmed as done.
 - **Dock:** logs showed `Dock.qml` errors (`length` of undefined), so the running-app dots are unconfirmed. If missing, paste `journalctl --user -u dynisland | rg Wm:`.
 - **Screenshot at login:** it happens and the cause is unknown. It is not the `Home` key alone anymore.
 - **Touch on mango:** untested on the Surface. Mango has no touchscreen edge gestures and no on-screen keyboard inside the session.
-- **Not ported:** monitor rules (`modules.desktop.mango.monitorRules`), mouse-wheel workspace switching.
+- **Not ported:** mouse-wheel workspace switching.
 - **Warning:** `qt.platformTheme` should become `qt.platformTheme.name`.
 - **Security:** the old `surface-bootstrap` plaintext `initialPassword` is still in git history. Change it if not already changed.
 
@@ -51,9 +60,12 @@ Mango itself: native touch input since 0.16 (forwarded to `wl_touch` clients, op
 ### Recommendation
 Keep niri on the Surface and take the touch gestures from the niri pull request. Hyprland + hyprgrass is the alternative (new config and shell integration needed). Plasma is the fallback with no development.
 
-**Next step:** check whether niri PR #3771 applies cleanly to the chronos fork.
+**Update:** the direction is now Hyprland (see `HYPRLAND_PLAN.md`). Hyprland needs the Lua config (0.55+) and flake-pinned plugins (hyprgrass for touch).
+
+**Next step:** apply the patch, boot the `hyprland` entry on the Surface, check `hyprctl configerrors` and `systemctl --user status dynisland`.
 
 ## Environment notes
-- Shell is zsh with `grep` aliased to `rg` and `ls` to `eza`. Use `command ls` and `rg -g '*.nix'`.
+- Shell is zsh with `grep` aliased to `rg` and `ls` to `eza`. Use `command ls`, `command grep` and `rg -g '*.nix'`.
+- First Hyprland build needs the Cachix flags on the CLI (see `HYPRLAND_PLAN.md`); use `nixos-rebuild boot`, not `switch`, on the Surface.
 - Flakes ignore untracked files: run `git add -A` before every rebuild.
 - Nothing in this tree has been evaluated by me; the sandbox has no Nix.

@@ -62,6 +62,10 @@ in
   modules.programs.profile = "lean";
   hardware.nvidia.enable = false; # Intel HD 620 only
 
+  # Boot entry "hyprland" (systemd-boot menu): same system, Hyprland session.
+  # The default entry stays mango. See HYPRLAND_PLAN.md.
+  specialisation.hyprland.configuration.modules.desktop.session = lib.mkForce "hyprland";
+
   # Deskflow: this tablet joins the laptop's server.
   modules.programs.deskflow = {
     role = "client";

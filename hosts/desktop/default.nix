@@ -43,11 +43,12 @@
     serverAddress = "laptop";
   };
 
-  # Optional: pin a fractional scale on the 4K monitor (find names with
-  # `mmsg get all-monitors`), then rebuild:
-  # modules.desktop.mango.monitorRules = [
-  #   "name:^HDMI-A-1$,width:3840,height:2160,refresh:60,x:0,y:0,scale:1.5"
-  # ];
+  # Explicitly disable rotation for both active desktop outputs. Avoid the
+  # trailing `$` regex anchor here; Mango matches names without requiring it.
+  modules.desktop.mango.monitorRules = [
+    "name:^HDMI-A-1,width:1080,height:1920,refresh:60,rr:1"
+    "name:^HDMI-A-2,width:1080,height:1920,refresh:60,rr:0"
+  ];
 
   system.stateVersion = "26.05";
 }

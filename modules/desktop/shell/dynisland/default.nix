@@ -14,6 +14,8 @@ let
   wmPackage =
     if cfg.session == "mango" then
       config.programs.mango.package
+    else if cfg.session == "hyprland" then
+      config.programs.hyprland.package
     else
       inputs.chronos.packages.${pkgs.stdenv.hostPlatform.system}.niri;
   # Tools the shell calls at runtime (service PATH is minimal, so list them)

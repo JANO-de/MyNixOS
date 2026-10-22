@@ -16,6 +16,10 @@
     # carry yet. If you want to share nixpkgs, add `inputs.nixpkgs.follows`.
     mango.url = "github:mangowm/mango";
 
+    # Hyprland (flake package: plugins must match its exact version). Do NOT add
+    # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
+    hyprland.url = "github:hyprwm/Hyprland";
+
     # Chronos: niri fork + Quickshell shell (also used by the Surface).
     chronos.url = "git+file:///home/jano/Proyectos/chronos";
 
