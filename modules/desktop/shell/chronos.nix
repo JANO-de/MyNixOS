@@ -24,13 +24,29 @@ let
   '';
 in
 {
+<<<<<<< HEAD:modules/desktop/shell/chronos.nix
   config = lib.mkIf (cfg.shell == "chronos") {
     fonts.packages = [ pkgs.ibm-plex ];
+=======
+  options.modules.desktop.chronosTerminal.enable =
+    lib.mkEnableOption "Chronos Terminal shell (replaces dynisland autostart)";
+  options.modules.desktop.chronosTerminal.defaultMode = lib.mkOption { type = lib.types.enum [ "office" "field" ]; default = "office"; description = "Shell mode at login: office or field."; };
+
+  config = lib.mkIf cfg.enable {
+    fonts.packages = [ pkgs.ibm-plex pkgs.departure-mono ];
+>>>>>>> d124c01b7b7fa06a7bc399514d75e1dc5c53adf0:modules/desktop/shell/chronos-terminal.nix
     services.udev.packages = [ pkgs.brightnessctl ];
     users.users.jano.extraGroups = [ "video" ];
 
     home-manager.users.jano = {
+<<<<<<< HEAD:modules/desktop/shell/chronos.nix
       home.packages = [ pkgs.quickshell chronosShell ];
+=======
+      home.packages = [ pkgs.quickshell chronosShell pkgs.brightnessctl pkgs.wtype ];
+      
+      # only one shell autostarts
+      systemd.user.services.dynisland.Install.WantedBy = lib.mkForce [ ];
+>>>>>>> d124c01b7b7fa06a7bc399514d75e1dc5c53adf0:modules/desktop/shell/chronos-terminal.nix
 
       systemd.user.services.chronos-terminal = {
         Unit = {
@@ -42,6 +58,7 @@ in
           ExecStart = "${pkgs.quickshell}/bin/qs -p ${shellStore}";
           Restart = "on-failure";
           Environment = [
+            "CHRONOS_MODE=${cfg.defaultMode}"
             "XDG_DATA_DIRS=/run/current-system/sw/share:/etc/profiles/per-user/jano/share:%h/.nix-profile/share"
             "PATH=${binPath}:/run/wrappers/bin:/etc/profiles/per-user/jano/bin:/run/current-system/sw/bin"
           ];
