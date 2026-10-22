@@ -31,7 +31,7 @@ Item {
     readonly property real sigma: base * 1.6
     readonly property real mag: 1 + (Config.dock.magnification - 1)
                                  * Math.exp(-Math.pow(mouseX - slot, 2) / (2 * sigma * sigma))
-    readonly property var wins: Niri.windowsFor(item.appId)
+    readonly property var wins: Wm.windowsFor(item.appId)
     readonly property bool running: wins.length > 0
     readonly property bool focused: wins.length > 0 && wins.some(w => w.is_focused)
 
@@ -89,7 +89,7 @@ Item {
                 Behavior on width { NumberAnimation { duration: 140 } }
                 color: w && w.is_focused ? Theme.primary : Theme.surfaceFg
                 opacity: w && w.is_focused ? 1 : 0.5
-                MouseArea { anchors { fill: parent; margins: -3 } onClicked: if (parent.w) Niri.focus(parent.w.id) }
+                MouseArea { anchors { fill: parent; margins: -3 } onClicked: if (parent.w) Wm.focus(parent.w.id) }
             }
         }
     }
@@ -134,7 +134,7 @@ Item {
             if (mouse.button === Qt.MiddleButton) { if (ic.item.entry) { ic.item.entry.execute(); bounceAnim.start() } return }
             if (ic.running) {   // cycle: focus the window after the focused one
                 let i = ic.wins.findIndex(w => w.is_focused);
-                Niri.focus(ic.wins[(i + 1) % ic.wins.length].id);
+                Wm.focus(ic.wins[(i + 1) % ic.wins.length].id);
                 return
             }
             if (ic.item.entry) { ic.item.entry.execute(); bounceAnim.start() }

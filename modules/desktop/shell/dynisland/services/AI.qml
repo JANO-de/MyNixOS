@@ -195,7 +195,7 @@ Singleton {
         clip.running = true;
     }
     function envInfo() {
-        return { cwd: workDir, date: Qt.formatDateTime(new Date(), "dddd d MMMM yyyy, HH:mm"), os: "NixOS (Linux), niri (Wayland)", shell: "bash" };
+        return { cwd: workDir, date: Qt.formatDateTime(new Date(), "dddd d MMMM yyyy, HH:mm"), os: "NixOS (Linux), Wayland (mango)", shell: "bash" };
     }
     function readMemory() {
         let out = "";

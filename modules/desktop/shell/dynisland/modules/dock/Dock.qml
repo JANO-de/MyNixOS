@@ -26,7 +26,7 @@ PanelWindow {
     readonly property var cfg: Config.dock
     // visibility: always | autohide | dodge (the old autoHide toggle still counts as autohide)
     readonly property string mode: cfg.behavior !== "always" ? cfg.behavior : (cfg.autoHide ? "autohide" : "always")
-    readonly property bool dodging: mode === "dodge" && Niri.busy(win.screen ? win.screen.name : "")
+    readonly property bool dodging: mode === "dodge" && Wm.busy(win.screen ? win.screen.name : "")
     readonly property bool hideNow: (mode === "autohide" || dodging) && !hh.hovered && win.menuItem === null
 
     // ---- right-click menu state ----
@@ -109,7 +109,7 @@ PanelWindow {
     }
 
     function openMenu(item, cx) {
-        const e = item.entry, ws = Niri.windowsFor(item.appId), m = [];
+        const e = item.entry, ws = Wm.windowsFor(item.appId), m = [];
         m.push({ label: ws.length ? "New window" : "Open", run: () => { if (e) e.execute() } });
         // every action the app declares in its .desktop file (Actions=), minus a duplicate "New window"
         if (e && e.actions) for (const a of e.actions) {
@@ -120,12 +120,12 @@ PanelWindow {
         // open windows: click one to focus it
         if (cfg.windowList && ws.length > 1) {
             m.push({ label: "Windows", header: true });
-            ws.slice(0, 8).forEach(w => m.push({ label: w.title || item.appId, indent: true, run: () => Niri.focus(w.id) }));
+            ws.slice(0, 8).forEach(w => m.push({ label: w.title || item.appId, indent: true, run: () => Wm.focus(w.id) }));
             m.push({ sep: true });
         }
         m.push({ label: isPinned(item.appId) ? "Unpin from dock" : "Pin to dock", run: () => togglePin(item.appId) });
         if (ws.length) m.push({ label: ws.length > 1 ? "Close all windows (" + ws.length + ")" : "Close window", danger: true,
-                                run: () => ws.forEach(w => Niri.close(w.id)) });
+                                run: () => ws.forEach(w => Wm.close(w.id)) });
         // the app's own tray menu (mute, status, quit...), shown below
         const ti = trayFor(item);
         trayStack = ti && ti.hasMenu ? [ti.menu] : [];
@@ -142,7 +142,7 @@ PanelWindow {
             const e = DesktopEntries.heuristicLookup(id);
             if (e && !out.some(o => norm(o.appId) === norm(id))) out.push({ key: id, appId: id, entry: e, pinned: true });
         }
-        for (const w of Niri.windows) {
+        for (const w of Wm.windows) {
             const a = w.app_id;
             if (!a || out.some(o => norm(o.appId) === norm(a))) continue;
             const e = DesktopEntries.heuristicLookup(a);

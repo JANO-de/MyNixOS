@@ -5,7 +5,7 @@
 //  Layout (import path "qs.<folder>"):
 //    config/      Config.qml        persisted settings (~/.config/dynisland/config.json)
 //    services/    singletons: Theme (matugen), Cava, Media, Notifs, Osd,
-//                 Sys (wifi/bt/brightness), Niri (windows), Weather, Clock, UiState
+//                 Sys (wifi/bt/brightness), Wm (windows, compositor-agnostic), Weather, Clock, UiState
 //    components/  reusable UI bits (Icon, IconButton, ValueSlider, Toggle, ...)
 //    modules/     island/ dock/ settings/ background/ widgets/
 //

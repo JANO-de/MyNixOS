@@ -22,7 +22,7 @@ Page {
         PillButton { label: Server.active ? "Turn off" : "Turn on"; icon: "dns"; filled: !Server.active; onClicked: Server.toggle() } }
     SettingRow { label: "Lock on enter"; hint: "Lock the session first, so touching the PC shows the lock screen"
         Toggle { checked: Config.server.lockOnEnter; onToggled: Config.server.lockOnEnter = !Config.server.lockOnEnter } }
-    SettingRow { label: "Monitors off"; hint: "niri power-off-monitors (any input wakes them)"
+    SettingRow { label: "Monitors off"; hint: "power off monitors (any input wakes them)"
         Toggle { checked: Config.server.screensOff; onToggled: Config.server.screensOff = !Config.server.screensOff } }
     SettingRow { label: "LEDs off"; hint: "Runs the commands below (OpenRGB). Fans are not touched"
         Toggle { checked: Config.server.ledsOff; onToggled: Config.server.ledsOff = !Config.server.ledsOff } }

@@ -1,17 +1,22 @@
 # DynIsland (Quickshell)
 
-Dynamic Island + macOS dock + desktop widgets + iNiR-style settings, for niri.
+Dynamic Island + macOS dock + desktop widgets + iNiR-style settings, for mango (and niri).
 
-## Install (NixOS / home-manager)
-1. Copy this folder to `modules/desktop/shell/dynisland/`, import `./default.nix`.
-2. Disable eww and the python notification server (only one process may own
-   `org.freedesktop.Notifications`).
-3. Put wallpapers in `~/Pictures/Wallpapers` (or change the folder in Settings).
-4. Rebuild. Test without the service: `qs -c dynisland`.
+## Install
+Part of this repo: `modules/desktop/default.nix` imports `./shell/dynisland`, which
+is active when `modules.desktop.shell = "dynisland"` (the default). Rebuild, then
+`systemctl --user restart dynisland` after editing QML. Wallpapers go in
+`~/Pictures/Wallpapers` (or change the folder in Settings).
 
-## niri keybinds (config.kdl)
-    Mod+Comma  { spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle"; }
-    Mod+I      { spawn "qs" "-c" "dynisland" "ipc" "call" "island" "toggle"; }
+## Keybinds
+Declared in `modules/desktop/mango.nix` (mango) / `modules/desktop/niri.nix` (niri):
+`Mod+Comma` settings, `Mod+I` island, `Mod+Space` launcher, `Alt+Space` spotlight,
+`Mod+A` AI, `Mod+Q` quick settings, `Mod+V` clipboard, `Mod+Shift+L` lock.
+By hand: `dynisland ipc <target> <function>`, e.g. `dynisland ipc settings toggle`.
+
+## Compositor support
+`services/Wm.qml` is the only file that talks to the compositor: `mmsg` on mango,
+`niri msg` on niri. It replaces the old niri-only `services/Niri.qml`.
 
 ## Where things live
 | Want to change...            | Edit                                   |

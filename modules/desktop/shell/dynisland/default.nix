@@ -1,15 +1,21 @@
 # =============================================================================
 #  NixOS module (wraps home-manager) for the Quickshell Dynamic Island shell.
-#  Folder: modules/desktop/shell/dynisland/ — import ./default.nix from your
-#  NixOS config. Then rebuild.
+#  Active when modules.desktop.shell = "dynisland" (desktop, laptop).
 #
 #  Command:  dynisland {start|stop|restart|dev|settings|log}
 #    start/stop/restart  background copy installed by Nix (needs rebuild to update)
 #    dev                 runs from the repo, foreground, hot reload + logs
 #    settings            toggles the settings window
 # =============================================================================
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 let
+  cfg = config.modules.desktop;
+  # window/monitor IPC the shell talks to: mmsg on mango, niri msg on niri (see services/Wm.qml)
+  wmPackage =
+    if cfg.session == "mango" then
+      config.programs.mango.package
+    else
+      inputs.chronos.packages.${pkgs.stdenv.hostPlatform.system}.niri;
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
     cava
@@ -17,7 +23,7 @@ let
     brightnessctl
     networkmanager
     curl
-    niri
+    wmPackage
     coreutils
     bash
     vdirsyncer
@@ -115,6 +121,7 @@ let
   '';
 in
 {
+  config = lib.mkIf (cfg.shell == "dynisland") {
   # ---- Server mode, system side (UNTESTED) -------------------------------------
   # Tailscale daemon idles disconnected; the shell runs `tailscale up/down` with Server mode.
   # --operator lets user jano run tailscale without sudo.
@@ -173,5 +180,6 @@ in
       };
       Install.WantedBy = [ "graphical-session.target" ];
     };
+  };
   };
 }
