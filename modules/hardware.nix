@@ -29,27 +29,18 @@
       hardware.graphics.enable = true;
     }
 
-    # ---- NVIDIA (desktop, laptop) ----
-    (lib.mkIf config.hardware.nvidia.enable {
-      services.xserver.videoDrivers = [ "nvidia" ];
-      hardware.nvidia = {
-        # Pin the legacy 580.x driver: the GTX 1060 (Pascal) was dropped by the
-        # current NVIDIA branch (595.xx and later ignore the GPU: no DRM render
-        # node, so SDDM and the compositor session fail and login hangs). The
-        # 580.xx legacy branch still supports Pascal.
-        package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
-        modesetting.enable = true;
-        powerManagement.enable = true;
-        open = false;
-        nvidiaSettings = true;
-        prime = {
-          offload = {
-            enable = true;
-            enableOffloadCmd = true;
-          };
-          intelBusId = "PCI:0:2:0";
-          nvidiaBusId = "PCI:1:0:0";
-        };
+        # ---- NVIDIA (desktop, laptop) ----
+      # Common bits only. Per-host: driver branch, open modules, PRIME (see hosts/).
+      (lib.mkIf config.hardware.nvidia.enable {
+        services.xserver.videoDrivers = [ "nvidia" ];
+        hardware.nvidia = {
+          # Default: 580 legacy branch (last one with Pascal support; the GTX 1060
+          # on the desktop needs it). Hosts with newer GPUs may override.
+          package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.legacy_580;
+          open = lib.mkDefault false; # Pascal has no open-module support
+          modesetting.enable = true;
+          powerManagement.enable = true;
+          nvidiaSettings = true;
       };
     })
   ];
