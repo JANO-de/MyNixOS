@@ -6,8 +6,8 @@
 #   network-aula.nix  school-network proxy dispatcher
 { config, pkgs, lib, inputs, ... }:
 
-# !!!! To revert to chronos sed -i '55s|"mango"|"niri"|; 56s|"dynisland"|"chronos"|' hosts/surface/default.nix
-#git add -A && sudo nixos-rebuild switch --flake .#surface
+# !!!! To revert to niri/chronos: sed -i '55s|"mango"|"niri"|; 56s|"dynisland"|"chronos"|' hosts/surface/default.nix
+#ip routegit add -A && sudo nixos-rebuild switch --flake .#surface
 
 let
   # Fully transparent cursor theme: every cursor name Adwaita knows points at

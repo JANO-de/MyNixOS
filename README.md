@@ -20,7 +20,7 @@ modules/theme.nix         one palette for everything (catppuccin mocha / mauve)
 |---|---|---|---|
 | desktop | mango | dynisland | full |
 | laptop | mango | dynisland | full |
-| surface | niri (chronos fork) | chronos | lean |
+| surface | mango (tablet experiment) | dynisland | lean |
 
 ```
 git add -A                                   # flakes only see tracked files

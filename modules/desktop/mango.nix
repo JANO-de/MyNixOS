@@ -10,6 +10,7 @@
 let
   cfg = config.modules.desktop;
   mod = "SUPER";
+  surfaceTouchDisabled = config.networking.hostName == "surface";
 
   # theme color -> mango's 0xRRGGBBAA
   hex = key: "0x${lib.removePrefix "#" (theme.color key)}ff";
@@ -118,8 +119,8 @@ in
         trackpad_natural_scrolling = 1;
         trackpad_disable_while_typing = 1;
         mouse_accel_profile = 2; # adaptive
-        touch_enable = 1;
-        touch_enable_mouse_emulation = 1;
+        touch_enable = if surfaceTouchDisabled then 0 else 1;
+        touch_enable_mouse_emulation = if surfaceTouchDisabled then 0 else 1;
 
         # ---- look: theme.nix (catppuccin mocha / mauve) ----
         border_px = 4;
