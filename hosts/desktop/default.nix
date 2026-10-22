@@ -31,7 +31,6 @@
     fsType = "ext4";
     options = [ "nofail" "noatime" ];
   };
-  modules.hardware.elementsDrive.enable = true;
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   # Capture runs on the NVIDIA/Intel hybrid GPU under Wayland: if streaming is

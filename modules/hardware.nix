@@ -9,11 +9,6 @@
     description = "Set up the NVIDIA driver. Turn off on hosts without an NVIDIA GPU (the Surface only has Intel graphics).";
   };
 
-  options.modules.hardware.elementsDrive.enable = lib.mkEnableOption ''
-    the external NTFS drive "Elements" (Seagate), mounted at /mnt/Elements.
-    "nofail" keeps boot from blocking when it is unplugged
-  '';
-
   config = lib.mkMerge [
     # ---- always on ----
     {
@@ -56,17 +51,6 @@
           nvidiaBusId = "PCI:1:0:0";
         };
       };
-    })
-
-    # ---- Elements drive (desktop, laptop) ----
-    (lib.mkIf config.modules.hardware.elementsDrive.enable {
-      fileSystems."/mnt/Elements" = {
-        device = "/dev/disk/by-uuid/D6B6960AB695EB6F";
-        fsType = "ntfs-3g";
-        options = [ "nofail" "uid=1000" "gid=100" "umask=000" ];
-      };
-      # provides the mount.ntfs-3g helper used by the mount above
-      environment.systemPackages = [ pkgs.ntfs3g ];
     })
   ];
 }
