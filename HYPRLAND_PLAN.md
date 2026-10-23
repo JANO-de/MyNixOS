@@ -6,7 +6,7 @@ mode when docked. Compositor = Hyprland, "feel" = the dynisland shell on top.
 
 ## Status
 - [x] 1. Baseline session: `session = "hyprland"` (boot entry `hyprland` on the Surface)
-- [ ] 2. Touch plumbing: hyprgrass, rotation, tablet switch, on-screen keyboard
+- [x] 2. Touch plumbing: hyprgrass, rotation, tablet switch, on-screen keyboard
 - [ ] 3. Mode switch: `set_mode("tablet" | "desktop")` (Lua) + shell IPC
 - [ ] 4. Shell: home screen, dock, control center, shade, app switcher, lock PIN pad
 - [ ] 5. Theming: matugen colors into iOS-shaped components
