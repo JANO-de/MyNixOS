@@ -47,7 +47,7 @@ function set_mode(m)
   else
     hl.exec_cmd("systemctl --user stop surface-rotate")
     hl.exec_cmd("surface-rotate 0")
-    hl.exec_cmd("pkill -x wvkbd-mobintl")
+    hl.exec_cmd("pkill -x wvkbd-mobintl; echo hidden > " .. rt .. "/kbd-visible")
   end
   pcall(hl.notification.create, { text = "Mode: " .. m, timeout = 1500, icon = "ok" })
 end

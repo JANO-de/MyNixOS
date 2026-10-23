@@ -9,6 +9,7 @@ rsync -a --delete shell/halo/ "jano@$IP:~/halo/"
 ssh "jano@$IP" '
   export WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1000
   export HYPRLAND_INSTANCE_SIGNATURE=$(ls /run/user/1000/hypr | grep -v chronos-shell | head -1)
+  [ -e /run/user/1000/kbd-visible ] || echo hidden > /run/user/1000/kbd-visible
   systemctl --user stop halo 2>/dev/null || true
   systemctl --user stop halo-test 2>/dev/null || true
   systemctl --user reset-failed halo-test 2>/dev/null || true

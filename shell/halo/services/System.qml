@@ -14,8 +14,11 @@ Singleton {
     property bool wifi: false
     property string wifiName: ""
     property bool bluetooth: false
+    property bool rotationLocked: false
+    readonly property bool airplane: !wifi && !bluetooth
 
     function refresh() {
+        rotProc.running = true;
         brightnessProc.running = true;
         volumeProc.running = true;
         wifiProc.running = true;
@@ -46,6 +49,27 @@ Singleton {
     function toggleBluetooth() {
         bluetooth = !bluetooth;
         Quickshell.execDetached(["bluetoothctl", "power", bluetooth ? "on" : "off"]);
+    }
+
+    function toggleAirplane() {
+        const on = !airplane;
+        wifi = !on;
+        bluetooth = !on;
+        Quickshell.execDetached(["nmcli", "radio", "wifi", on ? "off" : "on"]);
+        Quickshell.execDetached(["bluetoothctl", "power", on ? "off" : "on"]);
+    }
+
+    function toggleRotationLock() {
+        rotationLocked = !rotationLocked;
+        Quickshell.execDetached(["systemctl", "--user", rotationLocked ? "stop" : "start", "surface-rotate"]);
+    }
+
+    Process {
+        id: rotProc
+        command: ["systemctl", "--user", "is-active", "surface-rotate"]
+        stdout: StdioCollector {
+            onStreamFinished: root.rotationLocked = text.trim() !== "active"
+        }
     }
 
     Process {

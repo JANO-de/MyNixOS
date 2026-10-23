@@ -9,6 +9,7 @@ let
       HYPRLAND_INSTANCE_SIGNATURE=$(${pkgs.findutils}/bin/find "$XDG_RUNTIME_DIR/hypr" -mindepth 1 -maxdepth 1 -type d ! -name chronos-shell -printf '%f\n' | ${pkgs.coreutils}/bin/head -1)
       export HYPRLAND_INSTANCE_SIGNATURE
     fi
+    echo hidden > "$XDG_RUNTIME_DIR/kbd-visible"
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir}
   '';
 
@@ -25,6 +26,8 @@ in
       pkgs.wireplumber # wpctl (volume)
       pkgs.networkmanager # nmcli (Wi-Fi tile)
       pkgs.bluez # bluetoothctl (Bluetooth tile)
+      pkgs.grim # screenshot tile
+      pkgs.libnotify # notify-send
     ];
     services.udev.packages = [ pkgs.brightnessctl ]; # backlight writable without root
 

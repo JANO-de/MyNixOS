@@ -46,16 +46,34 @@ let
     '';
   };
 
-  # kbd-toggle: starts wvkbd hidden on first use, then toggles it with SIGRTMIN.
+  # wvkbd heights in px (portrait / landscape). Keep in sync with shell/halo/services/Kbd.qml.
+  kbdH = "420";
+  kbdL = "300";
+
+  # kbd-toggle [toggle|show|hide]: starts wvkbd hidden on first use, then shows/hides it with
+  # SIGRTMIN and records the state in $XDG_RUNTIME_DIR/kbd-visible (read by the Halo shell).
   kbdToggle = pkgs.writeShellApplication {
     name = "kbd-toggle";
-    runtimeInputs = [ pkgs.wvkbd pkgs.procps ];
+    runtimeInputs = [ pkgs.wvkbd pkgs.procps pkgs.coreutils ];
     text = ''
+      state="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/kbd-visible"
       if ! pgrep -x wvkbd-mobintl > /dev/null; then
-        wvkbd-mobintl --hidden &
+        wvkbd-mobintl --hidden -H ${kbdH} -L ${kbdL} &
         sleep 0.3
+        echo hidden > "$state"
       fi
-      pkill -RTMIN -x wvkbd-mobintl
+      cur=$(cat "$state" 2>/dev/null || echo hidden)
+      want="''${1:-toggle}"
+      if [ "$want" = toggle ]; then
+        if [ "$cur" = visible ]; then want=hide; else want=show; fi
+      fi
+      if [ "$want" = show ] && [ "$cur" != visible ]; then
+        pkill -RTMIN -x wvkbd-mobintl
+        echo visible > "$state"
+      elif [ "$want" = hide ] && [ "$cur" = visible ]; then
+        pkill -RTMIN -x wvkbd-mobintl
+        echo hidden > "$state"
+      fi
     '';
   };
 in
