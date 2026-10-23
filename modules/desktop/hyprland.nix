@@ -76,7 +76,7 @@ in
 
       # The flake is built against its own nixpkgs: use that Mesa so the GL/GBM
       # libs match (Hyprland wiki, Nix page).
-      hardware.graphics.package = hyprNixpkgs.mesa;
+      #hardware.graphics.package = hyprNixpkgs.mesa;
 
       xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # file picker
       services.gnome.gnome-keyring.enable = true;

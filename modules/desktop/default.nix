@@ -24,6 +24,7 @@ in
     ./mango.nix
     ./niri.nix
     ./hyprland.nix
+    ./hyperland-touch.nix
     ./shell/dynisland
     ./shell/chronos.nix
   ];

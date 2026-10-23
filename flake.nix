@@ -19,6 +19,10 @@
     # Hyprland (flake package: plugins must match its exact version). Do NOT add
     # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
     hyprland.url = "github:hyprwm/Hyprland";
+    hyprgrass = { 
+      url = "github:horriblename/hyprgrass"; 
+      inputs.hyprland.follows = "hyprland"; 
+    };
 
     # Chronos: niri fork + Quickshell shell (also used by the Surface).
     chronos.url = "git+file:///home/jano/Proyectos/chronos";

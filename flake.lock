@@ -296,6 +296,31 @@
         "type": "github"
       }
     },
+    "hyprgrass": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "hyprgrass",
+          "hyprland",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792712311,
+        "narHash": "sha256-LHGZEYybmHlLb8VHFR8KuXcBF7tSGdskz7dYZbLa3Q4=",
+        "owner": "horriblename",
+        "repo": "hyprgrass",
+        "rev": "cfe7cfb96042045e9716b8b95facc5635f56a6b7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "horriblename",
+        "repo": "hyprgrass",
+        "type": "github"
+      }
+    },
     "hyprland": {
       "inputs": {
         "aquamarine": "aquamarine",
@@ -812,6 +837,7 @@
         "claude-desktop": "claude-desktop",
         "forge": "forge",
         "home-manager": "home-manager",
+        "hyprgrass": "hyprgrass",
         "hyprland": "hyprland",
         "mango": "mango",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
