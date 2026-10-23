@@ -9,7 +9,7 @@ Singleton {
     id: root
 
     // Matched with DesktopEntries.heuristicLookup. Edit freely.
-    readonly property var pinned: ["alacritty", "zen", "yazi", "nautilus"]
+    readonly property var pinned: ["Alacritty", "org.kde.angelfish", "com.adilhanney.saber", "org.pwmt.zathura", "org.pulseaudio.pavucontrol", "btop"]
 
     function norm(s) {
         return String(s || "").toLowerCase();
@@ -31,6 +31,8 @@ Singleton {
 
         for (const name of pinned) {
             const e = DesktopEntries.heuristicLookup(name);
+            if (!e)
+                continue;
             const wins = [];
             if (e) {
                 for (const t of tops) {
