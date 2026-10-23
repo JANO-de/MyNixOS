@@ -81,3 +81,10 @@ hl.layer_rule({ match = { namespace = "halo-dock" }, blur = true, ignore_alpha =
 -- Halo: SUPER+A toggles the home screen, and it gets the same blur as the dock
 hl.bind("SUPER + A", hl.dsp.exec_cmd("halo-ctl call home toggle"))
 hl.layer_rule({ match = { namespace = "halo-home" }, blur = true, ignore_alpha = 0 })
+
+-- Halo shade + control center: blur, SUPER+N toggle.
+hl.layer_rule({ match = { namespace = "halo-shade" }, blur = true, ignore_alpha = 0 })
+hl.bind("SUPER + N", hl.dsp.exec_cmd("halo-ctl call shade toggle"))
+
+-- Keyboard fallback (the 2-finger edge swipe is unverified).
+hl.bind("SUPER + K", hl.dsp.exec_cmd("kbd-toggle"))

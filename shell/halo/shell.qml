@@ -14,6 +14,7 @@ ShellRoot {
             Island { screen: scope.modelData }
             HomeScreen { screen: scope.modelData }
             Dock { screen: scope.modelData }
+            Shade { screen: scope.modelData }
         }
     }
 }

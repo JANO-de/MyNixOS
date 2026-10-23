@@ -108,7 +108,7 @@ in
 
   qt = {
     enable = true;
-    platformTheme = "gtk3";
+    platformTheme.name = "gtk3";
     kvantum = {
       enable = true;
       settings.General.theme = "catppuccin-mocha-mauve";

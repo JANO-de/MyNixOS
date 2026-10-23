@@ -19,7 +19,14 @@ let
 in
 {
   config = lib.mkIf (cfg.shell == "halo") {
-    environment.systemPackages = [ haloCtl ];
+    environment.systemPackages = [
+      haloCtl
+      pkgs.brightnessctl # shade brightness slider
+      pkgs.wireplumber # wpctl (volume)
+      pkgs.networkmanager # nmcli (Wi-Fi tile)
+      pkgs.bluez # bluetoothctl (Bluetooth tile)
+    ];
+    services.udev.packages = [ pkgs.brightnessctl ]; # backlight writable without root
 
     systemd.user.services.halo = {
       description = "Halo shell (Quickshell)";

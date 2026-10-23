@@ -123,6 +123,12 @@ in
           action = hl.dsp.exec_cmd("kbd-toggle"),
         }
 
+        -- Swipe down from the top edge: shade + control center
+        hl.plugin.hyprgrass.bind {
+          pattern = { kind = "edge", origin = "up", direction = "down" },
+          action = hl.dsp.exec_cmd("halo-ctl call shade toggle"),
+        }
+
         -- 3-finger long-press: drag window
         hl.plugin.hyprgrass.bind {
           pattern = { kind = "longpress", fingers = 3 },
