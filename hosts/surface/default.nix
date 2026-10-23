@@ -65,6 +65,7 @@ in
   # Boot entry "hyprland" (systemd-boot menu): same system, Hyprland session.
   # The default entry stays mango. See HYPRLAND_PLAN.md.
   specialisation.hyprland.configuration.modules.desktop.session = lib.mkForce "hyprland";
+  specialisation.hyprland.configuration.modules.desktop.shell = lib.mkForce "halo";
 
   # Deskflow: this tablet joins the laptop's server.
   modules.programs.deskflow = {

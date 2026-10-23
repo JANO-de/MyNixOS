@@ -27,6 +27,7 @@ in
     ./hyprland-touch.nix
     ./shell/dynisland
     ./shell/chronos.nix
+    ./shell/halo.nix
   ];
 
   options.modules.desktop = {
@@ -36,7 +37,7 @@ in
       description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see HYPRLAND_PLAN.md).";
     };
     shell = lib.mkOption {
-      type = lib.types.enum [ "dynisland" "chronos" ];
+      type = lib.types.enum [ "dynisland" "chronos" "halo" ];
       default = "dynisland";
       description = "Quickshell shell (island, dock, launcher, lock) autostarted in the session.";
     };

@@ -12,6 +12,7 @@ ShellRoot {
             required property ShellScreen modelData
 
             Island { screen: scope.modelData }
+            HomeScreen { screen: scope.modelData }
             Dock { screen: scope.modelData }
         }
     }

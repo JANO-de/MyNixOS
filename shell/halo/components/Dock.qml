@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import qs.services
 
 // Floating dock. Reserves space in desktop mode, overlays windows in tablet mode.
+// Rises above the home screen while it is open.
 PanelWindow {
     id: root
 
@@ -17,7 +18,7 @@ PanelWindow {
     exclusionMode: Mode.tablet ? ExclusionMode.Ignore : ExclusionMode.Auto
 
     WlrLayershell.namespace: "halo-dock"
-    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.layer: UI.homeOpen ? WlrLayer.Overlay : WlrLayer.Top
 
     Rectangle {
         id: pill
@@ -34,6 +35,38 @@ PanelWindow {
             id: row
             anchors.centerIn: parent
             spacing: 14
+
+            // Apps button: desktop mode only (tablet uses the edge swipe).
+            Item {
+                visible: !Mode.tablet
+                width: root.iconSize
+                height: root.iconSize
+                scale: launcherArea.pressed ? 0.88 : 1
+                Behavior on scale { NumberAnimation { duration: 90 } }
+
+                Grid {
+                    anchors.centerIn: parent
+                    columns: 3
+                    spacing: 4
+
+                    Repeater {
+                        model: 9
+                        Rectangle {
+                            width: 10
+                            height: 10
+                            radius: 3
+                            color: Theme.text
+                            opacity: 0.85
+                        }
+                    }
+                }
+
+                MouseArea {
+                    id: launcherArea
+                    anchors.fill: parent
+                    onClicked: UI.toggleHome()
+                }
+            }
 
             Repeater {
                 model: Apps.items
@@ -69,7 +102,10 @@ PanelWindow {
                     MouseArea {
                         id: area
                         anchors.fill: parent
-                        onClicked: Apps.activate(cell.modelData)
+                        onClicked: {
+                            UI.closeHome();
+                            Apps.activate(cell.modelData);
+                        }
                     }
                 }
             }

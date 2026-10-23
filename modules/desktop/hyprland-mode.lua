@@ -74,3 +74,6 @@ end)
 hl.on("hyprland.start", function()
   set_mode(mode)
 end)
+
+-- Halo: blur behind the glass dock (namespace set in components/Dock.qml)
+hl.layer_rule({ match = { namespace = "halo-dock" }, blur = true, ignore_alpha = 0 })
