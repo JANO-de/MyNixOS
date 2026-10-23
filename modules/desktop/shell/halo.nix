@@ -11,9 +11,16 @@ let
     fi
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir}
   '';
+
+  # halo-ctl call home toggle|open|close  (talks to the running shell by its config path)
+  haloCtl = pkgs.writeShellScriptBin "halo-ctl" ''
+    exec ${lib.getExe pkgs.quickshell} -p ${shellDir} ipc "$@"
+  '';
 in
 {
   config = lib.mkIf (cfg.shell == "halo") {
+    environment.systemPackages = [ haloCtl ];
+
     systemd.user.services.halo = {
       description = "Halo shell (Quickshell)";
       wantedBy = [ "graphical-session.target" ];

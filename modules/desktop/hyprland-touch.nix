@@ -111,9 +111,15 @@ in
           action = "workspace",
         }
 
-        -- Swipe up from the bottom edge: toggle the on-screen keyboard (temporary until the shell has one)
+        -- Swipe up from the bottom edge (1 finger): home screen
         hl.plugin.hyprgrass.bind {
           pattern = { kind = "edge", origin = "down", direction = "up" },
+          action = hl.dsp.exec_cmd("halo-ctl call home toggle"),
+        }
+
+        -- Swipe up from the bottom edge (2 fingers): on-screen keyboard
+        hl.plugin.hyprgrass.bind {
+          pattern = { kind = "edge", origin = "down", direction = "up", fingers = 2 },
           action = hl.dsp.exec_cmd("kbd-toggle"),
         }
 

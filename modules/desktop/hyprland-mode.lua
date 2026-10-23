@@ -77,3 +77,7 @@ end)
 
 -- Halo: blur behind the glass dock (namespace set in components/Dock.qml)
 hl.layer_rule({ match = { namespace = "halo-dock" }, blur = true, ignore_alpha = 0 })
+
+-- Halo: SUPER+A toggles the home screen, and it gets the same blur as the dock
+hl.bind("SUPER + A", hl.dsp.exec_cmd("halo-ctl call home toggle"))
+hl.layer_rule({ match = { namespace = "halo-home" }, blur = true, ignore_alpha = 0 })
