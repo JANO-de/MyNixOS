@@ -79,3 +79,4 @@ pcall(hl.config, {
 })
 
 dofile("/etc/hypr/hyprland-touch.lua")
+dofile("/etc/hypr/hyprland-mode.lua")

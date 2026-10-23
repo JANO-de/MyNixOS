@@ -125,5 +125,6 @@ in
         }
       end
     '';
+    environment.etc."hypr/hyprland-mode.lua".source = ./hyprland-mode.lua;
   };
 }
