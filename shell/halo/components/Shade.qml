@@ -17,7 +17,14 @@ PanelWindow {
     anchors.right: true
     anchors.bottom: true
     color: "transparent"
-    visible: shown || panel.opacity > 0.01
+    // 0 = hidden, 1 = open. Follows the finger while pulled from the top edge (TopEdge.qml).
+    property real progress: UI.shadeDragging ? UI.shadeDrag : (UI.shadeOpen ? 1 : 0)
+    Behavior on progress {
+        enabled: !UI.shadeDragging
+        NumberAnimation { duration: 380; easing.type: Easing.OutQuint }
+    }
+
+    visible: progress > 0.001 || shown || UI.shadeDragging
     exclusionMode: ExclusionMode.Ignore
 
     WlrLayershell.namespace: "halo-shade"
@@ -27,7 +34,6 @@ PanelWindow {
     onShownChanged: {
         if (shown) {
             panel.expand = 0;
-            panel.dragY = 0;
             editing = false;
             System.refresh();
         }
@@ -49,8 +55,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         color: Qt.rgba(0, 0, 0, 0.38)
-        opacity: !root.shown ? 0 : Math.max(0, Math.min(1, 1 + panel.dragY / 300))
-        Behavior on opacity { enabled: !panel.dragging; NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+        opacity: root.progress
 
         MouseArea {
             anchors.fill: parent
@@ -62,7 +67,6 @@ PanelWindow {
         id: panel
 
         property real expand: 0 // 0 = control center, 1 = + notifications
-        property real dragY: 0
         property bool dragging: false
         readonly property real collapsedH: content.implicitHeight + 40 + grabberZone.height
         readonly property real maxH: root.height - 24
@@ -74,11 +78,9 @@ PanelWindow {
         color: Qt.rgba(0.13, 0.13, 0.16, 0.74)
         border.color: Theme.glassStroke
         border.width: 1
-        opacity: root.shown ? 1 : 0
-        y: root.shown ? 12 + dragY : -height - 24
+        opacity: Math.min(1, root.progress * 3)
+        y: 12 - (1 - root.progress) * (height + 36)
 
-        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Behavior on y { enabled: !panel.dragging; NumberAnimation { duration: 380; easing.type: Easing.OutQuint } }
         Behavior on expand { enabled: !panel.dragging; NumberAnimation { duration: 340; easing.type: Easing.OutQuint } }
 
         // Swallow taps on the panel.
@@ -349,6 +351,8 @@ PanelWindow {
                     vel = 0;
                     startExpand = panel.expand;
                     panel.dragging = true;
+                    UI.shadeDrag = 1;
+                    UI.shadeDragging = true;
                 }
                 onPositionChanged: mouse => {
                     if (!pressed)
@@ -357,11 +361,12 @@ PanelWindow {
                     const range = Math.max(1, panel.maxH - panel.collapsedH);
                     const p = startExpand + (y - startY) / range;
                     if (p < 0) {
+                        // Dragging up: the panel follows the finger out of the screen.
                         panel.expand = 0;
-                        panel.dragY = p * range;
+                        UI.shadeDrag = Math.max(0, 1 + (p * range) / (panel.height + 36));
                     } else {
                         panel.expand = Math.min(1, p);
-                        panel.dragY = 0;
+                        UI.shadeDrag = 1;
                     }
                     const now = Date.now();
                     const dt = now - lastT;
@@ -372,16 +377,17 @@ PanelWindow {
                 }
                 onReleased: {
                     panel.dragging = false;
-                    const closing = panel.dragY < -70 || (panel.dragY < -10 && vel < -0.4);
-                    if (closing) {
-                        UI.closeShade();
-                        panel.dragY = 0;
-                    } else {
-                        panel.dragY = 0;
+                    const closing = UI.shadeDrag < 0.8 || (UI.shadeDrag < 0.97 && vel < -0.4);
+                    if (closing)
+                        UI.shadeOpen = false;
+                    else
                         panel.expand = (panel.expand > 0.5 && vel > -0.4) || vel > 0.5 ? 1 : 0;
-                    }
+                    UI.shadeDragging = false;
                 }
-                onCanceled: panel.dragging = false
+                onCanceled: {
+                    panel.dragging = false;
+                    UI.shadeDragging = false;
+                }
             }
         }
     }

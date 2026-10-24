@@ -18,11 +18,16 @@ PanelWindow {
     exclusionMode: Mode.tablet ? ExclusionMode.Ignore : ExclusionMode.Auto
 
     WlrLayershell.namespace: "halo-dock"
-    WlrLayershell.layer: UI.homeOpen ? WlrLayer.Overlay : WlrLayer.Top
+    WlrLayershell.layer: (UI.homeOpen || UI.overviewOpen || UI.overviewDragging) ? WlrLayer.Overlay : WlrLayer.Top
+    visible: UI.chromeShown || pill.opacity > 0.01
 
     Rectangle {
         id: pill
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: UI.chromeShown ? 0 : -(height + 40)
+        opacity: UI.chromeShown ? 1 : 0
+        Behavior on anchors.bottomMargin { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: 240 } }
         anchors.horizontalCenter: parent.horizontalCenter
         width: row.implicitWidth + 28
         height: root.iconSize + 24

@@ -14,6 +14,7 @@ PanelWindow {
     implicitHeight: 38
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
+    visible: UI.chromeShown || pill.opacity > 0.01
 
     WlrLayershell.namespace: "halo-island"
     WlrLayershell.layer: WlrLayer.Top
@@ -29,7 +30,13 @@ PanelWindow {
     }
 
     Rectangle {
-        anchors.fill: parent
+        id: pill
+        width: parent.width
+        height: parent.height
+        y: UI.chromeShown ? 0 : -height - 16
+        opacity: UI.chromeShown ? 1 : 0
+        Behavior on y { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: 240 } }
         radius: height / 2
         color: "#000000"
 

@@ -129,23 +129,9 @@ in
           action = "workspace",
         }
 
-        -- Swipe up from the bottom edge (1 finger): home screen (the Halo desktop)
-        hl.plugin.hyprgrass.bind {
-          pattern = { kind = "edge", origin = "down", direction = "up" },
-          action = hl.dsp.exec_cmd("halo-ctl call desktop show"),
-        }
-
-        -- Swipe up from the bottom edge (2 fingers): on-screen keyboard
-        hl.plugin.hyprgrass.bind {
-          pattern = { kind = "edge", origin = "down", direction = "up", fingers = 2 },
-          action = hl.dsp.exec_cmd("kbd-toggle"),
-        }
-
-        -- Swipe down from the top edge: shade + control center
-        hl.plugin.hyprgrass.bind {
-          pattern = { kind = "edge", origin = "up", direction = "down" },
-          action = hl.dsp.exec_cmd("halo-ctl call shade open"),
-        }
+        -- Edge gestures are handled by Halo itself (TopEdge.qml / BottomEdge.qml) so they follow the
+        -- finger in real time: top = shade, bottom = home (short) / app overview (long).
+        -- Keyboard: SUPER+K or the Keyboard tile.
 
         -- 3-finger long-press: drag window
         hl.plugin.hyprgrass.bind {

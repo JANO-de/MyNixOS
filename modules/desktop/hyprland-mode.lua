@@ -111,6 +111,8 @@ hl.layer_rule({ match = { namespace = "halo-home" }, blur = true, ignore_alpha =
 
 -- Halo shade + control center: blur, SUPER+N toggle.
 hl.layer_rule({ match = { namespace = "halo-shade" }, blur = true, ignore_alpha = 0 })
+hl.layer_rule({ match = { namespace = "halo-overview" }, blur = true, ignore_alpha = 0 })
+hl.bind("SUPER + TAB", hl.dsp.exec_cmd("halo-ctl call overview toggle"))
 hl.bind("SUPER + N", hl.dsp.exec_cmd("halo-ctl call shade toggle"))
 
 -- Keyboard fallback (the 2-finger edge swipe is unverified).

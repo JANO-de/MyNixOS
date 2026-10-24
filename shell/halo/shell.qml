@@ -16,6 +16,9 @@ ShellRoot {
             HomeScreen { screen: scope.modelData }
             Dock { screen: scope.modelData }
             Shade { screen: scope.modelData }
+            Overview { screen: scope.modelData }
+            TopEdge { screen: scope.modelData }
+            BottomEdge { screen: scope.modelData }
             Banner { screen: scope.modelData }
             KbdHandle { screen: scope.modelData }
         }
