@@ -101,3 +101,42 @@ Suggested order after the home screen: Lock screen + Greeter -> Settings -> File
 - Pitfalls seen: `ls` is `eza` (use `command ls`, also in `$(...)`); a root-owned `.git/objects` broke `git add` (`sudo chown -R $USER: .git .` fixed it); `~/Downloads` is English, other dirs are Spanish (`Descargas`); the download card may need a second click, check `command ls ~/Downloads` before `tar`; extract with `tar -xzf ~/Downloads/halo-update.tar.gz` from the repo root, then `git add -A`.
 - `~/.config/halo/controls.json` is created on first control-center edit (the "File does not exist" warning is expected). One desktop entry has an icon path in `~/Descargas` that no longer exists (blank icon, harmless).
 - The assistant has no Nix, Hyprland or Qt in its sandbox: everything is verified only by pasted output.
+## Session update (Oct 2026)
+
+### Environment notes
+- Surface: `jano@192.168.0.115` (IP moves between .111 and .115). SSH asks for a password every time (no key). `sudo` password is asked during deploy.
+- Desktop shell aliases `find`->fd and `cat`->bat: use `command find` / `command cat` in scripts and pasted commands. To copy output: `... | wl-copy`.
+- `scripts/surface-deploy.sh` builds and sets the config for the next boot (action = boot): restarting the `halo` user service afterwards does NOT load the new build, run `scripts/surface-reboot.sh`. `scripts/halo-dev.sh` is the QML-only path.
+- Hyprland 0.56 uses a Lua config. Over SSH: `export HYPRLAND_INSTANCE_SIGNATURE=$(ls $XDG_RUNTIME_DIR/hypr | head -1)`, then `hyprctl dispatch "hl.dsp.focus({ last = true })"`. `hl.dsp.focus` accepts only: direction, monitor, window, urgent_or_last, last (it cannot drop focus). Old dispatcher names like `focuscurrentorlast` fail.
+- `scripts/surface-clean.sh` was run: 26853 store paths deleted, 31.3 GiB freed.
+
+### iptsd boot crash loop (fixed, verified)
+- Real config is `hosts/surface/default.nix` (`hosts/surface/hardware.nix` is not imported). It had `RestartSec=1s` and no start-limit override, which caused the start-limit-hit.
+- Now: `RestartSec=3s`, `StartLimitBurst=4`, `StartLimitIntervalSec=60`, `OnFailure=iptsd-recover.service`. `iptsd-recover` stops iptsd, reloads the ipts driver and starts iptsd again, at most 3 times per 10 minutes.
+- Verified after reboot: overrides present, `iptsd@dev-hidraw0` active. `iptsd-recover` has not triggered yet (not exercised); a cold-boot touch test at SDDM and in Halo was requested, result not recorded.
+
+### On-screen keyboard (squeekboard): verified findings
+- squeekboard needs dconf `org/gnome/desktop/a11y/applications screen-keyboard-enabled=true`. It was unset; it was set by hand, now permanent via `programs.dconf.profiles.user.databases` in `modules/desktop/default.nix`. Verified after reset + deploy + reboot.
+- `Kbd.hide()` runs `kbd-toggle hide` -> D-Bus `sm.puri.OSK0 SetVisible false`, which leaves squeekboard forced hidden. Tapping the same field again sends no new focus event (a field tap sends one `input_method_v2.activate`; tapping empty space sends no deactivate), so it stays hidden. Tapping a field in another app reopens it. `SetVisible true` (what `kbd-toggle show` calls) always reopens it.
+- Fix shipped: `components/KbdButton.qml` (round keyboard button, bottom right, `visible: Kbd.dismissed && !Kbd.visible`, calls `Kbd.show()`); `services/Kbd.qml` got `dismissed` (set true in `hide()`, cleared when `kbd-visible` reads "visible") and `show()`; instantiated in `shell.qml` after `KbdHandle`. Verified working.
+- Tried and rejected: `WlrLayershell.keyboardFocus: OnDemand` on `KbdHandle` (focus loop, keyboard flickers true/false every few seconds); `hl.dsp.focus({ last = true })` cycles (clear the hidden state but reopen the keyboard immediately).
+- Unexplained: in one test `Visible` flipped false/true within 3 s with no input (00:11:07 to 00:11:10). Not investigated.
+- Observations: the keyboard opened in Alacritty during tests (earlier note said Alacritty has no text-input; recheck). Long-pressing the DuckDuckGo page background opens its context menu: browser behavior, not a Halo bug.
+- Unchecked, dropped for now: hardware keyboard + squeekboard, auto-show in Zen/Angelfish.
+
+### Dropped for now
+- Quick checks (`fingers = 2` bottom-edge bind, Zen/Angelfish auto-show, hardware keyboard).
+- Small fixes (rotate old `surface-bootstrap` password, DHCP reservation for the Surface).
+
+### New goal: shell 1:1 with iPadOS, built in stages, deploy after each
+1. Home screen: icon pages, page dots, dock, jiggle mode (rearrange/delete), folders.
+2. Widgets + widget gallery.
+3. App switcher (swipe-up cards, swipe up to close).
+4. matugen theming (`services/Theme.qml` is static).
+
+### Current shell layout (`shell/halo`)
+- `shell.qml`: `LockScreen`, then per screen `Desktop`, `Island`, `HomeScreen`, `Dock`, `Shade`, `Overview`, `TopEdge`, `BottomEdge`, `Banner`, `KbdHandle`, `KbdButton`.
+- `components/Desktop.qml` is the real always-visible home screen; `services/Home.qml` its state (`cellW`, `cellH`, `launch(entry)`). `components/HomeScreen.qml` (156 lines) is only the SUPER+A launcher overlay: clock, search, full app grid (`GridView` of `AppIcon`, `DesktopEntries`), layer Top, exclusive keyboard focus.
+- `components/Widget{Battery,Calendar,Clock,Media}.qml` + `WidgetHost.qml` exist. `Overview.qml` is the current app switcher (finger-tracked from `BottomEdge.qml`). `Shade.qml`/`TopEdge.qml`/`ControlGrid.qml` are the control center. `Dock.qml` 119 lines. Other: `Island`, `Banner`, `Sheet`, `QsSlider`, `PinPad`, `Lock*`, `WallpaperView`.
+- Services: `UI.qml` (shared state: `homeOpen`, `shadeOpen`, `overviewOpen`, drag values, `appOpen`/`onHome`/`chromeShown`; IPC targets home|overview|desktop|shade, `goHome()` calls `hyprctl eval go_home()`), `Apps`, `Controls`, `Home`, `Kbd`, `Lock`, `Mode` (tablet/desktop), `Notifs`, `System`, `Theme`, `Wallpaper`.
+- Next step: read `Desktop.qml`, `Home.qml`, `AppIcon.qml`, `WidgetHost.qml`, `Theme.qml` (command: `cd shell/halo && command cat components/Desktop.qml services/Home.qml components/AppIcon.qml components/WidgetHost.qml services/Theme.qml | wl-copy`), then design and build stage 1.
