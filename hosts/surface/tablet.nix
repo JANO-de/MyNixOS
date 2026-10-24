@@ -1,7 +1,7 @@
 # Plasma 6 (Wayland) tablet session: login screen, on-screen keyboard and a
 # hidden cursor so a touch-only Surface can be logged into and used. Auto-rotate
 # (iio) and the udev button rules live in hardware.nix.
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
   # Fully transparent cursor theme: every cursor name Adwaita knows points at
@@ -38,23 +38,33 @@ in
   # login screen is not a dead end without the Type Cover. The greeter itself
   # stays on X11, which is the reliable path on this panel.
   modules.desktop = {
-    niri.enable = false;
+    chronosTerminal.enable = true;
+    chronosTerminal.defaultMode = "field";
+    niri.enable = true;
     displayManager = "sddm";
     greeterOsK.enable = true;
   };
-  services.displayManager.defaultSession = "plasma";
+  services.displayManager.defaultSession = "niri";
   # SDDM prefers the last-used session over defaultSession; forget it every
   # boot so a stale Plasma X11 choice can never override Wayland.
   systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];
-  services.displayManager.sddm.wayland.enable = false;
+
+  # SDDM X11 touch fix (greeter OSK settings live in modules/desktop/greeter.nix;
+  # do not redefine settings.General here, it conflicts).
+  services.xserver.enable = true;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = false;
+  };
 
   # Electron/Chromium apps use Wayland natively.
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     XCURSOR_SIZE = "36";
     XCURSOR_THEME = "blank";
-    # Touch-first tablet: use Denial's mobile shell instead of the desktop one.
-    DENIAL_SHELL_PROFILE = "mobile";
+    # Touch-first tablet: default to desktop shell; mobile can be toggled from shade if needed.
+      DENIAL_SHELL_PROFILE = "mobile";
+      DENIAL_FORCE_TOUCH_GESTURES = "1";
   };
   # Link the blank cursor theme so XCURSOR_THEME resolves.
   environment.pathsToLink = [ "/share/icons" ];

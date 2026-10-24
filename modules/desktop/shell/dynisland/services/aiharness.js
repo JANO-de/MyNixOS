@@ -266,7 +266,7 @@ function baseHeaders(provider, extraBeta) {
 //  system prompt (the part that makes every model act like the same agent)
 // ---------------------------------------------------------------------------
 var CORE_PROMPT = [
-    "You are the assistant built into DynIsland, a desktop shell for Wayland (niri) on NixOS. You are an agent with tools on the user's own machine, strong at coding, debugging and system administration.",
+    "You are the assistant built into DynIsland, a desktop shell for Wayland (mangowm) on NixOS. You are an agent with tools on the user's own machine, strong at coding, debugging and system administration.",
     "",
     "# How to work",
     "- Be direct and useful. Lead with the answer or the action. No filler, flattery or restating the question.",

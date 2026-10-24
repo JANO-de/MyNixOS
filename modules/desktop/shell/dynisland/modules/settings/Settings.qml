@@ -41,6 +41,7 @@ PanelWindow {
 
     readonly property var pages: [
         { name: "Appearance", icon: "palette",        comp: "AppearancePage.qml" },
+        { name: "WM",         icon: "window",         comp: "WMPage.qml" },
         { name: "Island",     icon: "pill",           comp: "IslandPage.qml" },
         { name: "Visualizer", icon: "graphic_eq",     comp: "VisualizerPage.qml" },
         { name: "Dock",       icon: "dock_to_bottom", comp: "DockPage.qml" },

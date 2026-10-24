@@ -56,7 +56,7 @@ Singleton {
         active = false; loginUrl = "";
         offT.stop(); up.running = false;
         Quickshell.execDetached(["rm", "-f", marker]);
-        if (cfg.screensOff) Quickshell.execDetached(["niri", "msg", "action", "power-on-monitors"]);
+        if (cfg.screensOff) Wm.monitorsOn();
         if (cfg.ledsOff) Quickshell.execDetached(["sh", "-c", cfg.ledsOnCmd]);
         // llama.cpp is deliberately NOT stopped
         if (cfg.tailscale) Quickshell.execDetached(["sh", "-c", "tailscale serve reset; tailscale down"]);
@@ -66,7 +66,7 @@ Singleton {
     // monitors off a moment after locking (never while a first-time login URL is pending)
     Timer {
         id: offT; interval: 2500
-        onTriggered: if (root.active && root.loginUrl === "") Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"])
+        onTriggered: if (root.active && root.loginUrl === "") Wm.monitorsOff()
     }
 
     Process {

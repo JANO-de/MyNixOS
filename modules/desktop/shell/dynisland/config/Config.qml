@@ -29,7 +29,7 @@ Singleton {
     function applySaved(text) {
         try {
             const j = JSON.parse(text);
-            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "system", "server", "calendar", "profile", "ai"]) {
+            for (const sec of ["appearance", "island", "cava", "dock", "widgets", "lock", "wm", "system", "server", "calendar", "profile", "ai"]) {
                 if (!j[sec]) continue;
                 for (const k in j[sec]) root[sec][k] = j[sec][k];
             }
@@ -51,6 +51,7 @@ Singleton {
     property alias dock: adapter.dock
     property alias widgets: adapter.widgets
     property alias lock: adapter.lock
+    property alias wm: adapter.wm
     property alias system: adapter.system
     property alias server: adapter.server
     property alias calendar: adapter.calendar
@@ -102,7 +103,7 @@ Singleton {
                 property real glassTint: 0              // custom preset only; 0..1, mixes accent into the glass
                 property string wallpaperFill: "crop"  // crop | fit | stretch
                 property real wallpaperDim: 0          // 0..0.8 black overlay
-                property bool perWorkspace: false      // different wallpaper per niri workspace
+                property bool perWorkspace: false      // different wallpaper per workspace (mango: tag)
                 property var wsWallpapers: ({})        // { "<workspace name or index>": "/path.jpg" }
             }
 
@@ -199,6 +200,19 @@ Singleton {
                 property bool resumeLast: true              // reopen the most recent chat on start
             }
 
+            property JsonObject wm: JsonObject {
+                property bool autoDetect: true
+                property int borderPx: 4
+                property int gapInnerHorizontal: 10
+                property int gapInnerVertical: 10
+                property int gapOuterHorizontal: 20
+                property int gapOuterVertical: 20
+                property int borderRadius: 12
+                property int rotation: 1                 // 0 = normal, 1 = 90° CCW, 3 = 270° CCW
+                property string monitorMatch: "width:1920,height:1080,refresh:60"
+                property bool applyRotation: true
+            }
+
             property JsonObject system: JsonObject {
                 property string terminal: "alacritty"     // used by the launcher's "> command"
                 property bool builtinLock: true          // use the shell's own lock screen
@@ -218,7 +232,7 @@ Singleton {
                 property bool emojiClose: true         // close the emoji panel after picking one
                 property int emojiRecent: 16           // how many recent emoji to show first
                 property bool quickPull: true          // allow the quick-settings pulldown (IPC: quick toggle)
-                property string logoutCmd: "niri msg action quit --skip-confirmation"
+                property string logoutCmd: "if [ -n \"$MANGO_INSTANCE_SIGNATURE\" ]; then mmsg dispatch quit; elif [ -n \"$NIRI_SOCKET\" ]; then niri msg action quit --skip-confirmation; else mmsg dispatch quit; fi"
                 property string rebootCmd: "systemctl reboot"
                 property string shutdownCmd: "systemctl poweroff"
                 property string suspendCmd: "systemctl suspend"
@@ -233,7 +247,7 @@ Singleton {
             // Server mode (services/Server.qml, Settings > Server)
             property JsonObject server: JsonObject {
                 property bool lockOnEnter: true       // lock the session when entering
-                property bool screensOff: true        // niri: power off monitors (input wakes them)
+                property bool screensOff: true        // power off monitors (input wakes them)
                 property bool ledsOff: true           // run ledsOffCmd / ledsOnCmd
                 property bool tailscale: true         // tailscale up/down with the mode
                 property bool ssh: true               // Tailscale SSH (no sshd needed)

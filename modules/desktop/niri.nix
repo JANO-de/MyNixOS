@@ -1,32 +1,61 @@
+# niri (the chronos fork), used by the Surface. Config: ./niri.kdl with the theme
+# colors and the shell's binds filled in, validated at build time.
+{ config, lib, pkgs, inputs, theme, ... }:
+
+let
+  cfg = config.modules.desktop;
+
+  shellBinds = lib.optionalString (cfg.shell == "dynisland") ''
+    Mod+Space   { spawn "dynisland" "ipc" "launcher" "toggle"; }
+    Alt+Space   { spawn "dynisland" "ipc" "spotlight" "toggle"; }
+    Mod+Shift+L { spawn "dynisland" "ipc" "lock" "lock"; }
+    Mod+Q       { spawn "dynisland" "ipc" "quick" "toggle"; }
+    Mod+V       { spawn "dynisland" "ipc" "tools" "clipboard"; }
+    Mod+Ctrl+E  { spawn "dynisland" "ipc" "tools" "emoji"; }
+    Mod+Shift+C { spawn "dynisland" "ipc" "tools" "color"; }
+    Mod+A       { spawn "dynisland" "ipc" "ai" "toggle"; }
+    Mod+Comma   { spawn "dynisland" "ipc" "settings" "toggle"; }
+    Mod+I       { spawn "dynisland" "ipc" "island" "toggle"; }
+  '';
+
+  content =
+    lib.replaceStrings
+      [
+        "@FOCUS@"
+        "@FOCUS_INACTIVE@"
+        "@SHELL_BINDS@"
+        ''spawn-at-startup "polkit-gnome-authentication-agent-1"''
+      ]
+      [
+        (theme.color "accent")
+        (theme.color "surface")
+        shellBinds
+        ''spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"''
+      ]
+      (builtins.readFile ./niri.kdl);
+in
 {
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
-  config = lib.mkIf config.modules.desktop.niri.enable {
+  config = lib.mkIf (cfg.session == "niri") {
     programs.niri = {
       enable = true;
+      package = inputs.chronos.packages.${pkgs.stdenv.hostPlatform.system}.niri; # the fork, NOT stock niri
     };
 
-    # Electron apps (vscode, discord, ...) run natively on Wayland
-    environment.sessionVariables.NIXOS_OZONE_WL = "1";
-
-    # Polkit auth agent for the niri session (no NixOS module exists anymore)
-    security.polkit.enable = true;
-
-    # GTK icon theme used by the shell (set via dconf)
-    programs.dconf.profiles.user.databases = [
-      {
-        settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark";
-      }
-    ];
-
     environment.systemPackages = with pkgs; [
-      polkit_gnome # launched via spawn-at-startup in the niri config
-      xwayland-satellite # niri 25.08+ auto-spawns this on-demand for X11 apps (Steam)
-      brightnessctl # Fn brightness keys (XF86MonBrightness*)
-      playerctl # Fn media keys (XF86AudioPlay/Next/Prev)
+      polkit_gnome
+      xwayland-satellite # niri auto-spawns it on demand for X11 apps
     ];
+
+    home-manager.users.jano.xdg.configFile."niri/config.kdl".source =
+      pkgs.runCommand "niri-config-validated"
+        {
+          nativeBuildInputs = [ pkgs.niri ];
+          passAsFile = [ "content" ];
+          inherit content;
+        }
+        ''
+          niri validate --config "$contentPath"
+          cp "$contentPath" $out
+        '';
   };
 }

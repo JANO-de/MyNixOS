@@ -1,117 +1,97 @@
 {
-  description = "MyNixOS configuration";
-
-  # Denial's Cachix cache, so its prebuilt engine is pulled instead of built
-  # from source. A flake's nixConfig is ignored when the flake is only used as
-  # an input, so it has to live here (the top-level flake); pass
-  # --accept-flake-config to nixos-rebuild for it to take effect.
-  nixConfig = {
-    extra-substituters = [ "https://denial.cachix.org" ];
-    extra-trusted-public-keys = [ "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo=" ];
-  };
+  description = "MyNixOS: desktop, laptop and surface";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
-    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # --- desktop / session ---
+    # MangoWM: NixOS module (session + portals) and Home Manager module
+    # (declarative config). Deliberately NOT following our nixpkgs: it builds
+    # against its own pinned wlroots/scenefx, which the stable channel may not
+    # carry yet. If you want to share nixpkgs, add `inputs.nixpkgs.follows`.
+    mango.url = "github:mangowm/mango";
+
+    # Hyprland (flake package: plugins must match its exact version). Do NOT add
+    # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
+    hyprland.url = "github:hyprwm/Hyprland";
+    hyprgrass = { 
+      url = "github:horriblename/hyprgrass"; 
+      inputs.hyprland.follows = "hyprland"; 
+    };
+
+    # Chronos: niri fork + Quickshell shell (also used by the Surface).
+    chronos.url = "git+file:///home/jano/Proyectos/chronos";
+
+    # --- apps ---
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    nix-software-center.url = "github:snowfallorg/nix-software-center";
-
     opencode-flake.url = "github:noblepayne/opencode-flake";
-
-    # SimpMusic desktop client, built from the local checkout so patches in
-    # ./patches and the Nix work in flake.nix stay the ones being tested.
-    simpmusic = {
-      url = "path:/home/jano/Proyectos/SimpMusic";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Forge terminal UI for OpenCode
     forge = {
-      url = "github:JANO-de/Forge-TUI";
+      url = "github:JANO-de/Forge-TUI"; # terminal UI for OpenCode
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # CachyOS kernel — release branch = CI-built & cached on their Attic.
-    # Do NOT override its nixpkgs input (patches/kernel must stay in sync).
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
-
-    # Hardware enablement for the Surface (linux-surface patched kernel,
-    # IPTS touch, Marvell wifi firmware, thermald, surface-control).
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
-
-    # Native Claude Desktop (Electron) wrapper for Linux.
-    # Not made to follow our nixpkgs: it still uses the now-removed
-    # `nodePackages` top-level attr, so it needs its own pinned nixpkgs.
+    # Native Claude Desktop (Electron) wrapper. Not made to follow our nixpkgs:
+    # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
-    # Denial compositor. Deliberately NOT made to follow our nixpkgs: doing so
-    # changes its engine cache key and forces a full source build.
-    denial.url = "github:denialwm/denial";
+    # --- hardware ---
+    # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
+    # override its nixpkgs input.
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+    # linux-surface kernel, IPTS touch, Marvell wifi firmware (surface).
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
 
+  outputs =
+    {
+      nixpkgs,
+      home-manager,
+      mango,
+      forge,
+      nix-cachyos-kernel,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
+      theme = import ./modules/theme.nix;
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, nix-cachyos-kernel, nixos-hardware, opencode-flake, nix-software-center, simpmusic, forge, claude-desktop, denial }@inputs:
-  let
-    system = "x86_64-linux";
-    lib = nixpkgs.lib;
-    theme = import ./modules/theme.nix;
-
-    # niriEnabled=true: niri + eww shell; false: no niri (Plasma on the Surface).
-    # Passed explicitly (no module default) so the defaulted-arg probe can't recurse.
-    mkHost = { host, niriEnabled ? true, cachyos ? true, denialEnabled ? false }: lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit inputs theme niriEnabled denialEnabled; };
-      modules = [ forge.nixosModules.default
-        inputs.home-manager.nixosModules.home-manager
-        ./hosts/${host}/default.nix
-      ]
-      # CachyOS kernel overlay (pinned = built against their nixpkgs, uses binary cache)
-      ++ lib.optional cachyos ({ ... }: { nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ]; });
-    };
-  in
-  {
-    nixosConfigurations = {
-      laptop = mkHost { host = "laptop"; };
-      desktop = mkHost { host = "desktop"; };
-
-      # Microsoft Surface Pro 5 (i5 / 8GB / 128GB), Plasma 6 on Wayland.
-      # Deliberately NO CachyOS overlay: the Surface relies on nixos-hardware's
-      # linux-surface patched kernel (SAM/IPTS/thermald) + the in-tree Marvell
-      # mwifiex wifi driver; the CachyOS kernel would drop all of that.
-      surface = mkHost { host = "surface"; niriEnabled = false; cachyos = false; denialEnabled = true; };
-
-      # Live USB image used to install `surface` (and to rescue it). Same GNOME
-      # installer as upstream, plus nixos-hardware's Surface support (patched
-      # kernel + iptsd + redistributable firmware), so touch and Wi-Fi work in
-      # the live session where the official image has neither.
-      installer = lib.nixosSystem {
-        inherit system;
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
-          inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
-          ./modules/installer/surface-live.nix
-        ];
-      };
-
-      # Tiny first-stage system for the SP5 (see hosts/surface-bootstrap/default.nix).
-      surface-bootstrap = lib.nixosSystem {
-        inherit system;
-        modules = [ ./hosts/surface-bootstrap/default.nix ];
+      mkHost =
+        {
+          host,
+          cachyos ? false,
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs theme; };
+          modules = [
+            home-manager.nixosModules.home-manager
+            forge.nixosModules.default
+            mango.nixosModules.mango
+            ./hosts/${host}/default.nix
+          ]
+          # CachyOS kernel overlay: only the laptop boots that kernel. The
+          # Surface must NOT get it (it relies on nixos-hardware's patched
+          # linux-surface kernel).
+          ++ nixpkgs.lib.optional cachyos {
+            nixpkgs.overlays = [ nix-cachyos-kernel.overlays.pinned ];
+          };
+        };
+    in
+    {
+      nixosConfigurations = {
+        desktop = mkHost { host = "desktop"; };
+        laptop = mkHost {
+          host = "laptop";
+          cachyos = true;
+        };
+        surface = mkHost { host = "surface"; };
       };
     };
-
-    packages.${system} = {
-      nixos-gnome-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
-    };
-  };
 }

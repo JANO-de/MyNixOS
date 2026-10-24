@@ -50,7 +50,7 @@ PanelWindow {
         : (hasActivity && !full) ? "activity"
         : full ? "full" : Osd.active ? "osd" : "idle"
     // visibility: always | autohide | dodge. Only the idle pill hides; banners, OSD, panels and hover always show.
-    readonly property bool dodging: cfg.behavior === "dodge" && Niri.busy(win.screen ? win.screen.name : "")
+    readonly property bool dodging: cfg.behavior === "dodge" && Wm.busy(win.screen ? win.screen.name : "")
     readonly property bool hideNow: (cfg.behavior === "autohide" || dodging) && mode === "idle" && !hovered && !ph.hovered
     onHoveredChanged: Notifs.hold = hovered      // hovering a banner pauses its auto-hide
     onFullChanged: { Sys.watching = full; if (!full) UiState.quickPage = false }          // poll wifi/brightness only while open

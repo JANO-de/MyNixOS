@@ -2,11 +2,11 @@
 # nixos-hardware's microsoft-surface-pro-intel, which already provides the
 # linux-surface kernel, iptsd, redistributable firmware, thermald,
 # surface-control and S0ix sleep.
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   # --- display: Panel Self Refresh blanks the eDP output on this panel ---
-  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES"  ];
+  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES" ];
 
   # Use the iHD VA-API driver (intel-media-driver), the right one for Kaby
   # Lake (HD 620). As a side effect this drops nixos-hardware's legacy
@@ -72,6 +72,7 @@
   # Mark the GPIO button nodes as keyboards so the compositor doesn't drop them.
   services.udev.extraRules = ''
     SUBSYSTEM=="input", KERNEL=="event*", KERNELS=="MSHW0040:00", ENV{ID_INPUT_KEYBOARD}="1"
+    SUBSYSTEM=="hidraw", ACTION=="change", KERNELS=="*045E:001F*", TAG+="systemd"
   '';
 
   # Plasma owns the power key (powerdevil); long press offers power-off.
@@ -88,10 +89,27 @@
     enable = true;
     config = {
       Touchscreen = {
-        DisableOnPalm = true;    # no touch while a palm rests on the glass
+        DisableOnPalm = false;    # no touch while a palm rests on the glass
         DisableOnStylus = true;  # no touch while the pen is hovering/drawing
       };
       Stylus.Disable = false;
+    };
+  };
+  # iptsd@ is bound to dev-hidraw0.device, which flaps/never forms on this
+  # box, so systemd stops the service <1s after start. Drop the device binding
+  # and keep it running; Restart covers a real hidraw re-creation.
+  # iptsd hangs on stop (SIGKILL after default 90s timeout); shorten it.
+  systemd.services."iptsd@" = {
+    restartIfChanged = false;
+    unitConfig = {
+      BindsTo = lib.mkForce "";          # empty value clears the inherited BindsTo=%i.device
+      StopWhenUnneeded = lib.mkForce "no";
+      StartLimitIntervalSec = lib.mkForce 0; # never give up: the IPTS device needs a few seconds after boot
+    };
+    serviceConfig = {
+      TimeoutStopSec = lib.mkForce "5s";
+      Restart = lib.mkForce "on-failure";
+      RestartSec = lib.mkForce "3s";
     };
   };
   services.udev.packages = [ pkgs.libwacom-surface ];

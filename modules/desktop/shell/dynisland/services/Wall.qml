@@ -8,7 +8,7 @@ import qs.config
 
 QtObject {
     function keyFor(output) {
-        const ws = Niri.workspaces.find(w => w.is_active && (!output || w.output === output));
+        const ws = Wm.workspaces.find(w => w.is_active && (!output || w.output === output));
         return ws ? (ws.name || String(ws.idx)) : "";
     }
     function pathFor(output) {
