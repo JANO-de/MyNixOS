@@ -36,12 +36,74 @@ let
       echo "PIN saved."
     '';
   };
+  # halo-autokbd: tablet when no real keyboard is attached, desktop when one is (Type Cover, Bluetooth, USB).
+  #   halo-autokbd count   -> list the keyboards it sees (udev ID_INPUT_KEYBOARD=1) and exit
+  #   halo-autokbd         -> watch input hot-plug (debounced) and call set_mode when the keyboard set flips
+  haloAutoKbd = pkgs.writeShellApplication {
+    name = "halo-autokbd";
+    runtimeInputs = [ config.programs.hyprland.package pkgs.coreutils pkgs.findutils pkgs.systemd ];
+    text = ''
+      # A real keyboard has the letter keys (KEY_Q=16, KEY_A=30, KEY_Z=44, KEY_SPACE=57).
+      # Power/volume buttons (gpio-keys), lid and video bus do not.
+      list() {
+        local ev words w v b ok
+        for ev in /sys/class/input/event*; do
+          [ -r "$ev/device/capabilities/key" ] || continue
+          read -r -a words < "$ev/device/capabilities/key" || continue
+          [ "''${#words[@]}" -gt 0 ] || continue
+          w=''${words[-1]}
+          v=$((16#$w))
+          ok=1
+          for b in 16 30 44 57; do
+            if [ $(( (v >> b) & 1 )) -eq 0 ]; then ok=0; fi
+          done
+          if [ "$ok" -eq 1 ]; then cat "$ev/device/name"; fi
+        done
+      }
+
+      if [ "''${1:-}" = "count" ]; then
+        list
+        echo "keyboards: $(list | wc -l)"
+        exit 0
+      fi
+
+      if [ -z "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+        HYPRLAND_INSTANCE_SIGNATURE=$(find "/run/user/$(id -u)/hypr" -mindepth 1 -maxdepth 1 -type d ! -name chronos-shell -printf '%f\n' | head -1)
+        export HYPRLAND_INSTANCE_SIGNATURE
+      fi
+
+      last=""
+      apply() {
+        local n want
+        n=$(list | wc -l)
+        if [ "$n" -gt 0 ]; then want=desktop; else want=tablet; fi
+        # Only act when the keyboard set flips, so a manual toggle wins until then.
+        echo "halo-autokbd: $n keyboard(s) -> $want (last: ''${last:-none})" >&2
+        if [ "$want" != "$last" ]; then
+          if hyprctl eval "set_mode(\"$want\")" > /dev/null; then last=$want; else echo "halo-autokbd: hyprctl eval failed" >&2; fi
+        fi
+      }
+
+      for _ in 1 2 3 4 5 6 7 8 9 10; do
+        apply
+        [ -n "$last" ] && break
+        sleep 2
+      done
+
+      udevadm monitor --udev --subsystem-match=input | while read -r _; do
+        while read -r -t 1.5 _; do :; done
+        apply
+      done
+    '';
+  };
 in
 {
+  options.modules.desktop.autoMode = lib.mkEnableOption "automatic tablet/desktop mode from attached keyboards (halo-autokbd)";
   config = lib.mkIf (cfg.shell == "halo") {
     environment.systemPackages = [
       haloCtl
       haloSetPin
+      haloAutoKbd
       pkgs.dbus # dbus-monitor: lock before suspend
       pkgs.brightnessctl # shade brightness slider
       pkgs.wireplumber # wpctl (volume)
@@ -55,6 +117,19 @@ in
     environment.etc."halo/wallpapers".source = ../../../assets/wallpapers;
     services.upower.enable = lib.mkDefault true; # battery widget
     security.pam.services.halo = { }; # lock screen password check
+
+    systemd.user.services.halo-autokbd = lib.mkIf cfg.autoMode {
+      description = "Auto tablet/desktop mode from attached keyboards";
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
+      path = [ config.programs.hyprland.package "/run/current-system/sw" ];
+      serviceConfig = {
+        ExecStart = lib.getExe haloAutoKbd;
+        Restart = "on-failure";
+        RestartSec = 3;
+      };
+    };
 
     systemd.user.services.halo = {
       description = "Halo shell (Quickshell)";

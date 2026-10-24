@@ -55,18 +55,15 @@ in
 
   # ---- session -------------------------------------------------------------
   modules.desktop = {
-    session = "mango";
-    shell = "dynisland";
+    session = "hyprland"; # Hyprland (UWSM) + Halo; the newest generation is always the default boot entry
+    shell = "halo";
+    autoMode = true; # tablet/desktop from attached keyboards (halo-autokbd)
     greeterOsk.enable = true; # log in by touch, no Type Cover needed
   };
   modules.programs.profile = "lean";
   hardware.nvidia.enable = false; # Intel HD 620 only
 
-  # Boot entry "hyprland" (systemd-boot menu): same system, Hyprland session.
-  # The default entry stays mango. See HYPRLAND_PLAN.md.
-  modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode
-  specialisation.hyprland.configuration.modules.desktop.session = lib.mkForce "hyprland";
-  specialisation.hyprland.configuration.modules.desktop.shell = lib.mkForce "halo";
+  modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode (see HYPRLAND_PLAN.md)
 
   # Deskflow: this tablet joins the laptop's server.
   modules.programs.deskflow = {
@@ -210,12 +207,37 @@ in
     unitConfig = {
       BindsTo = lib.mkForce ""; # empty value clears the inherited BindsTo=%i.device
       StopWhenUnneeded = lib.mkForce "no";
+      # 4 failures in 60 s = firmware stuck: hand over to iptsd-recover (reloads the ipts driver).
+      StartLimitIntervalSec = lib.mkForce 60;
+      StartLimitBurst = lib.mkForce 4;
+      OnFailure = [ "iptsd-recover.service" ];
     };
     serviceConfig = {
       TimeoutStopSec = lib.mkForce "5s";
       Restart = lib.mkForce "on-failure";
-      RestartSec = lib.mkForce "1s";
+      RestartSec = lib.mkForce "3s";
     };
+  };
+  # Recovery for the boot race where the touch firmware stops answering (-11):
+  # reload the ipts driver, then start iptsd again. Max 3 runs per 10 min.
+  systemd.services.iptsd-recover = {
+    description = "Reload ipts driver and restart iptsd";
+    unitConfig = {
+      StartLimitIntervalSec = 600;
+      StartLimitBurst = 3;
+    };
+    path = [ pkgs.kmod pkgs.systemd pkgs.gawk pkgs.coreutils ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      units=$(systemctl list-units --all --plain --no-legend 'iptsd@*' | awk '{print $1}')
+      for u in $units; do systemctl stop "$u" || true; done
+      modprobe -r ipts || true
+      sleep 2
+      modprobe ipts
+      sleep 4
+      systemctl reset-failed 'iptsd@*' || true
+      for u in $units; do systemctl start "$u"; done
+    '';
   };
   services.udev.packages = [ pkgs.libwacom-surface ];
 
