@@ -2,6 +2,7 @@ import QtQuick
 import qs.services
 
 // Rounded app tile with its label. `interactive: false` lets a parent handle touches (edit mode).
+// When `entry.isFolder` is set, renders a 2x2 preview of the folder's first apps instead.
 Item {
     id: root
 
@@ -23,7 +24,30 @@ Item {
             radius: Home.tile / 4
             color: Qt.rgba(1, 1, 1, 0.10)
 
+            Grid {
+                visible: root.entry && root.entry.isFolder
+                anchors.centerIn: parent
+                columns: 2
+                rows: 2
+                spacing: 3
+
+                Repeater {
+                    model: (root.entry && root.entry.isFolder) ? root.entry.items.slice(0, 4) : []
+
+                    Image {
+                        required property string modelData
+                        width: Home.tile * 0.32
+                        height: Home.tile * 0.32
+                        source: Apps.iconSource((DesktopEntries.byId(modelData) || {}).icon)
+                        sourceSize: Qt.size(64, 64)
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                    }
+                }
+            }
+
             Image {
+                visible: !(root.entry && root.entry.isFolder)
                 anchors.centerIn: parent
                 width: Home.tile * 0.7
                 height: Home.tile * 0.7

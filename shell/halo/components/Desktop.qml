@@ -6,12 +6,15 @@ import qs.services
 // The home screen: wallpaper + widgets + paged app icons, always behind the windows.
 // Show it with `halo-ctl call desktop show` (empty "home" workspace). Long-press empty space
 // for the wallpaper menu; long-press an icon/widget to edit (jiggle, drag to reorder).
+// Drag one app onto another and hold ~550ms to merge them into a folder; drag onto a folder
+// to add to it. Tap a folder to open it.
 PanelWindow {
     id: root
 
     readonly property int dockSpace: Mode.tablet ? 120 : 104
     property string sheet: "" // "", "menu", "wallpapers", "widgets", "settings"
     property point menuAt: Qt.point(0, 0)
+    property string openFolder: "" // folder id currently shown in its own sheet, or ""
 
     function openMenu(x, y) {
         menuAt = Qt.point(x, y);
@@ -108,6 +111,11 @@ PanelWindow {
             property real fx: 0
             property real fy: 0
 
+            // Drag-to-merge: the slot index currently dwelt on. Crossing into a new index arms
+            // mergeTimer; if the finger lingers there it merges into a folder, otherwise it
+            // settles as a plain reorder (see refreshDrag / mergeTimer / Slot.finish()).
+            property var mergeTarget: null
+
             function slotOf(i) {
                 let p = 0;
                 let k = i;
@@ -135,7 +143,7 @@ PanelWindow {
                 return Math.max(0, Math.min(n - 1, p === 0 ? k : cap0 + (p - 1) * capN + k));
             }
 
-            // Follow the finger, reorder live, auto-flip pages at the screen edges.
+            // Follow the finger, dwell-reorder/merge live, auto-flip pages at the screen edges.
             function refreshDrag() {
                 const s = dragSlot;
                 if (!s)
@@ -143,9 +151,20 @@ PanelWindow {
                 const p = container.mapFromItem(null, fx, fy);
                 s.dragX = p.x - s.grabX;
                 s.dragY = p.y - s.grabY;
+
                 const target = indexAt(p.x, p.y);
-                if (target !== s.index)
-                    Home.moveIcon(s.index, target);
+                if (target !== s.index) {
+                    if (target !== mergeTarget) {
+                        if (mergeTarget !== null && mergeTarget !== s.index)
+                            Home.moveIcon(s.index, mergeTarget);
+                        mergeTarget = target;
+                        mergeTimer.restart();
+                    }
+                } else {
+                    mergeTarget = null;
+                    mergeTimer.stop();
+                }
+
                 const vx = pager.mapFromItem(null, fx, fy).x;
                 const atEdge = vx < 70 || vx > width - 70;
                 if (atEdge && !edgeTimer.running)
@@ -173,6 +192,22 @@ PanelWindow {
                         pager.goTo(pager.curPage - 1);
                     else if (vx > pager.width - 70)
                         pager.goTo(pager.curPage + 1);
+                }
+            }
+
+            // Dwell on one target slot long enough -> merge into a folder instead of reordering.
+            Timer {
+                id: mergeTimer
+                interval: 550
+                onTriggered: {
+                    const s = pager.dragSlot;
+                    if (!s || pager.mergeTarget === null || pager.mergeTarget === s.index)
+                        return;
+                    Home.mergeIntoFolder(s.index, pager.mergeTarget);
+                    pager.mergeTarget = null;
+                    pager.dragActive = false;
+                    pager.dragSlot = null;
+                    edgeTimer.stop();
                 }
             }
 
@@ -315,6 +350,11 @@ PanelWindow {
                                     return;
                                 dragging = false;
                                 pager.dragActive = false;
+                                // If released mid-hover (before the merge dwell fired), settle it as a plain reorder.
+                                if (pager.mergeTarget !== null && pager.mergeTarget !== index)
+                                    Home.moveIcon(index, pager.mergeTarget);
+                                pager.mergeTarget = null;
+                                mergeTimer.stop();
                                 pager.dragSlot = null;
                                 edgeTimer.stop();
                                 Home.save();
@@ -374,8 +414,12 @@ PanelWindow {
                                     }
                                 }
                                 onClicked: {
-                                    if (!Home.editing && slot.entry)
-                                        Home.launch(slot.entry);
+                                    if (!Home.editing && slot.entry) {
+                                        if (slot.entry.isFolder)
+                                            root.openFolder = slot.eid;
+                                        else
+                                            Home.launch(slot.entry);
+                                    }
                                 }
                                 onReleased: slot.finish()
                                 onCanceled: slot.finish()
@@ -422,18 +466,21 @@ PanelWindow {
             id: overlay
             anchors.fill: parent
             z: 20
-            visible: root.sheet !== "" || dim.opacity > 0.01
+            visible: root.sheet !== "" || root.openFolder !== "" || dim.opacity > 0.01
 
             Rectangle {
                 id: dim
                 anchors.fill: parent
                 color: Qt.rgba(0, 0, 0, 0.4)
-                opacity: root.sheet !== "" ? 1 : 0
+                opacity: (root.sheet !== "" || root.openFolder !== "") ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: root.sheet = ""
+                    onClicked: {
+                        root.sheet = "";
+                        root.openFolder = "";
+                    }
                 }
             }
 
@@ -800,6 +847,72 @@ PanelWindow {
                                 root.sheet = "";
                             }
                         }
+                    }
+                }
+            }
+
+            // Folder contents
+            Sheet {
+                visible: root.openFolder !== ""
+                anchors.centerIn: parent
+                title: (Home.folders[root.openFolder] ? Home.folders[root.openFolder].name : "")
+                onClosed: root.openFolder = ""
+
+                Column {
+                    width: parent.width
+                    spacing: 16
+
+                    TextInput {
+                        width: parent.width
+                        horizontalAlignment: TextInput.AlignHCenter
+                        text: Home.folders[root.openFolder] ? Home.folders[root.openFolder].name : ""
+                        color: Theme.text
+                        font.pixelSize: 18
+                        font.weight: Font.DemiBold
+                        onEditingFinished: Home.renameFolder(root.openFolder, text)
+                    }
+
+                    Flow {
+                        width: parent.width
+                        spacing: 14
+
+                        Repeater {
+                            model: Home.folders[root.openFolder] ? Home.folders[root.openFolder].items : []
+
+                            Column {
+                                id: fItem
+                                required property string modelData
+                                width: 96
+                                spacing: 6
+
+                                AppIcon {
+                                    id: fIcon
+                                    width: 96
+                                    height: 96
+                                    interactive: false
+                                    entry: DesktopEntries.byId(fItem.modelData)
+                                }
+                                MouseArea {
+                                    anchors.fill: fIcon
+                                    onClicked: {
+                                        const e = DesktopEntries.byId(fItem.modelData);
+                                        if (e) {
+                                            root.openFolder = "";
+                                            Home.launch(e);
+                                        }
+                                    }
+                                    onPressAndHold: Home.removeFromFolder(root.openFolder, fItem.modelData)
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: "Long-press an app to take it out of the folder."
+                        color: Theme.dim
+                        font.pixelSize: 13
+                        wrapMode: Text.Wrap
                     }
                 }
             }

@@ -16,6 +16,7 @@ Singleton {
     property alias icons: iconModel
     property var widgets: ["clock", "calendar", "media"]
     property var savedOrder: []
+    property var folders: ({}) // folderId -> { name, items: [eid,...] }
 
     // Widget row holds at most 4 units.
     readonly property int maxSpan: 4
@@ -68,11 +69,103 @@ Singleton {
         save();
     }
 
+    // ---- Folders --------------------------------------------------------------------------
+    function isFolder(id) {
+        return typeof id === "string" && id.indexOf("folder:") === 0;
+    }
+
+    function newFolderId() {
+        return "folder:" + Date.now() + "-" + Math.floor(Math.random() * 10000);
+    }
+
+    function folderedIds() {
+        const s = {};
+        for (const fid in folders)
+            for (const eid of folders[fid].items)
+                s[eid] = true;
+        return s;
+    }
+
+    function indexOfIcon(eid) {
+        for (let i = 0; i < iconModel.count; i++)
+            if (iconModel.get(i).eid === eid)
+                return i;
+        return -1;
+    }
+
+    // Drag `dragIndex`'s icon onto `targetIndex`'s icon: creates a folder, or adds to one.
+    function mergeIntoFolder(dragIndex, targetIndex) {
+        if (dragIndex === targetIndex || dragIndex < 0 || targetIndex < 0)
+            return;
+        const dragEid = iconModel.get(dragIndex).eid;
+        const targetEid = iconModel.get(targetIndex).eid;
+        if (dragEid === targetEid)
+            return;
+
+        if (isFolder(targetEid)) {
+            const f = folders[targetEid];
+            if (!f || f.items.indexOf(dragEid) >= 0)
+                return;
+            const nf = Object.assign({}, folders);
+            nf[targetEid] = { name: f.name, items: f.items.concat([dragEid]) };
+            folders = nf;
+            iconModel.remove(dragIndex);
+        } else {
+            const fid = newFolderId();
+            const nf = Object.assign({}, folders);
+            nf[fid] = { name: "Folder", items: [targetEid, dragEid] };
+            folders = nf;
+            iconModel.set(targetIndex, { eid: fid });
+            iconModel.remove(dragIndex);
+        }
+        save();
+    }
+
+    function removeFromFolder(fid, eid) {
+        const f = folders[fid];
+        if (!f)
+            return;
+        const items = f.items.filter(e => e !== eid);
+        const nf = Object.assign({}, folders);
+
+        if (items.length <= 1) {
+            delete nf[fid];
+            folders = nf;
+            const idx = indexOfIcon(fid);
+            if (idx >= 0) {
+                if (items.length === 1)
+                    iconModel.set(idx, { eid: items[0] });
+                else
+                    iconModel.remove(idx);
+            }
+        } else {
+            nf[fid] = { name: f.name, items };
+            folders = nf;
+        }
+        iconModel.append({ eid });
+        save();
+    }
+
+    function renameFolder(fid, name) {
+        const f = folders[fid];
+        if (!f || !name)
+            return;
+        const nf = Object.assign({}, folders);
+        nf[fid] = { name, items: f.items };
+        folders = nf;
+        save();
+    }
+
     function entry(id) {
+        if (isFolder(id)) {
+            const f = folders[id];
+            return f ? { isFolder: true, id, name: f.name, items: f.items } : null;
+        }
         return DesktopEntries.byId(id) || DesktopEntries.heuristicLookup(id);
     }
 
-    // Visible apps: saved order first, then the rest alphabetically.
+    // Visible apps: saved order first (folders kept as-is), then the rest alphabetically.
+    // Apps already inside a folder are excluded from the top-level list.
     function sync() {
         if (editing)
             return;
@@ -85,16 +178,24 @@ Singleton {
             names.push(e);
         }
         names.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+        const inFolder = folderedIds();
         const ids = [];
         const seen = {};
         for (const id of savedOrder) {
-            if (byId[id] && !seen[id]) {
+            if (seen[id] || inFolder[id])
+                continue;
+            if (isFolder(id)) {
+                if (folders[id]) {
+                    ids.push(id);
+                    seen[id] = true;
+                }
+            } else if (byId[id]) {
                 ids.push(id);
                 seen[id] = true;
             }
         }
         for (const e of names) {
-            if (!seen[e.id]) {
+            if (!seen[e.id] && !inFolder[e.id]) {
                 ids.push(e.id);
                 seen[e.id] = true;
             }
@@ -113,6 +214,7 @@ Singleton {
         editing = false;
         savedOrder = [];
         widgets = ["clock", "calendar", "media"];
+        folders = ({});
         showLabels = true;
         density = 1;
         iconModel.clear();
@@ -156,7 +258,7 @@ Singleton {
         for (let i = 0; i < iconModel.count; i++)
             ids.push(iconModel.get(i).eid);
         savedOrder = ids;
-        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density }));
+        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density, folders: folders }));
     }
 
     function apply(raw) {
@@ -170,6 +272,8 @@ Singleton {
                 showLabels = p.labels;
             if (typeof p.density === "number" && p.density >= 0 && p.density <= 2)
                 density = p.density;
+            if (p.folders && typeof p.folders === "object")
+                folders = p.folders;
         } catch (e) {}
         sync();
     }
