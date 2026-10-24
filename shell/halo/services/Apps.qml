@@ -87,7 +87,7 @@ Singleton {
             }
             next.activate();
         } else if (item.entry) {
-            item.entry.execute();
+            Home.launch(item.entry);
         }
     }
 

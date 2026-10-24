@@ -64,6 +64,7 @@ in
 
   # Boot entry "hyprland" (systemd-boot menu): same system, Hyprland session.
   # The default entry stays mango. See HYPRLAND_PLAN.md.
+  modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode
   specialisation.hyprland.configuration.modules.desktop.session = lib.mkForce "hyprland";
   specialisation.hyprland.configuration.modules.desktop.shell = lib.mkForce "halo";
 

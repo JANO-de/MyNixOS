@@ -3,7 +3,8 @@ import Quickshell
 import Quickshell.Wayland
 import qs.services
 
-// Full-screen home: clock, search, app grid. Opened by UI.homeOpen (IPC, dock button, edge swipe).
+// App launcher overlay (SUPER+A, dock button): clock, search and the full app grid.
+// The always-visible home screen with icons and widgets is components/Desktop.qml.
 PanelWindow {
     id: root
 
@@ -46,8 +47,8 @@ PanelWindow {
     property var apps: filtered()
 
     function launch(entry) {
-        entry.execute();
         UI.closeHome();
+        Home.launch(entry);
     }
 
     SystemClock {
@@ -58,18 +59,16 @@ PanelWindow {
     Rectangle {
         id: content
         anchors.fill: parent
-        color: Qt.rgba(0.04, 0.04, 0.07, 0.55)
+        color: Qt.rgba(0.04, 0.04, 0.07, 0.6)
         opacity: root.shown ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
-        // Tap on empty space closes the home screen.
         MouseArea {
             anchors.fill: parent
             onClicked: UI.closeHome()
         }
 
         Item {
-            id: page
             anchors.fill: parent
             scale: root.shown ? 1 : 1.05
             Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
@@ -138,58 +137,18 @@ PanelWindow {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: root.dockSpace
                 anchors.horizontalCenter: parent.horizontalCenter
-                cellWidth: 132
-                cellHeight: 140
+                cellWidth: Home.cellW
+                cellHeight: Home.cellH
                 width: Math.max(1, Math.floor((parent.width - 80) / cellWidth)) * cellWidth
                 clip: true
                 model: root.apps
 
-                delegate: Item {
-                    id: cell
+                delegate: AppIcon {
                     required property var modelData
-
                     width: grid.cellWidth
                     height: grid.cellHeight
-                    scale: tap.pressed ? 0.92 : 1
-                    Behavior on scale { NumberAnimation { duration: 90 } }
-
-                    Column {
-                        anchors.centerIn: parent
-                        spacing: 8
-
-                        Rectangle {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            width: 80
-                            height: 80
-                            radius: 20
-                            color: Qt.rgba(1, 1, 1, 0.10)
-
-                            Image {
-                                anchors.centerIn: parent
-                                width: 56
-                                height: 56
-                                source: Apps.iconSource(cell.modelData.icon)
-                                sourceSize: Qt.size(112, 112)
-                                fillMode: Image.PreserveAspectFit
-                                smooth: true
-                            }
-                        }
-
-                        Text {
-                            width: grid.cellWidth - 16
-                            horizontalAlignment: Text.AlignHCenter
-                            elide: Text.ElideRight
-                            text: cell.modelData.name
-                            color: Theme.text
-                            font.pixelSize: 13
-                        }
-                    }
-
-                    MouseArea {
-                        id: tap
-                        anchors.fill: parent
-                        onClicked: root.launch(cell.modelData)
-                    }
+                    entry: modelData
+                    onActivated: root.launch(modelData)
                 }
             }
         }

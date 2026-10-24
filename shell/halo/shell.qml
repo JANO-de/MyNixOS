@@ -11,6 +11,7 @@ ShellRoot {
             id: scope
             required property ShellScreen modelData
 
+            Desktop { screen: scope.modelData }
             Island { screen: scope.modelData }
             HomeScreen { screen: scope.modelData }
             Dock { screen: scope.modelData }

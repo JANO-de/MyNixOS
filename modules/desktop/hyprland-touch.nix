@@ -129,10 +129,10 @@ in
           action = "workspace",
         }
 
-        -- Swipe up from the bottom edge (1 finger): home screen
+        -- Swipe up from the bottom edge (1 finger): home screen (the Halo desktop)
         hl.plugin.hyprgrass.bind {
           pattern = { kind = "edge", origin = "down", direction = "up" },
-          action = hl.dsp.exec_cmd("halo-ctl call home toggle"),
+          action = hl.dsp.exec_cmd("halo-ctl call desktop show"),
         }
 
         -- Swipe up from the bottom edge (2 fingers): on-screen keyboard
@@ -144,7 +144,7 @@ in
         -- Swipe down from the top edge: shade + control center
         hl.plugin.hyprgrass.bind {
           pattern = { kind = "edge", origin = "up", direction = "down" },
-          action = hl.dsp.exec_cmd("halo-ctl call shade toggle"),
+          action = hl.dsp.exec_cmd("halo-ctl call shade open"),
         }
 
         -- 3-finger long-press: drag window
@@ -156,5 +156,6 @@ in
       end
     '';
     environment.etc."hypr/hyprland-mode.lua".source = ./hyprland-mode.lua;
+    environment.etc."hypr/default-mode".text = config.modules.desktop.hyprlandMode + "\n";
   };
 }

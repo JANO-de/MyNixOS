@@ -4,7 +4,17 @@
 -- Manual use:  hyprctl eval 'set_mode("tablet")'   |   hyprctl eval 'set_mode("desktop")'
 -- State file (read by the shell): $XDG_RUNTIME_DIR/hypr-mode  ("tablet" or "desktop")
 
-local default_mode = "desktop" -- mode at first login (no state file yet)
+-- Mode at first login (no state file yet): /etc/hypr/default-mode, set per host with
+-- modules.desktop.hyprlandMode (surface = "tablet"). Falls back to "desktop".
+local function read_default()
+  local ok, f = pcall(io.open, "/etc/hypr/default-mode", "r")
+  if not ok or not f then return "desktop" end
+  local s = f:read("*l")
+  f:close()
+  if s == "tablet" or s == "desktop" then return s end
+  return "desktop"
+end
+local default_mode = read_default()
 
 local rt = (os and os.getenv and os.getenv("XDG_RUNTIME_DIR")) or "/run/user/1000"
 local state_path = rt .. "/hypr-mode"
@@ -52,6 +62,22 @@ function set_mode(m)
   pcall(hl.notification.create, { text = "Mode: " .. m, timeout = 1500, icon = "ok" })
 end
 
+-- Halo desktop: "home" is a named workspace that stays empty, so the Halo home screen
+-- (wallpaper, widgets, icons) shows. In tablet mode every launched app gets a fresh workspace
+-- (new_ws is called by the shell before it starts an app). Unverified: hl.dispatch; the
+-- fallback uses hyprctl dispatch.
+function go_home()
+  local ok = pcall(function() hl.dispatch(hl.dsp.focus({ workspace = "name:home" })) end)
+  if not ok then hl.exec_cmd("hyprctl dispatch workspace name:home") end
+end
+
+function new_ws()
+  local ok = pcall(function() hl.dispatch(hl.dsp.focus({ workspace = "emptynext" })) end)
+  if not ok then hl.exec_cmd("hyprctl dispatch workspace emptynext") end
+end
+
+hl.bind("SUPER + D", hl.dsp.exec_cmd("halo-ctl call desktop show"))
+
 -- Manual toggle (keyboard now, shell button later).
 hl.bind("SUPER + SHIFT + T", function()
   set_mode(mode == "tablet" and "desktop" or "tablet")
@@ -73,6 +99,7 @@ end)
 -- Apply side effects (service, state file) once at session start.
 hl.on("hyprland.start", function()
   set_mode(mode)
+  if mode == "tablet" then go_home() end -- boot to the home screen
 end)
 
 -- Halo: blur behind the glass dock (namespace set in components/Dock.qml)

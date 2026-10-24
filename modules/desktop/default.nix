@@ -41,6 +41,11 @@ in
       default = "dynisland";
       description = "Quickshell shell (island, dock, launcher, lock) autostarted in the session.";
     };
+    hyprlandMode = lib.mkOption {
+      type = lib.types.enum [ "tablet" "desktop" ];
+      default = "desktop";
+      description = "Hyprland mode at first login of a boot (tablet = touch UI, desktop = pointer UI). Written to /etc/hypr/default-mode.";
+    };
     greeterOsk.enable = lib.mkEnableOption ''
       an on-screen keyboard in the SDDM greeter (Qt virtual keyboard), so a
       touch-only device can be logged into

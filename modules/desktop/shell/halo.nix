@@ -30,6 +30,9 @@ in
       pkgs.libnotify # notify-send
     ];
     services.udev.packages = [ pkgs.brightnessctl ]; # backlight writable without root
+    # Bundled wallpapers (assets/wallpapers) -> /etc/halo/wallpapers; its own store path, so shell edits do not copy them again.
+    environment.etc."halo/wallpapers".source = ../../../assets/wallpapers;
+    services.upower.enable = lib.mkDefault true; # battery widget
 
     systemd.user.services.halo = {
       description = "Halo shell (Quickshell)";

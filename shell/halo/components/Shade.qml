@@ -54,7 +54,7 @@ PanelWindow {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: UI.closeShade()
+            onClicked: UI.tapCloseShade()
         }
     }
 
