@@ -50,20 +50,32 @@ let
   kbdH = "420";
   kbdL = "300";
 
-  # kbd-toggle [toggle|show|hide]: starts wvkbd hidden on first use, then shows/hides it with
-  # SIGRTMIN and records the state in $XDG_RUNTIME_DIR/kbd-visible (read by the Halo shell).
+  osk = "sm.puri.OSK0";
+  oskPath = "/sm/puri/OSK0";
+
+  # kbd-toggle [toggle|show|hide]: with squeekboard running (tablet mode) it calls SetVisible over
+  # D-Bus; otherwise it falls back to wvkbd (SIGRTMIN). State goes to $XDG_RUNTIME_DIR/kbd-visible.
   kbdToggle = pkgs.writeShellApplication {
     name = "kbd-toggle";
-    runtimeInputs = [ pkgs.wvkbd pkgs.procps pkgs.coreutils ];
+    runtimeInputs = [ pkgs.wvkbd pkgs.procps pkgs.coreutils pkgs.systemd pkgs.gawk ];
     text = ''
       state="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/kbd-visible"
+      want="''${1:-toggle}"
+      if systemctl --user is-active --quiet halo-osk; then
+        cur=$(busctl --user get-property ${osk} ${oskPath} ${osk} Visible 2>/dev/null | awk '{print $2}' || true)
+        if [ "$want" = toggle ]; then
+          if [ "$cur" = true ]; then want=hide; else want=show; fi
+        fi
+        if [ "$want" = show ]; then v=true; else v=false; fi
+        busctl --user call ${osk} ${oskPath} ${osk} SetVisible b "$v"
+        exit 0
+      fi
       if ! pgrep -x wvkbd-mobintl > /dev/null; then
         wvkbd-mobintl --hidden -H ${kbdH} -L ${kbdL} &
         sleep 0.3
         echo hidden > "$state"
       fi
       cur=$(cat "$state" 2>/dev/null || echo hidden)
-      want="''${1:-toggle}"
       if [ "$want" = toggle ]; then
         if [ "$cur" = visible ]; then want=hide; else want=show; fi
       fi
@@ -76,10 +88,34 @@ let
       fi
     '';
   };
+
+  # kbd-watch: mirrors squeekboard's Visible property into kbd-visible, and its real height
+  # (from the layer surface) into kbd-height, so the Halo shell can place the handle.
+  kbdWatch = pkgs.writeShellApplication {
+    name = "kbd-watch";
+    runtimeInputs = [ pkgs.systemd pkgs.gawk pkgs.coreutils pkgs.jq hyprPkg ];
+    text = ''
+      rt="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+      last=""
+      while sleep 0.4; do
+        v=$(busctl --user get-property ${osk} ${oskPath} ${osk} Visible 2>/dev/null | awk '{print $2}' || true)
+        [ -n "$v" ] || continue
+        if [ "$v" = true ]; then st=visible; else st=hidden; fi
+        [ "$st" != "$last" ] || continue
+        last="$st"
+        if [ "$st" = visible ]; then
+          sleep 0.5
+          h=$(hyprctl layers -j 2>/dev/null | jq '[.. | objects | select(.namespace? == "osk") | .h] | max // empty' || true)
+          [ -z "$h" ] || echo "$h" > "$rt/kbd-height"
+        fi
+        echo "$st" > "$rt/kbd-visible"
+      done
+    '';
+  };
 in
 {
   config = lib.mkIf (config.modules.desktop.session == "hyprland") {
-    environment.systemPackages = [ surfaceRotate kbdToggle pkgs.iio-sensor-proxy pkgs.evtest ];
+    environment.systemPackages = [ surfaceRotate kbdToggle kbdWatch pkgs.squeekboard pkgs.iio-sensor-proxy pkgs.evtest ];
 
     # Auto-rotation daemon. Test manually first: systemctl --user start surface-rotate
     systemd.user.services.surface-rotate = {
@@ -91,6 +127,27 @@ in
         ExecStart = lib.getExe surfaceRotate;
         Restart = "on-failure";
         RestartSec = 3;
+      };
+    };
+
+    # Auto-showing on-screen keyboard (shows when a text field is focused, text-input-v3).
+    # Started/stopped by set_mode() in hyprland-mode.lua: only in tablet mode.
+    systemd.user.services.halo-osk = {
+      description = "Squeekboard on-screen keyboard";
+      serviceConfig = {
+        ExecStart = lib.getExe pkgs.squeekboard;
+        Restart = "on-failure";
+        RestartSec = 2;
+      };
+    };
+    systemd.user.services.halo-osk-watch = {
+      description = "Mirror squeekboard visibility/height for the Halo shell";
+      partOf = [ "halo-osk.service" ];
+      after = [ "halo-osk.service" ];
+      serviceConfig = {
+        ExecStart = lib.getExe kbdWatch;
+        Restart = "on-failure";
+        RestartSec = 2;
       };
     };
 

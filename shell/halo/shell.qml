@@ -23,6 +23,7 @@ ShellRoot {
             BottomEdge { screen: scope.modelData }
             Banner { screen: scope.modelData }
             KbdHandle { screen: scope.modelData }
+            KbdButton { screen: scope.modelData }
         }
     }
 }

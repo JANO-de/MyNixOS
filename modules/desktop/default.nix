@@ -80,6 +80,7 @@ in
       programs.dconf.enable = true;
       programs.dconf.profiles.user.databases = [
         { settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark"; }
+        { settings."org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true; }
       ];
       environment.sessionVariables.XDG_DATA_DIRS = [
         "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"

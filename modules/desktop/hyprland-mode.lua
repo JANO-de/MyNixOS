@@ -54,7 +54,9 @@ function set_mode(m)
   hl.exec_cmd("echo " .. m .. " > " .. state_path)
   if m == "tablet" then
     hl.exec_cmd("systemctl --user start surface-rotate")
+    hl.exec_cmd("systemctl --user start halo-osk halo-osk-watch")
   else
+    hl.exec_cmd("systemctl --user stop halo-osk-watch halo-osk")
     hl.exec_cmd("systemctl --user stop surface-rotate")
     hl.exec_cmd("surface-rotate 0")
     hl.exec_cmd("pkill -x wvkbd-mobintl; echo hidden > " .. rt .. "/kbd-visible")
