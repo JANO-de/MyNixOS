@@ -4,6 +4,8 @@ import Quickshell
 import qs.components
 
 ShellRoot {
+    LockScreen {}
+
     Variants {
         model: Quickshell.screens
 

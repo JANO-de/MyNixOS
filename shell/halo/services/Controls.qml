@@ -8,8 +8,8 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    readonly property var all: ["wifi", "bluetooth", "airplane", "dnd", "rotation", "mode", "keyboard", "screenshot"]
-    readonly property var defaults: ["wifi", "bluetooth", "airplane", "dnd", "rotation", "mode", "keyboard", "screenshot"]
+    readonly property var all: ["wifi", "bluetooth", "airplane", "dnd", "rotation", "mode", "keyboard", "screenshot", "lock"]
+    readonly property var defaults: ["wifi", "bluetooth", "airplane", "dnd", "rotation", "mode", "keyboard", "screenshot", "lock"]
 
     property alias model: enabledModel
     property int rev: 0
@@ -62,7 +62,7 @@ Singleton {
     }
 
     function closesShade(tid) {
-        return tid === "mode" || tid === "keyboard" || tid === "screenshot";
+        return tid === "mode" || tid === "keyboard" || tid === "screenshot" || tid === "lock";
     }
 
     function info(tid) {
@@ -83,6 +83,8 @@ Singleton {
             return { title: "Keyboard", sub: Kbd.visible ? "Shown" : "Hidden", active: Kbd.visible };
         case "screenshot":
             return { title: "Screenshot", sub: "Full screen", active: false };
+        case "lock":
+            return { title: "Lock", sub: "Lock screen", active: false };
         }
         return { title: tid, sub: "", active: false };
     }
@@ -109,6 +111,9 @@ Singleton {
             break;
         case "keyboard":
             Kbd.toggle();
+            break;
+        case "lock":
+            Lock.lock();
             break;
         case "screenshot":
             Quickshell.execDetached(["sh", "-c", "sleep 0.6; mkdir -p ~/Pictures/Screenshots; f=~/Pictures/Screenshots/$(date +%F_%H-%M-%S).png; grim \"$f\" && notify-send -t 2000 Screenshot \"Saved to Pictures/Screenshots\""]);

@@ -26,6 +26,14 @@
 - **Risks to check first:** `go_home()`/`new_ws()` via `hyprctl eval`; desktop visible on empty workspace; `DesktopEntries.byId`; `horizontalVelocity` sign; reorder drag feel; Canvas "contours" wallpaper; wallpaper thumbnails have square corners (no mask effect used).
 - Not done: folders, widget resize/stacks, app library, dock edit, Spotlight pull-down on the desktop.
 
+## Lock screen (written, untested)
+- `LockScreen.qml` (`WlSessionLock`, one `LockContent.qml` per screen), `services/Lock.qml` (state, auth, IPC `halo-ctl call lock lock`), `PinPad.qml`, `LockKeyboard.qml`. iPadOS look: wallpaper, big clock, notification titles only, media card, finger-tracked swipe up -> passcode pad; "Use password" -> password field with an in-lock keyboard (wvkbd cannot draw above a session lock).
+- **PIN:** run `halo-set-pin` (4-8 digits) once; salted sha256 in `~/.config/halo/lock.json` (convenience lock; real protection = disk encryption + password). **Password:** PAM service `halo` (`security.pam.services.halo`). 5 wrong tries -> 30 s cooldown, doubling to 10 min.
+- **Triggers:** shade tile *Lock*, `SUPER+L`, IPC, 5 min idle (`IdleMonitor`), before suspend (`dbus-monitor` on logind `PrepareForSleep`). `$XDG_RUNTIME_DIR/halo-locked` keeps the session locked across a shell restart; `misc:allow_session_lock_restore` lets a new Halo take over a dead lock.
+- **Danger while testing:** if Halo dies while locked you see the red "lockscreen crashed" screen. Recovery over SSH: restart the shell (it re-locks from the flag file, then unlock normally) or `ssh -t jano@IP 'rm -f /run/user/1000/halo-locked'` and restart `halo`.
+- **Check first:** `PamContext` API names (`onPamMessage`, `respond`, `PamResult`), `IdleMonitor`/`WlSessionLock` in Quickshell 0.3.0, swipe-up zone, keyboard typing, relock after a shell restart. Needs a rebuild for `halo-set-pin`, PAM and `SUPER+L`; `halo-dev.sh` only loads the QML (the tile and IPC work, password/PAM needs the rebuild).
+- Not done: fingerprint/IR face unlock, lock-screen shortcuts (camera, flashlight), per-app preview privacy, lock on Type Cover detach.
+
 ## Gestures, overview, auto-hide (written, untested)
 - **Finger-tracked edge pulls:** `TopEdge.qml` / `BottomEdge.qml` are invisible 22 px overlay strips that take the touch and drive `UI.shadeDrag` / `UI.overviewDrag` 1:1 (Shade and Overview animate from that `progress`, release snaps by distance/velocity). The hyprgrass **edge binds were removed** (bottom 1-finger, bottom 2-finger keyboard, top) so they cannot fight the strips; hyprgrass keeps the 3-finger workspace swipe and 3-finger long-press drag. Keyboard: `SUPER+K` / Keyboard tile. The bottom strip hides while the keyboard is up or the overview is open.
 - **Bottom swipe up** (`BottomEdge.qml`, 32 px strip). Researched, not guessed:
@@ -53,9 +61,9 @@
 ## Open
 1. **Test the update above** (`scripts/surface-deploy.sh`, or `scripts/halo-dev.sh` for QML only). Verify `fingers = 2` bottom-edge bind.
 2. **Home screen like iPadOS:** pages of icons (drag to rearrange, folders, jiggle/delete), page dots, widgets (clock, weather, calendar, notes, battery, media, search) incl. app widgets, widget gallery, Stage-Manager-like windowing in desktop mode.
-3. **App switcher** (ToplevelManager cards, swipe up to close), **lock screen with PIN pad** (WlSessionLock), matugen theming (`Theme.qml` is static).
+3. **App switcher** (ToplevelManager cards, swipe up to close), matugen theming (`Theme.qml` is static).
 4. **On-screen keyboard:** wvkbd never auto-shows on text-field tap. Candidates: squeekboard (needs text-input v2/v3) or a Halo-native keyboard.
-5. **Type Cover trigger for `set_mode`:** no `SW_TABLET_MODE`; diff `libinput list-devices` and `/sys/bus/surface_aggregator/devices` attached vs detached. External-monitor trigger untested; `layout = "monocle"` effect unverified.
+5. **Auto mode from attached keyboards (Type Cover, Bluetooth, USB):** tablet when no keyboard is present, desktop when any real keyboard is. No `SW_TABLET_MODE` device exists on the SP5, so detect keyboards instead: listen to input hot-plug (`udevadm monitor -u -s input`, or Hyprland device events), debounce ~1.5 s, count keyboards from `hyprctl devices -j` ignoring virtual ones (`wvkbd`, power/lid/video buttons, `iptsd` touch), then call `set_mode`. A manual toggle (pill, `SUPER+SHIFT+T`) should win until the keyboard set changes again. The Type Cover needs a diff of `libinput list-devices` and `/sys/bus/surface_aggregator/devices` attached vs detached to learn its device name. External-monitor trigger untested; `layout = "monocle"` in tablet mode unverified.
 6. **Small:** rotate the old `surface-bootstrap` password (in git history); DHCP reservation for the Surface (IP moves `.111`/`.115`); `sudo bootctl status | rg -i oneshot` on the desktop.
 7. **Desktop/laptop (unchanged):** dock running-app dots, screenshot at login (cause unknown), mouse-wheel workspace switching, mango touch, `Dock.qml` `length` error.
 

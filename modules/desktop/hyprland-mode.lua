@@ -117,3 +117,7 @@ hl.bind("SUPER + N", hl.dsp.exec_cmd("halo-ctl call shade toggle"))
 
 -- Keyboard fallback (the 2-finger edge swipe is unverified).
 hl.bind("SUPER + K", hl.dsp.exec_cmd("kbd-toggle"))
+
+-- Lock screen: SUPER+L. If the lock client restarts, a new one may take over the lock.
+hl.bind("SUPER + L", hl.dsp.exec_cmd("halo-ctl call lock lock"))
+pcall(hl.config, { misc = { allow_session_lock_restore = true } })
