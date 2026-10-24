@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.services
 
 // Rounded app tile with its label. `interactive: false` lets a parent handle touches (edit mode).
@@ -25,7 +26,7 @@ Item {
             color: Qt.rgba(1, 1, 1, 0.10)
 
             Grid {
-                visible: root.entry && root.entry.isFolder
+                visible: !!(root.entry && root.entry.isFolder)
                 anchors.centerIn: parent
                 columns: 2
                 rows: 2
