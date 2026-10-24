@@ -111,10 +111,12 @@ PanelWindow {
             property real fx: 0
             property real fy: 0
 
-            // Drag-to-merge: the slot index currently dwelt on. Crossing into a new index arms
-            // mergeTimer; if the finger lingers there it merges into a folder, otherwise it
-            // settles as a plain reorder (see refreshDrag / mergeTimer / Slot.finish()).
+            // Drag-to-merge: the slot index currently dwelt on, plus its eid (looked up fresh at
+            // merge/release time so a shift during the 550ms dwell can't merge the wrong icon).
+            // Crossing into a new index arms mergeTimer; if the finger lingers there it merges
+            // into a folder, otherwise it settles as a plain reorder (refreshDrag / mergeTimer / Slot.finish()).
             property var mergeTarget: null
+            property string mergeTargetEid: ""
 
             function slotOf(i) {
                 let p = 0;
@@ -158,10 +160,12 @@ PanelWindow {
                         if (mergeTarget !== null && mergeTarget !== s.index)
                             Home.moveIcon(s.index, mergeTarget);
                         mergeTarget = target;
+                        mergeTargetEid = Home.icons.get(target).eid;
                         mergeTimer.restart();
                     }
                 } else {
                     mergeTarget = null;
+                    mergeTargetEid = "";
                     mergeTimer.stop();
                 }
 
@@ -201,10 +205,15 @@ PanelWindow {
                 interval: 550
                 onTriggered: {
                     const s = pager.dragSlot;
-                    if (!s || pager.mergeTarget === null || pager.mergeTarget === s.index)
+                    if (!s || !pager.mergeTargetEid)
                         return;
-                    Home.mergeIntoFolder(s.index, pager.mergeTarget);
+                    const dragIdx = Home.indexOfIcon(s.eid);
+                    const targetIdx = Home.indexOfIcon(pager.mergeTargetEid);
+                    if (dragIdx < 0 || targetIdx < 0 || dragIdx === targetIdx)
+                        return;
+                    Home.mergeIntoFolder(dragIdx, targetIdx);
                     pager.mergeTarget = null;
+                    pager.mergeTargetEid = "";
                     pager.dragActive = false;
                     pager.dragSlot = null;
                     edgeTimer.stop();
@@ -351,9 +360,13 @@ PanelWindow {
                                 dragging = false;
                                 pager.dragActive = false;
                                 // If released mid-hover (before the merge dwell fired), settle it as a plain reorder.
-                                if (pager.mergeTarget !== null && pager.mergeTarget !== index)
-                                    Home.moveIcon(index, pager.mergeTarget);
+                                if (pager.mergeTargetEid) {
+                                    const t = Home.indexOfIcon(pager.mergeTargetEid);
+                                    if (t >= 0 && t !== index)
+                                        Home.moveIcon(index, t);
+                                }
                                 pager.mergeTarget = null;
+                                pager.mergeTargetEid = "";
                                 mergeTimer.stop();
                                 pager.dragSlot = null;
                                 edgeTimer.stop();
