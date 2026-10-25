@@ -144,6 +144,7 @@ PanelWindow {
             property var mergeTarget: null
             property string mergeTargetEid: ""
             property bool overTrash: false
+            property bool overDock: false // an icon is held over the dock: release = pin it there
 
             function slotOf(i) {
                 let p = 0;
@@ -172,6 +173,18 @@ PanelWindow {
                 return Math.max(0, Math.min(n - 1, p === 0 ? k : cap0 + (p - 1) * capN + k));
             }
 
+            function dockHit(x, y) {
+                const r = UI.dockRect;
+                return r.width > 0 && x >= r.x - 48 && x <= r.x + r.width + 48 && y >= r.y - 56;
+            }
+            // Insertion position among the dock's pinned items for a finger at screen x.
+            function dockIndexAt(px) {
+                const n = Apps.items.filter(i => i.pinIndex >= 0).length;
+                const icon = UI.dockStep - 14;
+                const i = Math.ceil((px - UI.dockRowLeft - UI.dockLead - icon / 2) / Math.max(1, UI.dockStep));
+                return Math.max(0, Math.min(n, i));
+            }
+
             // Follow the finger, dwell-reorder/merge live, auto-flip pages at the screen edges.
             function refreshDrag() {
                 const s = dragSlot;
@@ -183,6 +196,20 @@ PanelWindow {
 
                 overTrash = trashZone.contains(trashZone.mapFromItem(null, fx, fy));
                 if (overTrash) {
+                    overDock = false;
+                    UI.dockDropHot = false;
+                    mergeTarget = null;
+                    mergeTargetEid = "";
+                    mergeTimer.stop();
+                    edgeTimer.stop();
+                    return;
+                }
+
+                // Over the dock: folders cannot be pinned, plain apps can.
+                overDock = !(s.entry && s.entry.isFolder) && dockHit(fx, fy);
+                UI.dockDropHot = overDock;
+                if (overDock) {
+                    UI.dockDropIndex = dockIndexAt(fx);
                     mergeTarget = null;
                     mergeTargetEid = "";
                     mergeTimer.stop();
@@ -260,8 +287,8 @@ PanelWindow {
                 id: snapAnim
                 target: flick
                 property: "contentX"
-                duration: 360
-                easing.type: Easing.OutQuint
+                duration: 160
+                easing.type: Easing.OutCubic
             }
 
             Flickable {
@@ -276,16 +303,24 @@ PanelWindow {
 
                 onMovementStarted: snapAnim.stop()
                 onContentXChanged: if (pager.dragActive) pager.refreshDrag()
+                property real dragStartX: 0
+                onDragStarted: dragStartX = contentX
                 onDragEnded: {
+                    // Direction from flick speed, else from how far the finger dragged (>12% of a page).
                     const v = horizontalVelocity;
-                    const pos = contentX / pager.width;
-                    let t = Math.round(pos);
-                    if (v > 450)
-                        t = Math.ceil(pos - 0.05);
-                    else if (v < -450)
-                        t = Math.floor(pos + 0.05);
+                    const d = contentX - dragStartX;
+                    let dir = 0;
+                    if (Math.abs(v) > 250)
+                        dir = v > 0 ? 1 : -1;
+                    else if (Math.abs(d) > pager.width * 0.12)
+                        dir = d > 0 ? 1 : -1;
                     cancelFlick();
-                    pager.goTo(t);
+                    pager.goTo(Math.round(dragStartX / pager.width) + dir);
+                }
+                // Never rest between two pages.
+                onMovementEnded: {
+                    if (!snapAnim.running && !pager.dragActive)
+                        pager.goTo(Math.round(contentX / pager.width));
                 }
 
                 Item {
@@ -493,7 +528,11 @@ PanelWindow {
                                     return;
                                 dragging = false;
                                 pager.dragActive = false;
-                                if (pager.overTrash) {
+                                if (pager.overDock) {
+                                    // Pin to the dock; the icon stays on the home screen too.
+                                    if (entry && !entry.isFolder)
+                                        Apps.pinAtVisible(entry, UI.dockDropIndex);
+                                } else if (pager.overTrash) {
                                     Home.hideIconAt(index);
                                 } else if (pager.mergeTargetEid) {
                                     // If released mid-hover (before the merge dwell fired), settle it as a plain reorder.
@@ -502,6 +541,8 @@ PanelWindow {
                                         Home.moveIcon(index, t);
                                 }
                                 pager.overTrash = false;
+                                pager.overDock = false;
+                                UI.dockDropHot = false;
                                 pager.mergeTarget = null;
                                 pager.mergeTargetEid = "";
                                 mergeTimer.stop();
@@ -828,6 +869,7 @@ PanelWindow {
                     model: [
                         { glyph: "▣", label: "Wallpapers", target: "wallpapers" },
                         { glyph: "⊞", label: "Widgets", target: "widgets" },
+                        { glyph: "⚙", label: "Halo Settings", target: "halo-settings" },
                         { glyph: "⌂", label: "Launcher settings", target: "settings" }
                     ]
 
@@ -856,7 +898,14 @@ PanelWindow {
                         MouseArea {
                             id: rowTap
                             anchors.fill: parent
-                            onClicked: root.sheet = parent.modelData.target
+                            onClicked: {
+                                if (parent.modelData.target === "halo-settings") {
+                                    root.sheet = "";
+                                    UI.openSettings();
+                                } else {
+                                    root.sheet = parent.modelData.target;
+                                }
+                            }
                         }
                     }
                 }

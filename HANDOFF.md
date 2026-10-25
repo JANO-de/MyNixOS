@@ -1,142 +1,73 @@
-# Handoff: MyNixOS (`~/Proyectos/MyNixOS`)
+# Halo handoff v2
 
-## State
-- Hosts: `desktop`, `laptop` (mango + dynisland) and `surface`.
-- **Surface:** boots **Hyprland (UWSM) + Halo by default** (`session = "hyprland"`, `shell = "halo"`, `autoMode = true` in `hosts/surface/default.nix`). No specialisation: every `nixos-rebuild boot` makes the newest generation the default entry. Old mango/specialisation generations stay as fallback until `scripts/surface-clean.sh`.
-- **Direction:** a new tablet product. iPadOS look and polish, Android mechanics, Android-style Settings, DeX-like desktop mode. Niri is the fallback.
-- **Verified (2026-10-24):** Surface on generation 134, Hyprland + Halo default, `surface-clean.sh` done (kept 2 generations). `iptsd` recovery works after reboot (`RestartSec=3s`, `StartLimitBurst=4/60s`, `OnFailure=iptsd-recover.service`, defined in `hosts/surface/default.nix`; `hosts/surface/hardware.nix` is NOT imported, ignore its iptsd block). Auto mode with a Keychron K4: 1 keyboard -> desktop, unplugged -> tablet. Lock screen relocks after a Halo restart.
-- **Verified by the user:** Hyprland, touch gestures, rotation, mode switch, home screen, dock, edge swipes, `SUPER+A`, first shade (tiles, sliders).
-- **Verified this session:** the new Halo QML (shade, control center, banner, keyboard handle) loads with no errors via `scripts/halo-dev.sh`, and the shade opens through IPC.
-- **Not yet rebuilt into the system:** `kbd-toggle` (state file, `show|hide`), `halo.nix` runtime tools, the top-edge `shade open` bind and the Qt theme fix. The Surface still runs the older system config, so the keyboard handle (needs `kbd-visible`) and the permanent swipe do not work until `scripts/surface-deploy.sh` + reboot into the Hyprland entry.
+Halo = iPadOS look + Android mechanics shell for Hyprland, written in Quickshell QML. Runs on the Surface.
+Repo layout: `shell/halo/` (this shell) · `modules/desktop/shell/halo.nix` (service, `halo-ctl`, `halo-set-pin`, `halo-autokbd`).
+Test run: `quickshell -p ~/halo` (or the systemd user service `halo`). IPC: `halo-ctl call <target> <fn>`.
+IPC targets: `home` `shade` `overview` `settings` (toggle|open|close), `desktop show`, lock.
 
-## Latest update (untested)
-- **Control center** (`components/Shade.qml`, `ControlGrid.qml`, `services/Controls.qml`): iPad-style tiles. Long-press or *Edit* = jiggle mode, drag to reorder, `-` to remove, `+` chips to add back. Layout saved to `~/.config/halo/controls.json`. Tiles: Wi-Fi, Bluetooth, Airplane, DND, Rotation lock, Mode, Keyboard, Screenshot. Add a tile = add its id to `Controls.all` and a case in `info()` / `trigger()`.
-- **Pull-down:** first pull = control center; drag the bottom grabber further = notification list (`Notifs.qml`, Halo is the notification daemon); drag it up = close. Notifications swipe sideways to dismiss; heads-up banner in `Banner.qml`.
-- **Sliders** (`QsSlider.qml`): fill follows the finger 1:1, updates throttled to ~22 Hz, eased settle on release.
-- **Keyboard:** `kbd-toggle [toggle|show|hide]` records `$XDG_RUNTIME_DIR/kbd-visible`; `KbdHandle.qml` shows a grabber + X above the keyboard (drag down >50 px or tap X). Heights `-H 420 -L 300` are set in `hyprland-touch.nix` and mirrored in `services/Kbd.qml`: tune both together. Unverified: whether the handle stacks above wvkbd (both on the overlay layer) and that `-H/-L` behave as assumed.
-- `qt.platformTheme.name` fix; `scripts/`: `halo-dev.sh` (hot reload), `surface-deploy.sh` (rebuild, newest generation = default boot), `surface-clean.sh`, `ssh-config-surface.txt`.
-- Not done: finger-tracked open of the shade/home from the screen edge (hyprgrass edge binds are discrete). Idea: thin Halo edge-strip windows that take the touch and drive the progress; needs a test of whether hyprgrass swallows edge touches first. Compositor animation curves (workspace swipe, windows) are not tuned yet.
+## Working notes
+- Sandbox has no QML runtime: everything below was only syntax-balance-checked, never run. Say what is untested.
+- When a change "doesn't take", grep the WHOLE repo for the filename (same-named stray file shadows the real one).
+- `anchors { ... };` is illegal QML. No anchors on children of Row/Column.
+- ListModel.get() inside a binding does not register a dependency; bump a `tick` property (see SetPageApps).
+- Always list which files go where; the repo is 79 MB, so updates ship as `halo-update.tar.gz` (changed files only, repo-relative paths) plus a `.diff`.
 
-## Home screen = the desktop (written, untested)
-- **`components/Desktop.qml`**: Halo window on `WlrLayer.Background`, always behind the apps: wallpaper (`WallpaperView.qml`, `services/Wallpaper.qml`: procedural presets + images from `~/Pictures/Wallpapers`), **widgets band + paged icon grid** (finger-tracked Flickable, velocity snap, page dots). `components/HomeScreen.qml` is now only the **launcher overlay** (search + all apps, `SUPER+A`, dock button, IPC `home`).
-- **Bundled wallpapers:** 82 JPEGs (downscaled to <=2736 px, 19 MB) in `assets/wallpapers/`, installed to `/etc/halo/wallpapers` by `halo.nix`; the picker also lists `~/Pictures/Wallpapers`. Skipped: animated (mp4/gif) and tiny images. `halo-dev.sh` copies them to `~/Pictures/Wallpapers` until the first rebuild. Add more by dropping files into `assets/wallpapers/` and rebuilding.
-- **Long-press empty space** -> menu like Android: wallpaper thumbnails (current has a check), *Wallpapers*, *Widgets* (gallery with live previews, add/remove), *Launcher settings* (app names, icon size S/M/L, edit, reset). Generic `Sheet.qml`.
-- **Edit mode:** long-press an icon/widget: jiggle, drag to reorder (also across pages at the screen edge), `-` removes a widget, `+` chips add. State: `~/.config/halo/home.json` (`services/Home.qml`), wallpaper: `wallpaper.json`.
-- **Go home:** IPC `halo-ctl call desktop show` (bottom-edge swipe, `SUPER+D`) -> `hyprctl eval 'go_home()'` -> focus workspace `name:home` (kept empty). **Tablet mode: every launched app first runs `new_ws()` (focus `emptynext`)** so each app has its own workspace and home stays empty (`Home.launch`, also used by the dock). Boot in tablet mode lands on home. Defined in `hyprland-mode.lua`; `hl.dispatch(...)` is unverified, fallback is `hyprctl dispatch workspace ...`.
-- **Widgets:** clock (analog), calendar, battery (UPower, `services.upower.enable` in `halo.nix`), now playing (MPRIS). New widget = `WidgetX.qml` + `Component` in `WidgetHost.qml` + entry in `Home.widgetTypes`. App widgets plug in the same way.
-- **Risks to check first:** `go_home()`/`new_ws()` via `hyprctl eval`; desktop visible on empty workspace; `DesktopEntries.byId`; `horizontalVelocity` sign; reorder drag feel; Canvas "contours" wallpaper; wallpaper thumbnails have square corners (no mask effect used).
-- Not done: folders, widget resize/stacks, app library, dock edit, Spotlight pull-down on the desktop.
+## Done this session (ALL UNTESTED)
+**Dock drag and drop**
+- Home screen -> dock: in edit mode drag an icon onto the dock; the pill glows, a bar shows the insertion slot, release pins it (icon stays on the home screen too). Folders cannot be pinned.
+  `Desktop.qml` (dockHit / dockIndexAt / refreshDrag / finish), `Dock.qml` publishes its geometry into `UI.dockRect|dockRowLeft|dockLead|dockStep`, `Apps.pinAtVisible()`.
+- Dock -> screen: swipe an app up out of the dock (not in jiggle mode). `DockDrag.qml` draws the ghost icon and the target. Edge strip (80 px) = Slide Over, outer 35% = Split View, anywhere else / back over the dock = cancel.
+  `UI.beginDockDrag/moveDockDrag/finishDockDrag`, `Tiling.qml` does the placement with `hyprctl --batch "dispatch ..."` (Slide Over: setfloating + resizeactive + moveactive, 420 px wide, 86% high; Split View: settiled + movewindow l/r). It uses `entry.execute()` on the current workspace, NOT `Home.launch` (tablet mode would open a fresh workspace).
 
-## Lock screen (relock verified; rest see below)
-- `LockScreen.qml` (`WlSessionLock`, one `LockContent.qml` per screen), `services/Lock.qml` (state, auth, IPC `halo-ctl call lock lock`), `PinPad.qml`, `LockKeyboard.qml`. iPadOS look: wallpaper, big clock, notification titles only, media card, finger-tracked swipe up -> passcode pad; "Use password" -> password field with an in-lock keyboard (wvkbd cannot draw above a session lock).
-- **PIN:** run `halo-set-pin` (4-8 digits) once; salted sha256 in `~/.config/halo/lock.json` (convenience lock; real protection = disk encryption + password). **Password:** PAM service `halo` (`security.pam.services.halo`). 5 wrong tries -> 30 s cooldown, doubling to 10 min.
-- **Triggers:** shade tile *Lock*, `SUPER+L`, IPC, 5 min idle (`IdleMonitor`), before suspend (`dbus-monitor` on logind `PrepareForSleep`). `$XDG_RUNTIME_DIR/halo-locked` keeps the session locked across a shell restart; `misc:allow_session_lock_restore` lets a new Halo take over a dead lock.
-- **Danger while testing:** if Halo dies while locked you see the red "lockscreen crashed" screen. Recovery over SSH: restart the shell (it re-locks from the flag file, then unlock normally) or `ssh -t jano@IP 'rm -f /run/user/1000/halo-locked'` and restart `halo`.
-- **Verified:** relock after `systemctl --user restart halo`. Still untested: `SUPER+L`, password path via PAM, idle (5 min) and suspend lock, Lock tile.
-- **Check first:** `PamContext` API names (`onPamMessage`, `respond`, `PamResult`), `IdleMonitor`/`WlSessionLock` in Quickshell 0.3.0, swipe-up zone, keyboard typing, relock after a shell restart. Needs a rebuild for `halo-set-pin`, PAM and `SUPER+L`; `halo-dev.sh` only loads the QML (the tile and IPC work, password/PAM needs the rebuild).
-- Not done: fingerprint/IR face unlock, lock-screen shortcuts (camera, flashlight), per-app preview privacy, lock on Type Cover detach.
+**Settings app** (`HaloSettings.qml`, overlay window, Android-style)
+- Open: gear in the shade, "Halo Settings" in the home-screen long-press menu, `halo-ctl call settings open`.
+- Wide screens (>= 900 px): category list left, page right. Narrow: list, then page with back arrow. Esc goes back/closes.
+- Pages (`SetPage*.qml`): Wi-Fi (list, connect, password field, forget, disconnect), Bluetooth (list, scan 8 s, pair/connect/forget), Display (brightness, rotation lock, colour scheme, interface size), Sound (volume, mute), Notifications (DND, clear all), Home screen (names, icon size, edit mode, wallpaper, reset), Security (lock now, PIN status), Apps (Dock / Home pills per app), Battery (level, time left, power mode), Storage (disks, RAM), Updates (NixOS generations, read-only), About.
+- Helpers: `SetGroup/SetRow/SetSwitch/SetChips/SetButton`; services `Net.qml` (nmcli, bluetoothctl, powerprofilesctl) and `Info.qml` (device facts, one shell script).
 
-## Gestures, overview, auto-hide (written, untested)
-- **Finger-tracked edge pulls:** `TopEdge.qml` / `BottomEdge.qml` are invisible 22 px overlay strips that take the touch and drive `UI.shadeDrag` / `UI.overviewDrag` 1:1 (Shade and Overview animate from that `progress`, release snaps by distance/velocity). The hyprgrass **edge binds were removed** (bottom 1-finger, bottom 2-finger keyboard, top) so they cannot fight the strips; hyprgrass keeps the 3-finger workspace swipe and 3-finger long-press drag. Keyboard: `SUPER+K` / Keyboard tile. The bottom strip hides while the keyboard is up or the overview is open.
-- **Bottom swipe up** (`BottomEdge.qml`, 32 px strip). Researched, not guessed:
-  - **Android** (AOSP Launcher3 `AbsSwipeUpHandler.calculateEndTarget`): fling up (not paused, speed > `quickstep_fling_threshold_speed`) -> HOME; non-fling: motion *paused* (`MotionPauseDetector`) -> RECENTS, else still moving up -> HOME, else back to the app; cancel -> app. `MIN_PROGRESS_FOR_OVERVIEW = 0.7`. On the Android home screen a swipe up opens the app drawer; recents needs a pause.
-  - **iOS** (WWDC18 session 803 "Designing Fluid Interfaces"): home/multitasking/quick switch are one continuous gesture; pause halfway -> app switcher, pause is detected from the finger's *acceleration* (no timers; community re-creation: >90% velocity lost, <100 px/s, >50 px); the end point is *projected* from the release velocity with `project(v, rate=0.998) = v/1000 * rate/(1-rate)` (~0.5 s of travel) and the nearest target wins. Apple's real SpringBoard code is closed, so only the talk/sample is a source.
-  - **Halo rule (your spec, built from those):** on the home screen any drag >40 px -> overview. In an app: fling (>1.5 px/ms over the last 100 ms) -> home; else projected end point = position + speed x 200 ms (a damped iOS projection, so the overview stays easy) past 50% of screen height -> home, otherwise overview; <40 px -> nothing. Resting before lifting = zero momentum (pause). The overview fades in over the first 25% of the drag and dims/shrinks when the *projected* end is past half (`UI.overviewHomeHint`). Deliberate deviation from Android: a slow swipe that is still moving does not go home. Tunables at the top of the MouseArea: `appear`, `homeAt`, `flickSpeed`, `projectMs`.
-- **Overview (`Overview.qml`):** horizontal live window cards (`ScreencopyView` of each `ToplevelManager` toplevel), swipe a card up (or flick) to close it (`toplevel.close()`), tap to open (`activate()`), **Close all** button (then goes home), swipe up on empty space = home, tap empty = back. IPC `halo-ctl call overview toggle|open|close`, `SUPER+TAB`. Layer rule blur for `halo-overview` in `hyprland-mode.lua`.
-- **Shade:** panel `y`/backdrop now derive from one `progress`; the grabber drags it up with the finger too.
-- **Auto-hide:** in tablet mode the dock and island slide away while an app is focused (`UI.appOpen = Mode.tablet && ToplevelManager.activeToplevel !== null`, `UI.chromeShown`); they return on the home screen, launcher and overview.
-- **Check first:** do the strips receive the touch (no hyprgrass interference)? `ScreencopyView` shows window contents on Hyprland (otherwise cards show only the title); card swipe-up vs horizontal list flick; `activeToplevel` becomes null on the empty home workspace (else dock never returns: check `UI.appOpen`); strips covering the top of the island and the dock bottom edge.
-- Not done: window-to-card zoom animation (the compositor window itself does not scale), 3-finger gestures in the overview, back-swipe from the screen sides.
+## Files and where they go (all under `shell/halo/`)
+| New | Changed |
+|---|---|
+| components/HaloSettings.qml, DockDrag.qml, SetGroup/SetRow/SetSwitch/SetChips/SetButton.qml, SetPage{Wifi,Bluetooth,Display,Sound,Notifs,Home,Security,Apps,Battery,Storage,Updates,About}.qml | shell.qml, components/Desktop.qml, Dock.qml, Shade.qml |
+| services/Net.qml, Info.qml, Tiling.qml | services/UI.qml, Apps.qml |
 
-## Tablet mode at start
-- New option `modules.desktop.hyprlandMode` ("tablet"|"desktop", default desktop), written to `/etc/hypr/default-mode`; `hyprland-mode.lua` reads it for the first login of a boot. `hosts/surface/default.nix` sets `"tablet"`. A stored `$XDG_RUNTIME_DIR/hypr-mode` (same boot, earlier login) still wins; it is cleared on full logout/reboot. Needs a rebuild. (Not `defaultMode`: `chronos.nix` already uses that name.)
+## Next shell features
+- Widget resize and stacks; weather, notes and search widgets; app widgets.
+- Spotlight-style pull-down search on the home screen.
+- Back-swipe from the screen sides; 3-finger gestures in the overview; window-to-card zoom animation (needs compositor support).
+- Folders: drag an app out onto the page, multi-page folders, drop highlight.
+- Library: search inside it, drag icons from the library to the home pages.
+- Gesture tuning pass for the bottom swipe, based on feedback.
+- Dock: drop highlight when dragging a dock icon back onto the home screen; Slide Over should stay on top across apps (needs `pin` or a special workspace); swapping/closing a Slide Over window.
 
-## Current bug (in progress)
-- Top-edge swipe (live bind via `scripts/halo-live-binds.sh`) opened the shade and it closed immediately (~1% blur). Suspects: the bind fired twice (toggle), or the touch-up of the swipe hit the backdrop. Fix shipped, **unverified**: the gesture now calls `shade open` (idempotent) and `UI.tapCloseShade()` ignores backdrop taps for 500 ms after opening; `halo-live-binds.sh` now runs `hyprctl reload` first so duplicate live binds are cleared.
-- Next check: `scripts/halo-ipc.sh call shade open`. If that stays open, the problem is the gesture; if not, the panel. If hyprgrass swallows or mis-reports edge touches, fall back to Halo edge-strip windows that take the touch themselves (also gives finger-tracked opening).
+## Settings still to do
+Per-app notification control; sound output/input device picker; screen timeout and night light; idle/suspend lock timeout; one-tap rollback (needs polkit); storage cleanup; Wi-Fi advanced (static IP, hidden networks); Bluetooth device details.
 
-## Known facts
-- Touch device to transform: `iptsd-virtual-touchscreen-045e:001f`. `surface-rotate N` sets monitor + touch transform. Pinned apps: `Alacritty`, `org.kde.angelfish`, `com.adilhanney.saber`, `org.pwmt.zathura`, `org.pulseaudio.pavucontrol`, `btop` (missing ones hidden).
-- Mode switch: `hyprctl eval 'set_mode("tablet"|"desktop")'`, state `$XDG_RUNTIME_DIR/hypr-mode`, `SUPER+SHIFT+T`. Binds: `SUPER+A` launcher, `SUPER+D` desktop, `SUPER+N` shade, `SUPER+K` keyboard.
-- Fixed earlier: SDDM GLX crash (do not set `hardware.graphics.package = hyprNixpkgs.mesa`); Hyprland input compiles ~35 min if Cachix misses.
+## Product roadmap (the Halo app suite)
+- Lock screen and Greeter polish (SDDM replacement, boot splash, face unlock later).
+- Files, Gallery.
+- Contacts, then Calendar, Clock, Calculator, Weather, Notes, Reminders.
+- Camera, Voice recorder, Music and Video players.
+- Browser, Mail, Messages, Maps.
+- Store / Updates (Flatpak front end, generation rollback).
+- System features: Stage-Manager windows, clipboard history, global search, Focus modes, accessibility, Pen support, KDE Connect, setup wizard, Waydroid.
 
-## Open
-1. **Test the update above** (`scripts/surface-deploy.sh`, or `scripts/halo-dev.sh` for QML only). Verify `fingers = 2` bottom-edge bind.
-2. **Home screen like iPadOS:** pages of icons (drag to rearrange, folders, jiggle/delete), page dots, widgets (clock, weather, calendar, notes, battery, media, search) incl. app widgets, widget gallery, Stage-Manager-like windowing in desktop mode.
-3. **App switcher** (ToplevelManager cards, swipe up to close), matugen theming (`Theme.qml` is static).
-4. **On-screen keyboard (written, untested):** squeekboard (`halo-osk` user service, started in tablet mode / stopped in desktop mode by `set_mode`) auto-shows on text-field focus via text-input-v3. `kbd-toggle` uses D-Bus `sm.puri.OSK0 SetVisible` when it runs, else the old wvkbd. `kbd-watch` (`halo-osk-watch`) polls `Visible` into `$XDG_RUNTIME_DIR/kbd-visible` and the layer height (`hyprctl layers -j`, namespace `osk`) into `kbd-height`; `Kbd.qml` uses it for the handle. Check: auto-show in Angelfish/Qt apps and Zen; Alacritty has no text-input (use `SUPER+K`/Keyboard tile); does a handle-hide re-arm auto-show; does squeekboard show with a hardware keyboard attached; Visible property polling works; `journalctl --user -u halo-osk`.
-   - Verified: squeekboard needs dconf `org/gnome/desktop/a11y/applications screen-keyboard-enabled=true` (set via `programs.dconf` in `modules/desktop/default.nix`). X sends `SetVisible false`, which keeps it forced hidden until a *new* focus event; re-tapping the same field does nothing. Fix: `KbdButton.qml` (⌨ bottom right, shown when `Kbd.dismissed && !Kbd.visible`) calls `kbd-toggle show`. Tried and rejected: `keyboardFocus: OnDemand` on the handle (focus loop, keyboard flickers), `hl.dsp.focus` cycles (reopens at once).
-5. **Auto mode from keyboards (VERIFIED with Keychron K4; no Type Cover tested):** `halo-autokbd` (`halo.nix`, user service `halo-autokbd`, enabled by `modules.desktop.autoMode`, set in `hosts/surface/default.nix`). Counts keyboards that have the letter keys in sysfs `capabilities/key` (udev `ID_INPUT_KEYBOARD` also matches the `gpio-keys` buttons, so it is not used), watches `udevadm monitor` (debounce 1.5 s), calls `set_mode` only when the keyboard set flips (0 -> tablet, >=1 -> desktop), so a manual toggle wins until the next flip. `halo-autokbd count` lists what it sees. Check first: `count` prints 0 with no keyboard attached (else a virtual device needs filtering), Type Cover attach/detach flips the mode, BT keyboard connect/disconnect too. Still open: external-monitor trigger untested; `layout = "monocle"` in tablet mode unverified.
-6. **Small:** rotate the old `surface-bootstrap` password (in git history); DHCP reservation for the Surface (IP moves `.111`/`.115`); ``scripts/surface-clean.sh` already run.
-7. **Desktop/laptop (unchanged):** dock running-app dots, screenshot at login (cause unknown), mouse-wheel workspace switching, mango touch, `Dock.qml` `length` error.
+## Review pass (static, still UNTESTED at runtime)
+Checked: imports, every `Singleton.member` reference, unknown component types, brace balance, coordinate maths dock <-> Desktop <-> Tiling. Nothing blocking found. Fixed: `bluetoothctl info` ate the stdin of the device loop (Net.qml); Esc inside a TextInput did nothing (HaloSettings.qml); null guard (SetPageBattery.qml); opening home/overview/shade now closes Settings (UI.qml).
+Known, not fixed: a Wi-Fi rescan rebuilds the list and clears a half-typed password; dragging the volume slider while muted stays silent; Wi-Fi password still visible in `ps`.
 
-## Product roadmap: the Halo app suite
-Goal: ship it like a new tablet. Shared design language, one QML module `HaloUI` (tokens from `Theme.qml`: glass, radius 26, spring/ease-out-quint motion, large touch targets 48 px+, swipe-back, pull-to-refresh). Native apps are Qt6/QML (Kirigami-compatible) with a C++/Python backend where needed. Each app gets a `.desktop` file, an icon, and an optional home-screen widget. Android-style *Settings* (flat list, search on top, per-section pages) is intentional.
+## Still untested
+- NEW: everything above. First things to check, in order:
+  1. Does the shell still start? (`quickshell -p ~/halo`, read the log for QML errors in the new files.)
+  2. Dock: home -> dock drop, insertion index with and without the Apps button (desktop mode).
+  3. Dock -> screen drag: the touch must stay grabbed by the dock window while the finger is far outside it. If coordinates stop arriving, DockDrag needs to take the input instead.
+  4. Settings: open/close, back navigation, every page loads, Wi-Fi password connect, Bluetooth pair, brightness/volume sliders, power mode.
+  5. Slide Over / Split View through hyprctl. Check `hyprland-mode.lua` for rules that force fullscreen/maximise in tablet mode; the classic dispatchers are assumed to work next to the Lua config.
+- Glyphs: ≋ ✧ ⚑ ▦ ▮ ▤ ⟳ ⓘ ☀ ♪ ◔ 🔒 may render as boxes without a symbol/emoji font; swap for icons if so.
+- Multi-monitor: every Dock writes `UI.dockRect`, the last one wins.
+- From before: lock screen (SUPER+L, PAM, idle and suspend lock, Lock tile); control center and notification feel; edge strips versus hyprgrass; external monitor and Type Cover mode flips; Squeekboard with a hardware keyboard.
 
-1. **Greeter / Login** (SDDM replacement, or Quickshell `WlSessionLock` + greetd): wallpaper with blur, clock, user avatar, PIN pad, password fallback, face unlock later (Windows Hello IR camera on the SP5 is possible via Howdy), power menu, on-screen keyboard, rotation aware, boots straight into tablet mode. Boot splash (Plymouth) matching the theme.
-2. **Lock screen:** same clock/widgets as iPad, notifications list, media controls, camera/flashlight shortcuts, swipe up to unlock, PIN/pattern.
-3. **Files:** sidebar (Recents, Favorites, Downloads, Documents, Pictures, Trash, external drives, network/SMB), grid/list/column views, multi-select with touch, drag and drop between windows, quick look preview (images, PDF, text, video), tags, zip/unzip, share sheet, search, Trash restore, storage overview. Backend: Qt + KIO or `gio`/udisks2.
-4. **Gallery (Photos):** all photos timeline by date, albums, favorites, videos, memories, map view from EXIF, pinch-zoom, swipe between photos, edit (crop, rotate, filters, adjust), share, hide/delete with 30-day trash, import from USB/SD. Thumbnail cache; face/scene grouping later.
-5. **Contacts:** list with alphabet scrubber, groups, avatars, vCard/CardDAV (Nextcloud/Google) sync via evolution-data-server or `vdirsyncer`, call/message/email actions, QR share, duplicates merge. Shared backend for Mail, Calendar, Messages.
-6. **Settings (Android style):** search, Wi-Fi, Bluetooth, Display (brightness, scale, night light, rotation, refresh), Sound, Notifications (per app), Home screen and dock, Lock screen and security, Apps (permissions, defaults), Battery (health, usage, saver), Storage, Accounts, Keyboard and pen, Gestures, Desktop mode (DeX options, external display), Updates (NixOS generations, rollback), About. Backend: NetworkManager, BlueZ, UPower, logind, PipeWire, DBus.
-7. **Calendar** (events, week/day/month, reminders, CalDAV), **Clock** (alarms, timer, stopwatch, world clock), **Calculator**, **Weather** (widget source), **Notes** (Saber is pinned today; pen-first with palm rejection, handwriting to text, PDF annotate), **Reminders/To-do**.
-8. **Camera** (v4l2/libcamera, Surface front/rear cams, QR scan), **Voice recorder**, **Music/Media player** (MPRIS, widget, lock-screen controls), **Video player**.
-9. **Browser** (Angelfish today; tabs overview, reader mode, touch gestures, extensions), **Mail**, **Messages** (Matrix/Signal bridge), **Maps**.
-10. **Store / Updates:** Flatpak front end plus a curated tablet app list; update center with generation rollback.
-11. **System features:** multitasking (split view, slide over, Stage-Manager-like windows in desktop mode), app switcher, drag and drop across apps, screenshots with markup, screen recording, clipboard history, Spotlight-style global search (apps, files, contacts, settings, calculator), Siri-like voice assistant hook (Claude/local), share sheet, Focus modes (DND schedules), per-app notification controls, accessibility (zoom, large text, screen reader via Orca, color filters), Pencil/pen support (Surface Pen: pressure, tilt, eraser, hover, barrel button), KDE Connect for phone continuity, backup/restore, first-run setup wizard (OOBE), parental/guest user, Waydroid for Android apps, auto-brightness and battery health charge limit.
-
-Suggested order after the home screen: Lock screen + Greeter -> Settings -> Files -> Gallery -> Contacts/Calendar -> Camera -> Store -> the rest.
-
-## How things work
-- **Boot (Surface):** `scripts/surface-deploy.sh` runs `nixos-rebuild boot --target-host` (needs `--sudo --ask-sudo-password`), then `scripts/surface-reboot.sh`. `scripts/surface-clean.sh` deletes old generations (keeps 2) and rewrites the boot menu. No one-shot entries any more.
-- **Halo dev loop (no rebuild):** `scripts/halo-dev.sh` rsyncs `shell/halo` to `~/halo` and runs `quickshell -p ~/halo` as `halo-test` (hot reload). IPC: `halo-ctl call home|shade|overview toggle|open|close`, `halo-ctl call desktop show`, or `quickshell -p <path> ipc call ...`. `quickshell ipc --newest` does not work.
-- **Dev scripts (all reuse one SSH password via ControlMaster):** `halo-dev.sh` (sync + run `halo-test`), `halo-ipc.sh call shade|home toggle|open|close` (needs `WAYLAND_DISPLAY=wayland-1`, set inside), `halo-live-binds.sh` (test the top-edge bind without a rebuild), `surface-deploy.sh` (rebuild), `surface-clean.sh` (drop old generations). On the Surface `quickshell` is not in PATH before the rebuild: the scripts use `/nix/store/*-quickshell-0.3.0/bin/quickshell`. After the rebuild use `halo-ctl call shade open`.
-- **Always `ssh -t`** for anything that runs `sudo` (reboot, bootctl): `scripts/surface-reboot.sh`.
-- **Hyprland from SSH:** `export HYPRLAND_INSTANCE_SIGNATURE=$(command ls /run/user/1000/hypr | rg -v chronos-shell | head -1)`; add `WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1000` for Wayland clients.
-- **Files:** `modules/desktop/hyprland.nix` + `hyprland.lua`, `hyprland-touch.nix` (hyprgrass, `surface-rotate`, `kbd-toggle`, touch binds), `hyprland-mode.lua` (mode, layer rules, binds), `modules/desktop/shell/halo.nix` (service, `halo-ctl`, runtime tools), `shell/halo/` (`shell.qml`; `services/{Theme,Mode,Apps,UI,System,Controls,Notifs,Kbd}.qml`; `components/{Island,Dock,HomeScreen,Shade,ControlGrid,QsSlider,Banner,KbdHandle}.qml`). Singletons import as `qs.services` / `qs.components`.
-
-## Environment notes
-- zsh with `grep` -> `rg`, `ls` -> `eza`: use `command ls`. Flakes ignore untracked files: `git add -A` before every eval/rebuild.
-- SP5: touch via `iptsd`, rotation via `hardware.sensor.iio.enable`; `monitor-sensor` over SSH fails (polkit), the user service is fine.
-- Pitfalls seen: `ls` is `eza` (use `command ls`, also in `$(...)`); a root-owned `.git/objects` broke `git add` (`sudo chown -R $USER: .git .` fixed it); `~/Downloads` is English, other dirs are Spanish (`Descargas`); the download card may need a second click, check `command ls ~/Downloads` before `tar`; extract with `tar -xzf ~/Downloads/halo-update.tar.gz` from the repo root, then `git add -A`.
-- `~/.config/halo/controls.json` is created on first control-center edit (the "File does not exist" warning is expected). One desktop entry has an icon path in `~/Descargas` that no longer exists (blank icon, harmless).
-- The assistant has no Nix, Hyprland or Qt in its sandbox: everything is verified only by pasted output.
-## Session update (Oct 2026)
-
-### Environment notes
-- Surface: `jano@192.168.0.115` (IP moves between .111 and .115). SSH asks for a password every time (no key). `sudo` password is asked during deploy.
-- Desktop shell aliases `find`->fd and `cat`->bat: use `command find` / `command cat` in scripts and pasted commands. To copy output: `... | wl-copy`.
-- `scripts/surface-deploy.sh` builds and sets the config for the next boot (action = boot): restarting the `halo` user service afterwards does NOT load the new build, run `scripts/surface-reboot.sh`. `scripts/halo-dev.sh` is the QML-only path.
-- Hyprland 0.56 uses a Lua config. Over SSH: `export HYPRLAND_INSTANCE_SIGNATURE=$(ls $XDG_RUNTIME_DIR/hypr | head -1)`, then `hyprctl dispatch "hl.dsp.focus({ last = true })"`. `hl.dsp.focus` accepts only: direction, monitor, window, urgent_or_last, last (it cannot drop focus). Old dispatcher names like `focuscurrentorlast` fail.
-- `scripts/surface-clean.sh` was run: 26853 store paths deleted, 31.3 GiB freed.
-
-### iptsd boot crash loop (fixed, verified)
-- Real config is `hosts/surface/default.nix` (`hosts/surface/hardware.nix` is not imported). It had `RestartSec=1s` and no start-limit override, which caused the start-limit-hit.
-- Now: `RestartSec=3s`, `StartLimitBurst=4`, `StartLimitIntervalSec=60`, `OnFailure=iptsd-recover.service`. `iptsd-recover` stops iptsd, reloads the ipts driver and starts iptsd again, at most 3 times per 10 minutes.
-- Verified after reboot: overrides present, `iptsd@dev-hidraw0` active. `iptsd-recover` has not triggered yet (not exercised); a cold-boot touch test at SDDM and in Halo was requested, result not recorded.
-
-### On-screen keyboard (squeekboard): verified findings
-- squeekboard needs dconf `org/gnome/desktop/a11y/applications screen-keyboard-enabled=true`. It was unset; it was set by hand, now permanent via `programs.dconf.profiles.user.databases` in `modules/desktop/default.nix`. Verified after reset + deploy + reboot.
-- `Kbd.hide()` runs `kbd-toggle hide` -> D-Bus `sm.puri.OSK0 SetVisible false`, which leaves squeekboard forced hidden. Tapping the same field again sends no new focus event (a field tap sends one `input_method_v2.activate`; tapping empty space sends no deactivate), so it stays hidden. Tapping a field in another app reopens it. `SetVisible true` (what `kbd-toggle show` calls) always reopens it.
-- Fix shipped: `components/KbdButton.qml` (round keyboard button, bottom right, `visible: Kbd.dismissed && !Kbd.visible`, calls `Kbd.show()`); `services/Kbd.qml` got `dismissed` (set true in `hide()`, cleared when `kbd-visible` reads "visible") and `show()`; instantiated in `shell.qml` after `KbdHandle`. Verified working.
-- Tried and rejected: `WlrLayershell.keyboardFocus: OnDemand` on `KbdHandle` (focus loop, keyboard flickers true/false every few seconds); `hl.dsp.focus({ last = true })` cycles (clear the hidden state but reopen the keyboard immediately).
-- Unexplained: in one test `Visible` flipped false/true within 3 s with no input (00:11:07 to 00:11:10). Not investigated.
-- Observations: the keyboard opened in Alacritty during tests (earlier note said Alacritty has no text-input; recheck). Long-pressing the DuckDuckGo page background opens its context menu: browser behavior, not a Halo bug.
-- Unchecked, dropped for now: hardware keyboard + squeekboard, auto-show in Zen/Angelfish.
-
-### Dropped for now
-- Quick checks (`fingers = 2` bottom-edge bind, Zen/Angelfish auto-show, hardware keyboard).
-- Small fixes (rotate old `surface-bootstrap` password, DHCP reservation for the Surface).
-
-### New goal: shell 1:1 with iPadOS, built in stages, deploy after each
-1. Home screen: icon pages, page dots, dock, jiggle mode (rearrange/delete), folders.
-2. Widgets + widget gallery.
-3. App switcher (swipe-up cards, swipe up to close).
-4. matugen theming (`services/Theme.qml` is static).
-
-### Current shell layout (`shell/halo`)
-- `shell.qml`: `LockScreen`, then per screen `Desktop`, `Island`, `HomeScreen`, `Dock`, `Shade`, `Overview`, `TopEdge`, `BottomEdge`, `Banner`, `KbdHandle`, `KbdButton`.
-- `components/Desktop.qml` is the real always-visible home screen; `services/Home.qml` its state (`cellW`, `cellH`, `launch(entry)`). `components/HomeScreen.qml` (156 lines) is only the SUPER+A launcher overlay: clock, search, full app grid (`GridView` of `AppIcon`, `DesktopEntries`), layer Top, exclusive keyboard focus.
-- `components/Widget{Battery,Calendar,Clock,Media}.qml` + `WidgetHost.qml` exist. `Overview.qml` is the current app switcher (finger-tracked from `BottomEdge.qml`). `Shade.qml`/`TopEdge.qml`/`ControlGrid.qml` are the control center. `Dock.qml` 119 lines. Other: `Island`, `Banner`, `Sheet`, `QsSlider`, `PinPad`, `Lock*`, `WallpaperView`.
-- Services: `UI.qml` (shared state: `homeOpen`, `shadeOpen`, `overviewOpen`, drag values, `appOpen`/`onHome`/`chromeShown`; IPC targets home|overview|desktop|shade, `goHome()` calls `hyprctl eval go_home()`), `Apps`, `Controls`, `Home`, `Kbd`, `Lock`, `Mode` (tablet/desktop), `Notifs`, `System`, `Theme`, `Wallpaper`.
-- Next step: read `Desktop.qml`, `Home.qml`, `AppIcon.qml`, `WidgetHost.qml`, `Theme.qml` (command: `cd shell/halo && command cat components/Desktop.qml services/Home.qml components/AppIcon.qml components/WidgetHost.qml services/Theme.qml | wl-copy`), then design and build stage 1.
+## Small chores
+- Rotate the old surface-bootstrap password.
+- DHCP reservation for the Surface.
+- Wi-Fi connect passes the password as a command-line argument (visible in `ps` for a moment); move to `nmcli --ask` via stdin if that matters.

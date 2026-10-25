@@ -17,8 +17,10 @@ ShellRoot {
             Island { screen: scope.modelData }
             HomeScreen { screen: scope.modelData }
             Dock { screen: scope.modelData }
+            DockDrag { screen: scope.modelData }
             Shade { screen: scope.modelData }
             Overview { screen: scope.modelData }
+            HaloSettings { screen: scope.modelData }
             TopEdge { screen: scope.modelData }
             BottomEdge { screen: scope.modelData }
             Banner { screen: scope.modelData }

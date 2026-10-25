@@ -22,6 +22,14 @@ PanelWindow {
     WlrLayershell.layer: (UI.homeOpen || UI.overviewOpen || UI.overviewDragging) ? WlrLayer.Overlay : WlrLayer.Top
     visible: UI.dockShown || pill.opacity > 0.01
 
+    // Publish where the pill sits (screen coordinates) so the home screen can hit-test drops onto it.
+    Binding { target: UI; property: "dockRect"; value: root.screen ? Qt.rect((root.screen.width - pill.width) / 2, root.screen.height - 10 - pill.height, pill.width, pill.height) : Qt.rect(0, 0, 0, 0) }
+    Binding { target: UI; property: "dockScreenW"; value: root.screen ? root.screen.width : 0 }
+    Binding { target: UI; property: "dockScreenH"; value: root.screen ? root.screen.height : 0 }
+    Binding { target: UI; property: "dockRowLeft"; value: (root.screen ? (root.screen.width - pill.width) / 2 : 0) + 14 }
+    Binding { target: UI; property: "dockLead"; value: Mode.tablet ? 0 : root.iconSize + row.spacing }
+    Binding { target: UI; property: "dockStep"; value: root.iconSize + row.spacing }
+
     Rectangle {
         id: pill
         anchors.bottom: parent.bottom
@@ -35,8 +43,21 @@ PanelWindow {
         height: root.iconSize + 24
         radius: Theme.radius
         color: Theme.glass
-        border.color: Theme.glassStroke
-        border.width: 1
+        border.color: UI.dockDropHot ? Theme.accent : Theme.glassStroke
+        border.width: UI.dockDropHot ? 3 : 1
+        scale: UI.dockDropHot ? 1.06 : 1
+        Behavior on scale { NumberAnimation { duration: 120 } }
+
+        // Insertion marker while an icon from the home screen hovers the dock.
+        Rectangle {
+            visible: UI.dockDropHot
+            x: 14 + UI.dockLead + UI.dockDropIndex * UI.dockStep - 9
+            y: 12
+            width: 4
+            height: root.iconSize
+            radius: 2
+            color: Theme.accent
+        }
 
         Row {
             id: row
@@ -85,6 +106,7 @@ PanelWindow {
                     readonly property bool pinnedItem: modelData.pinIndex >= 0
                     property real dragDx: 0
                     property bool dragging: false
+                    property bool launchDragged: false // dragged up out of the dock (Slide Over / Split View)
 
                     width: root.iconSize
                     height: root.iconSize
@@ -133,9 +155,27 @@ PanelWindow {
                         id: area
                         anchors.fill: parent
                         property real startX: 0
+                        property real startY: 0
 
-                        onPressed: m => startX = mapToItem(null, m.x, 0).x
+                        onPressed: m => {
+                            const p = mapToItem(null, m.x, m.y);
+                            startX = p.x;
+                            startY = p.y;
+                            cell.launchDragged = false;
+                        }
                         onPositionChanged: m => {
+                            if (!UI.dockEditing && pressed) {
+                                // Swipe up out of the dock: drag the app to an edge (Slide Over) or further in (Split View).
+                                const q = mapToItem(null, m.x, m.y);
+                                const up = startY - q.y;
+                                if (!UI.dockDragActive && up > 44 && Math.abs(q.x - startX) < up * 1.5) {
+                                    cell.launchDragged = true;
+                                    UI.beginDockDrag(cell.modelData, root.screen ? root.screen.name : "");
+                                }
+                                if (UI.dockDragActive && cell.launchDragged)
+                                    UI.moveDockDrag(UI.dockRect.x + q.x, UI.dockRect.y + q.y);
+                                return;
+                            }
                             if (!UI.dockEditing || !pressed || !cell.pinnedItem)
                                 return;
                             const dx = mapToItem(null, m.x, 0).x - startX;
@@ -145,6 +185,10 @@ PanelWindow {
                                 cell.dragDx = dx;
                         }
                         onReleased: {
+                            if (cell.launchDragged) {
+                                UI.finishDockDrag(root.screen);
+                                return;
+                            }
                             if (cell.dragging) {
                                 // Reorder: how many slots did it travel? (visible pinned items only)
                                 const list = Apps.items.filter(i => i.pinIndex >= 0);
@@ -160,15 +204,21 @@ PanelWindow {
                         onCanceled: {
                             cell.dragging = false;
                             cell.dragDx = 0;
+                            if (cell.launchDragged)
+                                UI.cancelDockDrag();
                         }
                         onClicked: {
+                            if (cell.launchDragged) {
+                                cell.launchDragged = false;
+                                return;
+                            }
                             if (UI.dockEditing)
                                 return;
                             UI.closeHome();
                             Apps.activate(cell.modelData);
                         }
                         onPressAndHold: {
-                            if (!UI.dockEditing && !cell.dragging)
+                            if (!UI.dockEditing && !cell.dragging && !cell.launchDragged)
                                 UI.dockEditing = true;
                         }
                     }

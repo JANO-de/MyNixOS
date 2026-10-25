@@ -107,7 +107,31 @@ PanelWindow {
                     font.pixelSize: 14
                 }
 
+                // Settings gear
                 Rectangle {
+                    anchors.right: editPill.left
+                    anchors.rightMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 30
+                    height: 30
+                    radius: 15
+                    color: Qt.rgba(1, 1, 1, 0.14)
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "⚙"
+                        color: Theme.text
+                        font.pixelSize: 16
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -6
+                        onClicked: UI.openSettings()
+                    }
+                }
+
+                Rectangle {
+                    id: editPill
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     width: editLabel.implicitWidth + 28

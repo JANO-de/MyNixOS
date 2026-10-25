@@ -30,6 +30,24 @@ Singleton {
         pinned = pinned.concat([entry.id]);
         savePins();
     }
+    // Pin at a visible dock position (vi counts only pinned items that resolved to an app); an already
+    // pinned app is moved there instead. Used by home-screen -> dock drops.
+    function pinAtVisible(entry, vi) {
+        if (!entry || !entry.id)
+            return;
+        const vis = items.filter(i => i.pinIndex >= 0);
+        const at = vi < vis.length ? vis[Math.max(0, vi)].pinIndex : pinned.length;
+        const cur = pinnedIndexOf(entry);
+        const a = pinned.slice();
+        if (cur >= 0) {
+            const x = a.splice(cur, 1)[0];
+            a.splice(cur < at ? at - 1 : at, 0, x);
+        } else {
+            a.splice(at, 0, entry.id);
+        }
+        pinned = a;
+        savePins();
+    }
     function unpin(idx) {
         pinned = pinned.filter((_, i) => i !== idx);
         savePins();

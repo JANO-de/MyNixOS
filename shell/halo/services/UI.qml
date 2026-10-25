@@ -13,6 +13,27 @@ Singleton {
     property bool shadeOpen: false
     property double shadeOpenedAt: 0
     property bool overviewOpen: false
+    property bool settingsOpen: false
+
+    // Dock drag-and-drop.
+    //  home screen -> dock: Desktop.qml sets dockDropHot / dockDropIndex while an icon hovers the dock.
+    //  dock -> screen: dragging an app up out of the dock shows drop zones (Slide Over at the edge,
+    //  Split View further in); see DockDrag.qml and Tiling.qml.
+    property bool dockDropHot: false
+    property int dockDropIndex: 0
+    property rect dockRect: Qt.rect(0, 0, 0, 0) // dock pill in screen coordinates (published by Dock.qml)
+    property real dockScreenW: 0
+    property real dockScreenH: 0
+    property real dockRowLeft: 0
+    property real dockLead: 0
+    property real dockStep: 1
+    property bool dockDragActive: false
+    property var dockDragItem: null
+    property string dockDragIcon: ""
+    property string dockDragScreen: ""
+    property real dockDragX: 0
+    property real dockDragY: 0
+    property string dockDragZone: "" // "", slide-left, slide-right, split-left, split-right
 
     // Finger-tracked pulls from the screen edges (see TopEdge.qml / BottomEdge.qml).
     property bool shadeDragging: false
@@ -32,10 +53,10 @@ Singleton {
     // No app window focused (home screen / empty workspace).
     readonly property bool onHome: ToplevelManager.activeToplevel === null
     readonly property bool chromeShown: !appOpen || homeOpen || overviewOpen || overviewDragging
-    readonly property bool dockShown: chromeShown || dockPinned || dockDragging || dockEditing
+    readonly property bool dockShown: chromeShown || dockPinned || dockDragging || dockEditing || dockDragActive
 
     // Home and shade are mutually exclusive.
-    function openHome() { shadeOpen = false; overviewOpen = false; dockPinned = false; homeOpen = true; }
+    function openHome() { settingsOpen = false; shadeOpen = false; overviewOpen = false; dockPinned = false; homeOpen = true; }
     function closeHome() { homeOpen = false; }
     function toggleHome() { if (homeOpen) closeHome(); else openHome(); }
 
@@ -45,16 +66,22 @@ Singleton {
         homeOpen = false;
         shadeOpen = false;
         overviewOpen = false;
+        settingsOpen = false;
         Quickshell.execDetached(["hyprctl", "eval", "go_home()"]);
     }
 
-    function openOverview() { homeOpen = false; shadeOpen = false; dockPinned = false; overviewOpen = true; }
+    function openSettings() { homeOpen = false; shadeOpen = false; overviewOpen = false; dockPinned = false; settingsOpen = true; }
+    function closeSettings() { settingsOpen = false; }
+    function toggleSettings() { if (settingsOpen) closeSettings(); else openSettings(); }
+
+    function openOverview() { settingsOpen = false; homeOpen = false; shadeOpen = false; dockPinned = false; overviewOpen = true; }
     function closeOverview() { overviewOpen = false; }
     function toggleOverview() { if (overviewOpen) closeOverview(); else openOverview(); }
 
     function openShade() {
         if (shadeOpen)
             return;
+        settingsOpen = false;
         homeOpen = false;
         overviewOpen = false;
         shadeOpenedAt = Date.now();
@@ -116,6 +143,58 @@ Singleton {
             return;
         qsIdx = n;
         qsList[n].activate();
+    }
+
+    // ---- dock -> screen drag (Slide Over / Split View) --------------------------------------------
+    function dockDragZoneAt(x, y) {
+        if (y > dockRect.y - 24)
+            return ""; // still over the dock: releasing here cancels
+        if (x < 80)
+            return "slide-left";
+        if (x > dockScreenW - 80)
+            return "slide-right";
+        if (x < dockScreenW * 0.35)
+            return "split-left";
+        if (x > dockScreenW * 0.65)
+            return "split-right";
+        return "";
+    }
+    function beginDockDrag(item, screenName) {
+        dockDragItem = item;
+        dockDragIcon = item.icon;
+        dockDragScreen = screenName;
+        dockDragZone = "";
+        dockDragActive = true;
+    }
+    function moveDockDrag(x, y) {
+        dockDragX = x;
+        dockDragY = y;
+        dockDragZone = dockDragZoneAt(x, y);
+    }
+    function cancelDockDrag() {
+        dockDragActive = false;
+        dockDragItem = null;
+        dockDragZone = "";
+    }
+    function finishDockDrag(screen) {
+        const z = dockDragZone;
+        const item = dockDragItem;
+        cancelDockDrag();
+        if (!item || z === "")
+            return;
+        const side = z.indexOf("left") >= 0 ? "left" : "right";
+        if (z.indexOf("slide") === 0)
+            Tiling.slideOver(item, side, screen);
+        else
+            Tiling.splitView(item, side, screen);
+    }
+
+    IpcHandler {
+        target: "settings"
+
+        function toggle(): void { root.toggleSettings(); }
+        function open(): void { root.openSettings(); }
+        function close(): void { root.closeSettings(); }
     }
 
     IpcHandler {

@@ -1,0 +1,271 @@
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+import qs.services
+
+// Settings app (Android-style). Wide screens: category list on the left, page on the right.
+// Narrow screens: the list first, then the page with a back arrow.
+// Open with: halo-ctl call settings open | the gear in the shade | long-press menu on the home screen.
+PanelWindow {
+    id: root
+
+    readonly property bool shown: UI.settingsOpen
+    readonly property bool wide: card.width >= 900
+    property string page: "" // "" = category list (narrow) / first category (wide)
+    readonly property string cur: wide ? (page === "" ? "wifi" : page) : page
+
+    readonly property var cats: [
+        { key: "wifi", glyph: "≋", label: "Wi-Fi" },
+        { key: "bluetooth", glyph: "✧", label: "Bluetooth" },
+        { key: "display", glyph: "☀", label: "Display" },
+        { key: "sound", glyph: "♪", label: "Sound" },
+        { key: "notifs", glyph: "◔", label: "Notifications" },
+        { key: "home", glyph: "⌂", label: "Home screen" },
+        { key: "security", glyph: "⚑", label: "Security" },
+        { key: "apps", glyph: "▦", label: "Apps" },
+        { key: "battery", glyph: "▮", label: "Battery" },
+        { key: "storage", glyph: "▤", label: "Storage" },
+        { key: "updates", glyph: "⟳", label: "Updates" },
+        { key: "about", glyph: "ⓘ", label: "About" }
+    ]
+
+    readonly property var comps: ({
+        wifi: cWifi, bluetooth: cBluetooth, display: cDisplay, sound: cSound, notifs: cNotifs,
+        home: cHome, security: cSecurity, apps: cApps, battery: cBattery, storage: cStorage,
+        updates: cUpdates, about: cAbout
+    })
+
+    function labelOf(key) {
+        for (const c of cats)
+            if (c.key === key)
+                return c.label;
+        return "Settings";
+    }
+
+    onShownChanged: {
+        if (shown) {
+            page = "";
+            Info.refresh();
+        }
+    }
+
+    anchors.top: true
+    anchors.left: true
+    anchors.right: true
+    anchors.bottom: true
+    color: "transparent"
+    visible: shown || card.opacity > 0.01
+    exclusionMode: ExclusionMode.Ignore
+    // Leave room for the on-screen keyboard (squeekboard sits below this Overlay window otherwise).
+    margins.bottom: (shown && Kbd.visible) ? Kbd.heightFor(screen) : 0
+
+    WlrLayershell.namespace: "halo-settings"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+
+    Component { id: cWifi; SetPageWifi {} }
+    Component { id: cBluetooth; SetPageBluetooth {} }
+    Component { id: cDisplay; SetPageDisplay {} }
+    Component { id: cSound; SetPageSound {} }
+    Component { id: cNotifs; SetPageNotifs {} }
+    Component { id: cHome; SetPageHome {} }
+    Component { id: cSecurity; SetPageSecurity {} }
+    Component { id: cApps; SetPageApps {} }
+    Component { id: cBattery; SetPageBattery {} }
+    Component { id: cStorage; SetPageStorage {} }
+    Component { id: cUpdates; SetPageUpdates {} }
+    Component { id: cAbout; SetPageAbout {} }
+
+    Rectangle {
+        id: card
+        anchors.fill: parent
+        color: Theme.scrim
+        opacity: root.shown ? 1 : 0
+        scale: root.shown ? 1 : 0.97
+        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+
+        // Swallow touches so nothing behind the settings reacts.
+        MouseArea { anchors.fill: parent }
+
+        // On the card (not a sibling Item) so Esc typed into a page's TextInput bubbles up to it.
+        focus: root.shown
+        Keys.onEscapePressed: {
+            if (!root.wide && root.page !== "")
+                root.page = "";
+            else
+                UI.closeSettings();
+        }
+
+        // ---- Header ------------------------------------------------------------------------
+        Item {
+            id: header
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 84
+
+            Rectangle {
+                visible: !root.wide && root.page !== ""
+                anchors.left: parent.left
+                anchors.leftMargin: 24
+                anchors.verticalCenter: parent.verticalCenter
+                width: 44
+                height: 44
+                radius: 22
+                color: Qt.rgba(1, 1, 1, 0.14)
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "‹"
+                    color: Theme.text
+                    font.pixelSize: 30
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: -6
+                    onClicked: root.page = ""
+                }
+            }
+
+            Text {
+                anchors.left: parent.left
+                anchors.leftMargin: (!root.wide && root.page !== "") ? 84 : 32
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.wide ? "Settings" : (root.page === "" ? "Settings" : root.labelOf(root.page))
+                color: Theme.text
+                font.pixelSize: 30
+                font.weight: Font.DemiBold
+            }
+
+            Rectangle {
+                anchors.right: parent.right
+                anchors.rightMargin: 24
+                anchors.verticalCenter: parent.verticalCenter
+                width: 44
+                height: 44
+                radius: 22
+                color: Qt.rgba(1, 1, 1, 0.14)
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "✕"
+                    color: Theme.text
+                    font.pixelSize: 18
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: -6
+                    onClicked: UI.closeSettings()
+                }
+            }
+        }
+
+        // ---- Category list -------------------------------------------------------------------
+        Flickable {
+            id: side
+            visible: root.wide || root.page === ""
+            anchors.top: header.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            width: root.wide ? 320 : parent.width - 40
+            clip: true
+            contentWidth: width
+            contentHeight: catCol.height + 24
+            boundsBehavior: Flickable.StopAtBounds
+
+            Column {
+                id: catCol
+                width: parent.width
+                spacing: 4
+
+                Repeater {
+                    model: root.cats
+
+                    Rectangle {
+                        id: cat
+                        required property var modelData
+                        readonly property bool selected: root.wide && root.cur === modelData.key
+
+                        width: catCol.width
+                        height: 64
+                        radius: 22
+                        color: selected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.26) : (catTap.pressed ? Theme.surfacePress : "transparent")
+                        Behavior on color { ColorAnimation { duration: 90 } }
+
+                        Rectangle {
+                            x: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 40
+                            height: 40
+                            radius: 20
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.22)
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: cat.modelData.glyph
+                                color: Theme.accent
+                                font.pixelSize: 20
+                            }
+                        }
+                        Text {
+                            x: 68
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: cat.modelData.label
+                            color: Theme.text
+                            font.pixelSize: 18
+                        }
+                        Text {
+                            visible: !root.wide
+                            anchors.right: parent.right
+                            anchors.rightMargin: 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "›"
+                            color: Theme.dim
+                            font.pixelSize: 26
+                        }
+                        MouseArea {
+                            id: catTap
+                            anchors.fill: parent
+                            onClicked: root.page = cat.modelData.key
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---- Page ----------------------------------------------------------------------------
+        Flickable {
+            id: content
+            visible: root.wide || root.page !== ""
+            anchors.top: header.bottom
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 20
+            anchors.left: root.wide ? side.right : parent.left
+            anchors.leftMargin: root.wide ? 28 : 20
+            clip: true
+            contentWidth: width
+            contentHeight: (loader.item ? loader.item.height : 0) + (root.wide ? 80 : 20) + 40
+            boundsBehavior: Flickable.StopAtBounds
+
+            // Heading above the page (wide layout; the header already names the page when narrow).
+            Text {
+                visible: root.wide
+                y: 4
+                text: root.labelOf(root.cur)
+                color: Theme.text
+                font.pixelSize: 26
+                font.weight: Font.DemiBold
+            }
+
+            Loader {
+                id: loader
+                y: root.wide ? 56 : 8
+                width: content.width
+                sourceComponent: root.comps[root.cur] || null
+            }
+        }
+    }
+}
