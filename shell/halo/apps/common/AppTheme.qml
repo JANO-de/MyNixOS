@@ -14,6 +14,9 @@ Singleton {
     property color text: "#ffffff"
     property color dim: "#8e8e93"
     readonly property color line: Qt.rgba(1, 1, 1, 0.12)
+    readonly property color accentSoft: Qt.rgba(accent.r, accent.g, accent.b, 0.24)
+    readonly property color low: Qt.tint(bg, Qt.rgba(1, 1, 1, 0.04))
+    readonly property color hover: Qt.rgba(1, 1, 1, 0.07)
     readonly property string home: Quickshell.env("HOME")
 
     function apply(c) {

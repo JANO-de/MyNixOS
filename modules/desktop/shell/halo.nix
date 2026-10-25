@@ -130,6 +130,11 @@ in
       (haloAppEntry "gallery" "Gallery" "image-x-generic" "Graphics")
       pkgs.glib # gio trash (Files, Gallery)
       pkgs.xdg-utils # xdg-open
+      pkgs.zip # Files: compress / extract
+      pkgs.unzip
+      pkgs.p7zip
+      pkgs.file # Files: mime type in the info panel
+      pkgs.udisks # udisksctl: mount / unmount in Files
       pkgs.dbus # dbus-monitor: lock before suspend
       pkgs.brightnessctl # shade brightness slider
       pkgs.wireplumber # wpctl (volume)
@@ -143,6 +148,7 @@ in
     # Bundled wallpapers (assets/wallpapers) -> /etc/halo/wallpapers; its own store path, so shell edits do not copy them again.
     environment.etc."halo/wallpapers".source = ../../../assets/wallpapers;
     services.upower.enable = lib.mkDefault true; # battery widget
+    services.udisks2.enable = lib.mkDefault true; # Files: mount / unmount drives
     services.power-profiles-daemon.enable = lib.mkDefault true; # Settings > Battery > Power mode (powerprofilesctl)
     security.pam.services.halo = { }; # lock screen password check
 
