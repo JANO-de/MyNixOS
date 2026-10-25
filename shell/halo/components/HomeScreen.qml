@@ -35,7 +35,7 @@ PanelWindow {
         const q = search.text.trim().toLowerCase();
         const list = [];
         for (const e of DesktopEntries.applications.values) {
-            if (e.noDisplay)
+            if (e.noDisplay || Apps.blocked(e))
                 continue;
             if (q !== "" && String(e.name).toLowerCase().indexOf(q) < 0)
                 continue;

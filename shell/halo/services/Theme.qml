@@ -83,8 +83,8 @@ Singleton {
             surfacePress = rgba(c.surface_container_highest, 0.98);
         if (c.surface)
             scrim = rgba(c.surface, 0.88);
-        if (c.primary_container)
-            iconTile = rgba(c.primary_container, 0.9);
+        if (c.surface_container_highest)
+            iconTile = rgba(c.surface_container_highest, 0.9);
         if (c.icons && c.icons.dir)
             setIcons(c.icons.dir, c.icons.names || []);
     }
@@ -96,8 +96,8 @@ Singleton {
             if (n !== "" && n.charAt(0) !== "/")
                 names.push(n);
         }
-        return ["halo-recolor-icons", c.on_primary, c.primary, c.on_primary_container,
-                Quickshell.env("HOME") + "/.cache/halo/icons/" + String(c.primary).replace("#", "")].concat(names);
+        return ["halo-recolor-icons", c.primary_container, c.primary, c.primary,
+                Quickshell.env("HOME") + "/.cache/halo/icons/" + String(c.primary + c.primary_container).replace(/#/g, "")].concat(names);
     }
 
     // matugen JSON differs between versions: {colors:{dark:{role:"#hex"}}} or {colors:{role:{dark:"#hex"}}}.
@@ -151,7 +151,7 @@ Singleton {
                         root.applyColors(colors);
                         root.pending = colors;
                         cache.setText(JSON.stringify(colors));
-                        if (colors.on_primary && colors.on_primary_container) {
+                        if (colors.primary_container) {
                             icons.command = root.iconCmd(colors);
                             icons.running = true;
                         }

@@ -218,7 +218,7 @@ Singleton {
     function buildLibrary() {
         const by = {};
         for (const e of DesktopEntries.applications.values) {
-            if (e.noDisplay)
+            if (e.noDisplay || Apps.blocked(e))
                 continue;
             const c = catOf(e);
             if (!by[c])
@@ -253,7 +253,7 @@ Singleton {
         const byId = {};
         const names = [];
         for (const e of DesktopEntries.applications.values) {
-            if (e.noDisplay)
+            if (e.noDisplay || Apps.blocked(e))
                 continue;
             byId[e.id] = e;
             names.push(e);

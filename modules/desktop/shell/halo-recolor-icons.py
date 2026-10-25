@@ -36,7 +36,7 @@ ALIAS = {
     "folder": ["nautilus", "thunar", "dolphin", "pcmanfm", "nemo", "files", "system_file_manager", "org_gnome_nautilus"],
     "document_viewer": ["zathura", "evince", "okular", "pdf_viewer", "mupdf", "atril"],
     "volume": ["pavucontrol", "pulseaudio", "pipewire", "helvum", "easyeffects"],
-    "settings": ["systemsettings", "gnome_control_center", "system_settings", "gnome_tweaks"],
+    "settings": ["applications_system", "systemsettings", "gnome_control_center", "system_settings", "gnome_tweaks"],
     "browser": ["angelfish", "epiphany", "falkon", "qutebrowser", "librewolf"],
     "calculator": ["gnome_calculator", "kcalc", "qalculate"],
     "notes": ["gnome_text_editor", "kate", "gedit", "mousepad", "xed"],
@@ -46,6 +46,12 @@ ALIAS = {
     "music": ["rhythmbox", "lollypop", "amarok", "elisa"],
     "calendar_1": ["gnome_calendar", "korganizer"],
     "contacts": ["gnome_contacts", "kaddressbook"],
+    "top": ["btop", "htop", "btop_", "bpytop", "bottom", "resources", "mission_center"],
+    "print": ["printer", "system_config_printer", "cups", "printers"],
+    "share_to_computer": ["deskflow", "barrier", "synergy", "input_leap", "lan_mouse"],
+    "sketch": ["infinipaint", "infini_paint"],
+    "services": ["uuctl", "systemd", "systemctl", "systemd_manager"],
+    "book": ["nixos_manual", "nixos", "nix", "nix_manual", "manual", "nixos_help"],
     "mail": ["geary", "evolution", "kmail"],
 }
 ALIAS_REV = {a: t for t, lst in ALIAS.items() for a in lst}

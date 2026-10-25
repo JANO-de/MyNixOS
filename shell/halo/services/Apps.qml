@@ -140,6 +140,16 @@ Singleton {
         }
     }
 
+    // Entries never shown as icons (lower-case names, substring match).
+    readonly property var blockedNames: ["neovim wrapper"]
+    function blocked(e) {
+        const n = String(e.name || "").toLowerCase();
+        for (const b of blockedNames)
+            if (n.indexOf(b) >= 0)
+                return true;
+        return false;
+    }
+
     function iconSource(icon) {
         const s = String(icon || "");
         if (s.startsWith("/"))
