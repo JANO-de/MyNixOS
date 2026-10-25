@@ -24,6 +24,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
     onShownChanged: {
+        menuEntry = null;
         if (shown) {
             search.text = "";
             search.focus = false; // search only when tapped
@@ -46,6 +47,12 @@ PanelWindow {
 
     property var apps: filtered()
 
+    // Long-press menu state (Open / Add to or Remove from Home Screen).
+    property var menuEntry: null
+    property point menuAt: Qt.point(0, 0)
+    readonly property bool menuInFolder: menuEntry ? !!Home.folderedIds()[menuEntry.id] : false
+    readonly property bool menuOnHome: menuEntry ? (Home.indexOfIcon(menuEntry.id) >= 0 || menuInFolder) : false
+
     function launch(entry) {
         UI.closeHome();
         Home.launch(entry);
@@ -65,10 +72,16 @@ PanelWindow {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: UI.closeHome()
+            onClicked: {
+                if (root.menuEntry)
+                    root.menuEntry = null;
+                else
+                    UI.closeHome();
+            }
         }
 
         Item {
+            id: stage
             anchors.fill: parent
             scale: root.shown ? 1 : 1.05
             Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
@@ -148,7 +161,95 @@ PanelWindow {
                     width: grid.cellWidth
                     height: grid.cellHeight
                     entry: modelData
-                    onActivated: root.launch(modelData)
+                    onActivated: {
+                        if (root.menuEntry)
+                            root.menuEntry = null;
+                        else
+                            root.launch(modelData);
+                    }
+                    onLongPressed: {
+                        root.menuAt = mapToItem(stage, width / 2, 0);
+                        root.menuEntry = modelData;
+                    }
+                }
+            }
+
+            Column {
+                id: iconMenu
+                visible: root.menuEntry !== null
+                z: 5
+                width: 240
+                spacing: 4
+                x: Math.max(12, Math.min(stage.width - width - 12, root.menuAt.x - width / 2))
+                y: Math.max(12, Math.min(stage.height - height - 12, root.menuAt.y - height - 8))
+
+                Rectangle {
+                    width: parent.width
+                    height: 44
+                    radius: 14
+                    color: openTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Open"
+                        color: Theme.text
+                        font.pixelSize: 15
+                    }
+                    MouseArea {
+                        id: openTap
+                        anchors.fill: parent
+                        onClicked: {
+                            const e = root.menuEntry;
+                            root.menuEntry = null;
+                            if (e)
+                                root.launch(e);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    visible: !root.menuOnHome
+                    width: parent.width
+                    height: 44
+                    radius: 14
+                    color: addTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Add to Home Screen"
+                        color: Theme.text
+                        font.pixelSize: 15
+                    }
+                    MouseArea {
+                        id: addTap
+                        anchors.fill: parent
+                        onClicked: {
+                            if (root.menuEntry)
+                                Home.addToHome(root.menuEntry.id);
+                            root.menuEntry = null;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    visible: root.menuOnHome && !root.menuInFolder
+                    width: parent.width
+                    height: 44
+                    radius: 14
+                    color: rmTap.pressed ? Qt.rgba(0.4, 0.15, 0.15, 0.98) : Qt.rgba(0.25, 0.1, 0.1, 0.97)
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Remove from Home Screen"
+                        color: "#ff8f8f"
+                        font.pixelSize: 14
+                    }
+                    MouseArea {
+                        id: rmTap
+                        anchors.fill: parent
+                        onClicked: {
+                            if (root.menuEntry)
+                                Home.hideIconAt(Home.indexOfIcon(root.menuEntry.id));
+                            root.menuEntry = null;
+                        }
+                    }
                 }
             }
         }

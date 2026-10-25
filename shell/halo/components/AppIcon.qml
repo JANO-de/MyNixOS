@@ -10,6 +10,7 @@ Item {
     property var entry: null
     property bool interactive: true
     signal activated
+    signal longPressed
 
     scale: tap.pressed && interactive ? 0.92 : 1
     Behavior on scale { NumberAnimation { duration: 90 } }
@@ -75,5 +76,6 @@ Item {
         anchors.fill: parent
         enabled: root.interactive
         onClicked: root.activated()
+        onPressAndHold: root.longPressed()
     }
 }
