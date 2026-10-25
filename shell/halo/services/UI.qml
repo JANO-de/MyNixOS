@@ -147,19 +147,12 @@ Singleton {
         qsList[n].activate();
     }
 
-    // ---- dock -> screen drag (Slide Over / Split View) --------------------------------------------
+    // ---- dock -> screen drag (Split Screen) --------------------------------------------
+    // Android: above the dock, the left half / right half of the screen are the two drop targets.
     function dockDragZoneAt(x, y) {
         if (y > dockRect.y - 24)
             return ""; // still over the dock: releasing here cancels
-        if (x < 80)
-            return "slide-left";
-        if (x > dockScreenW - 80)
-            return "slide-right";
-        if (x < dockScreenW * 0.35)
-            return "split-left";
-        if (x > dockScreenW * 0.65)
-            return "split-right";
-        return "";
+        return x < dockScreenW / 2 ? "split-left" : "split-right";
     }
     function beginDockDrag(item, screenName) {
         dockDragItem = item;
@@ -185,10 +178,7 @@ Singleton {
         if (!item || z === "")
             return;
         const side = z.indexOf("left") >= 0 ? "left" : "right";
-        if (z.indexOf("slide") === 0)
-            Tiling.slideOver(item, side, screen);
-        else
-            Tiling.splitView(item, side, screen);
+        Tiling.splitView(item, side, screen);
     }
 
     IpcHandler {

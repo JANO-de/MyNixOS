@@ -154,6 +154,7 @@ PanelWindow {
                     MouseArea {
                         id: area
                         anchors.fill: parent
+                        preventStealing: !UI.dockEditing // keep the touch for the swipe-up
                         property real startX: 0
                         property real startY: 0
 
@@ -168,7 +169,7 @@ PanelWindow {
                                 // Swipe up out of the dock: drag the app to an edge (Slide Over) or further in (Split View).
                                 const q = mapToItem(null, m.x, m.y);
                                 const up = startY - q.y;
-                                if (!UI.dockDragActive && up > 44 && Math.abs(q.x - startX) < up * 1.5) {
+                                if (!UI.dockDragActive && up > 22 && Math.abs(q.x - startX) < up * 3) {
                                     cell.launchDragged = true;
                                     UI.beginDockDrag(cell.modelData, root.screen ? root.screen.name : "");
                                 }

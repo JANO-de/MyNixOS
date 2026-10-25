@@ -4,21 +4,20 @@ import Quickshell.Wayland
 import qs.services
 
 // Visual feedback while an app is dragged up out of the dock: the app icon follows the finger and the
-// target is shown (edge = Slide Over, further in = Split View). The touch stays grabbed by the dock
+// two half-screen drop targets are shown (Android split screen). The touch stays grabbed by the dock
 // window; this window only draws, so it takes no input.
 PanelWindow {
     id: root
 
+    property string screenName: "" // plain string: reading `screen` inside `visible` makes a binding loop
     readonly property string zone: UI.dockDragZone
-    readonly property bool isSlide: zone.indexOf("slide") === 0
-    readonly property bool isLeft: zone.indexOf("left") >= 0
-
+    
     anchors.top: true
     anchors.left: true
     anchors.right: true
     anchors.bottom: true
     color: "transparent"
-    visible: UI.dockDragActive && UI.dockDragScreen === (screen ? screen.name : "")
+    visible: UI.dockDragActive && UI.dockDragScreen === screenName
     exclusionMode: ExclusionMode.Ignore
     mask: Region {}
 
@@ -31,45 +30,36 @@ PanelWindow {
         color: Qt.rgba(0, 0, 0, 0.28)
     }
 
-    // Target preview
-    Rectangle {
-        visible: root.zone !== ""
-        width: root.isSlide ? 420 : root.width / 2 - 20
-        height: root.isSlide ? root.height * 0.86 : root.height - 40
-        y: (root.height - height) / 2
-        x: root.isLeft ? (root.isSlide ? 16 : 10) : root.width - width - (root.isSlide ? 16 : 10)
-        radius: 32
-        color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.22)
-        border.color: Theme.accent
-        border.width: 3
+    // Android split drop targets: two half-screen panels above the dock; the one under the finger lights up.
+    Repeater {
+        model: ["split-left", "split-right"]
 
-        Text {
-            anchors.centerIn: parent
-            text: root.isSlide ? "Slide Over" : "Split View"
-            color: Theme.text
-            font.pixelSize: 26
-            font.weight: Font.DemiBold
-        }
-    }
+        Rectangle {
+            id: target
+            required property string modelData
+            readonly property bool hot: root.zone === modelData
+            readonly property bool isLeft: modelData === "split-left"
 
-    // Hint while no zone is hit
-    Rectangle {
-        visible: root.zone === ""
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: 48
-        width: hint.implicitWidth + 40
-        height: 44
-        radius: 22
-        color: Theme.glass
-        border.color: Theme.glassStroke
-        border.width: 1
+            x: isLeft ? 12 : root.width / 2 + 6
+            y: 12
+            width: root.width / 2 - 18
+            height: root.height - UI.dockRect.height - 40
+            radius: 28
+            color: hot ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : Qt.rgba(1, 1, 1, 0.08)
+            border.color: hot ? Theme.accent : Qt.rgba(1, 1, 1, 0.22)
+            border.width: hot ? 3 : 1
+            scale: hot ? 1 : 0.98
+            Behavior on color { ColorAnimation { duration: 120 } }
+            Behavior on scale { NumberAnimation { duration: 120 } }
 
-        Text {
-            id: hint
-            anchors.centerIn: parent
-            text: "Edge: Slide Over  ·  Further in: Split View"
-            color: Theme.text
-            font.pixelSize: 15
+            Text {
+                anchors.centerIn: parent
+                text: target.isLeft ? "Left" : "Right"
+                visible: target.hot
+                color: Theme.text
+                font.pixelSize: 24
+                font.weight: Font.DemiBold
+            }
         }
     }
 
