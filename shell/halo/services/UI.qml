@@ -60,7 +60,7 @@ Singleton {
     readonly property bool dockShown: chromeShown || dockPinned || dockDragging || dockEditing || dockDragActive
 
     // Home and shade are mutually exclusive.
-    function openHome() { settingsOpen = false; shadeOpen = false; overviewOpen = false; dockPinned = false; homeOpen = true; }
+    function openHome() { shadeOpen = false; overviewOpen = false; dockPinned = false; homeOpen = true; }
     function closeHome() { homeOpen = false; }
     function toggleHome() { if (homeOpen) closeHome(); else openHome(); }
 
@@ -82,6 +82,7 @@ Singleton {
         if (libSearchOpen) { libSearchOpen = false; Kbd.hideQuiet(); return; }
         if (shadeOpen) { closeShade(); return; }
         if (overviewOpen) { closeOverview(); return; }
+        if (homeOpen) { closeHome(); return; }
         if (settingsOpen) {
             if (appInfoId !== "")
                 appInfoId = "";
@@ -89,7 +90,6 @@ Singleton {
                 settingsBackTick++;
             return;
         }
-        if (homeOpen) { closeHome(); return; }
         backTick++;
     }
 
@@ -98,7 +98,6 @@ Singleton {
         homeOpen = false;
         shadeOpen = false;
         overviewOpen = false;
-        settingsOpen = false;
         Quickshell.execDetached(["hyprctl", "eval", "go_home()"]);
     }
 
@@ -111,14 +110,13 @@ Singleton {
     function openAppInfo(id) { openSettingsPage("apps"); appInfoId = id || ""; }
     function toggleSettings() { if (settingsOpen) closeSettings(); else openSettings(); }
 
-    function openOverview() { settingsOpen = false; homeOpen = false; shadeOpen = false; dockPinned = false; overviewOpen = true; }
+    function openOverview() { homeOpen = false; shadeOpen = false; dockPinned = false; overviewOpen = true; }
     function closeOverview() { overviewOpen = false; }
     function toggleOverview() { if (overviewOpen) closeOverview(); else openOverview(); }
 
     function openShade() {
         if (shadeOpen)
             return;
-        settingsOpen = false;
         homeOpen = false;
         overviewOpen = false;
         shadeOpenedAt = Date.now();

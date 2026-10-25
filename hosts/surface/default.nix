@@ -59,6 +59,7 @@ in
     shell = "halo";
     autoMode = true; # tablet/desktop from attached keyboards (halo-autokbd)
     greeterOsk.enable = true; # log in by touch, no Type Cover needed
+    haloGreeter.enable = true; # Halo greetd login screen instead of SDDM (see greeter.nix)
   };
   modules.programs.profile = "lean";
   hardware.nvidia.enable = false; # Intel HD 620 only

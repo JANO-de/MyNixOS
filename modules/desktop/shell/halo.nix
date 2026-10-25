@@ -128,6 +128,14 @@ in
       haloApp
       (haloAppEntry "files" "Files" "system-file-manager" "Utility")
       (haloAppEntry "gallery" "Gallery" "image-x-generic" "Graphics")
+      (pkgs.makeDesktopItem {
+        name = "halo-settings";
+        desktopName = "Settings";
+        exec = "halo-ctl call settings open";
+        icon = "preferences-system";
+        categories = [ "Settings" ];
+        startupWMClass = "halo-settings";
+      })
       pkgs.glib # gio trash (Files, Gallery)
       pkgs.xdg-utils # xdg-open
       pkgs.zip # Files: compress / extract

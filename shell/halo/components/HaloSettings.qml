@@ -1,12 +1,12 @@
 import QtQuick
 import Quickshell
-import Quickshell.Wayland
 import qs.services
 
 // Settings app (Android-style). Wide screens: category list on the left, page on the right.
 // Narrow screens: the list first, then the page with a back arrow.
+// A real Wayland window (title "Settings" -> app id halo-settings), so split, dock dots and Overview treat it like any app.
 // Open with: halo-ctl call settings open | the gear in the shade | long-press menu on the home screen.
-PanelWindow {
+FloatingWindow {
     id: root
 
     readonly property bool shown: UI.settingsOpen
@@ -64,19 +64,16 @@ PanelWindow {
         }
     }
 
-    anchors.top: true
-    anchors.left: true
-    anchors.right: true
-    anchors.bottom: true
-    color: "transparent"
-    visible: shown || card.opacity > 0.01
-    exclusionMode: ExclusionMode.Ignore
-    // Leave room for the on-screen keyboard (squeekboard sits below this Overlay window otherwise).
-    margins.bottom: (shown && Kbd.visible) ? Kbd.heightFor(screen) : 0
-
-    WlrLayershell.namespace: "halo-settings"
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    title: "Settings"
+    implicitWidth: 1100
+    implicitHeight: 720
+    color: Qt.rgba(Theme.scrim.r, Theme.scrim.g, Theme.scrim.b, 1)
+    visible: shown
+    // Closed from the compositor (kill / close button): keep UI state in sync.
+    onVisibleChanged: {
+        if (!visible && UI.settingsOpen)
+            UI.closeSettings();
+    }
 
     Component { id: cWifi; SetPageWifi {} }
     Component { id: cBluetooth; SetPageBluetooth {} }
@@ -94,11 +91,7 @@ PanelWindow {
     Rectangle {
         id: card
         anchors.fill: parent
-        color: Theme.scrim
-        opacity: root.shown ? 1 : 0
-        scale: root.shown ? 1 : 0.97
-        Behavior on opacity { NumberAnimation { duration: 180 } }
-        Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+        color: "transparent"
 
         // Swallow touches so nothing behind the settings reacts.
         MouseArea { anchors.fill: parent }

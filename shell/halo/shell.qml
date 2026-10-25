@@ -5,6 +5,7 @@ import qs.components
 
 ShellRoot {
     LockScreen {}
+    HaloSettings {}
 
     Variants {
         model: Quickshell.screens
@@ -24,7 +25,6 @@ ShellRoot {
             WindowsMenu { screen: scope.modelData; screenName: scope.modelData.name }
             Shade { screen: scope.modelData }
             Overview { screen: scope.modelData }
-            HaloSettings { screen: scope.modelData }
             LibSearch { screen: scope.modelData }
             NoteEdit { screen: scope.modelData }
             TopEdge { screen: scope.modelData }

@@ -28,6 +28,7 @@ in
     ./shell/dynisland
     ./shell/chronos.nix
     ./shell/halo.nix
+    ./greeter.nix
   ];
 
   options.modules.desktop = {
