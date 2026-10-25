@@ -71,3 +71,7 @@ Known, not fixed: a Wi-Fi rescan rebuilds the list and clears a half-typed passw
 - Rotate the old surface-bootstrap password.
 - DHCP reservation for the Surface.
 - Wi-Fi connect passes the password as a command-line argument (visible in `ps` for a moment); move to `nmcli --ask` via stdin if that matters.
+
+## Keyboard (squeekboard) notes
+- Squeekboard keeps the user's X/hide as an override until the text field changes, so every field tap must call `SetVisible true` (idempotent). `Kbd.show()` now always asks (250 ms merge); it no longer trusts the mirrored `kbd-visible` flag (stale/0.4 s lag). `Kbd.hideQuiet()` hides without the floating button.
+- Wi-Fi password now uses `SetInput` (was a bare TextInput without keyboard logic). UNTESTED.

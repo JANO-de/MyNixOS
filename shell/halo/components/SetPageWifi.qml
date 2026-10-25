@@ -113,36 +113,15 @@ Column {
                             width: parent.width
                             height: 48
 
-                            Rectangle {
+                            SetInput {
+                                id: pw
                                 anchors.left: parent.left
                                 anchors.right: go.left
                                 anchors.rightMargin: 10
-                                height: 48
-                                radius: 24
-                                color: Qt.rgba(1, 1, 1, 0.12)
-
-                                TextInput {
-                                    id: pw
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 18
-                                    anchors.rightMargin: 18
-                                    verticalAlignment: TextInput.AlignVCenter
-                                    echoMode: TextInput.Password
-                                    inputMethodHints: Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
-                                    color: Theme.text
-                                    font.pixelSize: 18
-                                    clip: true
-                                    focus: net.open && !net.modelData.active
-                                    onAccepted: go.clicked()
-
-                                    Text {
-                                        visible: pw.text === ""
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: "Password"
-                                        color: Theme.dim
-                                        font.pixelSize: 18
-                                    }
-                                }
+                                placeholder: "Password"
+                                password: true
+                                grab: net.open && !net.modelData.active
+                                onAccepted: go.clicked()
                             }
                             SetButton {
                                 id: go

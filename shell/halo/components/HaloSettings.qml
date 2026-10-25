@@ -46,6 +46,8 @@ PanelWindow {
         if (shown) {
             page = "";
             Info.refresh();
+        } else if (Mode.tablet && Kbd.visible) {
+            Kbd.hideQuiet();
         }
     }
 
@@ -88,13 +90,31 @@ PanelWindow {
         // Swallow touches so nothing behind the settings reacts.
         MouseArea { anchors.fill: parent }
 
-        // On the card (not a sibling Item) so Esc typed into a page's TextInput bubbles up to it.
-        focus: root.shown
-        Keys.onEscapePressed: {
-            if (!root.wide && root.page !== "")
-                root.page = "";
-            else
-                UI.closeSettings();
+        // Tap anywhere that is not a text field: drop focus, tuck the keyboard away. Checked shortly after
+        // release and skipped when a SetInput was pressed or took focus meanwhile (e.g. opening a password row).
+        PointHandler {
+            id: outside
+            property real pressAt: 0
+            onActiveChanged: {
+                if (active) {
+                    pressAt = Date.now();
+                    return;
+                }
+                const d = Math.hypot(point.position.x - point.pressPosition.x, point.position.y - point.pressPosition.y);
+                if (d < 24)
+                    outsideTimer.restart();
+            }
+        }
+        Timer {
+            id: outsideTimer
+            interval: 120
+            onTriggered: {
+                if (UI.inputTapAt >= outside.pressAt - 50 || UI.inputFocusAt >= outside.pressAt - 50)
+                    return;
+                card.forceActiveFocus();
+                if (Mode.tablet && Kbd.visible)
+                    Kbd.hideQuiet();
+            }
         }
 
         // ---- Header ------------------------------------------------------------------------

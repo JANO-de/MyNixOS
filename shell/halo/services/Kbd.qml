@@ -23,9 +23,22 @@ Singleton {
         return screen.width > screen.height ? landscapeHeight : portraitHeight;
     }
 
+    // Always asks squeekboard (SetVisible true is idempotent); never trusts the mirrored `visible` flag,
+    // which can be stale or 0.4 s behind. Calls closer than 250 ms are merged.
+    property double lastShowAt: 0
+
     function show() {
         dismissed = false;
+        const now = Date.now();
+        if (now - lastShowAt < 250)
+            return;
+        lastShowAt = now;
         Quickshell.execDetached(["kbd-toggle", "show"]);
+    }
+
+    // Hide without raising the floating "show keyboard" button (tap outside a field, Settings closed).
+    function hideQuiet() {
+        Quickshell.execDetached(["kbd-toggle", "hide"]);
     }
 
     function hide() {

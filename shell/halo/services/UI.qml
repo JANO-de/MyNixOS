@@ -33,6 +33,8 @@ Singleton {
     property string dockDragScreen: ""
     property real dockDragX: 0
     property real dockDragY: 0
+    property double inputFocusAt: 0 // last time a SetInput gained focus
+    property double inputTapAt: 0 // last press on a SetInput (Settings uses it to tell field taps from other taps)
     property string dockDragZone: "" // "", slide-left, slide-right, split-left, split-right
 
     // Finger-tracked pulls from the screen edges (see TopEdge.qml / BottomEdge.qml).
