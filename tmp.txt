@@ -1,0 +1,199 @@
+halo-ha
+ndoff.tar
+.gz
+GZ
+HANDOFF.md
+75 líneas
+MD
+
+Handoff read. The tarball only contains the same HANDOFF.md, with no repo files, so I can’t touch the code yet.
+
+Open problem #1 is the vanished shell after update 12. Run this and send me the output:
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 60 --no-pager | grep -viE "portal|kbd-height"'
+
+If the log shows nothing useful, bisect by removing the new overlay (in the repo root):
+
+sed -i '/SplitDivider/d' shell/halo/shell.qml && scripts/halo-dev.sh
+
+Tell me whether the shell comes back. If you can, also upload a fresh Nixos_tar.xz so I can read SplitDivider.qml, DockDrag.qml, Tiling.qml and UI.qml and find the cause directly.
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 60 --no-pager | grep -viE "portal|kbd-height"'
+(jano@192.168.0.115) Password: 
+oct 25 12:46:14 surface halo-tiling[8439]: ok
+oct 25 12:46:15 surface halo-tiling[8448]: ok
+oct 25 12:47:39 surface quickshell[8008]:   INFO: Reloading configuration...
+oct 25 12:47:39 surface systemd[1352]: Stopping [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo...
+oct 25 12:47:39 surface systemd[1352]: Stopped [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:47:39 surface systemd[1352]: halo-test.service: Consumed 13.040s CPU time over 1min 41.995s wall clock time, 627.5M memory peak.
+oct 25 12:47:39 surface systemd[1352]: Started [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:47:40 surface quickshell[9424]:   INFO: Launching config: "/home/jano/halo/shell.qml"
+oct 25 12:47:40 surface quickshell[9424]:   INFO: Shell ID: "e3939426049d9f190db632afedde8c27" Path ID "e3939426049d9f190db632afedde8c27"
+oct 25 12:47:40 surface quickshell[9424]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/s97grognt/log.qslog"
+oct 25 12:47:40 surface quickshell[9424]:   INFO: Configuration Loaded
+oct 25 12:48:10 surface halo-tiling[9974]: ok
+oct 25 12:48:10 surface halo-tiling[9974]: ok
+oct 25 12:48:10 surface halo-tiling[9974]: ok
+oct 25 12:48:11 surface halo-tiling[9974]: ok
+oct 25 12:48:24 surface quickshell[9424]:   WARN quickshell.wayland.screencopy.hyprland: Ending recording due to screencopy failure for qs::wayland::screencopy::ScreencopyContext(0x7876a3363500)
+oct 25 12:48:24 surface quickshell[9424]:   WARN quickshell.wayland.screencopy.hyprland: Ending recording due to screencopy failure for qs::wayland::screencopy::ScreencopyContext(0x7876a3445a80)
+oct 25 12:48:46 surface quickshell[9424]:   WARN quickshell.wayland.screencopy.hyprland: Ending recording due to screencopy failure for qs::wayland::screencopy::ScreencopyContext(0x7876a33660c0)
+oct 25 12:48:46 surface quickshell[9424]:   WARN quickshell.wayland.screencopy.hyprland: Ending recording due to screencopy failure for qs::wayland::screencopy::ScreencopyContext(0x7876c39be180)
+oct 25 12:48:51 surface halo-tiling[11127]: ok
+oct 25 12:48:51 surface halo-tiling[11127]: ok
+oct 25 12:48:51 surface halo-tiling[11127]: ok
+oct 25 12:48:52 surface halo-tiling[11127]: ok
+oct 25 12:50:12 surface systemd[1352]: Stopping [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo...
+oct 25 12:50:12 surface systemd[1352]: Stopped [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:50:12 surface systemd[1352]: halo-test.service: Consumed 25.266s CPU time over 2min 32.615s wall clock time, 783.8M memory peak.
+oct 25 12:50:12 surface systemd[1352]: Started [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:50:12 surface quickshell[11959]:   INFO: Launching config: "/home/jano/halo/shell.qml"
+oct 25 12:50:12 surface quickshell[11959]:   INFO: Shell ID: "e3939426049d9f190db632afedde8c27" Path ID "e3939426049d9f190db632afedde8c27"
+oct 25 12:50:12 surface quickshell[11959]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/789ovognt/log.qslog"
+oct 25 12:50:13 surface quickshell[11959]:   INFO: Configuration Loaded
+oct 25 12:50:31 surface halo-tiling[12416]: target 63ef20ccb0f0
+oct 25 12:50:31 surface halo-tiling[12416]: ok
+oct 25 12:50:31 surface halo-tiling[12416]: ok
+oct 25 12:50:31 surface halo-tiling[12416]: ok
+oct 25 12:50:32 surface halo-tiling[12416]: ok
+oct 25 12:53:52 surface quickshell[11959]:   INFO: Reloading configuration...
+oct 25 12:53:52 surface systemd[1352]: Stopping [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo...
+oct 25 12:53:53 surface systemd[1352]: Stopped [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:53:53 surface systemd[1352]: halo-test.service: Consumed 11.642s CPU time over 3min 40.452s wall clock time, 640.2M memory peak.
+oct 25 12:53:53 surface systemd[1352]: Started [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:53:53 surface quickshell[14382]:   INFO: Launching config: "/home/jano/halo/shell.qml"
+oct 25 12:53:53 surface quickshell[14382]:   INFO: Shell ID: "e3939426049d9f190db632afedde8c27" Path ID "e3939426049d9f190db632afedde8c27"
+oct 25 12:53:53 surface quickshell[14382]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/i3bt1pgnt/log.qslog"
+oct 25 12:53:53 surface quickshell[14382]:  ERROR: Failed to load configuration
+oct 25 12:53:53 surface quickshell[14382]:  ERROR:   caused by @shell.qml[20:13]: Type DockDrag unavailable
+oct 25 12:53:53 surface quickshell[14382]:  ERROR:   caused by @components/DockDrag.qml[41:13]: Cannot override FINAL property
+oct 25 12:53:53 surface systemd[1352]: halo-test.service: Main process exited, code=exited, status=255/EXCEPTION
+oct 25 12:53:53 surface systemd[1352]: halo-test.service: Failed with result 'exit-code'.
+oct 25 12:54:02 surface systemd[1352]: Started [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 12:54:02 surface quickshell[14519]:   INFO: Launching config: "/home/jano/halo/shell.qml"
+oct 25 12:54:02 surface quickshell[14519]:   INFO: Shell ID: "e3939426049d9f190db632afedde8c27" Path ID "e3939426049d9f190db632afedde8c27"
+oct 25 12:54:02 surface quickshell[14519]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/b7b22pgnt/log.qslog"
+oct 25 12:54:03 surface quickshell[14519]:  ERROR: Failed to load configuration
+oct 25 12:54:03 surface quickshell[14519]:  ERROR:   caused by @shell.qml[20:13]: Type DockDrag unavailable
+oct 25 12:54:03 surface quickshell[14519]:  ERROR:   caused by @components/DockDrag.qml[41:13]: Cannot override FINAL property
+oct 25 12:54:03 surface systemd[1352]: halo-test.service: Main process exited, code=exited, status=255/EXCEPTION
+oct 25 12:54:03 surface systemd[1352]: halo-test.service: Failed with result 'exit-code'.
+
+Diagnosing a QML property override error.
+
+Found it: components/DockDrag.qml line 41, “Cannot override FINAL property”. Some declaration there redefines a built-in property (probably screen, visible, width or similar on a PanelWindow). I can’t see the file, so send me the lines:
+
+ssh jano@192.168.0.115 'sed -n 25,70p ~/halo/components/DockDrag.qml'
+
+I’ll answer with halo-update-13.tar.gz (untested, since there is no QML runtime here).
+
+❯ ssh jano@192.168.0.115 'sed -n 25,70p ~/halo/components/DockDrag.qml'
+(jano@192.168.0.115) Password: 
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.28)
+    }
+
+    // Android split drop targets: two half-screen panels above the dock; the one under the finger lights up.
+    Repeater {
+        model: ["split-left", "split-right"]
+
+        Rectangle {
+            id: target
+            required property string modelData
+            readonly property bool hot: root.zone === modelData
+            readonly property bool left: modelData === "split-left"
+
+            x: left ? 12 : root.width / 2 + 6
+            y: 12
+            width: root.width / 2 - 18
+            height: root.height - UI.dockRect.height - 40
+            radius: 28
+            color: hot ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : Qt.rgba(1, 1, 1, 0.08)
+            border.color: hot ? Theme.accent : Qt.rgba(1, 1, 1, 0.22)
+            border.width: hot ? 3 : 1
+            scale: hot ? 1 : 0.98
+            Behavior on color { ColorAnimation { duration: 120 } }
+            Behavior on scale { NumberAnimation { duration: 120 } }
+
+            Text {
+                anchors.centerIn: parent
+                text: target.left ? "Left" : "Right"
+                visible: target.hot
+                color: Theme.text
+                font.pixelSize: 24
+                font.weight: Font.DemiBold
+            }
+        }
+    }
+
+    // The dragged app
+    Item {
+        x: UI.dockDragX - 40
+        y: UI.dockDragY - 40
+        width: 80
+
+Locating the exact line number within the file.
+
+Line 41 is readonly property bool left. left collides with a built-in final property, so it has to be renamed. I don’t have the file, so here is a one-line patch instead of a tarball. Run it in the repo root:
+
+sed -i 's/\bleft\b: modelData/isLeft: modelData/; s/x: left ?/x: isLeft ?/; s/target\.left/target.isLeft/' shell/halo/components/DockDrag.qml && grep -n "isLeft\|\bleft\b" shell/halo/components/DockDrag.qml && scripts/halo-dev.sh
+
+Check that the grep output shows only isLeft (and anchors.left if there is any), then look at the shell. Untested.
+
+If it still fails, send me the first ERROR from:
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 15 --no-pager | grep ERROR'
+
+sed -i 's/\bleft\b: modelData/isLeft: modelData/; s/x: left ?/x: isLeft ?/; s/target\.left/target.isLeft/' shell/halo/components/DockDrag.qml && grep -n "isLeft\|\bleft\b" shell/halo/components/DockDrag.qml && scripts/halo-dev.sh
+
+No QML errors or warnings. The log also shows a split ran on workspace 5 at 13:30:57, followed by five divider snaps (13:31:00 to 13:31:08), each ok. So the split and the divider are still working.
+
+I can’t tell from the log which of the new features you tried. Reply with pass or fail for each:
+
+Long-press a dock icon: does the menu appear above the icon?
+Split left or right with an app in front: did it split at once?
+From home, did Split left/right stage the app (placeholder plus pill with ✕)?
+Tapping a second app after staging: did it open and split in?
+Is the divider dimmed right after a snap, and does it ignore touch for a moment?
+
+For any that failed, tell me what you saw on screen. If it was a stage or menu failure, also send:
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 80 --no-pager | grep -iE "appmenu|splitstage|stage|menu|TypeError|ReferenceError"'
+
+If all five pass, I’ll start the taskbar next.
+
+All work
+
+All five work. I’m moving on to the taskbar, starting with the Android dimensions, since I only read the layout logic before.
+
+Status: the Apps and Dock patches for the Android taskbar layout are in and brace-checked. I’m now updating HANDOFF.md and packaging update 18.
+
+halo-update-18.tar.gz is ready: the dock now follows the Android taskbar layout. It is untested (brace-checked only). It changes Dock.qml, Apps.qml and HANDOFF.md.
+
+Extract it from the repo root and run the dev script:
+
+tar xzf ~/Downloads/halo-update-18.tar.gz && scripts/halo-dev.sh
+
+What changed (from TaskbarView and TaskbarRecentAppsController):
+
+The All Apps button is now first in tablet mode too, and opens the app library.
+The order is All Apps, then pinned apps, then a divider, then recents. With no recents, the divider sits right after All Apps instead.
+In tablet mode only the 2 most recently used non-pinned apps show, the app in front is excluded, and they run oldest to newest. Desktop mode still shows every running app.
+
+Test:
+
+Open 3 or more apps that aren’t pinned, then go home. Check that only 2 recents show after the divider.
+Check that All Apps opens the library.
+Drag a home-screen icon onto the dock and check that the insertion marker and the drop still land in the right place.
+
+Send me the output of this, plus anything that looks wrong on screen:
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 40 --no-pager | grep -E "ERROR|WARN" | grep -viE "portal|screencopy"'
+
+Not matched to Android yet: I couldn’t find the taskbar icon-size numbers in the source, so icon sizes and spacing are unchanged. A running-app dot still shows in tablet mode, which Android only does in desktop windowing.
+
+After you confirm this, I’ll do per-app window previews (“Manage windows”) from the long-press menu.

@@ -10,6 +10,17 @@ PanelWindow {
     id: root
 
     readonly property int iconSize: Mode.tablet ? 64 : 48
+    // Android taskbar spacing (res/values/dimens.xml): taskbar_icon_size 44dp, taskbar_icon_spacing 12dp per side
+    // (transient taskbar = tablet: transient_taskbar_icon_spacing 10dp). Visible gap between icons = 2 x spacing.
+    // Scaled to our icon size (icon px / 44dp).
+    readonly property real gap: Math.round(iconSize * 2 * (Mode.tablet ? 10 : 12) / 44)
+
+    // Android TaskbarView order: [All Apps][divider if no recents][pinned][divider if recents][recents/running]
+    readonly property var pinnedItems: Apps.items.filter(i => i.pinIndex >= 0)
+    readonly property var recentItems: Apps.items.filter(i => i.pinIndex < 0)
+    readonly property real dividerW: 4
+    readonly property bool dividerAfterAllApps: recentItems.length === 0 && pinnedItems.length > 0
+    readonly property bool dividerForRecents: recentItems.length > 0 && pinnedItems.length > 0
 
     anchors.bottom: true
     margins.bottom: 10
@@ -27,7 +38,7 @@ PanelWindow {
     Binding { target: UI; property: "dockScreenW"; value: root.screen ? root.screen.width : 0 }
     Binding { target: UI; property: "dockScreenH"; value: root.screen ? root.screen.height : 0 }
     Binding { target: UI; property: "dockRowLeft"; value: (root.screen ? (root.screen.width - pill.width) / 2 : 0) + 14 }
-    Binding { target: UI; property: "dockLead"; value: Mode.tablet ? 0 : root.iconSize + row.spacing }
+    Binding { target: UI; property: "dockLead"; value: root.iconSize + row.spacing + (root.dividerAfterAllApps ? root.dividerW + row.spacing : 0) }
     Binding { target: UI; property: "dockStep"; value: root.iconSize + row.spacing }
 
     Rectangle {
@@ -36,8 +47,8 @@ PanelWindow {
         // Follows the finger during the bottom swipe inside an app (iPad dock reveal).
         anchors.bottomMargin: UI.dockDragging ? -(height + 40) * (1 - UI.dockPeek) : (UI.dockShown ? 0 : -(height + 40))
         opacity: UI.dockDragging ? Math.min(1, UI.dockPeek * 2) : (UI.dockShown ? 1 : 0)
-        Behavior on anchors.bottomMargin { enabled: !UI.dockDragging; NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { enabled: !UI.dockDragging; NumberAnimation { duration: 240 } }
+        Behavior on anchors.bottomMargin { enabled: !UI.dockDragging; NumberAnimation { duration: 417; easing.type: Easing.OutQuint } } // TRANSIENT_TASKBAR_STASH_DURATION
+        Behavior on opacity { enabled: !UI.dockDragging; NumberAnimation { duration: UI.dockShown ? 50 : 417 } } // TRANSIENT_TASKBAR_STASH_ALPHA_DURATION
         anchors.horizontalCenter: parent.horizontalCenter
         width: row.implicitWidth + 28
         height: root.iconSize + 24
@@ -51,7 +62,7 @@ PanelWindow {
         // Insertion marker while an icon from the home screen hovers the dock.
         Rectangle {
             visible: UI.dockDropHot
-            x: 14 + UI.dockLead + UI.dockDropIndex * UI.dockStep - 9
+            x: 14 + UI.dockLead + UI.dockDropIndex * UI.dockStep - root.gap / 2 - 2
             y: 12
             width: 4
             height: root.iconSize
@@ -62,11 +73,10 @@ PanelWindow {
         Row {
             id: row
             anchors.centerIn: parent
-            spacing: 14
+            spacing: root.gap
 
-            // Apps button: desktop mode only (tablet uses the edge swipe).
+            // All Apps button: first in the taskbar (Android), in tablet mode too.
             Item {
-                visible: !Mode.tablet
                 width: root.iconSize
                 height: root.iconSize
                 scale: launcherArea.pressed ? 0.88 : 1
@@ -96,8 +106,9 @@ PanelWindow {
                 }
             }
 
-            Repeater {
-                model: Apps.items
+            // One icon cell (pinned and recent/running apps share it).
+            Component {
+                id: cellComp
 
                 Item {
                     id: cell
@@ -106,6 +117,7 @@ PanelWindow {
                     readonly property bool pinnedItem: modelData.pinIndex >= 0
                     property real dragDx: 0
                     property bool dragging: false
+                    property bool menuOpened: false // long-press menu opened by this press (Android: keep dragging = drag the icon)
                     property bool launchDragged: false // dragged up out of the dock (Slide Over / Split View)
 
                     width: root.iconSize
@@ -163,13 +175,18 @@ PanelWindow {
                             startX = p.x;
                             startY = p.y;
                             cell.launchDragged = false;
+                            cell.menuOpened = false;
                         }
                         onPositionChanged: m => {
                             if (!UI.dockEditing && pressed) {
                                 // Swipe up out of the dock: drag the app to an edge (Slide Over) or further in (Split View).
                                 const q = mapToItem(null, m.x, m.y);
                                 const up = startY - q.y;
-                                if (!UI.dockDragActive && up > 22 && Math.abs(q.x - startX) < up * 3) {
+                                // TaskbarDragController: after the long-press popup opened, moving the finger starts the drag.
+                                const afterHold = cell.menuOpened && Math.hypot(q.x - startX, q.y - startY) > 12;
+                                if (!UI.dockDragActive && ((up > 22 && Math.abs(q.x - startX) < up * 3) || afterHold)) {
+                                    if (afterHold)
+                                        UI.closeAppMenu();
                                     cell.launchDragged = true;
                                     UI.beginDockDrag(cell.modelData, root.screen ? root.screen.name : "");
                                 }
@@ -219,8 +236,12 @@ PanelWindow {
                             Apps.activate(cell.modelData);
                         }
                         onPressAndHold: {
-                            if (!UI.dockEditing && !cell.dragging && !cell.launchDragged)
-                                UI.dockEditing = true;
+                            // Android: long-press opens the app menu (split left/right, ...); "Edit dock" is in it.
+                            if (!UI.dockEditing && !cell.dragging && !cell.launchDragged) {
+                                const p = cell.mapToItem(null, cell.width / 2, 0);
+                                UI.openAppMenu(cell.modelData, UI.dockRect.x + p.x, UI.dockRect.y + p.y - 8, root.screen ? root.screen.name : "");
+                                cell.menuOpened = true;
+                            }
                         }
                     }
 
@@ -254,6 +275,44 @@ PanelWindow {
                         }
                     }
                 }
+            }
+
+            Item {
+                visible: root.dividerAfterAllApps
+                width: root.dividerW
+                height: root.iconSize
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 2
+                    height: root.iconSize * 0.6
+                    radius: 1
+                    color: Theme.dim
+                    opacity: 0.6
+                }
+            }
+
+            Repeater {
+                model: root.pinnedItems
+                delegate: cellComp
+            }
+
+            Item {
+                visible: root.dividerForRecents
+                width: root.dividerW
+                height: root.iconSize
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 2
+                    height: root.iconSize * 0.6
+                    radius: 1
+                    color: Theme.dim
+                    opacity: 0.6
+                }
+            }
+
+            Repeater {
+                model: root.recentItems
+                delegate: cellComp
             }
 
             // Leaves dock edit mode.

@@ -19,6 +19,9 @@ ShellRoot {
             Dock { screen: scope.modelData }
             DockDrag { screen: scope.modelData; screenName: scope.modelData.name }
             SplitDivider { screen: scope.modelData }
+            SplitStage { screen: scope.modelData; screenName: scope.modelData.name }
+            AppMenu { screen: scope.modelData; screenName: scope.modelData.name }
+            WindowsMenu { screen: scope.modelData; screenName: scope.modelData.name }
             Shade { screen: scope.modelData }
             Overview { screen: scope.modelData }
             HaloSettings { screen: scope.modelData }

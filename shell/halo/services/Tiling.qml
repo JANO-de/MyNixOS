@@ -29,6 +29,7 @@ Singleton {
     property real ratio: 0.5 // share of the width taken by the left window
     property bool splitAlive: false // both windows exist on splitWs
     property bool splitVisible: false // ... and that workspace is the one on screen
+    property bool resizing: false // Android DividerView: not interactive while a resize runs
 
     readonly property real gapOut: Mode.tablet ? 6 : 10
     readonly property real gapIn: Mode.tablet ? 6 : 5
@@ -48,6 +49,8 @@ Singleton {
     // Snap the left window to `r` (0.3 / 0.5 / 0.7).
     function applyRatio(r) {
         ratio = r;
+        resizing = true;
+        resizeTimer.restart();
         const wl = Math.round(r * (splitW - 2 * gapOut) - gapIn);
         hypr("dispatch hl.dsp.window.resize({ x = " + wl + ", y = " + Math.round(splitH - 2 * gapOut) + ", relative = false, " + addr(splitL) + " })");
     }
@@ -68,6 +71,12 @@ Singleton {
         Quickshell.execDetached(["sh", "-c", ': > "$XDG_RUNTIME_DIR/halo-split"']);
         if (Mode.tablet)
             hypr('dispatch function() hl.config({ general = { layout = "monocle" } }) end');
+    }
+
+    Timer {
+        id: resizeTimer
+        interval: 400
+        onTriggered: root.resizing = false
     }
 
     // ---- starting a split (dock drag) -----------------------------------------------------------

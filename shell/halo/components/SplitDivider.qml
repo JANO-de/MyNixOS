@@ -80,6 +80,7 @@ PanelWindow {
 
         MouseArea {
             anchors.fill: parent
+            enabled: !Tiling.resizing // Android: the divider is made non-interactive while a resize runs
             preventStealing: true
             onPressed: m => {
                 root.dragX = hit.x + m.x;
@@ -105,6 +106,8 @@ PanelWindow {
         width: root.dragging ? 10 : 6
         height: root.dragging ? 112 : 56
         radius: width / 2
+        opacity: Tiling.resizing ? 0.4 : 1
+        Behavior on opacity { NumberAnimation { duration: 120 } }
         color: root.dragging ? Theme.accent : Qt.rgba(1, 1, 1, 0.75)
         Behavior on x { enabled: !root.dragging; NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
         Behavior on width { NumberAnimation { duration: 120 } }

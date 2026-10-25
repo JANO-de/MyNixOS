@@ -141,8 +141,17 @@ Singleton {
         return false;
     }
 
-    // Launch if closed, focus if running, cycle if several windows.
+    // Launch if closed, focus if running, cycle if several windows. While a split is staged the tapped
+    // app becomes the second half instead.
     function activate(item) {
+        if (UI.splitStaging) {
+            UI.completeSplitSelect(item);
+            return;
+        }
+        activateNow(item);
+    }
+
+    function activateNow(item) {
         const w = item.windows;
         if (w.length > 0) {
             let next = w[0];

@@ -310,6 +310,10 @@ Singleton {
     function launch(entry) {
         if (!entry)
             return;
+        if (typeof UI !== "undefined" && UI.splitStaging) {
+            UI.completeSplitSelect({ key: "launch:" + entry.id, pinIndex: -1, entry: entry, windows: [], name: entry.name, icon: entry.icon });
+            return;
+        }
         if (typeof Mode !== "undefined" && Mode.tablet) {
             pendingLaunch = entry;
             Quickshell.execDetached(["hyprctl", "eval", "new_ws()"]);

@@ -118,6 +118,10 @@ Singleton {
             const t = ToplevelManager.activeToplevel;
             root.dockPinned = false;
             root.dockEditing = false;
+            root.menuItem = null;
+            root.winItem = null;
+            if (t && root.stageItem)
+                root.cancelSplitSelect(); // an app opened by other means: staging is over
             if (t)
                 root.recent = [t].concat(root.recent.filter(x => x !== t));
         }
@@ -179,6 +183,107 @@ Singleton {
             return;
         const side = z.indexOf("left") >= 0 ? "left" : "right";
         Tiling.splitView(item, side, screen);
+    }
+
+    // ---- long-press app menu (Android TaskbarPopupController: split options + extras) ----------
+    property var menuItem: null
+    property string menuScreen: ""
+    property real menuX: 0 // screen x of the icon centre
+    property real menuY: 0 // screen y of the icon top
+    function openAppMenu(item, cx, top, screenName) {
+        menuX = cx;
+        menuY = top;
+        menuScreen = screenName;
+        menuItem = item;
+    }
+    function closeAppMenu() { menuItem = null; }
+
+    // ---- "Manage windows" carousel (Android ManageWindowsTaskbarShortcut) ------------------------
+    property var winItem: null
+    property string winScreen: ""
+    property real winX: 0 // screen x of the icon centre
+    property real winY: 0 // screen y of the icon top
+    function openWindowsMenu(item, cx, top, screenName) {
+        winX = cx;
+        winY = top;
+        winScreen = screenName;
+        winItem = item;
+    }
+    function closeWindowsMenu() { winItem = null; }
+
+    // ---- split select staging (Android SplitShortcut -> startSplitSelection) --------------------
+    // With an app in front the menu item splits at once (Tiling.splitView). With nothing in front (home)
+    // the chosen app is only STAGED: the next app opened (dock, home, library) becomes the other half.
+    property var stageItem: null
+    property string stageSide: ""
+    property string stageScreenName: ""
+    property var stageScreen: null
+    property var stagePending: null
+    readonly property bool splitStaging: stageItem !== null
+
+    function splitFromMenu(item, side, screen) {
+        closeAppMenu();
+        const a = ToplevelManager.activeToplevel;
+        if (a && item.windows.indexOf(a) < 0) {
+            Tiling.splitView(item, side, screen);
+            return;
+        }
+        stageSide = side;
+        stageScreen = screen;
+        stageScreenName = screen ? screen.name : "";
+        stageItem = item;
+    }
+    function cancelSplitSelect() {
+        stageItem = null;
+        stageSide = "";
+        stageScreen = null;
+        stageScreenName = "";
+    }
+    // The second app was chosen: open it, wait until it is in front, then split the staged app in.
+    function completeSplitSelect(second) {
+        const item = stageItem;
+        const side = stageSide;
+        const scr = stageScreen || Quickshell.screens[0];
+        cancelSplitSelect();
+        if (!item)
+            return;
+        if (second.entry && item.entry && second.entry.id === item.entry.id) {
+            Apps.activateNow(second); // same app picked: just open it
+            return;
+        }
+        homeOpen = false;
+        stagePending = { item: item, side: side, scr: scr };
+        stageTimer.tries = 0;
+        stageTimer.seen = false;
+        stageTimer.restart();
+        Apps.activateNow(second);
+    }
+
+    Timer {
+        id: stageTimer
+        property int tries: 0
+        property bool seen: false
+        interval: 250
+        repeat: true
+        onTriggered: {
+            const p = root.stagePending;
+            tries++;
+            if (!p || tries > 40) {
+                stop();
+                root.stagePending = null;
+                return;
+            }
+            const a = ToplevelManager.activeToplevel;
+            if (a && p.item.windows.indexOf(a) < 0) {
+                if (!seen) {
+                    seen = true; // one more tick so the new window settles
+                    return;
+                }
+                stop();
+                root.stagePending = null;
+                Tiling.splitView(p.item, p.side, p.scr);
+            }
+        }
     }
 
     IpcHandler {
