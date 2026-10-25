@@ -1,15 +1,51 @@
-# Halo boot splash: a breathing ring on the greeter's background colour.
+# Halo boot splash: a breathing ring with "HALOS" inside, the letters light up in a wave.
 Window.SetBackgroundTopColor(0.086, 0.161, 0.169);
 Window.SetBackgroundBottomColor(0.039, 0.067, 0.071);
 
-ring = Image("ring.png");
-sprite = Sprite(ring);
-sprite.SetX(Window.GetWidth() / 2 - ring.GetWidth() / 2);
-sprite.SetY(Window.GetHeight() / 2 - ring.GetHeight() / 2);
+W = Window.GetWidth();
+H = Window.GetHeight();
+
+# ring, scaled to 30 % of the screen height
+D = H * 0.30;
+ring_img = Image("ring.png");
+ring_img = ring_img.Scale(D, D);
+ring = Sprite(ring_img);
+ring.SetX(W / 2 - D / 2);
+ring.SetY(H / 2 - D / 2);
+
+# letters: render big, scale so the whole word is ~40 % of the ring diameter
+word[0] = "H";
+word[1] = "A";
+word[2] = "L";
+word[3] = "O";
+word[4] = "S";
+N = 5;
+total = 0;
+for (i = 0; i < N; i++) {
+    raw[i] = Image.Text(word[i], 0.75, 0.94, 0.91, 1, "Sans Bold 48");
+    total = total + raw[i].GetWidth();
+}
+gap = 0.12 * raw[0].GetWidth();
+total = total + gap * (N - 1);
+k = (D * 0.40) / total;
+
+x = W / 2 - (D * 0.40) / 2;
+for (i = 0; i < N; i++) {
+    w = raw[i].GetWidth() * k;
+    h = raw[i].GetHeight() * k;
+    img[i] = raw[i].Scale(w, h);
+    letter[i] = Sprite(img[i]);
+    letter[i].SetX(x);
+    letter[i].SetY(H / 2 - h / 2);
+    letter[i].SetZ(10);
+    x = x + w + gap * k;
+}
 
 t = 0;
 fun refresh() {
     t++;
-    sprite.SetOpacity(0.6 + 0.4 * Math.Sin(t / 16));
+    ring.SetOpacity(0.6 + 0.4 * Math.Sin(t / 16));
+    for (i = 0; i < N; i++)
+        letter[i].SetOpacity(0.35 + 0.65 * (0.5 + 0.5 * Math.Sin(t / 8 - i * 0.9)));
 }
 Plymouth.SetRefreshFunction(refresh);

@@ -23,6 +23,8 @@ in
 
   config = lib.mkIf cfg.enable {
     services.displayManager.sddm.enable = lib.mkForce false;
+    # Wallpaper mirror for the greeter (written by the shell: services/Wallpaper.qml syncGreeter, read by greeter.qml).
+    systemd.tmpfiles.rules = [ "d /var/lib/halo-greeter 0755 ${cfg.user} users -" ];
     services.greetd = {
       enable = true;
       settings.default_session = {
@@ -34,6 +36,9 @@ in
           "HOME=/tmp" "QT_QPA_PLATFORM=wayland" "QT_WAYLAND_DISABLE_WINDOWDECORATION=1" "QT_SCALE_FACTOR=${cfg.scale}"
           "HALO_GREETER_USER=${cfg.user}"
           "HALO_UWSM=${lib.getExe config.programs.uwsm.package}"
+          "HALO_SH=${pkgs.runtimeShell}"
+          "HALO_SYSTEMCTL=${config.systemd.package}/bin/systemctl"
+          "HALO_SESSIONS=${config.services.displayManager.sessionData.desktops}/share/wayland-sessions"
           "${lib.getExe pkgs.quickshell}" "-p" "${dir}/greeter.qml"
         ];
       };

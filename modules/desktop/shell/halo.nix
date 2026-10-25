@@ -153,6 +153,9 @@ in
       pkgs.networkmanager # nmcli (Wi-Fi tile)
       pkgs.bluez # bluetoothctl (Bluetooth tile)
       pkgs.grim # screenshot tile
+      pkgs.slurp # region screenshot tile
+      pkgs.wf-recorder # screen record tile
+      pkgs.hyprsunset # night light tile
       pkgs.libnotify # notify-send
       pkgs.matugen # wallpaper-derived theme colours (Theme.qml)
     ];

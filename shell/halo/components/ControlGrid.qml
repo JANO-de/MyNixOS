@@ -16,7 +16,9 @@ Item {
     readonly property int count: Controls.model.count
     readonly property int rows: Math.ceil(count / cols)
 
-    implicitHeight: rows > 0 ? rows * cell + (rows - 1) * gap : 0
+    readonly property real cellH: count > 8 ? cell * 0.78 : cell
+
+    implicitHeight: rows > 0 ? rows * cellH + (rows - 1) * gap : 0
 
     Repeater {
         model: Controls.model
@@ -34,10 +36,10 @@ Item {
             property real grabY: 0
             readonly property var info: Controls.info(tid)
             readonly property real slotX: (index % root.cols) * (root.cell + root.gap)
-            readonly property real slotY: Math.floor(index / root.cols) * (root.cell + root.gap)
+            readonly property real slotY: Math.floor(index / root.cols) * (root.cellH + root.gap)
 
             width: root.cell
-            height: root.cell
+            height: root.cellH
             x: dragging ? dragX : slotX
             y: dragging ? dragY : slotY
             z: dragging ? 10 : 0
@@ -57,16 +59,36 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 26
-                color: slot.info.active ? Theme.accent : Qt.rgba(1, 1, 1, 0.14)
+                radius: 28
+                color: slot.info.active ? Theme.accent : Qt.rgba(1, 1, 1, 0.12)
+                border.width: 1
+                border.color: slot.info.active ? "transparent" : Qt.rgba(1, 1, 1, 0.08)
                 Behavior on color { ColorAnimation { duration: 160 } }
+
+                Rectangle {
+                    id: badge
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.margins: 14
+                    width: Math.min(46, root.cellH * 0.34)
+                    height: width
+                    radius: width / 2
+                    color: slot.info.active ? Qt.rgba(0, 0, 0, 0.14) : Qt.rgba(1, 1, 1, 0.14)
+
+                    QIcon {
+                        anchors.centerIn: parent
+                        size: parent.width * 0.58
+                        name: slot.info.icon
+                        color: slot.info.active ? Theme.accentInk : Theme.text
+                    }
+                }
 
                 Column {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    anchors.margins: 16
-                    spacing: 2
+                    anchors.margins: 14
+                    spacing: 1
 
                     Text {
                         width: parent.width
@@ -118,7 +140,7 @@ Item {
                     slot.dragX = p.x - slot.grabX;
                     slot.dragY = p.y - slot.grabY;
                     const col = Math.max(0, Math.min(root.cols - 1, Math.floor(p.x / (root.cell + root.gap))));
-                    const row = Math.max(0, Math.min(root.rows - 1, Math.floor(p.y / (root.cell + root.gap))));
+                    const row = Math.max(0, Math.min(root.rows - 1, Math.floor(p.y / (root.cellH + root.gap))));
                     const target = Math.min(root.count - 1, row * root.cols + col);
                     if (target !== slot.index)
                         Controls.move(slot.index, target);
@@ -144,11 +166,10 @@ Item {
                 border.color: Qt.rgba(1, 1, 1, 0.3)
                 border.width: 1
 
-                Rectangle {
+                QIcon {
                     anchors.centerIn: parent
-                    width: 12
-                    height: 2
-                    radius: 1
+                    size: 16
+                    name: "minus"
                     color: Theme.text
                 }
                 MouseArea {

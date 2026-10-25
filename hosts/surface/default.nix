@@ -1,4 +1,4 @@
-# Microsoft Surface Pro 5 (2017, i5-7300U / 8 GB / 128 GB): lean tablet host.
+# HALOS1 = Microsoft Surface Pro 5 (2017, i5-7300U / 8 GB / 128 GB): lean tablet host.
 # niri (chronos fork) + the chronos shell, SDDM greeter with an on-screen
 # keyboard, lean program set. Deployed from the desktop over SSH.
 #
@@ -58,9 +58,9 @@ in
     session = "hyprland"; # Hyprland (UWSM) + Halo; the newest generation is always the default boot entry
     shell = "halo";
     autoMode = true; # tablet/desktop from attached keyboards (halo-autokbd)
-    greeterOsk.enable = true; # log in by touch, no Type Cover needed
     haloGreeter.enable = true; # Halo greetd login screen instead of SDDM (see greeter.nix)
     haloSplash.enable = true; # quiet boot + Halo ring splash
+    droidloom.enable = true; # Android apps in native windows
   };
   modules.programs.profile = "lean";
   hardware.nvidia.enable = false; # Intel HD 620 only

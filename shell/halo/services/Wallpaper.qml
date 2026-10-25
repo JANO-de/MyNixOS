@@ -51,6 +51,21 @@ Singleton {
     function set(spec) {
         current = spec;
         file.setText(JSON.stringify({ current: spec }));
+        syncGreeter();
+    }
+
+    // The greeter user cannot read ~/.config or ~/Pictures: mirror the wallpaper into /var/lib/halo-greeter
+    // (created by greeter.nix, owned by the login user). Image -> copy, procedural preset -> two colours.
+    function syncGreeter() {
+        const d = "d=/var/lib/halo-greeter; [ -d $d ] && [ -w $d ] || exit 0; ";
+        if (current.indexOf("file:") === 0) {
+            Quickshell.execDetached(["sh", "-c", d + "cmp -s \"$1\" $d/wallpaper || { cp -L \"$1\" $d/wallpaper.tmp && mv -f $d/wallpaper.tmp $d/wallpaper; }; echo '{\"image\":true}' > $d/theme.json", "halo", current.slice(5)]);
+            return;
+        }
+        const pr = preset(current.slice(7));
+        const c1 = pr ? (pr.bg || pr.c1) : "#16292b";
+        const c2 = pr ? (pr.line || pr.c2) : "#0a1112";
+        Quickshell.execDetached(["sh", "-c", d + "rm -f $d/wallpaper; printf '{\"image\":false,\"c1\":\"%s\",\"c2\":\"%s\"}' \"$1\" \"$2\" > $d/theme.json", "halo", c1, c2]);
     }
 
     function rescan() {
@@ -74,6 +89,7 @@ Singleton {
                 const p = JSON.parse(text());
                 if (typeof p.current === "string")
                     root.current = p.current;
+                root.syncGreeter();
             } catch (e) {}
         }
     }

@@ -30,6 +30,7 @@ in
     ./shell/halo.nix
     ./greeter.nix
     ./splash.nix
+    ./droidloom.nix
   ];
 
   options.modules.desktop = {
@@ -72,7 +73,7 @@ in
         if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
       # SDDM prefers the last-used session over defaultSession; forget it every
       # boot so a stale choice (e.g. an old Plasma/niri entry) can never win.
-      systemd.tmpfiles.rules = [ "r /var/lib/sddm/state.conf" ];
+      systemd.tmpfiles.rules = lib.optional config.services.displayManager.sddm.enable "r /var/lib/sddm/state.conf";
 
       # ---- session basics ----------------------------------------------------
       # Electron apps (vscodium, vesktop, claude-desktop...) run natively on Wayland
@@ -102,7 +103,7 @@ in
         xdg-utils
         adwaita-icon-theme # cursor theme
         pavucontrol
-      ] ++ lib.optional (!cfg.greeterOsk.enable) astronaut;
+      ] ++ lib.optional (!cfg.greeterOsk.enable && config.services.displayManager.sddm.enable) astronaut;
     }
 
     (lib.mkIf cfg.greeterOsk.enable {

@@ -36,6 +36,7 @@ PanelWindow {
             panel.expand = 0;
             editing = false;
             System.refresh();
+            Controls.refresh();
         }
     }
 
@@ -98,59 +99,58 @@ PanelWindow {
 
             Item {
                 width: parent.width
-                height: 30
+                height: 36
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
+                    color: Theme.text
+                    font.pixelSize: 17
+                    font.weight: Font.DemiBold
                     text: Qt.formatDateTime(clock.date, "dddd, d MMMM")
-                    color: Theme.dim
-                    font.pixelSize: 14
                 }
 
-                // Settings gear
-                Rectangle {
-                    anchors.right: editPill.left
-                    anchors.rightMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 30
-                    height: 30
-                    radius: 15
-                    color: Qt.rgba(1, 1, 1, 0.14)
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "⚙"
-                        color: Theme.text
-                        font.pixelSize: 16
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -6
-                        onClicked: UI.openSettings()
-                    }
-                }
-
-                Rectangle {
-                    id: editPill
+                Row {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    width: editLabel.implicitWidth + 28
-                    height: 30
-                    radius: 15
-                    color: root.editing ? Theme.accent : Qt.rgba(1, 1, 1, 0.14)
+                    spacing: 10
 
-                    Text {
-                        id: editLabel
-                        anchors.centerIn: parent
-                        text: root.editing ? "Done" : "Edit"
-                        color: root.editing ? Theme.accentInk : Theme.text
-                        font.pixelSize: 13
-                        font.weight: Font.DemiBold
+                    Rectangle {
+                        width: 36
+                        height: 36
+                        radius: 18
+                        color: Qt.rgba(1, 1, 1, 0.14)
+
+                        QIcon {
+                            anchors.centerIn: parent
+                            size: 20
+                            name: "gear"
+                            color: Theme.text
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            onClicked: UI.openSettings()
+                        }
                     }
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -6
-                        onClicked: root.editing = !root.editing
+
+                    Rectangle {
+                        width: 36
+                        height: 36
+                        radius: 18
+                        color: root.editing ? Theme.accent : Qt.rgba(1, 1, 1, 0.14)
+                        Behavior on color { ColorAnimation { duration: 140 } }
+
+                        QIcon {
+                            anchors.centerIn: parent
+                            size: 20
+                            name: root.editing ? "check" : "edit"
+                            color: root.editing ? Theme.accentInk : Theme.text
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            onClicked: root.editing = !root.editing
+                        }
                     }
                 }
             }
@@ -173,17 +173,27 @@ PanelWindow {
 
                     Rectangle {
                         required property string modelData
-                        width: chip.implicitWidth + 32
-                        height: 34
-                        radius: 17
+                        width: chip.implicitWidth + 52
+                        height: 36
+                        radius: 18
                         color: Qt.rgba(1, 1, 1, 0.14)
 
                         Text {
                             id: chip
-                            anchors.centerIn: parent
-                            text: "+  " + Controls.info(parent.modelData).title
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 38
+                            text: Controls.info(parent.modelData).title
                             color: Theme.text
                             font.pixelSize: 13
+                        }
+                        QIcon {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            size: 18
+                            name: "plus"
+                            color: Theme.text
                         }
                         MouseArea {
                             anchors.fill: parent
@@ -195,6 +205,7 @@ PanelWindow {
 
             QsSlider {
                 width: parent.width
+                icon: "sun"
                 label: "Brightness"
                 value: System.brightness
                 onMoved: v => System.setBrightness(v)
@@ -202,6 +213,7 @@ PanelWindow {
 
             QsSlider {
                 width: parent.width
+                icon: System.muted ? "mute" : "volume"
                 label: System.muted ? "Volume (muted)" : "Volume"
                 value: System.muted ? 0 : System.volume
                 onMoved: v => System.setVolume(v)

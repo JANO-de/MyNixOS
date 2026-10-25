@@ -8,6 +8,7 @@ Rectangle {
 
     property real value: 0
     property string label: ""
+    property string icon: ""
     signal moved(real v)
 
     property bool dragging: false
@@ -52,14 +53,14 @@ Rectangle {
         }
     }
 
-    Text {
+    QIcon {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: 24
-        text: root.label
+        anchors.leftMargin: 20
+        size: 26
+        name: root.icon
         color: "#1c1c1e"
-        font.pixelSize: 15
-        font.weight: Font.Medium
+        opacity: 0.75
     }
 
     MouseArea {
