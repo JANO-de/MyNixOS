@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import qs.services
@@ -100,8 +101,17 @@ PanelWindow {
                         onRunningChanged: if (!running) cell.rotation = 0
                     }
 
-                    Image {
+                    Rectangle {
+                        visible: Theme.themedIcons
                         anchors.fill: parent
+                        radius: width / 4
+                        color: Theme.iconTile
+                    }
+
+                    Image {
+                        anchors.centerIn: parent
+                        width: parent.width * (Theme.themedIcons ? 0.7 : 1)
+                        height: width
                         source: Apps.iconSource(cell.modelData.icon)
                         sourceSize: Qt.size(root.iconSize * 2, root.iconSize * 2)
                         fillMode: Image.PreserveAspectFit
@@ -211,7 +221,7 @@ PanelWindow {
                         id: doneText
                         anchors.centerIn: parent
                         text: "Done"
-                        color: "#0b1b33"
+                        color: Theme.accentInk
                         font.pixelSize: 15
                         font.weight: Font.DemiBold
                     }

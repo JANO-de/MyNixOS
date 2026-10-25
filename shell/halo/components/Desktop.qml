@@ -68,7 +68,7 @@ PanelWindow {
                 id: doneText
                 anchors.centerIn: parent
                 text: "Done"
-                color: "#0b1b33"
+                color: Theme.accentInk
                 font.pixelSize: 15
                 font.weight: Font.DemiBold
             }
@@ -632,7 +632,7 @@ PanelWindow {
                 width: parent.width
                 height: 44
                 radius: 14
-                color: openTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                color: openTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                 Text {
                     anchors.centerIn: parent
                     text: "Open"
@@ -662,7 +662,7 @@ PanelWindow {
                 width: parent.width
                 height: 44
                 radius: 14
-                color: renameTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                color: renameTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                 Text {
                     anchors.centerIn: parent
                     text: "Rename"
@@ -685,7 +685,7 @@ PanelWindow {
                 width: parent.width
                 height: 44
                 radius: 14
-                color: dockMenuTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                color: dockMenuTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                 Text {
                     anchors.centerIn: parent
                     text: Apps.isPinned(Home.entry(root.menuFor)) ? "Remove from Dock" : "Add to Dock"
@@ -773,7 +773,7 @@ PanelWindow {
                     width: parent.width
                     height: thumbs.height + 32
                     radius: 36
-                    color: Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    color: Theme.surfaceHigh
 
                     Row {
                         id: thumbs
@@ -836,7 +836,7 @@ PanelWindow {
                         width: menu.width
                         height: 64
                         radius: 28
-                        color: rowTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                        color: rowTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                         Behavior on color { ColorAnimation { duration: 90 } }
 
                         Text {
@@ -945,7 +945,7 @@ PanelWindow {
                                 Text {
                                     anchors.centerIn: parent
                                     text: parent.parent.placed ? parent.parent.modelData.title + "  ·  Remove" : "Add " + parent.parent.modelData.title
-                                    color: parent.parent.placed ? Theme.text : "#0b1b33"
+                                    color: parent.parent.placed ? Theme.text : Theme.accentInk
                                     font.pixelSize: 14
                                     font.weight: Font.DemiBold
                                 }
@@ -1062,7 +1062,7 @@ PanelWindow {
                                     Text {
                                         anchors.centerIn: parent
                                         text: parent.modelData
-                                        color: Home.density === parent.index ? "#0b1b33" : Theme.text
+                                        color: Home.density === parent.index ? Theme.accentInk : Theme.text
                                         font.pixelSize: 13
                                     }
                                     MouseArea {
@@ -1071,6 +1071,52 @@ PanelWindow {
                                             Home.density = parent.index;
                                             Home.save();
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Colour scheme (matugen)
+                    Rectangle {
+                        width: parent.width
+                        height: 52 + schemeFlow.height + 12
+                        radius: 24
+                        color: Qt.rgba(1, 1, 1, 0.08)
+
+                        Text {
+                            x: 24
+                            y: 12
+                            text: "Colour scheme"
+                            color: Theme.text
+                            font.pixelSize: 17
+                        }
+                        Flow {
+                            id: schemeFlow
+                            x: 20
+                            y: 48
+                            width: parent.width - 40
+                            spacing: 8
+
+                            Repeater {
+                                model: Theme.schemes
+
+                                Rectangle {
+                                    required property string modelData
+                                    width: schemeText.implicitWidth + 28
+                                    height: 30
+                                    radius: 15
+                                    color: Theme.scheme === modelData ? Theme.accent : Qt.rgba(1, 1, 1, 0.14)
+                                    Text {
+                                        id: schemeText
+                                        anchors.centerIn: parent
+                                        text: parent.modelData
+                                        color: Theme.scheme === parent.modelData ? Theme.accentInk : Theme.text
+                                        font.pixelSize: 13
+                                    }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: Theme.setScheme(parent.modelData)
                                     }
                                 }
                             }

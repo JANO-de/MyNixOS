@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 let
   cfg = config.modules.desktop;
   shellDir = ../../../shell/halo;
@@ -16,6 +16,12 @@ let
   # halo-ctl call home toggle|open|close  (talks to the running shell by its config path)
   haloCtl = pkgs.writeShellScriptBin "halo-ctl" ''
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir} ipc "$@"
+  '';
+  # halo-recolor-icons DARK MID LIGHT OUTDIR NAME...: Papirus SVGs recoloured with the wallpaper palette (Theme.qml).
+  haloRecolorIcons = pkgs.writeShellScriptBin "halo-recolor-icons" ''
+    export HALO_ICON_SRC=${pkgs.papirus-icon-theme}/share/icons
+    export HALO_ARCTIC_SRC=${inputs.arcticons}/icons/white
+    exec ${pkgs.python3}/bin/python3 ${./halo-recolor-icons.py} "$@"
   '';
   # halo-set-pin: choose the lock-screen PIN (4-8 digits). Stored salted+hashed in ~/.config/halo/lock.json.
   haloSetPin = pkgs.writeShellApplication {
@@ -102,6 +108,7 @@ in
   config = lib.mkIf (cfg.shell == "halo") {
     environment.systemPackages = [
       haloCtl
+      haloRecolorIcons
       haloSetPin
       haloAutoKbd
       pkgs.dbus # dbus-monitor: lock before suspend

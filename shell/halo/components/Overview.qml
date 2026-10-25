@@ -47,7 +47,7 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0.04, 0.04, 0.07, 0.62)
+        color: Theme.scrim
         opacity: root.progress
 
         // Empty space: tap = back to the current app, swipe up = home screen.

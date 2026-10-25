@@ -66,7 +66,7 @@ Item {
                     anchors.centerIn: parent
                     visible: parent.valid
                     text: parent.day
-                    color: parent.today ? "#0b1b33" : Theme.text
+                    color: parent.today ? Theme.accentInk : Theme.text
                     font.pixelSize: Math.max(9, root.cs * 0.42)
                 }
             }

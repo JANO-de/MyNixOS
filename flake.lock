@@ -33,6 +33,22 @@
         "type": "github"
       }
     },
+    "arcticons": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792858888,
+        "narHash": "sha256-/MYMhgvoUoXBMLQpcpDVewOWtKnWPZqwps7tFGbVoO0=",
+        "owner": "Donnnno",
+        "repo": "Arcticons",
+        "rev": "2ff828c82e65f9792c750996bceac5e96a697eee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Donnnno",
+        "repo": "Arcticons",
+        "type": "github"
+      }
+    },
     "chronos": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -833,6 +849,7 @@
     },
     "root": {
       "inputs": {
+        "arcticons": "arcticons",
         "chronos": "chronos",
         "claude-desktop": "claude-desktop",
         "forge": "forge",

@@ -14,7 +14,7 @@ Rectangle {
     width: parent ? Math.min(parent.width - 48, 640) : 600
     height: Math.min(maxH, body.childrenRect.height + 96)
     radius: 36
-    color: Qt.rgba(0.11, 0.19, 0.2, 0.97)
+    color: Theme.surfaceHigh
     border.color: Theme.glassStroke
     border.width: 1
 

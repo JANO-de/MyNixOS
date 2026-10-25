@@ -24,7 +24,7 @@ Item {
             width: Home.tile
             height: Home.tile
             radius: Home.tile / 4
-            color: Qt.rgba(1, 1, 1, 0.10)
+            color: Theme.iconTile
 
             Grid {
                 visible: !!(root.entry && root.entry.isFolder)

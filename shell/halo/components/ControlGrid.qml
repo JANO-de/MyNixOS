@@ -72,7 +72,7 @@ Item {
                         width: parent.width
                         elide: Text.ElideRight
                         text: slot.info.title
-                        color: slot.info.active ? "#0b1b33" : Theme.text
+                        color: slot.info.active ? Theme.accentInk : Theme.text
                         font.pixelSize: 15
                         font.weight: Font.DemiBold
                     }
@@ -80,7 +80,7 @@ Item {
                         width: parent.width
                         elide: Text.ElideRight
                         text: slot.info.sub
-                        color: slot.info.active ? "#2a3f5f" : Theme.dim
+                        color: slot.info.active ? Theme.accentInkDim : Theme.dim
                         font.pixelSize: 12
                     }
                 }

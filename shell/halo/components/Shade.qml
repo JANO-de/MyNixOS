@@ -119,7 +119,7 @@ PanelWindow {
                         id: editLabel
                         anchors.centerIn: parent
                         text: root.editing ? "Done" : "Edit"
-                        color: root.editing ? "#0b1b33" : Theme.text
+                        color: root.editing ? Theme.accentInk : Theme.text
                         font.pixelSize: 13
                         font.weight: Font.DemiBold
                     }

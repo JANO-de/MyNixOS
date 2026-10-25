@@ -66,7 +66,7 @@ PanelWindow {
     Rectangle {
         id: content
         anchors.fill: parent
-        color: Qt.rgba(0.04, 0.04, 0.07, 0.6)
+        color: Theme.scrim
         opacity: root.shown ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
@@ -187,7 +187,7 @@ PanelWindow {
                     width: parent.width
                     height: 44
                     radius: 14
-                    color: openTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    color: openTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                     Text {
                         anchors.centerIn: parent
                         text: "Open"
@@ -211,7 +211,7 @@ PanelWindow {
                     width: parent.width
                     height: 44
                     radius: 14
-                    color: addTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    color: addTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                     Text {
                         anchors.centerIn: parent
                         text: "Add to Home Screen"
@@ -233,7 +233,7 @@ PanelWindow {
                     width: parent.width
                     height: 44
                     radius: 14
-                    color: dockTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    color: dockTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
                     Text {
                         anchors.centerIn: parent
                         text: Apps.isPinned(root.menuEntry) ? "Remove from Dock" : "Add to Dock"

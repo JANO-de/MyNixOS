@@ -41,6 +41,11 @@
     # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
+    # Arcticons line-art icons (SVG), recoloured by halo-recolor-icons.
+    arcticons = {
+      url = "github:Donnnno/Arcticons";
+      flake = false;
+    };
     # --- hardware ---
     # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
     # override its nixpkgs input.

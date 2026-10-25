@@ -144,6 +144,8 @@ Singleton {
         const s = String(icon || "");
         if (s.startsWith("/"))
             return "file://" + s;
+        if (Theme.iconDir !== "" && Theme.iconNames[s])
+            return "file://" + Theme.iconDir + "/" + s + ".svg";
         return Quickshell.iconPath(s, "application-x-executable");
     }
 }
