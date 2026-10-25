@@ -17,6 +17,7 @@ Singleton {
     property var widgets: ["clock", "calendar", "media"]
     property var savedOrder: []
     property var folders: ({}) // folderId -> { name, items: [eid,...] }
+    property var hidden: ({}) // eid -> true, for apps removed from the home screen
 
     // Widget row holds at most 4 units.
     readonly property int maxSpan: 4
@@ -156,6 +157,39 @@ Singleton {
         save();
     }
 
+    // Drag-to-trash / "Remove from Home Screen": drops the icon, not the app itself. A folder
+    // drops its whole contents back into the hidden set (they stay out of Home until re-added).
+    function hideIconAt(index) {
+        if (index < 0 || index >= iconModel.count)
+            return;
+        const eid = iconModel.get(index).eid;
+        const nh = Object.assign({}, hidden);
+        if (isFolder(eid)) {
+            const f = folders[eid];
+            const nf = Object.assign({}, folders);
+            delete nf[eid];
+            folders = nf;
+            if (f)
+                for (const m of f.items)
+                    nh[m] = true;
+        } else {
+            nh[eid] = true;
+        }
+        hidden = nh;
+        iconModel.remove(index);
+        save();
+    }
+
+    // Used by the app launcher's "Add to Home Screen" action.
+    function addToHome(eid) {
+        const nh = Object.assign({}, hidden);
+        delete nh[eid];
+        hidden = nh;
+        if (indexOfIcon(eid) < 0)
+            iconModel.append({ eid });
+        save();
+    }
+
     function entry(id) {
         if (isFolder(id)) {
             const f = folders[id];
@@ -182,7 +216,7 @@ Singleton {
         const ids = [];
         const seen = {};
         for (const id of savedOrder) {
-            if (seen[id] || inFolder[id])
+            if (seen[id] || inFolder[id] || hidden[id])
                 continue;
             if (isFolder(id)) {
                 if (folders[id]) {
@@ -195,7 +229,7 @@ Singleton {
             }
         }
         for (const e of names) {
-            if (!seen[e.id] && !inFolder[e.id]) {
+            if (!seen[e.id] && !inFolder[e.id] && !hidden[e.id]) {
                 ids.push(e.id);
                 seen[e.id] = true;
             }
@@ -215,6 +249,7 @@ Singleton {
         savedOrder = [];
         widgets = ["clock", "calendar", "media"];
         folders = ({});
+        hidden = ({});
         showLabels = true;
         density = 1;
         iconModel.clear();
@@ -258,7 +293,7 @@ Singleton {
         for (let i = 0; i < iconModel.count; i++)
             ids.push(iconModel.get(i).eid);
         savedOrder = ids;
-        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density, folders: folders }));
+        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density, folders: folders, hidden: hidden }));
     }
 
     function apply(raw) {
@@ -274,6 +309,8 @@ Singleton {
                 density = p.density;
             if (p.folders && typeof p.folders === "object")
                 folders = p.folders;
+            if (p.hidden && typeof p.hidden === "object")
+                hidden = p.hidden;
         } catch (e) {}
         sync();
     }

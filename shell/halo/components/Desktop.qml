@@ -15,6 +15,8 @@ PanelWindow {
     property string sheet: "" // "", "menu", "wallpapers", "widgets", "settings"
     property point menuAt: Qt.point(0, 0)
     property string openFolder: "" // folder id currently shown in its own sheet, or ""
+    property string menuFor: "" // eid whose long-press context menu is open, or ""
+    property point menuAt2: Qt.point(0, 0)
 
     function openMenu(x, y) {
         menuAt = Qt.point(x, y);
@@ -79,6 +81,28 @@ PanelWindow {
             }
         }
 
+        // Trash (edit mode): drag an icon here and release to remove it from Home.
+        Rectangle {
+            id: trashZone
+            visible: Home.editing
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 22
+            z: 5
+            width: pager.dragActive && pager.overTrash ? 64 : 52
+            height: width
+            radius: width / 2
+            color: pager.dragActive && pager.overTrash ? "#ff5f5f" : Qt.rgba(1, 1, 1, 0.16)
+            Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            Behavior on color { ColorAnimation { duration: 120 } }
+
+            Text {
+                anchors.centerIn: parent
+                text: "\uD83D\uDDD1" // 🗑
+                font.pixelSize: 22
+            }
+        }
+
         // ---- Pages: widgets + icons -----------------------------------------------------------
         Item {
             id: pager
@@ -117,6 +141,7 @@ PanelWindow {
             // into a folder, otherwise it settles as a plain reorder (refreshDrag / mergeTimer / Slot.finish()).
             property var mergeTarget: null
             property string mergeTargetEid: ""
+            property bool overTrash: false
 
             function slotOf(i) {
                 let p = 0;
@@ -153,6 +178,15 @@ PanelWindow {
                 const p = container.mapFromItem(null, fx, fy);
                 s.dragX = p.x - s.grabX;
                 s.dragY = p.y - s.grabY;
+
+                overTrash = trashZone.contains(trashZone.mapFromItem(null, fx, fy));
+                if (overTrash) {
+                    mergeTarget = null;
+                    mergeTargetEid = "";
+                    mergeTimer.stop();
+                    edgeTimer.stop();
+                    return;
+                }
 
                 const target = indexAt(p.x, p.y);
                 if (target !== s.index) {
@@ -260,7 +294,11 @@ PanelWindow {
                     // Empty space: tap leaves edit mode, long-press opens the wallpaper menu.
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: if (Home.editing) Home.editing = false
+                        onClicked: {
+                            root.menuFor = "";
+                            if (Home.editing)
+                                Home.editing = false;
+                        }
                         onPressAndHold: mouse => {
                             if (Home.editing)
                                 return;
@@ -338,6 +376,8 @@ PanelWindow {
                             property real grabY: 0
                             property real pressX: 0
                             property real pressY: 0
+                            property real menuPressX: 0
+                            property real menuPressY: 0
                             readonly property var entry: Home.entry(eid)
 
                             function begin() {
@@ -359,12 +399,15 @@ PanelWindow {
                                     return;
                                 dragging = false;
                                 pager.dragActive = false;
-                                // If released mid-hover (before the merge dwell fired), settle it as a plain reorder.
-                                if (pager.mergeTargetEid) {
+                                if (pager.overTrash) {
+                                    Home.hideIconAt(index);
+                                } else if (pager.mergeTargetEid) {
+                                    // If released mid-hover (before the merge dwell fired), settle it as a plain reorder.
                                     const t = Home.indexOfIcon(pager.mergeTargetEid);
                                     if (t >= 0 && t !== index)
                                         Home.moveIcon(index, t);
                                 }
+                                pager.overTrash = false;
                                 pager.mergeTarget = null;
                                 pager.mergeTargetEid = "";
                                 mergeTimer.stop();
@@ -413,6 +456,9 @@ PanelWindow {
                                 onPositionChanged: mouse => {
                                     slot.pressX = mouse.x;
                                     slot.pressY = mouse.y;
+                                    if (root.menuFor === slot.eid
+                                        && (Math.abs(mouse.x - slot.menuPressX) > 14 || Math.abs(mouse.y - slot.menuPressY) > 14))
+                                        root.menuFor = "";
                                     if (!slot.dragging)
                                         return;
                                     const s = mapToItem(null, mouse.x, mouse.y);
@@ -420,10 +466,14 @@ PanelWindow {
                                     pager.fy = s.y;
                                     pager.refreshDrag();
                                 }
-                                onPressAndHold: {
+                                onPressAndHold: mouse => {
                                     if (!Home.editing) {
                                         Home.editing = true;
                                         slot.begin();
+                                        slot.menuPressX = mouse.x;
+                                        slot.menuPressY = mouse.y;
+                                        root.menuFor = slot.eid;
+                                        root.menuAt2 = mapToItem(desk, width / 2, 0);
                                     }
                                 }
                                 onClicked: {
@@ -469,6 +519,92 @@ PanelWindow {
                         anchors.fill: parent
                         anchors.margins: -10
                         onClicked: pager.goTo(parent.index)
+                    }
+                }
+            }
+        }
+
+        // Per-icon context menu (long-press). Non-modal so jiggle/drag keeps working.
+        Column {
+            id: iconMenu
+            visible: root.menuFor !== ""
+            z: 6
+            width: 230
+            spacing: 4
+            x: Math.max(12, Math.min(desk.width - width - 12, root.menuAt2.x - width / 2))
+            y: Math.max(60, Math.min(desk.height - height - 12, root.menuAt2.y - height - 8))
+
+            Rectangle {
+                width: parent.width
+                height: 44
+                radius: 14
+                color: openTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                Text {
+                    anchors.centerIn: parent
+                    text: "Open"
+                    color: Theme.text
+                    font.pixelSize: 15
+                }
+                MouseArea {
+                    id: openTap
+                    anchors.fill: parent
+                    onClicked: {
+                        const id = root.menuFor;
+                        const e = Home.entry(id);
+                        root.menuFor = "";
+                        Home.editing = false;
+                        if (!e)
+                            return;
+                        if (e.isFolder)
+                            root.openFolder = id;
+                        else
+                            Home.launch(e);
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: Home.isFolder(root.menuFor)
+                width: parent.width
+                height: 44
+                radius: 14
+                color: renameTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                Text {
+                    anchors.centerIn: parent
+                    text: "Rename"
+                    color: Theme.text
+                    font.pixelSize: 15
+                }
+                MouseArea {
+                    id: renameTap
+                    anchors.fill: parent
+                    onClicked: {
+                        root.openFolder = root.menuFor;
+                        root.menuFor = "";
+                        Home.editing = false;
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 44
+                radius: 14
+                color: removeTap.pressed ? Qt.rgba(0.4, 0.15, 0.15, 0.98) : Qt.rgba(0.25, 0.1, 0.1, 0.97)
+                Text {
+                    anchors.centerIn: parent
+                    text: "Remove from Home Screen"
+                    color: "#ff8f8f"
+                    font.pixelSize: 14
+                }
+                MouseArea {
+                    id: removeTap
+                    anchors.fill: parent
+                    onClicked: {
+                        const idx = Home.indexOfIcon(root.menuFor);
+                        root.menuFor = "";
+                        if (idx >= 0)
+                            Home.hideIconAt(idx);
                     }
                 }
             }
@@ -892,14 +1028,17 @@ PanelWindow {
                         Repeater {
                             model: Home.folders[root.openFolder] ? Home.folders[root.openFolder].items : []
 
-                            Column {
+                            // A plain Item (not Column) so the MouseArea's anchors actually apply —
+                            // Column ignores anchors on its own children.
+                            Item {
                                 id: fItem
                                 required property string modelData
                                 width: 96
-                                spacing: 6
+                                height: 116
 
                                 AppIcon {
                                     id: fIcon
+                                    anchors.top: parent.top
                                     width: 96
                                     height: 96
                                     interactive: false
