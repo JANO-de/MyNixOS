@@ -19,15 +19,16 @@ PanelWindow {
 
     WlrLayershell.namespace: "halo-dock"
     WlrLayershell.layer: (UI.homeOpen || UI.overviewOpen || UI.overviewDragging) ? WlrLayer.Overlay : WlrLayer.Top
-    visible: UI.chromeShown || pill.opacity > 0.01
+    visible: UI.dockShown || pill.opacity > 0.01
 
     Rectangle {
         id: pill
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: UI.chromeShown ? 0 : -(height + 40)
-        opacity: UI.chromeShown ? 1 : 0
-        Behavior on anchors.bottomMargin { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 240 } }
+        // Follows the finger during the bottom swipe inside an app (iPad dock reveal).
+        anchors.bottomMargin: UI.dockDragging ? -(height + 40) * (1 - UI.dockPeek) : (UI.dockShown ? 0 : -(height + 40))
+        opacity: UI.dockDragging ? Math.min(1, UI.dockPeek * 2) : (UI.dockShown ? 1 : 0)
+        Behavior on anchors.bottomMargin { enabled: !UI.dockDragging; NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
+        Behavior on opacity { enabled: !UI.dockDragging; NumberAnimation { duration: 240 } }
         anchors.horizontalCenter: parent.horizontalCenter
         width: row.implicitWidth + 28
         height: root.iconSize + 24
