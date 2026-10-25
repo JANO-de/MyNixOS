@@ -8,6 +8,7 @@ Item {
     property string name: ""
     property color color: AppTheme.text
     property real size: 24
+    property bool filled: false
     width: size
     height: size
     Shape {
@@ -19,7 +20,7 @@ Item {
         ShapePath {
             strokeColor: r.color
             strokeWidth: 2.6
-            fillColor: "transparent"
+            fillColor: r.filled ? r.color : "transparent"
             capStyle: ShapePath.RoundCap
             joinStyle: ShapePath.RoundJoin
             PathSvg { path: Ic.p[r.name] || "" }

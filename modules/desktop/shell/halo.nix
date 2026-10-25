@@ -135,6 +135,10 @@ in
       pkgs.p7zip
       pkgs.file # Files: mime type in the info panel
       pkgs.udisks # udisksctl: mount / unmount in Files
+      pkgs.imagemagick # Gallery: rotate, EXIF info
+      pkgs.ffmpeg # Gallery: video thumbnails, duration
+      pkgs.poppler-utils # Files: pdftoppm PDF thumbnails
+      pkgs.wl-clipboard # wl-copy (Files, Gallery)
       pkgs.dbus # dbus-monitor: lock before suspend
       pkgs.brightnessctl # shade brightness slider
       pkgs.wireplumber # wpctl (volume)

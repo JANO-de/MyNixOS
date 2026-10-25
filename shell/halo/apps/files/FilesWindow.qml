@@ -201,11 +201,62 @@ FloatingWindow {
     function pairs(out) {
         return out.trim() === "" ? [] : out.trim().split("\n").map(l => l.split("\t"));
     }
+    property bool cpBusy: false
+    property real cpTotal: 0
+    property real cpDone: 0
+    property var cpProc: null
+    function runCp(mode, dst, srcs, done) {
+        if (cpBusy) {
+            toast("Another copy is running");
+            return;
+        }
+        cpBusy = true;
+        cpTotal = 0;
+        cpDone = 0;
+        const j = cpC.createObject(win, { command: sh("cpmvp.sh", [mode, dst].concat(srcs)), fin: done });
+        cpProc = j;
+        j.running = true;
+    }
+    Component {
+        id: cpC
+        Process {
+            id: cp
+            property var fin: null
+            property var pr: []
+            stdout: SplitParser {
+                onRead: line => {
+                    const f = line.split("\t");
+                    if (f[0] === "T")
+                        win.cpTotal = Number(f[1]);
+                    else if (f[0] === "P")
+                        win.cpDone = Number(f[1]);
+                    else if (f[0] === "D" && f.length >= 3)
+                        cp.pr = cp.pr.concat([[f[1], f[2]]]);
+                }
+            }
+            onExited: code => {
+                win.cpBusy = false;
+                win.cpProc = null;
+                if (cp.fin)
+                    cp.fin(cp.pr);
+                if (code === 130 || code === 143)
+                    win.toast("Cancelled");
+                else if (code !== 0)
+                    win.toast("Operation failed");
+                win.refreshAll();
+                cp.destroy(1500);
+            }
+        }
+    }
+    function cancelCp() {
+        if (cpProc)
+            cpProc.running = false;
+    }
     function copyMove(mode, srcs, dst) {
         if (srcs.length === 0)
             return;
         const e = { label: mode === "cp" ? "Copy" : "Move", pr: [] };
-        e.fwd = () => exec(sh("cpmv.sh", [mode, dst].concat(srcs)), out => { e.pr = pairs(out); });
+        e.fwd = () => runCp(mode, dst, srcs, pr => { e.pr = pr; });
         e.bwd = () => {
             if (mode === "cp")
                 exec(["rm", "-rf", "--"].concat(e.pr.map(p => p[1])));
@@ -214,6 +265,54 @@ FloatingWindow {
         };
         e.fwd();
         pushUndo(e);
+    }
+
+    // ---- drag and drop (mouse / stylus) ------------------------------------------------------
+    property var dragPaths: []
+    property bool dragOn: false
+    property real dragX: 0
+    property real dragY: 0
+    function dragStart(paths) {
+        dragPaths = paths;
+        dragOn = true;
+    }
+    function dragMove(gx, gy) {
+        dragX = gx;
+        dragY = gy;
+        const t = activeTab();
+        if (!t)
+            return;
+        const hit = dropTarget(gx, gy);
+        for (const p of [t.first, t.second])
+            p.dropPath = hit && hit.pane === p ? hit.dst : "";
+    }
+    function dragEnd(gx, gy, copy) {
+        dragOn = false;
+        const t = activeTab();
+        if (t)
+            for (const p of [t.first, t.second])
+                p.dropPath = "";
+        const hit = dropTarget(gx, gy);
+        if (!hit)
+            return;
+        const srcs = dragPaths.filter(s => s !== hit.dst && hit.dst.indexOf(s + "/") !== 0);
+        copyMove(copy ? "cp" : "mv", srcs, hit.dst);
+        hit.pane.sel = [];
+    }
+    function dropTarget(gx, gy) {
+        const t = activeTab();
+        if (!t)
+            return null;
+        for (const p of (t.split ? [t.first, t.second] : [t.first])) {
+            const q = p.mapFromItem(null, gx, gy);
+            if (q.x < 0 || q.y < 0 || q.x > p.width || q.y > p.height)
+                continue;
+            if (p.isPc || p.inTrash || p.path === "")
+                return null;
+            const fp = p.folderAt(gx, gy);
+            return { pane: p, dst: fp !== "" && dragPaths.indexOf(fp) < 0 ? fp : p.path };
+        }
+        return null;
     }
     function paste() {
         const p = activePane();
@@ -1050,7 +1149,25 @@ FloatingWindow {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: 44
-                Text { x: 22; height: parent.height; verticalAlignment: Text.AlignVCenter; text: win.statusText; color: AppTheme.dim; font.pixelSize: 13 }
+                Text { x: 22; height: parent.height; verticalAlignment: Text.AlignVCenter; text: win.statusText; color: AppTheme.dim; font.pixelSize: 13; visible: !win.cpBusy }
+                Item {
+                    visible: win.cpBusy
+                    x: 22
+                    width: parent.width - 44 - (win.view === "grid" && win.wide ? 180 : 0)
+                    height: parent.height
+                    Text { id: cpTx; height: parent.height; verticalAlignment: Text.AlignVCenter; text: win.cpTotal > 0 ? Math.round(100 * win.cpDone / win.cpTotal) + "%  \u00b7  " + Fx.human(win.cpDone) + " / " + Fx.human(win.cpTotal) : "Working\u2026"; color: AppTheme.text; font.pixelSize: 13 }
+                    Rectangle {
+                        x: cpTx.implicitWidth + 14
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: Math.max(40, parent.width - x - 44)
+                        height: 6
+                        radius: 3
+                        color: AppTheme.cardHigh
+                        Rectangle { width: win.cpTotal > 0 ? parent.width * Math.min(1, win.cpDone / win.cpTotal) : 0; height: parent.height; radius: 3; color: AppTheme.accent }
+                    }
+                    Ico { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; name: "close"; size: 20; color: AppTheme.dim
+                        MouseArea { anchors.fill: parent; anchors.margins: -10; onClicked: win.cancelCp() } }
+                }
                 Item {
                     visible: win.view === "grid" && win.wide
                     anchors.right: parent.right
@@ -1171,6 +1288,20 @@ FloatingWindow {
             Behavior on opacity { NumberAnimation { duration: 200 } }
             Text { id: toastText; anchors.centerIn: parent; color: AppTheme.text; font.pixelSize: 14 }
             Timer { id: toastTimer; interval: 2600; onTriggered: toastBox.show = false }
+        }
+
+        Rectangle {
+            visible: win.dragOn
+            z: 200
+            readonly property point pp: parent.mapFromItem(null, win.dragX, win.dragY)
+            x: pp.x + 12
+            y: pp.y + 12
+            width: gt.implicitWidth + 28
+            height: 36
+            radius: 18
+            color: AppTheme.accent
+            opacity: 0.92
+            Text { id: gt; anchors.centerIn: parent; color: AppTheme.accentInk; font.pixelSize: 14; text: win.dragPaths.length === 1 ? Fx.base(win.dragPaths[0]) : win.dragPaths.length + " items" }
         }
 
         MenuPop {

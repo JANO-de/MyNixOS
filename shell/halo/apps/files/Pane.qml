@@ -19,6 +19,40 @@ Item {
     property int cursor: -1
     property int anchorIdx: -1
     property bool editing: false
+    property string dropPath: ""
+    property var thumbOk: ({})
+    function folderAt(gx, gy) {
+        const q = view.mapFromItem(null, gx, gy);
+        if (q.x < 0 || q.y < 0 || q.x > view.width || q.y > view.height)
+            return "";
+        const i = view.indexAt(q.x + view.contentX, q.y + view.contentY);
+        const e = i >= 0 ? entries[i] : null;
+        return e && e.dir ? e.path : "";
+    }
+    // video / pdf thumbnails (thumbs.sh, cache shared with Gallery)
+    function thumbUrl(path) { return "file://" + win.home + "/.cache/halo/gthumbs/" + Qt.md5(path) + ".jpg"; }
+    function wantThumbs() {
+        if (win.view !== "grid" || isPc)
+            return;
+        const l = entries.filter(e => !e.dir && (Fx.kind(e) === "video" || Fx.kind(e) === "pdf") && !thumbOk[e.path]).slice(0, 40).map(e => e.path);
+        if (l.length > 0 && !thumbP.running) {
+            thumbP.list = l;
+            thumbP.command = win.sh("thumbs.sh", l);
+            thumbP.running = true;
+        }
+    }
+    onEntriesChanged: thumbT.restart()
+    Timer { id: thumbT; interval: 400; onTriggered: pane.wantThumbs() }
+    Process {
+        id: thumbP
+        property var list: []
+        onExited: {
+            const m = Object.assign({}, pane.thumbOk);
+            for (const x of list)
+                m[x] = true;
+            pane.thumbOk = m;
+        }
+    }
 
     readonly property bool isPc: path === "pc://"
     readonly property bool inTrash: path === win.trashFiles || path.indexOf(win.trashFiles + "/") === 0
@@ -435,12 +469,37 @@ Item {
             readonly property string k: Fx.kind(modelData)
             readonly property string iconSrc: Quickshell.iconPath(Fx.icon(k), "text-x-generic")
             property bool held: false
+            readonly property bool dropT: cell.modelData.dir && pane.dropPath === cell.modelData.path
             width: view.cellWidth
             height: view.cellHeight
 
             Loader {
                 anchors.fill: parent
                 sourceComponent: win.view === "grid" ? tileC : rowC
+            }
+            DragHandler {
+                id: dh
+                target: null
+                acceptedDevices: PointerDevice.Mouse | PointerDevice.Stylus
+                acceptedButtons: Qt.LeftButton
+                onActiveChanged: {
+                    const g = cell.mapToItem(null, centroid.position.x, centroid.position.y);
+                    if (active) {
+                        pane.win.focusPane(pane);
+                        if (!pane.isSel(cell.modelData.path))
+                            pane.sel = [cell.modelData.path];
+                        pane.win.dragStart(pane.sel.slice());
+                        pane.win.dragMove(g.x, g.y);
+                    } else if (pane.win.dragOn) {
+                        pane.win.dragEnd(g.x, g.y, (Qt.application.keyboardModifiers & Qt.ControlModifier) !== 0);
+                    }
+                }
+                onCentroidChanged: {
+                    if (active) {
+                        const g = cell.mapToItem(null, centroid.position.x, centroid.position.y);
+                        pane.win.dragMove(g.x, g.y);
+                    }
+                }
             }
             MouseArea {
                 id: ma
@@ -468,17 +527,20 @@ Item {
                     if (!pane.win.singleClick && mouse.button === Qt.LeftButton)
                         pane.open(cell.modelData);
                 }
-                onPressAndHold: mouse => {
-                    if (mouse.button === Qt.LeftButton) {
-                        cell.held = true;
-                        pane.win.focusPane(pane);
-                        if (!pane.isSel(cell.modelData.path))
-                            pane.sel = [cell.modelData.path];
-                        pane.anchorIdx = cell.index;
-                        pane.cursor = cell.index;
-                        const g = cell.mapToItem(null, mouse.x, mouse.y);
-                        pane.win.itemMenu(pane, g.x, g.y);
-                    }
+            }
+            TapHandler {
+                acceptedButtons: Qt.LeftButton
+                gesturePolicy: TapHandler.WithinBounds
+                longPressThreshold: 0.5
+                onLongPressed: {
+                    cell.held = true;
+                    pane.win.focusPane(pane);
+                    if (!pane.isSel(cell.modelData.path))
+                        pane.sel = [cell.modelData.path];
+                    pane.anchorIdx = cell.index;
+                    pane.cursor = cell.index;
+                    const g = cell.mapToItem(null, point.position.x, point.position.y);
+                    pane.win.itemMenu(pane, g.x, g.y);
                 }
             }
 
@@ -490,7 +552,7 @@ Item {
                     anchors.margins: 5
                     radius: 24
                     color: cell.picked ? AppTheme.accentSoft : (ma.containsMouse ? AppTheme.cardHigh : AppTheme.card)
-                    border.width: cell.picked || cell.isCur ? 2 : 0
+                    border.width: cell.picked || cell.isCur || cell.dropT ? 2 : 0
                     border.color: AppTheme.accent
                     scale: ma.pressed ? 0.96 : 1
                     Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutBack } }
@@ -506,8 +568,15 @@ Item {
                             radius: 16
                             source: cell.k === "image" ? "file://" + cell.modelData.path : ""
                         }
+                        RoundImg {
+                            id: tvImg
+                            anchors.fill: parent
+                            visible: (cell.k === "video" || cell.k === "pdf") && ready
+                            radius: 16
+                            source: (cell.k === "video" || cell.k === "pdf") && pane.thumbOk[cell.modelData.path] ? pane.thumbUrl(cell.modelData.path) : ""
+                        }
                         Ico {
-                            visible: cell.k !== "image"
+                            visible: cell.k !== "image" && !tvImg.visible
                             anchors.centerIn: parent
                             size: Math.min(parent.width, parent.height) * 0.62
                             name: Fx.ico(cell.k)
@@ -549,7 +618,7 @@ Item {
                     anchors.bottomMargin: 2
                     radius: cols3 ? 12 : 20
                     color: cell.picked ? (cols3 ? AppTheme.accent : AppTheme.accentSoft) : (ma.containsMouse ? AppTheme.hover : "transparent")
-                    border.width: cell.isCur && !cell.picked ? 1 : 0
+                    border.width: (cell.isCur && !cell.picked) || cell.dropT ? 2 : 0
                     border.color: AppTheme.accent
                     readonly property color ink: cell.picked && cols3 ? AppTheme.accentInk : AppTheme.text
                     readonly property color inkDim: cell.picked && cols3 ? AppTheme.accentInk : AppTheme.dim
