@@ -24,6 +24,8 @@ Item {
     readonly property bool bare: type ? !!type.bare : false
     readonly property bool fullBleed: type ? !!type.edge : false
     readonly property bool canEdit: Home.editing && !preview
+    // page -1 = the App Library page (always the last one); stale pages clamp to the last icon page.
+    readonly property int pg: inst ? (inst.page < 0 ? maxPage : Math.min(inst.page, Math.max(0, maxPage - 1))) : 0
 
     // Live values while dragging / resizing.
     property bool dragging: false
@@ -40,7 +42,7 @@ Item {
     // Placed widgets are positioned/sized from `inst`; previews are sized by their parent.
     Binding { target: root; property: "width"; value: root.sizeFor(root.uw); when: !root.preview; restoreMode: Binding.RestoreNone }
     Binding { target: root; property: "height"; value: root.sizeFor(root.uh); when: !root.preview; restoreMode: Binding.RestoreNone }
-    Binding { target: root; property: "x"; value: root.dragging ? root.dx : (root.inst ? root.inst.page * root.pw + root.inst.fx * root.pw : 0); when: !root.preview; restoreMode: Binding.RestoreNone }
+    Binding { target: root; property: "x"; value: root.dragging ? root.dx : (root.inst ? root.pg * root.pw + root.inst.fx * root.pw : 0); when: !root.preview; restoreMode: Binding.RestoreNone }
     Binding { target: root; property: "y"; value: root.dragging ? root.dy : (root.inst ? root.inst.fy * root.ph : 0); when: !root.preview; restoreMode: Binding.RestoreNone }
     z: dragging || resizing ? 50 : 5
 
@@ -124,7 +126,7 @@ Item {
             const fx = Math.max(0, Math.min(1 - root.width / root.pw, (root.dx - page * root.pw) / root.pw));
             const fy = Math.max(0, Math.min(1 - root.height / root.ph, root.dy / root.ph));
             root.dragging = false;
-            Home.moveWidget(root.inst.id, page, fx, fy);
+            Home.moveWidget(root.inst.id, page >= root.maxPage ? -1 : page, fx, fy);
         }
         onCanceled: { pageTimer.running = false; root.dragging = false; }
     }

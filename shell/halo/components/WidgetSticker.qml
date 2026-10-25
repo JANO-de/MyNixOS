@@ -8,6 +8,7 @@ Item {
     readonly property var cfg: inst && inst.cfg ? inst.cfg : ({})
     readonly property string src: cfg.src ? "file://" + cfg.src : ""
     readonly property string glyph: cfg.glyph || ""
+    rotation: cfg.rot || 0
 
     Image {
         anchors.fill: parent

@@ -21,8 +21,33 @@ PanelWindow {
 
     // Library drag (long-press an App Library icon, drop on a home page or the dock).
     property var libDragEntry: null
+    property string dragFolder: "" // folder the library-style drag started from (drag out / reorder), or ""
+    property bool folderHidden: false // finger left the folder: the sheet fades away (Launcher3 ON_EXIT_CLOSE_DELAY)
     property real libGX: 0
     property real libGY: 0
+
+    // Back gesture (UI.back -> backTick) when no shell layer took it: close home-screen layers, then go to page 1.
+    Connections {
+        target: UI
+        function onBackTickChanged() {
+            if (!UI.onHome)
+                return;
+            if (root.menuFor !== "") {
+                root.menuFor = "";
+            } else if (root.sheet !== "") {
+                root.sheet = "";
+            } else if (root.openFolder !== "") {
+                root.openFolder = "";
+            } else if (root.libCat !== "") {
+                root.libCat = "";
+            } else if (Home.editing) {
+                Home.editing = false;
+                Home.save();
+            } else if (pager.curPage !== 0) {
+                pager.goTo(0);
+            }
+        }
+    }
 
     function libDragBegin(e, gx, gy) {
         libDragEntry = e;
@@ -38,6 +63,21 @@ PanelWindow {
         UI.dockDropHot = hot;
         if (hot)
             UI.dockDropIndex = pager.dockIndexAt(gx);
+        if (dragFolder !== "" && openFolder === dragFolder) {
+            const inside = !folderHidden && folderSheet.contains(folderSheet.mapFromItem(null, gx, gy));
+            folderView.dragAt(gx, gy, inside);
+            if (inside)
+                exitTimer.stop();
+            else if (!folderHidden && !exitTimer.running)
+                exitTimer.start();
+        }
+    }
+
+    function folderDragBegin(e, gx, gy) {
+        dragFolder = openFolder;
+        folderHidden = false;
+        libDragBegin(e, gx, gy);
+        folderView.dragAt(gx, gy, true);
     }
 
     function libDragEnd(gx, gy) {
@@ -45,8 +85,29 @@ PanelWindow {
         libDragEntry = null;
         pager.widgetDrag = false;
         UI.dockDropHot = false;
+        exitTimer.stop();
+        const fid = dragFolder;
+        const gone = folderHidden;
+        dragFolder = "";
+        folderHidden = false;
+        folderView.dragDone();
         if (!e)
             return;
+        if (fid !== "") {
+            // Drag started inside a folder: reorder in place, or take the app out (home page / dock).
+            if (!gone && folderSheet.contains(folderSheet.mapFromItem(null, gx, gy))) {
+                Home.moveInFolder(fid, e.id, folderView.rankAt(gx, gy));
+            } else if (pager.dockHit(gx, gy)) {
+                Apps.pinAtVisible(e, UI.dockDropIndex);
+                Home.leaveFolder(e.id, true);
+                root.openFolder = "";
+            } else if (pager.curPage < pager.iconPages) {
+                const q = container.mapFromItem(null, gx, gy);
+                Home.addToHomeAt(e.id, pager.indexAt(q.x, q.y));
+                root.openFolder = "";
+            }
+            return;
+        }
         if (pager.dockHit(gx, gy)) {
             Apps.pinAtVisible(e, UI.dockDropIndex);
         } else if (pager.curPage < pager.iconPages) {
@@ -161,7 +222,14 @@ PanelWindow {
             readonly property real xPad: (width - areaW) / 2
             readonly property real unit: Math.max(110, Math.min(200, (areaW - 3 * gap) / 4))
             // Widget band (card + room for the "+" chips in edit mode); constant so editing never reflows icons.
-            readonly property real widgetsH: unit + 24 + 46
+            // Icons on page 1 start right below the lowest widget placed there (whole-pixel band, never the full page).
+            readonly property real widgetsH: {
+                let b = 0;
+                for (const w of Home.winst)
+                    if (w.page === 0)
+                        b = Math.max(b, w.fy * height + w.h * unit + (w.h - 1) * gap);
+                return b > 0 ? Math.ceil(Math.min(height - cellH, b + 12)) : 0;
+            }
             readonly property int rowsFull: Math.max(1, Math.floor(height / cellH))
             readonly property int rows0: Math.max(1, Math.floor((height - widgetsH) / cellH))
             readonly property int cap0: cols * rows0
@@ -405,65 +473,13 @@ PanelWindow {
                             xPad: pager.xPad
                             pagerItem: pager
                             flickRef: flick
-                            maxPage: pager.iconPages - 1
+                            maxPage: pager.iconPages
                             onConfigure: {
                                 Home.pickFor = modelData.id;
                                 root.sheet = "pick";
                             }
-                            onWantPage: d => pager.goTo(Math.max(0, Math.min(pager.iconPages - 1, pager.curPage + d)))
+                            onWantPage: d => pager.goTo(Math.max(0, Math.min(pager.pageCount - 1, pager.curPage + d)))
                             onDraggingChanged: pager.widgetDrag = dragging
-                        }
-                    }
-
-                    // Edit mode: open the widget gallery
-                    Rectangle {
-                        id: addBtn
-                        visible: Home.editing
-                        x: pager.xPad
-                        y: pager.unit + 14
-                        width: addText.implicitWidth + 36
-                        height: 36
-                        radius: 18
-                        color: Theme.accent
-
-                        Text {
-                            id: addText
-                            anchors.centerIn: parent
-                            text: "+  Add widget"
-                            color: Theme.accentInk
-                            font.pixelSize: 14
-                            font.weight: Font.DemiBold
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: root.sheet = "widgets"
-                        }
-                    }
-
-                    // Edit mode: free move vs snap to grid
-                    Rectangle {
-                        visible: Home.editing
-                        x: pager.xPad + addBtn.width + 10
-                        y: pager.unit + 14
-                        width: snapText.implicitWidth + 36
-                        height: 36
-                        radius: 18
-                        color: Home.snapGrid ? Theme.accent : Qt.rgba(1, 1, 1, 0.16)
-
-                        Text {
-                            id: snapText
-                            anchors.centerIn: parent
-                            text: Home.snapGrid ? "Snap to grid: on" : "Free move"
-                            color: Home.snapGrid ? Theme.accentInk : Theme.text
-                            font.pixelSize: 14
-                            font.weight: Font.DemiBold
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                Home.snapGrid = !Home.snapGrid;
-                                Home.save();
-                            }
                         }
                     }
 
@@ -806,9 +822,85 @@ PanelWindow {
                             }
                         }
                     }
+
+                    // Drop highlight while an icon dwells on another one (Launcher3 FolderRingAnimator): a ring grows behind the target.
+                    Rectangle {
+                        id: mergeRing
+                        readonly property int ti: (pager.dragActive && pager.mergeTargetEid !== "" && !pager.overDock && !pager.overTrash) ? Home.indexOfIcon(pager.mergeTargetEid) : -1
+                        readonly property real colH: Home.tile + (Home.showLabels ? 25 : 0)
+                        readonly property real size: Home.tile * 1.3
+                        z: -1
+                        width: size
+                        height: size
+                        radius: size / 4
+                        color: Qt.rgba(1, 1, 1, 0.26)
+                        visible: opacity > 0.01
+                        opacity: ti >= 0 ? 1 : 0
+                        scale: ti >= 0 ? 1 : 0.75
+                        x: pager.slotX(Math.max(0, ti)) + (pager.cellW - size) / 2
+                        y: pager.slotY(Math.max(0, ti)) + (pager.cellH - colH) / 2 + Home.tile / 2 - size / 2
+                        Behavior on opacity { NumberAnimation { duration: 120 } }
+                        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                    }
                 }
             }
         }
+
+        // Edit mode chips (kept out of the scrolling page so they never push icons around)
+        // Edit mode: open the widget gallery
+        Rectangle {
+            id: addBtn
+            visible: Home.editing
+            x: pager.xPad
+            y: 22
+            z: 6
+            width: addText.implicitWidth + 36
+            height: 36
+            radius: 18
+            color: Theme.accent
+
+            Text {
+                id: addText
+                anchors.centerIn: parent
+                text: "+  Add widget"
+                color: Theme.accentInk
+                font.pixelSize: 14
+                font.weight: Font.DemiBold
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.sheet = "widgets"
+            }
+        }
+
+        // Edit mode: free move vs snap to grid
+        Rectangle {
+            visible: Home.editing
+            x: pager.xPad + addBtn.width + 10
+            y: 22
+            z: 6
+            width: snapText.implicitWidth + 36
+            height: 36
+            radius: 18
+            color: Home.snapGrid ? Theme.accent : Qt.rgba(1, 1, 1, 0.16)
+
+            Text {
+                id: snapText
+                anchors.centerIn: parent
+                text: Home.snapGrid ? "Snap to grid: on" : "Free move"
+                color: Home.snapGrid ? Theme.accentInk : Theme.text
+                font.pixelSize: 14
+                font.weight: Font.DemiBold
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    Home.snapGrid = !Home.snapGrid;
+                    Home.save();
+                }
+            }
+        }
+
 
         // Page dots
         Row {
@@ -1287,7 +1379,7 @@ PanelWindow {
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
-                                        Home.addWidget(parent.parent.modelData.id, Math.min(pager.curPage, pager.iconPages - 1));
+                                        Home.addWidget(parent.parent.modelData.id, pager.curPage >= pager.iconPages ? -1 : pager.curPage);
                                         Home.editing = true;
                                         root.sheet = "";
                                     }
@@ -1563,11 +1655,19 @@ PanelWindow {
                 }
             }
 
-            // Folder contents
+            // Folder contents (paged grid, drag to reorder / take out)
+            Timer {
+                id: exitTimer
+                interval: 400 // Launcher3 Folder.ON_EXIT_CLOSE_DELAY (from memory, not verified)
+                onTriggered: root.folderHidden = true
+            }
             Sheet {
+                id: folderSheet
                 visible: root.openFolder !== ""
                 anchors.centerIn: parent
                 title: (Home.folders[root.openFolder] ? Home.folders[root.openFolder].name : "")
+                opacity: root.folderHidden ? 0 : 1
+                Behavior on opacity { NumberAnimation { duration: 140 } }
                 onClosed: root.openFolder = ""
 
                 Column {
@@ -1576,7 +1676,7 @@ PanelWindow {
 
                     TextInput {
                         width: parent.width
-                        horizontalAlignment: TextInput.AlignHCenter
+                        horizontalAlignment: folderView.pages > 1 ? TextInput.AlignLeft : TextInput.AlignHCenter
                         text: Home.folders[root.openFolder] ? Home.folders[root.openFolder].name : ""
                         color: Theme.text
                         font.pixelSize: 18
@@ -1584,47 +1684,27 @@ PanelWindow {
                         onEditingFinished: Home.renameFolder(root.openFolder, text)
                     }
 
-                    Flow {
+                    Item {
                         width: parent.width
-                        spacing: 14
+                        height: folderView.height
 
-                        Repeater {
-                            model: Home.folders[root.openFolder] ? Home.folders[root.openFolder].items : []
-
-                            // A plain Item (not Column) so the MouseArea's anchors actually apply —
-                            // Column ignores anchors on its own children.
-                            Item {
-                                id: fItem
-                                required property string modelData
-                                width: 96
-                                height: 116
-
-                                AppIcon {
-                                    id: fIcon
-                                    anchors.top: parent.top
-                                    width: 96
-                                    height: 96
-                                    interactive: false
-                                    entry: DesktopEntries.byId(fItem.modelData)
-                                }
-                                MouseArea {
-                                    anchors.fill: fIcon
-                                    onClicked: {
-                                        const e = DesktopEntries.byId(fItem.modelData);
-                                        if (e) {
-                                            root.openFolder = "";
-                                            Home.launch(e);
-                                        }
-                                    }
-                                    onPressAndHold: Home.removeFromFolder(root.openFolder, fItem.modelData)
-                                }
+                        FolderView {
+                            id: folderView
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fid: root.openFolder
+                            onItemActivated: e => {
+                                root.openFolder = "";
+                                Home.launch(e);
                             }
+                            onItemDragBegan: (e, gx, gy) => root.folderDragBegin(e, gx, gy)
+                            onItemDragMoved: (gx, gy) => root.libDragMove(gx, gy)
+                            onItemDragEnded: (gx, gy) => root.libDragEnd(gx, gy)
                         }
                     }
 
                     Text {
                         width: parent.width
-                        text: "Long-press an app to take it out of the folder."
+                        text: "Long-press and drag an app to reorder it, or out of the folder onto the home screen or dock."
                         color: Theme.dim
                         font.pixelSize: 13
                         wrapMode: Text.Wrap

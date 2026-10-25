@@ -81,6 +81,12 @@ Singleton {
         return String(s || "").toLowerCase();
     }
 
+    // Halo apps are Quickshell windows: if Qt reports the generic id, fall back to "halo-<title>".
+    function aid(t) {
+        const a = norm(t.appId);
+        return (a === "quickshell" || a === "org.quickshell") ? "halo-" + norm(t.title) : a;
+    }
+
     function matches(entry, appId) {
         const a = norm(appId);
         if (a === "")
@@ -103,7 +109,7 @@ Singleton {
             const wins = [];
             if (e) {
                 for (const t of tops) {
-                    if (matches(e, t.appId)) {
+                    if (matches(e, aid(t))) {
                         wins.push(t);
                         used.push(t);
                     }
@@ -117,7 +123,7 @@ Singleton {
         for (const t of tops) {
             if (used.indexOf(t) >= 0)
                 continue;
-            const k = norm(t.appId);
+            const k = aid(t);
             if (!groups[k]) {
                 groups[k] = [];
                 order.push(k);
@@ -126,7 +132,7 @@ Singleton {
         }
         for (const k of order) {
             const first = groups[k][0];
-            const e = DesktopEntries.heuristicLookup(first.appId);
+            const e = DesktopEntries.heuristicLookup(aid(first));
             out.push({ key: "run:" + k, pinIndex: -1, entry: e, windows: groups[k], name: e ? e.name : first.appId, icon: e ? e.icon : first.appId });
         }
         return out;

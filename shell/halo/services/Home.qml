@@ -39,14 +39,19 @@ Singleton {
         { id: "toggles", title: "Quick toggles", w: 2, h: 1, comp: "Toggles" },
         { id: "year", title: "Year progress", w: 1, h: 1, comp: "Year" },
         { id: "moon", title: "Moon phase", w: 1, h: 1, comp: "Moon" },
-        { id: "stack", title: "Smart stack", w: 2, h: 1, comp: "Stack" },
+        { id: "stack", title: "Smart stack", w: 2, h: 1, comp: "Stack", pick: "stack" },
         { id: "photo", title: "Photo frame", w: 2, h: 2, comp: "Photo", edge: true, pick: "photos" },
         { id: "sticker", title: "Sticker", w: 1, h: 1, comp: "Sticker", bare: true, edge: true, pick: "sticker" },
         { id: "shortcut", title: "App shortcut", w: 1, h: 1, comp: "Shortcut", pick: "app" },
-        { id: "appsrow", title: "App row", w: 2, h: 1, comp: "AppsRow", pick: "apps" }
+        { id: "appsrow", title: "App row", w: 2, h: 1, comp: "AppsRow", pick: "apps" },
+        { id: "notes", title: "Notes", w: 2, h: 2, comp: "Notes" },
+        { id: "recentfiles", title: "Recent files", w: 2, h: 2, comp: "RecentFiles" },
+        { id: "recentphotos", title: "Recent photos", w: 2, h: 1, comp: "RecentPhotos" }
     ]
     // Members of the Smart stack (swipe to flip).
     readonly property var stackItems: ["weather", "system", "date", "year", "moon", "battery"]
+    // Widget types that may be put into a Smart stack (ones that need no per-instance config).
+    readonly property var stackable: ["clock", "digital", "date", "calendar", "weather", "battery", "system", "media", "stopwatch", "timer", "brightness", "volume", "toggles", "year", "moon"]
 
     // Placed widgets: { id, type, page, fx, fy (fractions of the page), w, h (units), cfg }.
     property var winst: []
@@ -97,7 +102,7 @@ Singleton {
             return "";
         const k = winst.length % 5;
         const id = newWidgetId(type);
-        winst = winst.concat([{ id: id, type: type, page: Math.max(0, page || 0), fx: 0.1 + k * 0.03, fy: 0.05 + k * 0.03, w: t.w, h: t.h, cfg: {} }]);
+        winst = winst.concat([{ id: id, type: type, page: (page < 0 ? -1 : Math.max(0, page || 0)), fx: 0.1 + k * 0.03, fy: 0.05 + k * 0.03, w: t.w, h: t.h, cfg: {} }]);
         save();
         return id;
     }
@@ -154,7 +159,7 @@ Singleton {
             return;
         const dragEid = iconModel.get(dragIndex).eid;
         const targetEid = iconModel.get(targetIndex).eid;
-        if (dragEid === targetEid)
+        if (dragEid === targetEid || isFolder(dragEid))
             return;
 
         if (isFolder(targetEid)) {
@@ -176,7 +181,8 @@ Singleton {
         save();
     }
 
-    function removeFromFolder(fid, eid) {
+    // keep === false: the icon does not go back onto the home screen (caller places it).
+    function removeFromFolder(fid, eid, keep) {
         const f = folders[fid];
         if (!f)
             return;
@@ -197,7 +203,36 @@ Singleton {
             nf[fid] = { name: f.name, items };
             folders = nf;
         }
-        iconModel.append({ eid });
+        if (keep !== false)
+            iconModel.append({ eid });
+        save();
+    }
+
+    // Take an app out of its folder without adding it to the home screen (dock drop); hide = also keep it off Home.
+    function leaveFolder(eid, hide) {
+        for (const fid in folders)
+            if (folders[fid].items.indexOf(eid) >= 0) {
+                removeFromFolder(fid, eid, false);
+                break;
+            }
+        if (hide) {
+            const nh = Object.assign({}, hidden);
+            nh[eid] = true;
+            hidden = nh;
+        }
+        save();
+    }
+
+    // Reorder inside a folder (drop on another slot).
+    function moveInFolder(fid, eid, rank) {
+        const f = folders[fid];
+        if (!f || f.items.indexOf(eid) < 0)
+            return;
+        const items = f.items.filter(e => e !== eid);
+        items.splice(Math.max(0, Math.min(items.length, rank)), 0, eid);
+        const nf = Object.assign({}, folders);
+        nf[fid] = { name: f.name, items };
+        folders = nf;
         save();
     }
 

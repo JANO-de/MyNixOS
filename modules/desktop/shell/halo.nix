@@ -17,6 +17,20 @@ let
   haloCtl = pkgs.writeShellScriptBin "halo-ctl" ''
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir} ipc "$@"
   '';
+  # halo-app NAME: run a Halo app (apps/NAME.qml) as its own Wayland window. argv[0] = halo-NAME so the
+  # app_id matches the .desktop entry. Prefers the dev copy in ~/halo (scripts/halo-dev.sh).
+  haloApp = pkgs.writeShellScriptBin "halo-app" ''
+    d="$HOME/halo"; [ -f "$d/apps/$1.qml" ] || d=${shellDir}
+    exec -a "halo-$1" ${lib.getExe pkgs.quickshell} -n -p "$d/apps/$1.qml"
+  '';
+  haloAppEntry = name: title: icon: cat: pkgs.makeDesktopItem {
+    name = "halo-${name}";
+    desktopName = title;
+    exec = "halo-app ${name}";
+    icon = icon;
+    categories = [ cat ];
+    startupWMClass = "halo-${name}";
+  };
   # halo-recolor-icons DARK MID LIGHT OUTDIR NAME...: Papirus SVGs recoloured with the wallpaper palette (Theme.qml).
   haloRecolorIcons = pkgs.writeShellScriptBin "halo-recolor-icons" ''
     export HALO_ICON_SRC=${pkgs.papirus-icon-theme}/share/icons
@@ -111,6 +125,11 @@ in
       haloRecolorIcons
       haloSetPin
       haloAutoKbd
+      haloApp
+      (haloAppEntry "files" "Files" "system-file-manager" "Utility")
+      (haloAppEntry "gallery" "Gallery" "image-x-generic" "Graphics")
+      pkgs.glib # gio trash (Files, Gallery)
+      pkgs.xdg-utils # xdg-open
       pkgs.dbus # dbus-monitor: lock before suspend
       pkgs.brightnessctl # shade brightness slider
       pkgs.wireplumber # wpctl (volume)

@@ -26,8 +26,11 @@ ShellRoot {
             Overview { screen: scope.modelData }
             HaloSettings { screen: scope.modelData }
             LibSearch { screen: scope.modelData }
+            NoteEdit { screen: scope.modelData }
             TopEdge { screen: scope.modelData }
             BottomEdge { screen: scope.modelData }
+            SideEdge { screen: scope.modelData; leftSide: true }
+            SideEdge { screen: scope.modelData; leftSide: false }
             Banner { screen: scope.modelData }
             KbdHandle { screen: scope.modelData }
             KbdButton { screen: scope.modelData }

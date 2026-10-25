@@ -4,8 +4,10 @@ import qs.services
 // Smart stack: tap the dots or the bottom corners to flip between widgets.
 Item {
     id: root
+    property var inst: null // set by WidgetHost; cfg.items = chosen member types
     property int cur: 0
-    readonly property var items: Home.stackItems
+    readonly property var items: (inst && inst.cfg && inst.cfg.items && inst.cfg.items.length) ? inst.cfg.items : Home.stackItems
+    onItemsChanged: if (cur >= items.length) cur = 0
 
     Loader {
         id: ld

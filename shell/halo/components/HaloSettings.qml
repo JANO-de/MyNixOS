@@ -42,6 +42,18 @@ PanelWindow {
         return "Settings";
     }
 
+    Connections {
+        target: UI
+        function onSettingsBackTickChanged() {
+            if (!root.shown)
+                return;
+            if (!root.wide && root.page !== "")
+                root.page = "";
+            else
+                UI.closeSettings();
+        }
+    }
+
     onShownChanged: {
         if (shown) {
             page = UI.settingsPage;

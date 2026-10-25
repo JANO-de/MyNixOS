@@ -65,6 +65,34 @@ Singleton {
     function toggleHome() { if (homeOpen) closeHome(); else openHome(); }
 
     // Show the Halo desktop: close overlays and switch to the empty "home" workspace.
+    // ---- Back gesture (SideEdge.qml) ---------------------------------------------------------
+    property int backTick: 0 // bumped when no shell-level layer took the back; the home screen (Desktop) handles it
+    property int settingsBackTick: 0 // HaloSettings: page -> list -> close
+    property string noteId: "" // widget instance whose note is open in NoteEdit
+    function openNote(id) { noteId = id; }
+    function closeNote() { noteId = ""; }
+
+    // Closes the topmost layer; the order is the stacking order (menus, then overlays, then pages).
+    function back() {
+        if (noteId !== "") { closeNote(); Kbd.hideQuiet(); return; }
+        if (menuItem !== null) { closeAppMenu(); return; }
+        if (winItem !== null) { closeWindowsMenu(); return; }
+        if (splitStaging) { cancelSplitSelect(); return; }
+        if (dockEditing) { dockEditing = false; return; }
+        if (libSearchOpen) { libSearchOpen = false; Kbd.hideQuiet(); return; }
+        if (shadeOpen) { closeShade(); return; }
+        if (overviewOpen) { closeOverview(); return; }
+        if (settingsOpen) {
+            if (appInfoId !== "")
+                appInfoId = "";
+            else
+                settingsBackTick++;
+            return;
+        }
+        if (homeOpen) { closeHome(); return; }
+        backTick++;
+    }
+
     function goHome() {
         dockPinned = false;
         homeOpen = false;

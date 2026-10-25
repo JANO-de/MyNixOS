@@ -11,14 +11,17 @@ Item {
     readonly property var inst: Home.winstById(Home.pickFor)
     readonly property var type: inst ? Home.typeOf(inst.type) : null
     readonly property string mode: type && type.pick ? type.pick : ""
-    readonly property int maxSel: mode === "photos" ? 20 : (mode === "apps" ? 4 : 1)
+    readonly property int maxSel: mode === "photos" ? 20 : (mode === "apps" ? 4 : (mode === "stack" ? 8 : 1))
     property var sel: []
+    property real rot: 0 // sticker rotation, degrees
 
     readonly property var items: {
         if (mode === "photos")
             return Pics.files.map(p => ({ key: p, kind: "img", name: "" }));
         if (mode === "sticker")
             return Pics.stickerGlyphs.map(g => ({ key: g, kind: "glyph", name: "" })).concat(Pics.files.map(p => ({ key: p, kind: "img", name: "" })));
+        if (mode === "stack")
+            return Home.stackable.map(id => ({ key: id, kind: "type", name: Home.typeOf(id) ? Home.typeOf(id).title : id }));
         if (mode === "app" || mode === "apps") {
             const l = DesktopEntries.applications.values.slice();
             l.sort((a, b) => String(a.name).localeCompare(String(b.name)));
@@ -33,10 +36,13 @@ Item {
             return;
         }
         const c = inst.cfg;
+        rot = c.rot || 0;
         if (mode === "photos")
             sel = (c.photos || []).slice();
         else if (mode === "sticker")
             sel = c.src ? [c.src] : (c.glyph ? [c.glyph] : []);
+        else if (mode === "stack")
+            sel = (c.items && c.items.length ? c.items : Home.stackItems).slice();
         else
             sel = (c.apps || []).slice();
     }
@@ -57,8 +63,13 @@ Item {
             return;
         if (mode === "photos")
             Home.setCfg(inst.id, { photos: sel });
-        else if (mode === "sticker")
-            Home.setCfg(inst.id, sel.length === 0 ? {} : (sel[0].charAt(0) === "/" ? { src: sel[0] } : { glyph: sel[0] }));
+        else if (mode === "sticker") {
+            const c = sel.length === 0 ? {} : (sel[0].charAt(0) === "/" ? { src: sel[0] } : { glyph: sel[0] });
+            if (rot !== 0)
+                c.rot = rot;
+            Home.setCfg(inst.id, c);
+        } else if (mode === "stack")
+            Home.setCfg(inst.id, { items: sel });
         else
             Home.setCfg(inst.id, { apps: sel });
         done();
@@ -78,9 +89,39 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: root.mode === "photos" ? "Pick photos (" + root.sel.length + ")"
                 : root.mode === "sticker" ? "Pick a sticker or a picture"
-                : root.mode === "app" ? "Pick an app" : "Pick up to 4 apps (" + root.sel.length + ")"
+                : root.mode === "app" ? "Pick an app"
+                : root.mode === "stack" ? "Pick up to 8 widgets, in order (" + root.sel.length + ")"
+                : "Pick up to 4 apps (" + root.sel.length + ")"
             color: Theme.dim
             font.pixelSize: 14
+        }
+        Row {
+            visible: root.mode === "sticker"
+            anchors.right: parent.right
+            anchors.rightMargin: 96
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+
+            Rectangle {
+                width: 56; height: 34; radius: 17
+                color: Qt.rgba(1, 1, 1, 0.16)
+                Text { anchors.centerIn: parent; text: "-15\u00b0"; color: Theme.text; font.pixelSize: 14 }
+                MouseArea { anchors.fill: parent; onClicked: root.rot = ((root.rot - 15) % 360 + 360) % 360 }
+            }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 44
+                horizontalAlignment: Text.AlignHCenter
+                text: Math.round(root.rot) + "\u00b0"
+                color: Theme.text
+                font.pixelSize: 14
+            }
+            Rectangle {
+                width: 56; height: 34; radius: 17
+                color: Qt.rgba(1, 1, 1, 0.16)
+                Text { anchors.centerIn: parent; text: "+15\u00b0"; color: Theme.text; font.pixelSize: 14 }
+                MouseArea { anchors.fill: parent; onClicked: root.rot = (root.rot + 15) % 360 }
+            }
         }
         Rectangle {
             anchors.right: parent.right
@@ -143,6 +184,17 @@ Item {
                     text: cell.modelData.kind === "glyph" ? cell.modelData.key : ""
                     color: Theme.accent
                     font.pixelSize: 40
+                }
+                Text {
+                    anchors.fill: parent
+                    anchors.margins: 6
+                    visible: cell.modelData.kind === "type"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    wrapMode: Text.Wrap
+                    text: cell.modelData.kind === "type" ? cell.modelData.name + (cell.on ? "\n#" + (root.sel.indexOf(cell.modelData.key) + 1) : "") : ""
+                    color: Theme.text
+                    font.pixelSize: 14
                 }
                 Column {
                     anchors.centerIn: parent
