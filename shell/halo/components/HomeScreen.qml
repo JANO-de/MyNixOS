@@ -26,7 +26,7 @@ PanelWindow {
     onShownChanged: {
         if (shown) {
             search.text = "";
-            search.forceActiveFocus();
+            search.focus = false; // search only when tapped
         }
     }
 
