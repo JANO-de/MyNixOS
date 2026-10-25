@@ -486,7 +486,7 @@ FloatingWindow {
     }
 
     // ---- menus (modelled on Dolphin's context menus) -----------------------------------------
-    function I(id, label, ico, o) {
+    function mi(id, label, ico, o) {
         return Object.assign({ id: id, label: label, ico: ico }, o || {});
     }
     readonly property var sortSub: [
@@ -514,35 +514,35 @@ FloatingWindow {
         const img = one && Fx.kind(one) === "image";
         const m = [];
         if (pane.inTrash) {
-            m.push(I("restore", "Restore", "restore"), I("delperm", "Delete permanently", "trash", { danger: true }), { sep: true }, I("props", "Properties", "info"));
+            m.push(mi("restore", "Restore", "restore"), mi("delperm", "Delete permanently", "trash", { danger: true }), { sep: true }, mi("props", "Properties", "info"));
         } else {
-            m.push(I("open", n > 1 ? "Open " + n + " items" : "Open", "open"));
+            m.push(mi("open", n > 1 ? "Open " + n + " items" : "Open", "open"));
             if (one && !one.dir)
-                m.push(I("openwith", "Open with\u2026", "open"));
+                m.push(mi("openwith", "Open with\u2026", "open"));
             if (one && one.dir)
-                m.push(I("newtab", "Open in new tab", "plus"), I("terminal", "Open terminal here", "terminal"));
+                m.push(mi("newtab", "Open in new tab", "plus"), mi("terminal", "Open terminal here", "terminal"));
             if (one && one.dir && sp)
-                m.push(I("inother", "Open in other pane", "split"));
-            m.push({ sep: true }, I("cut", "Cut", "cut"), I("copy", "Copy", "copy"));
+                m.push(mi("inother", "Open in other pane", "split"));
+            m.push({ sep: true }, mi("cut", "Cut", "cut"), mi("copy", "Copy", "copy"));
             if (one && one.dir && clipPaths.length > 0)
-                m.push(I("pasteinto", "Paste into folder", "paste"));
-            m.push(I("dup", "Duplicate here", "copy"), I("rename", n > 1 ? "Rename " + n + " items\u2026" : "Rename\u2026", "edit"));
-            m.push({ sep: true }, I("copyto", "Copy to\u2026", "copy"), I("moveto", "Move to\u2026", "fwd"));
+                m.push(mi("pasteinto", "Paste into folder", "paste"));
+            m.push(mi("dup", "Duplicate here", "copy"), mi("rename", n > 1 ? "Rename " + n + " items\u2026" : "Rename\u2026", "edit"));
+            m.push({ sep: true }, mi("copyto", "Copy to\u2026", "copy"), mi("moveto", "Move to\u2026", "fwd"));
             if (sp)
-                m.push(I("copyother", "Copy to other pane", "split"), I("moveother", "Move to other pane", "split"));
+                m.push(mi("copyother", "Copy to other pane", "split"), mi("moveother", "Move to other pane", "split"));
             if (one)
-                m.push(I("link", "Create link here", "link"));
-            m.push({ sep: true }, { label: "Compress", ico: "compress", sub: [I("cz:zip", ".zip"), I("cz:tgz", ".tar.gz"), I("cz:txz", ".tar.xz"), I("cz:7z", ".7z")] });
+                m.push(mi("link", "Create link here", "link"));
+            m.push({ sep: true }, { label: "Compress", ico: "compress", sub: [mi("cz:zip", ".zip"), mi("cz:tgz", ".tar.gz"), mi("cz:txz", ".tar.xz"), mi("cz:7z", ".7z")] });
             if (allArch)
-                m.push(I("extract", "Extract here", "extract"));
-            m.push({ sep: true }, I("copypath", "Copy location", "copy"));
+                m.push(mi("extract", "Extract here", "extract"));
+            m.push({ sep: true }, mi("copypath", "Copy location", "copy"));
             if (one && one.dir)
-                m.push(I("bookmark", "Add to places", "star"));
+                m.push(mi("bookmark", "Add to places", "star"));
             if (img)
-                m.push(I("wallpaper", "Add to wallpapers", "image"));
+                m.push(mi("wallpaper", "Add to wallpapers", "image"));
             if (one && !one.dir)
-                m.push(I("checksum", "SHA-256 checksum", "hash"));
-            m.push(I("perms", "Permissions\u2026", "lock"), I("props", "Properties", "info"), { sep: true }, I("trash", "Move to Trash", "trash", { danger: true }), I("delperm", "Delete permanently", "close", { danger: true }));
+                m.push(mi("checksum", "SHA-256 checksum", "hash"));
+            m.push(mi("perms", "Permissions\u2026", "lock"), mi("props", "Properties", "info"), { sep: true }, mi("trash", "Move to Trash", "trash", { danger: true }), mi("delperm", "Delete permanently", "close", { danger: true }));
         }
         mctx = { pane: pane, x: x, y: y };
         ctxMenu.popup(x, y, m);
@@ -550,46 +550,46 @@ FloatingWindow {
     function bgMenu(pane, x, y) {
         let m;
         if (pane.inTrash)
-            m = [I("emptytrash", "Empty Trash", "trash", { danger: true }), I("restoreall", "Restore all", "restore"), { sep: true }, { label: "Select", ico: "select", sub: selSub }, { label: "Sort by", ico: "sort", sub: sortSub }, I("refresh", "Refresh", "refresh")];
+            m = [mi("emptytrash", "Empty Trash", "trash", { danger: true }), mi("restoreall", "Restore all", "restore"), { sep: true }, { label: "Select", ico: "select", sub: selSub }, { label: "Sort by", ico: "sort", sub: sortSub }, mi("refresh", "Refresh", "refresh")];
         else
-            m = [{ label: "Create new", ico: "plus", sub: [I("newfolder", "Folder", "newfolder"), I("newfile", "Text file", "newfile"), I("newlink", "Link to\u2026", "link")] },
-                 I("paste", "Paste", "paste", { disabled: clipPaths.length === 0 }), { sep: true },
+            m = [{ label: "Create new", ico: "plus", sub: [mi("newfolder", "Folder", "newfolder"), mi("newfile", "Text file", "newfile"), mi("newlink", "Link to\u2026", "link")] },
+                 mi("paste", "Paste", "paste", { disabled: clipPaths.length === 0 }), { sep: true },
                  { label: "Select", ico: "select", sub: selSub }, { label: "View", ico: "grid", sub: viewSub }, { label: "Sort by", ico: "sort", sub: sortSub }, { sep: true },
-                 I("terminal", "Open terminal here", "terminal"), I("bookmark", "Add to places", "star"), I("refresh", "Refresh", "refresh"), I("folderprops", "Properties", "info")];
+                 mi("terminal", "Open terminal here", "terminal"), mi("bookmark", "Add to places", "star"), mi("refresh", "Refresh", "refresh"), mi("folderprops", "Properties", "info")];
         mctx = { pane: pane, x: x, y: y };
         ctxMenu.popup(x, y, m);
     }
     function moreMenu(x, y) {
         const p = activePane();
         const m = [{ label: "View", ico: "grid", sub: viewSub }, { label: "Sort by", ico: "sort", sub: sortSub }, { label: "Select", ico: "select", sub: selSub }, { sep: true },
-                   I("undo", "Undo", "restore", { disabled: undoStack.length === 0 }), I("redo", "Redo", "redo", { disabled: redoStack.length === 0 }), { sep: true },
-                   I("newtab", "New tab", "plus"), I("terminal", "Open terminal here", "terminal"), I("refresh", "Refresh", "refresh")];
+                   mi("undo", "Undo", "restore", { disabled: undoStack.length === 0 }), mi("redo", "Redo", "redo", { disabled: redoStack.length === 0 }), { sep: true },
+                   mi("newtab", "New tab", "plus"), mi("terminal", "Open terminal here", "terminal"), mi("refresh", "Refresh", "refresh")];
         if (p && p.inTrash)
-            m.push({ sep: true }, I("emptytrash", "Empty Trash", "trash", { danger: true }));
+            m.push({ sep: true }, mi("emptytrash", "Empty Trash", "trash", { danger: true }));
         mctx = { pane: p, x: x, y: y };
         ctxMenu.popup(x, y, m);
     }
     function placeMenu(path, x, y) {
         mctx = { pane: activePane(), p: path };
-        const m = [I("placetab", "Open in new tab", "plus")];
+        const m = [mi("placetab", "Open in new tab", "plus")];
         if (path === trashFiles)
-            m.push(I("emptytrash", "Empty Trash", "trash", { danger: true }));
+            m.push(mi("emptytrash", "Empty Trash", "trash", { danger: true }));
         ctxMenu.popup(x, y, m);
     }
     function driveMenu(d, x, y) {
         mctx = { pane: activePane(), drive: d };
         const m = [];
         if (d.mount !== "")
-            m.push(I("drvopen", "Open", "open"), I("drvtab", "Open in new tab", "plus"));
+            m.push(mi("drvopen", "Open", "open"), mi("drvtab", "Open in new tab", "plus"));
         else
-            m.push(I("drvmount", "Mount", "sd"));
+            m.push(mi("drvmount", "Mount", "sd"));
         if (d.mount.indexOf("/run/media") === 0)
-            m.push(I("drvunmount", "Unmount", "eject"));
+            m.push(mi("drvunmount", "Unmount", "eject"));
         ctxMenu.popup(x, y, m);
     }
     function tabMenu(i, x, y) {
         mctx = { pane: activePane(), tab: i };
-        ctxMenu.popup(x, y, [I("tabdup", "Duplicate tab", "copy"), I("tabclose", "Close tab", "close"), I("tabothers", "Close other tabs", "close", { disabled: tabs.count < 2 })]);
+        ctxMenu.popup(x, y, [mi("tabdup", "Duplicate tab", "copy"), mi("tabclose", "Close tab", "close"), mi("tabothers", "Close other tabs", "close", { disabled: tabs.count < 2 })]);
     }
     function terminalAt(path) {
         Quickshell.execDetached(["sh", "-c", "cd \"$1\" || exit; for t in foot kitty alacritty wezterm konsole xterm; do command -v $t >/dev/null && exec $t; done", "sh", path]);

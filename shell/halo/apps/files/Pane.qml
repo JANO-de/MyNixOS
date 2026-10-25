@@ -472,9 +472,12 @@ Item {
                     if (mouse.button === Qt.LeftButton) {
                         cell.held = true;
                         pane.win.focusPane(pane);
-                        pane.toggle(cell.modelData.path);
+                        if (!pane.isSel(cell.modelData.path))
+                            pane.sel = [cell.modelData.path];
                         pane.anchorIdx = cell.index;
                         pane.cursor = cell.index;
+                        const g = cell.mapToItem(null, mouse.x, mouse.y);
+                        pane.win.itemMenu(pane, g.x, g.y);
                     }
                 }
             }

@@ -1,1029 +1,254 @@
-HANDOFF.md
-MD
+halo-upda
+te-31.tar
+.gz
+GZ
 src.tar.xz
 src.tar.xz
 XZ
-halo-update-30.tar.gz
-halo-upda
-te-30.tar
-.gz
-GZ
+HANDOFF.md
+HANDOFF.md
+MD
 
-HANDOFF.md MD src.tar.xz src.tar.xz XZ Se ejecutaron 2 comandos, se agregaron 2 recuerdos I read HANDOFF.md and unpacked src_tar.xz. It extracted cleanly: 239 files, with shell/halo/, modules/desktop/ and hyprland-mode.lua all present. I haven’t changed anything yet. Your message came through empty
+HANDOFF.md MD src.tar.xz src.tar.xz XZ halo-update-30.tar.gz halo-upda te-30.tar .gz GZ HANDOFF.md MD src.tar.xz src.tar.xz XZ Se ejecutaron 2 comandos, se agregaron 2 recuerdos I read HANDOFF.md and unpacked src_tar.xz. It extracted cleanly: 239 files, with shell/halo/, modules/desktop/ and hyprla
 
 pasted
 
 continue
 
-Se ejecutaron 3 comandos, se agregaron 2 recuerdos
-Rebuilt the repo from your snapshot plus update 30. Now reading the existing patterns (shell.qml, NoteEdit, WidgetNotes, Theme, halo.nix) before writing Files and Gallery.
+Resuming work on rewriting the Files app.
+Resuming work on rewriting the Files app.
+I’ll check what state the workspace is in first, since the container may have reset since that session.
 
-Se ejecutaron 8 comandos, archivos compartidos
-halo-update-31.tar.gz has Files and Gallery as separate windows, plus Recent files and Recent photos widgets. Nothing has run (no QML runtime here). HANDOFF.md is updated.
+Ejecutó un comando
+The repo is gone, as expected. I’ll rebuild it from the snapshot plus update 31, then redo the Files rewrite files that were created in the last session.
 
-cd ~/MyNixOS && tar xzf ~/Downloads/halo-update-31.tar.gz && scripts/halo-dev.sh
-ssh jano@192.168.0.115 'quickshell -n -p ~/halo/apps/files.qml'
-Then sudo nixos-rebuild switch for the launcher entries and halo-app.
+Se ejecutaron 3 comandos
+Update 31 is in place and Gallery still uses the same Pill API, so the rewrite stays compatible. Rebuilding the shared pieces and scripts first.
 
-Test checklist
+Se ejecutaron 11 comandos, archivos compartidos
+The Files rewrite is done and shipped as halo-update-32.tar.gz, but the QML has never run. The scripts and the JS logic did run in the sandbox. The container had reset, so I rebuilt the repo from your snapshot plus update 31 first.
 
-A. Launch
+What’s in it
 
-Files opens as a window. Run hyprctl clients | grep class and send me the class (expect halo-files).
-After rebuild: Files and Gallery show in the library and search, and the dock shows a running dot.
-Colours match the shell accent.
-B. Files
+Look: Material-3 style drawer, pill breadcrumbs, tonal tiles, rounded thumbnails and a “+ New” button.
+Views: grid, details list and Yazi-style Miller columns with a parent column.
+Dolphin features:
+tabs and split view
+undo/redo for copy, move, rename, new, trash, compress and extract
+zip, tar.gz, tar.xz and 7z archives
+a Trash that supports restore
+a This PC page with drive usage bars and mount/unmount
+an info panel with preview, properties, Open with, bookmarks and about 30 shortcuts
+Loaf: I only read its README (the source pages failed to fetch), so this follows its features and look, not its code.
+What I tested
 
-Sidebar places work. On narrow windows the sidebar hides and ‹ goes up a folder.
-Tap a folder opens it. Tap a file opens it with its app.
-Grid and List toggle. Hidden toggle shows dotfiles. Image thumbnails show.
-Long-press selects. Copy then Paste in another folder, and Cut then Paste, both work. Pasting over an existing name makes a numbered backup.
-Rename and New folder work with the keyboard.
-Trash moves files to Trash. In Trash, “Delete forever” removes them.
-C. Gallery
+The shell scripts ran against a temp directory: copy and move with numbered names, trash, restore, compress, extract and stat all behave.
+The sort, breadcrumb, find parsing and drive-detection helpers ran under node with mock data.
+The QML files are only brace-checked.
+Nix: I added zip unzip p7zip file udisks and services.udisks2 (as a default) to halo.nix. HANDOFF.md has the new row 32 and the next update number is 33.
 
-Photos from ~/Pictures show, newest first. Album chips filter by subfolder.
-Tap a photo opens the viewer. Swipe changes photo. Pinch zooms. Double-tap toggles zoom. Swiping is blocked while zoomed.
-Delete sends the photo to Trash and the grid refreshes.
-D. Widgets
+Run it
 
-Open a file in Files. “Recent files” shows it. Tap a row opens it. Tap the header opens Files.
-“Recent photos” shows 4 thumbnails. Tap opens Gallery.
-If something fails, send:
+cd ~/MyNixOS && git add -A && tar xzf ~/Downloads/halo-update-32.tar.gz && scripts/halo-dev.sh
+Then, in one SSH command (this fixes the missing PATH and Wayland env from before):
 
-ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 80 --no-pager | grep -viE "portal|kbd-height"'
-Guesses I could not check (details in HANDOFF.md):
+ssh jano@192.168.0.115 'systemctl --user stop halo-files-test 2>/dev/null; export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=$(ls /run/user/1000 | grep -E "^wayland-[0-9]+$" | head -1) QT_QPA_PLATFORM=wayland; systemd-run --user --unit=halo-files-test bash -c "exec -a halo-files /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -n -p $HOME/halo/apps/files.qml"; sleep 4; journalctl --user -u halo-files-test -n 60 --no-pager | grep -viE "portal|kbd-height"; export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t /run/user/1000/hypr | head -1); hyprctl clients | grep -E "class|title"'
+Send me that output. QML errors will show up in it.
 
-The window id is halo-files via exec -a. If Hyprland reports quickshell instead, Apps.qml falls back to the window title.
--p with a file path makes apps/ the import root.
-Quickshell.iconPath(name, fallback).
-The -n flag.
-Say when it’s checked and I’ll do the next batch.
+Likeliest to break (details in HANDOFF.md)
 
-Halo update 31.tar
+The sidebar’s inline component SideItem.
+Icon names such as folder-documents.
+The empty-area MouseArea letting presses through to file tiles.
+udisksctl mount output parsing.
+The lsblk MOUNTPOINTS column.
+Not done: drag and drop, copy progress bars, and video/PDF thumbnails. Say the word and I’ll do those next, along with whatever the log shows.
+
+Halo update 32.tar
 GZ
-git add -A && tar xzf ~/Downloads/halo-update-31.tar.gz && scripts/halo-dev.sh
-ssh jano@192.168.0.115 'quickshell -n -p ~/halo/apps/files.qml'
+its Proyectos/MyNixOS and remember always to write as less as possible
+
+Got it: repo is ~/Proyectos/MyNixOS, and I’ll keep replies short.
+
+cd ~/Proyectos/MyNixOS && git add -A && tar xzf ~/Downloads/halo-update-32.tar.gz && scripts/halo-dev.sh
+Then the test command from before. Send me the output.
+
+yNixOS on  main 
+❯ cd ~/Proyectos/MyNixOS && git add -A && tar xzf ~/Downloads/halo-update-32.tar.gz && scripts/halo-dev.sh
+(jano@192.168.0.115) Password: 
 quickshell: /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell
-Running as unit: halo-test.service; invocation ID: b1fada39ddbe432180bc1dd053d71b19
-oct 25 17:46:48 surface systemd[1352]: Stopping [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo...
-oct 25 17:46:48 surface systemd[1352]: Stopped [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
-oct 25 17:46:48 surface systemd[1352]: halo-test.service: Consumed 8.691s CPU time over 43.734s wall clock time, 536.1M memory peak.
-oct 25 17:46:48 surface systemd[1352]: Started [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
-oct 25 17:46:48 surface quickshell[199785]:   INFO: Launching config: "/home/jano/halo/shell.qml"
-oct 25 17:46:48 surface quickshell[199785]:   INFO: Shell ID: "e3939426049d9f190db632afedde8c27" Path ID "e3939426049d9f190db632afedde8c27"
-oct 25 17:46:48 surface quickshell[199785]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/l5a40m2hnt/log.qslog"
-oct 25 17:46:50 surface quickshell[199785]:   INFO: Configuration Loaded
-oct 25 17:46:50 surface quickshell[199785]:   WARN qt.qpa.services: Failed to register with host portal QDBusError("org.freedesktop.portal.Error.Failed", "Could not register app ID: Connection already associated with an application ID")
+Running as unit: halo-test.service; invocation ID: be11ce6d4a5f4bf6b4c61979154f3ba5
+oct 25 18:28:16 surface systemd[1352]: Stopping [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo...
+oct 25 18:28:16 surface systemd[1352]: Stopped [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 18:28:16 surface systemd[1352]: halo-test.service: Consumed 6.589s CPU time over 41min 27.966s wall clock time, 524.6M memory peak.
+oct 25 18:28:16 surface systemd[1352]: Started [systemd-run] /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -p /home/jano/halo.
+oct 25 18:28:16 surface quickshell[223669]:   INFO: Launching config: "/home/jano/halo/shell.qml"
+oct 25 18:28:16 surface quickshell[223669]:   INFO: Shell ID: "e3939426049d9f190db632afedde8c27" Path ID "e3939426049d9f190db632afedde8c27"
+oct 25 18:28:16 surface quickshell[223669]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/1ls44j4hnt/log.qslog"
+oct 25 18:28:17 surface quickshell[223669]:   INFO: Configuration Loaded
+oct 25 18:28:19 surface quickshell[223669]:   WARN qt.qpa.services: Failed to register with host portal QDBusError("org.freedesktop.portal.Error.Failed", "Could not register app ID: Connection already associated with an application ID")
 
 Test: ssh jano@192.168.0.115 'quickshell -p ~/halo ipc call shade toggle'
+
+MyNixOS on  main [!?] took 5s 
+❯ ssh jano@192.168.0.115 'systemctl --user stop halo-files-test 2>/dev/null; export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=$(ls /run/user/1000 | grep -E "^wayland-[0-9]+$" | head -1) QT_QPA_PLATFORM=wayland; systemd-run --user --unit=halo-files-test bash -c "exec -a halo-files /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -n -p $HOME/halo/apps/files.qml"; sleep 4; journalctl --user -u halo-files-test -n 60 --no-pager | grep -viE "portal|kbd-height"; export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t /run/user/1000/hypr | head -1); hyprctl clients | grep -E "class|title"'
 (jano@192.168.0.115) Password: 
+Running as unit: halo-files-test.service; invocation ID: 97f3c06108bb45a2930b6fb74f7d45ef
+oct 25 18:28:46 surface bash[224073]:   INFO: Shell ID: "702c314f8231fda17935f00ff6f13eea" Path ID "702c314f8231fda17935f00ff6f13eea"
+oct 25 18:28:46 surface bash[224073]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/9ws4yj4hnt/log.qslog"
+oct 25 18:28:46 surface bash[224073]:   WARN scene: QML Connections at @files/Pane.qml[233:5]: Detected function "onViewChanged" in Connections element. This is probably intended to be a signal handler but no signal of the target matches the name.
+oct 25 18:28:47 surface bash[224073]:   WARN scene: QML Connections at @files/Pane.qml[233:5]: Detected function "onViewChanged" in Connections element. This is probably intended to be a signal handler but no signal of the target matches the name.
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[126:-1]: TypeError: Cannot call method 'filterClear' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[348:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[347:-1]: TypeError: Cannot read property 'sortKey' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/TabView.qml[11:-1]: TypeError: Cannot read property 'cur' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[26:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[24:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[234:9]: Unable to assign [undefined] to QObject*
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[71:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[249:-1]: TypeError: Cannot read property 'split' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[32:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[370:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[28:-1]: TypeError: Cannot read property 'showHidden' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[430:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[427:-1]: TypeError: Cannot read property 'zoom' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[426:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[634:-1]: TypeError: Cannot read property 'length' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[27:-1]: TypeError: Cannot read property 'showHidden' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[709:-1]: TypeError: Cannot read property 'drives' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[770:-1]: TypeError: Cannot read property 'places' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[26:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[24:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[234:9]: Unable to assign [undefined] to QObject*
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[71:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[32:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[370:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[28:-1]: TypeError: Cannot read property 'showHidden' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[430:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[427:-1]: TypeError: Cannot read property 'zoom' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[426:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[634:-1]: TypeError: Cannot read property 'length' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[27:-1]: TypeError: Cannot read property 'showHidden' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[709:-1]: TypeError: Cannot read property 'drives' of undefined
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/Pane.qml[770:-1]: TypeError: Cannot read property 'places' of undefined
+oct 25 18:28:47 surface bash[224073]:   INFO: Configuration Loaded
+oct 25 18:28:47 surface bash[224073]:   WARN scene: QML FileView at @files/FilesWindow.qml[387:5]: Read of /home/jano/.config/halo/files.json failed: File does not exist.
+oct 25 18:28:47 surface bash[224073]:   WARN scene: @files/FilesWindow.qml[71:-1]: TypeError: Cannot read property 'length' of undefined
+oct 25 18:28:49 surface bash[224073]:   WARN scene: @files/Pane.qml[71:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:49 surface bash[224073]:   WARN scene: @files/Pane.qml[24:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:49 surface bash[224073]:   WARN scene: @files/Pane.qml[26:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:28:49 surface bash[224073]:   WARN scene: @files/FilesWindow.qml[71:-1]: TypeError: Cannot read property 'length' of undefined
+oct 25 18:28:49 surface bash[224073]:   WARN scene: @files/Pane.qml[126:-1]: TypeError: Cannot call method 'filterClear' of undefined
+        class: org.quickshell
+        title: Files
+
+Se ejecutaron 2 comandos
+Line 687 is InfoPanel, which has the same self-reference bug. Fixing it the same way.
+
+Ejecutó un comando, archivos compartidos
+The cause was win: win inside the tab delegate: the name resolved to the delegate’s own property, so win was undefined in every pane. TabView and InfoPanel now take it as host. The app id is org.quickshell, not halo-files, but Apps.qml already falls back to the window title for that, so nothing to fix there.
+
+cd ~/Proyectos/MyNixOS && git add -A && tar xzf ~/Downloads/halo-update-33.tar.gz && scripts/halo-dev.sh
+ssh jano@192.168.0.115 'systemctl --user stop halo-files-test 2>/dev/null; export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=$(ls /run/user/1000 | grep -E "^wayland-[0-9]+$" | head -1) QT_QPA_PLATFORM=wayland; systemd-run --user --unit=halo-files-test bash -c "exec -a halo-files /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -n -p $HOME/halo/apps/files.qml"; sleep 4; journalctl --user -u halo-files-test -n 40 --no-pager | grep -viE "portal|kbd-height"'
+Send me the output and tell me how the window looks.
+
+Halo update 33.tar
+GZ
+ssh jano@192.168.0.115 'systemctl --user stop halo-files-test 2>/dev/null; export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=$(ls /run/user/1000 | grep -E "^wayland-[0-9]+$" | head -1) QT_QPA_PLATFORM=wayland; systemd-run --user --unit=halo-files-test bash -c "exec -a halo-files /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -n -p $HOME/halo/apps/files.qml"; sleep 4; journalctl --user -u halo-files-test -n 40 --no-pager | grep -viE "portal|kbd-height"'
 (jano@192.168.0.115) Password: 
-zsh:1: command not found: quickshell
+Running as unit: halo-files-test.service; invocation ID: acd9475a9f084068ad9bf8cbb76be7f6
+oct 25 18:29:00 surface bash[224073]:   WARN scene: @files/Pane.qml[24:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:29:00 surface bash[224073]:   WARN scene: @files/Pane.qml[26:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:29:00 surface bash[224073]:   WARN scene: @files/FilesWindow.qml[71:-1]: TypeError: Cannot read property 'length' of undefined
+oct 25 18:29:00 surface bash[224073]:   WARN scene: @files/Pane.qml[126:-1]: TypeError: Cannot read property 'filterClear' of undefined
+oct 25 18:29:01 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot call method 'filter' of undefined
+oct 25 18:29:01 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot call method 'filter' of undefined
+oct 25 18:29:01 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot call method 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:02 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:04 surface bash[224073]:   WARN scene: @files/Pane.qml[71:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:29:04 surface bash[224073]:   WARN scene: @files/Pane.qml[24:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:29:04 surface bash[224073]:   WARN scene: @files/Pane.qml[26:-1]: TypeError: Cannot read property 'trashFiles' of undefined
+oct 25 18:29:04 surface bash[224073]:   WARN scene: @files/Pane.qml[101:-1]: TypeError: Cannot read property 'view' of undefined
+oct 25 18:29:04 surface bash[224073]:   WARN scene: @files/Pane.qml[27:-1]: TypeError: Cannot read property 'showHidden' of undefined
+oct 25 18:29:05 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:05 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:05 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:05 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:05 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:06 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:06 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:06 surface bash[224073]:   WARN scene: @files/Pane.qml[180:-1]: TypeError: Cannot read property 'filter' of undefined
+oct 25 18:29:18 surface systemd[1352]: halo-files-test.service: Consumed 3.237s CPU time over 32.670s wall clock time, 235.2M memory peak.
+oct 25 18:30:47 surface systemd[1352]: Started [systemd-run] /run/current-system/sw/bin/bash -c "exec -a halo-files /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -n -p /home/jano/halo/apps/files.qml".
+oct 25 18:30:47 surface bash[225458]: No running instances for "/home/jano/halo/apps/files.qml"
+oct 25 18:30:47 surface bash[225458]: Dead instances:
+oct 25 18:30:47 surface bash[225458]:  - mla4cn2hnt
+oct 25 18:30:47 surface bash[225458]:  - 9ws4yj4hnt
+oct 25 18:30:47 surface bash[225458]:   INFO: Launching config: "/home/jano/halo/apps/files.qml"
+oct 25 18:30:47 surface bash[225458]:   INFO: Shell ID: "702c314f8231fda17935f00ff6f13eea" Path ID "702c314f8231fda17935f00ff6f13eea"
+oct 25 18:30:47 surface bash[225458]:   INFO: Saving logs to "/run/user/1000/quickshell/by-id/qyt4bn4hnt/log.qslog"
+oct 25 18:30:48 surface bash[225458]:   INFO: Configuration Loaded
 
-Fixing the ssh command to use quickshell's full binary path.
-quickshell isn’t in the PATH of a non-interactive ssh, and the shell itself loaded fine. Use the full path and the Wayland env:
+looks good tho I want Articons everywhere. Also sda1 should be automounted is a microsdcard on the surface. And add ALL functionality possible from right click menus (longpress) to multifile select to clean trash and all. just look at kde dolphin
 
-ssh jano@192.168.0.115 'export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=$(ls /run/user/1000 | grep -E "^wayland-[0-9]+$" | head -1) QT_QPA_PLATFORM=wayland; systemd-run --user --unit=halo-files-test bash -c "exec -a halo-files /nix/store/3v0czgvmyms467pk4cbd3qx52qli1jbq-quickshell-0.3.0/bin/quickshell -n -p $HOME/halo/apps/files.qml"; sleep 4; journalctl --user -u halo-files-test -n 40 --no-pager'
-Then send me the output and:
+Mapping out full right-click menus and submenu navigation
+The 18:30 run is clean; the earlier errors were from the old instance. Checking how icons are themed in the repo before I add Arcticons.
 
-ssh jano@192.168.0.115 'export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t /run/user/1000/hypr | head -1); hyprctl clients | grep -E "class|title"'
-If it errors on a rerun, run systemctl --user stop halo-files-test first.
+Se ejecutaron 3 comandos
+Anchors on Row children are illegal in QML (noted in HANDOFF), so I’m wrapping the Pill icon in an Item. Then patching Fx, Pane, InfoPanel and the window for icons.
 
-https://github.com/m-uvex/loaf-fm I like this file manager, make ours more like it. I want the functionality of dolphin with aesthetics of loaf/yazi/gnomefiles
-
-Se ejecutaron 5 comandos, se leyeron 2 páginas y 2 herramientas más
-Fetched: GitHub - m-uvex/loaf-fm: A beautiful and fast rust-based material 3e file manager for linux.
-https://github.com/m-uvex/loaf-fm
-
-Exploring the project's source files for relevant code.
-Failed to fetch: https://github.com/m-uvex/loaf-fm/tree/main/qml
-Fallido
-
-Proyecto Halo: shell Quickshell/Hyprland en NixOS (repo MyNixOS), actualizaciones por tar.gz, suite de apps Files y Gallery.
-Proyecto Halo: shell Quickshell/Hyprland en NixOS (repo MyNixOS), actualizaciones por tar.gz, suite de apps Files y Gallery.
-Building theme styling and a reusable icon component.
-
-Designing tabs, panes, and window layout for file management.
-
-Sketching view modes, sorting, and selection behavior for file listings.
-
-Working out click, selection, and context-menu interactions.
-
-Drafting undo and redo commands for file operations.
-
-Capturing command output and restoring deleted items via closures.
-
-Scripting move, copy, and trash restoration with unique naming.
-
-Scripting archive compression and extraction with unique naming.
-
-Listing and mounting drives for a file-manager sidebar.
-
-Persisting settings and defining theme colors and icon tinting.
-
-Building reusable toolbar buttons with icon and pill styling.
-
-Assembling a popup menu component with positioning logic.
-
-Building a file-manager pane with navigation and search logic.
-
-Designing breadcrumb navigation and path parsing for panes.
-
-Styling rounded thumbnail tiles for grid and list views.
-
-Choosing delegates and loaders for shared file-view rendering.
-
-Resolving click handling between grid views and background mouse areas.
-
-Passing clicks through an overlay to reach empty grid space.
-
-Handling touch gestures and click versus long-press timing.
-
-Laying out the sidebar, toolbar, and overall window structure.
-
-Designing toolbar controls, menus, shortcuts, and properties retrieval scripts.
-
-Writing helper scripts for file metadata and type detection.
-
-Filtering and sorting file entries for pane display.
-
-Building breadcrumb paths and navigation history for panes.
-
-Refreshing directory listings and parsing file metadata output.
-
-Defining selection, tap, and keyboard navigation behavior.
-
-Styling breadcrumb chips and the editable path field.
-
-Styling grid tiles with search chips and parent columns.
-
-Wiring click and double-click handling within grid and list items.
-
-Adding guards against double-triggered selection and press-and-hold.
-
-Parsing drive data and scripting dialog prompts for user input.
-
-Structuring multi-pane tab views and window focus switching.
-
-Scripting copy and move operations with undo support.
-
-Scripting trash deletion and restoration with info files.
-
-Resolving script locations without relying on template literals.
-
-Scripting metadata lookups and info-panel display logic.
-
-Defining window structure, properties, and global state tracking.
-
-Arranging sidebar, tab host, and floating selection controls.
-
-Designing context menus with submenus for item actions.
-
-Starting the rewrite based on Loaf's README features
+Se ejecutaron 4 comandos, archivos compartidos
 bash
 
-cd /home/claude/repo/shell/halo/apps && mkdir -p files/scripts && python3 - <<'EOF'
-p='common/AppTheme.qml'
-s=open(p).read()
-s=s.replace('''    readonly property color line: Qt.rgba(1, 1, 1, 0.12)''','''    readonly property color line: Qt.rgba(1, 1, 1, 0.12)
-    readonly property color accentSoft: Qt.rgba(accent.r, accent.g, accent.b, 0.24)
-    readonly property color low: Qt.tint(bg, Qt.rgba(1, 1, 1, 0.04))
-    readonly property color hover: Qt.rgba(1, 1, 1, 0.07)''')
+cd /home/claude/repo/shell/halo/apps && python3 - <<'EOF'
+import re
+# Pill fix
+p='common/Pill.qml'; s=open(p).read()
+s=s.replace('        Ico { visible: root.icon !== ""; name: root.icon; color: root.ink; size: 22; anchors.verticalCenter: parent.verticalCenter }',
+'        Item { visible: root.icon !== ""; width: 22; height: 24; Ico { anchors.centerIn: parent; name: root.icon; color: root.ink; size: 22 } }')
 open(p,'w').write(s)
-EOF
-cat > common/Pill.qml <<'EOF'
-import QtQuick
-import qs.common
 
-// Round button / chip with a state layer. glyph = single character icon, label = text.
-Rectangle {
-    id: root
-    property string label: ""
-    property string glyph: ""
-    property bool on: false
-    property bool danger: false
-    property bool flat: false
-    property bool filled: false
-    signal clicked
-    signal pressAndHold
+# Fx
+p='files/Fx.qml'; s=open(p).read()
+s=s.replace('        if (x === "pdf")\n            return "pdf";','        if (x === "pdf")\n            return "pdf";\n        if (["js", "ts", "py", "c", "h", "cpp", "rs", "go", "sh", "qml", "nix", "lua", "json", "css", "html", "java", "toml", "yaml", "yml", "xml"].indexOf(x) >= 0)\n            return "code";')
+s=s.replace('archive: "package-x-generic", text: "text-x-generic" }[k];\n    }','archive: "package-x-generic", code: "text-x-generic", text: "text-x-generic" }[k];\n    }\n    function ico(k) {\n        return { folder: "folder", image: "image", audio: "music", video: "video", pdf: "pdf", archive: "archive", code: "code", text: "text" }[k] || "doc";\n    }')
+s=s.replace('const m = { image: "Image", audio: "Audio", video: "Video", pdf: "PDF document", archive: "Archive" };','const m = { image: "Image", audio: "Audio", video: "Video", pdf: "PDF document", archive: "Archive" };')
+open(p,'w').write(s)
 
-    readonly property color ink: filled ? AppTheme.accentInk : (on ? AppTheme.accent : (danger ? "#ff8a80" : AppTheme.text))
-    implicitWidth: Math.max(44, row.implicitWidth + (label !== "" ? 28 : 0))
-    implicitHeight: 44
-    radius: height / 2
-    color: filled ? AppTheme.accent : (on ? AppTheme.accentSoft : (ma.pressed ? AppTheme.cardHigh : (flat ? (ma.containsMouse ? AppTheme.hover : "transparent") : AppTheme.card)))
-    opacity: enabled ? 1 : 0.35
-    scale: ma.pressed ? 0.94 : 1
-    Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutBack } }
-
-    Row {
-        id: row
-        anchors.centerIn: parent
-        spacing: 6
-        Text { visible: root.glyph !== ""; text: root.glyph; color: root.ink; font.pixelSize: 20; height: 24; verticalAlignment: Text.AlignVCenter }
-        Text { visible: root.label !== ""; text: root.label; color: root.ink; font.pixelSize: 15; font.weight: Font.DemiBold; height: 24; verticalAlignment: Text.AlignVCenter }
-    }
-    MouseArea {
-        id: ma
-        anchors.fill: parent
-        hoverEnabled: true
-        onClicked: root.clicked()
-        onPressAndHold: root.pressAndHold()
-    }
-}
-EOF
-cat > common/RoundImg.qml <<'EOF'
-import QtQuick
-import QtQuick.Effects
-
-// Image with rounded corners (mask), cropped to fill.
-Item {
-    id: r
-    property alias source: img.source
-    property real radius: 16
-    property int px: 200
-    readonly property bool ready: img.status === Image.Ready
-    Image {
-        id: img
-        anchors.fill: parent
-        visible: false
-        sourceSize: Qt.size(r.px, r.px)
-        asynchronous: true
-        fillMode: Image.PreserveAspectCrop
-    }
-    Rectangle {
-        id: m
-        anchors.fill: parent
-        radius: r.radius
-        visible: false
-        layer.enabled: true
-    }
-    MultiEffect {
-        anchors.fill: parent
-        source: img
-        maskEnabled: true
-        maskSource: m
-        visible: r.ready
-    }
-}
-EOF
-cat > common/MenuPop.qml <<'EOF'
-import QtQuick
-import qs.common
-
-// Popup menu. popup(x, y, [{id,label,danger,disabled} | {sep:true}]); emits picked(id).
-Item {
-    id: root
-    property var items: []
-    property real px: 0
-    property real py: 0
-    signal picked(string id)
-    visible: false
-    anchors.fill: parent
-    z: 100
-
-    function popup(x, y, list) {
-        items = list;
-        px = x;
-        py = y;
-        visible = true;
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.AllButtons
-        onPressed: root.visible = false
-    }
-    Rectangle {
-        id: box
-        width: 250
-        height: col.implicitHeight + 16
-        radius: 24
-        color: AppTheme.cardHigh
-        border.width: 1
-        border.color: AppTheme.line
-        x: Math.max(8, Math.min(root.px, root.width - width - 8))
-        y: Math.max(8, Math.min(root.py, root.height - height - 8))
-        scale: root.visible ? 1 : 0.9
-        transformOrigin: Item.TopLeft
-        Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutBack } }
-
-        Column {
-            id: col
-            x: 8
-            y: 8
-            width: parent.width - 16
-            Repeater {
-                model: root.items
-                Item {
-                    id: it
-                    required property var modelData
-                    width: col.width
-                    height: modelData.sep ? 9 : 42
-                    Rectangle {
-                        visible: it.modelData.sep === true
-                        anchors.centerIn: parent
-                        width: parent.width - 16
-                        height: 1
-                        color: AppTheme.line
-                    }
-                    Rectangle {
-                        visible: it.modelData.sep !== true
-                        anchors.fill: parent
-                        radius: 16
-                        color: mm.pressed ? AppTheme.accentSoft : "transparent"
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.leftMargin: 14
-                            text: it.modelData.label || ""
-                            color: it.modelData.danger ? "#ff8a80" : AppTheme.text
-                            opacity: it.modelData.disabled ? 0.35 : 1
-                            font.pixelSize: 15
-                        }
-                        MouseArea {
-                            id: mm
-                            anchors.fill: parent
-                            enabled: it.modelData.sep !== true && it.modelData.disabled !== true
-                            onClicked: {
-                                root.visible = false;
-                                root.picked(it.modelData.id);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-EOF
-cat > files/Fx.qml <<'EOF'
-pragma Singleton
-import QtQuick
-import Quickshell
-
-// Path / file-type helpers for the Files app.
-Singleton {
-    function base(p) {
-        const i = p.lastIndexOf("/");
-        return i < 0 ? p : p.substring(i + 1);
-    }
-    function dirOf(p) {
-        const i = p.lastIndexOf("/");
-        return i <= 0 ? "/" : p.substring(0, i);
-    }
-    function ext(n) {
-        const i = n.lastIndexOf(".");
-        return i <= 0 ? "" : n.substring(i + 1).toLowerCase();
-    }
-    function isArchive(n) {
-        return /\.(zip|7z|tar|tar\.gz|tgz|tar\.xz|txz|tar\.zst|tar\.bz2|tbz2)$/i.test(n);
-    }
-    function kind(e) {
-        if (e.dir)
-            return "folder";
-        const x = ext(e.name);
-        if (["png", "jpg", "jpeg", "webp", "gif", "bmp", "svg"].indexOf(x) >= 0)
-            return "image";
-        if (["mp3", "flac", "ogg", "wav", "m4a", "opus"].indexOf(x) >= 0)
-            return "audio";
-        if (["mp4", "mkv", "webm", "mov", "avi"].indexOf(x) >= 0)
-            return "video";
-        if (x === "pdf")
-            return "pdf";
-        if (isArchive(e.name))
-            return "archive";
-        return "text";
-    }
-    function icon(k) {
-        return { folder: "folder", image: "image-x-generic", audio: "audio-x-generic", video: "video-x-generic", pdf: "application-pdf", archive: "package-x-generic", text: "text-x-generic" }[k];
-    }
-    function typeLabel(e) {
-        const k = kind(e);
-        if (k === "folder")
-            return "Folder";
-        const m = { image: "Image", audio: "Audio", video: "Video", pdf: "PDF document", archive: "Archive" };
-        if (m[k])
-            return m[k];
-        const x = ext(e.name);
-        return x === "" ? "File" : x.toUpperCase() + " file";
-    }
-    function human(b) {
-        if (b < 1024)
-            return b + " B";
-        const u = ["KB", "MB", "GB", "TB"];
-        let i = -1;
-        do {
-            b /= 1024;
-            i++;
-        } while (b >= 1024 && i < 3);
-        return b.toFixed(b < 10 ? 1 : 0) + " " + u[i];
-    }
-    function date(t) {
-        const d = new Date(t * 1000);
-        return d.toDateString() === new Date().toDateString() ? Qt.formatTime(d, "HH:mm") : Qt.formatDate(d, "d MMM yyyy");
-    }
-}
-EOF
-cd files/scripts
-cat > cpmv.sh <<'EOF'
-# cpmv.sh MODE(cp|mv) DESTDIR SRC...  -> prints "src<TAB>dest" per item; never overwrites ("name (1).ext")
-m=$1; d=$2; shift 2
-for f in "$@"; do
-  b=$(basename -- "$f"); n=$b; i=1
-  [ "$m" = mv ] && [ "$(dirname -- "$f")" = "$d" ] && continue
-  while [ -e "$d/$n" ]; do
-    if [[ "$b" == *.* && "$b" != .* ]]; then n="${b%.*} ($i).${b##*.}"; else n="$b ($i)"; fi
-    i=$((i+1))
-  done
-  if [ "$m" = cp ]; then cp -r -- "$f" "$d/$n"; else mv -- "$f" "$d/$n"; fi && printf '%s\t%s\n' "$f" "$d/$n"
-done
-EOF
-cat > reverse.sh <<'EOF'
-# reverse.sh FROM TO [FROM TO ...]  (undo of a move)
-while [ $# -gt 1 ]; do mkdir -p -- "$(dirname -- "$2")"; mv -n -- "$1" "$2"; shift 2; done
-EOF
-cat > trash.sh <<'EOF'
-# trash.sh PATH...  -> freedesktop trash; prints "orig<TAB>trashname"
-t="$HOME/.local/share/Trash"; mkdir -p "$t/files" "$t/info"
-for f in "$@"; do
-  b=$(basename -- "$f"); n=$b; i=1
-  while [ -e "$t/files/$n" ] || [ -e "$t/info/$n.trashinfo" ]; do n="$b.$i"; i=$((i+1)); done
-  p=$(realpath -s -- "$f" | sed 's/%/%25/g; s/ /%20/g')
-  printf '[Trash Info]\nPath=%s\nDeletionDate=%s\n' "$p" "$(date +%Y-%m-%dT%H:%M:%S)" > "$t/info/$n.trashinfo"
-  mv -- "$f" "$t/files/$n" && printf '%s\t%s\n' "$f" "$n"
-done
-EOF
-cat > restore.sh <<'EOF'
-# restore.sh TRASHNAME...  -> move back to the original path from the .trashinfo
-t="$HOME/.local/share/Trash"
-for n in "$@"; do
-  i="$t/info/$n.trashinfo"; [ -e "$i" ] || continue
-  o=$(sed -n 's/^Path=//p' "$i" | head -1); o=$(printf '%b' "${o//%/\\x}")
-  mkdir -p -- "$(dirname -- "$o")"; d="$o"; k=1
-  while [ -e "$d" ]; do d="$o ($k)"; k=$((k+1)); done
-  mv -- "$t/files/$n" "$d" && rm -f -- "$i"
-done
-EOF
-cat > emptytrash.sh <<'EOF'
-t="$HOME/.local/share/Trash"
-rm -rf -- "$t"/files/* "$t"/files/.[!.]* "$t"/info/* 2>/dev/null
-exit 0
-EOF
-cat > compress.sh <<'EOF'
-# compress.sh DIR OUT FMT(zip|tgz|txz|7z) NAME...   (NAMEs relative to DIR) -> prints the archive path
-cd "$1" || exit 1; out=$2; fmt=$3; shift 3
-case $fmt in
-  zip) zip -rq -- "$out" "$@" ;;
-  tgz) tar czf "$out" -- "$@" ;;
-  txz) tar cJf "$out" -- "$@" ;;
-  7z) 7z a -bso0 -bsp0 -- "$out" "$@" ;;
-esac && printf '%s\n' "$PWD/$out"
-EOF
-cat > extract.sh <<'EOF'
-# extract.sh ARCHIVE -> extracts into a new sibling folder, prints it
-f=$1; d=$(dirname -- "$f"); b=$(basename -- "$f")
-s="${b%.tar.*}"; [ "$s" = "$b" ] && s="${b%.*}"
-n=$s; i=1; while [ -e "$d/$n" ]; do n="$s ($i)"; i=$((i+1)); done
-mkdir -p -- "$d/$n"
-case "${b,,}" in
-  *.zip) unzip -q -- "$f" -d "$d/$n" ;;
-  *.7z) 7z x -bso0 -bsp0 -o"$d/$n" -- "$f" ;;
-  *) tar xf "$f" -C "$d/$n" ;;
-esac && printf '%s\n' "$d/$n"
-EOF
-cat > stat.sh <<'EOF'
-# stat.sh PATH [deep] -> 1 type|perm|owner|mtime|size  2 mime  3 item count  4 deep size  5.. text preview
-f=$1
-stat -c '%F|%A|%U:%G|%y|%s' -- "$f" 2>/dev/null || exit 1
-m=$(file -b --mime-type -- "$f" 2>/dev/null); echo "${m:-unknown}"
-if [ -d "$f" ]; then ls -A -- "$f" 2>/dev/null | wc -l; [ "$2" = deep ] && du -sb -- "$f" 2>/dev/null | cut -f1 || echo 0; else echo 0; echo 0; fi
-case "$m" in text/*|application/json|application/xml|application/toml|application/x-shellscript) head -c 800 -- "$f" ;; esac
-EOF
-ls
-Salida
-
-compress.sh
-cpmv.sh
-emptytrash.sh
-extract.sh
-restore.sh
-reverse.sh
-stat.sh
-trash.sh
-bash
-
-cd /home/claude/repo/shell/halo/apps/files && cat > Pane.qml <<'EOF'
-import QtQuick
-import Quickshell
-import Quickshell.Io
-import qs.common
-
-// One folder view: breadcrumb bar + (grid | details list | Miller columns) + This PC dashboard.
-Item {
-    id: pane
-    required property var win
-    property string path: ""
-    property bool isActive: false
-    property var hist: []
-    property int hpos: -1
-    property var raw: []
-    property var parentRaw: []
-    property var sel: []
-    property string query: ""
-    property string searchTerm: ""
-    property int cursor: -1
-    property int anchorIdx: -1
-    property bool editing: false
-
-    readonly property bool isPc: path === "pc://"
-    readonly property bool inTrash: path === win.trashFiles || path.indexOf(win.trashFiles + "/") === 0
-    readonly property bool searching: searchTerm !== ""
-    readonly property string title: isPc ? "This PC" : (path === win.trashFiles ? "Trash" : (path === win.home ? "Home" : Fx.base(path)))
-    readonly property var entries: build(raw, query, win.showHidden, win.sortKey, win.sortDesc)
-    readonly property var parentEntries: build(parentRaw, "", win.showHidden, "name", false)
-    readonly property var crumbs: makeCrumbs(path, searchTerm)
-    readonly property int cols: view.cols
-    readonly property string fmt: "%y\t%s\t%T@\t%P\n"
-
-    // ---- model -------------------------------------------------------------------------------
-    function build(r, q, hid, key, desc) {
-        const ql = q.toLowerCase();
-        const out = r.filter(e => (hid || e.name.charAt(0) !== ".") && (ql === "" || e.name.toLowerCase().indexOf(ql) >= 0));
-        const m = desc ? -1 : 1;
-        out.sort((a, b) => {
-            if (a.dir !== b.dir)
-                return a.dir ? -1 : 1;
-            let c = 0;
-            if (key === "size")
-                c = a.size - b.size;
-            else if (key === "date")
-                c = a.mtime - b.mtime;
-            else if (key === "type")
-                c = Fx.ext(a.name).localeCompare(Fx.ext(b.name));
-            if (c === 0)
-                return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }) * m;
-            return c * m;
-        });
-        return out;
-    }
-    function parse(t, basePath) {
-        const out = [];
-        for (const l of t.split("\n")) {
-            const f = l.split("\t");
-            if (f.length < 4)
-                continue;
-            const rel = f.slice(3).join("\t");
-            out.push({ name: Fx.base(rel), rel: rel, path: (basePath === "/" ? "" : basePath) + "/" + rel, dir: f[0] === "d", size: parseInt(f[1]), mtime: parseFloat(f[2]) });
-        }
-        return out;
-    }
-    function makeCrumbs(p, term) {
-        const out = [];
-        if (p === "pc://") {
-            out.push({ n: "This PC", p: "pc://" });
-        } else {
-            const roots = [[win.trashFiles, "Trash"], [win.home, "Home"], ["", "/"]];
-            for (const r of roots) {
-                if (r[0] === "" || p === r[0] || p.indexOf(r[0] + "/") === 0) {
-                    out.push({ n: r[1], p: r[0] === "" ? "/" : r[0] });
-                    let acc = r[0];
-                    for (const s of p.substring(r[0].length).split("/")) {
-                        if (s === "")
-                            continue;
-                        acc += "/" + s;
-                        out.push({ n: s, p: acc });
-                    }
-                    break;
-                }
-            }
-        }
-        if (term !== "")
-            out.push({ n: "Search: " + term, p: "" });
-        return out;
-    }
-
-    function refresh() {
-        if (isPc) {
-            raw = [];
-            parentRaw = [];
-            win.refreshDrives();
-            return;
-        }
-        lister.running = false;
-        lister.command = searching ? ["find", "-L", path, "-maxdepth", "6", "-mindepth", "1", "-iname", "*" + searchTerm + "*", "-printf", fmt] : ["find", "-L", path, "-maxdepth", "1", "-mindepth", "1", "-printf", fmt];
-        lister.running = true;
-        if (win.view === "columns" && path !== "/") {
-            plister.running = false;
-            plister.command = ["find", "-L", Fx.dirOf(path), "-maxdepth", "1", "-mindepth", "1", "-printf", fmt];
-            plister.running = true;
-        }
-    }
-    function go(p, keep) {
-        if (p.charAt(0) === "~")
-            p = win.home + p.substring(1);
-        if (p.length > 1 && p !== "pc://")
-            p = p.replace(/\/+$/, "");
-        if (p === "")
-            p = "/";
-        if (!keep) {
-            hist = hist.slice(0, hpos + 1).concat([p]);
-            hpos = hist.length - 1;
-        }
-        path = p;
-        searchTerm = "";
-        query = "";
-        sel = [];
-        cursor = -1;
-        anchorIdx = -1;
-        editing = false;
-        refresh();
-    }
-    function back() {
-        if (hpos > 0) {
-            hpos--;
-            go(hist[hpos], true);
-        }
-    }
-    function forward() {
-        if (hpos < hist.length - 1) {
-            hpos++;
-            go(hist[hpos], true);
-        }
-    }
-    function up() {
-        if (!isPc && path !== "/")
-            go(Fx.dirOf(path));
-    }
-    function search(term) {
-        searchTerm = term.trim();
-        query = "";
-        sel = [];
-        refresh();
-    }
-    function startEdit() {
-        if (isPc)
-            return;
-        editing = true;
-        pathIn.text = path;
-        pathIn.forceActiveFocus();
-        pathIn.selectAll();
-    }
-
-    // ---- selection ---------------------------------------------------------------------------
-    function isSel(p) {
-        return sel.indexOf(p) >= 0;
-    }
-    function toggle(p) {
-        const s = sel.slice();
-        const i = s.indexOf(p);
-        if (i >= 0)
-            s.splice(i, 1);
-        else
-            s.push(p);
-        sel = s;
-    }
-    function selectAll() {
-        sel = entries.map(e => e.path);
-    }
-    function invert() {
-        sel = entries.filter(e => !isSel(e.path)).map(e => e.path);
-    }
-    function selEntries() {
-        return entries.filter(e => isSel(e.path));
-    }
-    function open(e) {
-        if (e.dir)
-            go(e.path);
-        else
-            win.openFile(e.path);
-    }
-    function tap(i, mods) {
-        const e = entries[i];
-        if (!e)
-            return;
-        cursor = i;
-        win.focusPane(pane);
-        if (mods & Qt.ControlModifier) {
-            toggle(e.path);
-            anchorIdx = i;
-        } else if ((mods & Qt.ShiftModifier) && anchorIdx >= 0) {
-            sel = entries.slice(Math.min(anchorIdx, i), Math.max(anchorIdx, i) + 1).map(x => x.path);
-        } else if (sel.length > 0) {
-            toggle(e.path);
-            anchorIdx = i;
-        } else if (win.singleClick) {
-            open(e);
-        } else {
-            sel = [e.path];
-            anchorIdx = i;
-        }
-    }
-    function move(dx, dy) {
-        if (entries.length === 0)
-            return;
-        let i = cursor < 0 ? 0 : cursor + dx + dy * (win.view === "grid" ? cols : 1);
-        i = Math.max(0, Math.min(entries.length - 1, i));
-        cursor = i;
-        sel = [entries[i].path];
-        anchorIdx = i;
-        view.positionViewAtIndex(i, GridView.Contain);
-    }
-    function openCursor() {
-        const e = cursor >= 0 ? entries[cursor] : (sel.length === 1 ? selEntries()[0] : null);
-        if (e)
-            open(e);
-    }
-
-    Process {
-        id: lister
-        stdout: StdioCollector { onStreamFinished: pane.raw = pane.parse(text, pane.path) }
-    }
-    Process {
-        id: plister
-        stdout: StdioCollector { onStreamFinished: pane.parentRaw = pane.parse(text, Fx.dirOf(pane.path)) }
-    }
-    Connections {
-        target: win
-        function onViewChanged() { pane.refresh(); }
-    }
-
-    // ---- breadcrumb bar ----------------------------------------------------------------------
-    Rectangle {
-        id: bar
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 6
-        height: 48
-        radius: 24
-        color: AppTheme.card
-        border.width: pane.isActive && win.split ? 2 : 0
-        border.color: AppTheme.accent
-
-        Flickable {
-            id: cf
-            anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 8
-            visible: !pane.editing
-            clip: true
-            contentWidth: crumbRow.width
-            contentHeight: height
-            boundsBehavior: Flickable.StopAtBounds
-            onContentWidthChanged: contentX = Math.max(0, contentWidth - width)
-
-            Row {
-                id: crumbRow
-                height: cf.height
-                Repeater {
-                    model: pane.crumbs
-                    Row {
-                        id: cr
-                        required property var modelData
-                        required property int index
-                        height: crumbRow.height
-                        Text {
+# Pane
+p='files/Pane.qml'; s=open(p).read()
+# breadcrumb chevron
+s=re.sub(r'                        Text \{\n                            visible: cr\.index > 0.*?rightPadding: 2\n                        \}',
+'''                        Item {
                             visible: cr.index > 0
+                            width: 18
                             height: parent.height
-                            verticalAlignment: Text.AlignVCenter
-                            text: "\u203a"
-                            color: AppTheme.dim
-                            font.pixelSize: 22
-                            leftPadding: 2
-                            rightPadding: 2
-                        }
-                        Rectangle {
-                            y: (parent.height - 34) / 2
-                            width: ct.implicitWidth + 24
-                            height: 34
-                            radius: 17
-                            color: cr.index === pane.crumbs.length - 1 ? AppTheme.accentSoft : (cm.pressed ? AppTheme.cardHigh : "transparent")
-                            Text {
-                                id: ct
-                                anchors.centerIn: parent
-                                text: cr.modelData.n
-                                color: cr.index === pane.crumbs.length - 1 ? AppTheme.accent : AppTheme.text
-                                font.pixelSize: 15
-                                font.weight: cr.index === pane.crumbs.length - 1 ? Font.DemiBold : Font.Normal
-                            }
-                            MouseArea {
-                                id: cm
-                                anchors.fill: parent
-                                onClicked: {
-                                    pane.win.focusPane(pane);
-                                    if (cr.modelData.p !== "")
-                                        pane.go(cr.modelData.p);
-                                }
-                                onPressAndHold: pane.startEdit()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        TextInput {
-            id: pathIn
-            anchors.fill: parent
-            anchors.leftMargin: 20
-            anchors.rightMargin: 16
-            verticalAlignment: TextInput.AlignVCenter
-            visible: pane.editing
-            color: AppTheme.text
-            font.pixelSize: 16
-            clip: true
-            selectByMouse: true
-            onAccepted: pane.go(text)
-            Keys.onEscapePressed: pane.editing = false
-            onActiveFocusChanged: if (!activeFocus) pane.editing = false
-        }
-    }
-    onEditingChanged: win.pathEditing = editing
-
-    // ---- columns header (details view) -------------------------------------------------------
-    readonly property bool showCols: win.view === "list" && width > 620 && !isPc
-    Item {
-        id: head
-        anchors.top: bar.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: 14
-        anchors.rightMargin: 14
-        height: pane.showCols ? 34 : 0
-        visible: pane.showCols
-        Repeater {
-            model: [{ k: "name", t: "Name", x: 52, w: 0 }, { k: "size", t: "Size", x: -380, w: 90 }, { k: "date", t: "Modified", x: -290, w: 150 }, { k: "type", t: "Type", x: -130, w: 120 }]
-            Text {
-                required property var modelData
-                x: modelData.x >= 0 ? modelData.x : head.width + modelData.x
-                height: head.height
-                verticalAlignment: Text.AlignVCenter
-                text: modelData.t + (win.sortKey === modelData.k ? (win.sortDesc ? "  \u25be" : "  \u25b4") : "")
-                color: win.sortKey === modelData.k ? AppTheme.accent : AppTheme.dim
-                font.pixelSize: 13
-                font.weight: Font.DemiBold
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -6
-                    onClicked: {
-                        if (win.sortKey === parent.modelData.k)
-                            win.sortDesc = !win.sortDesc;
-                        else {
-                            win.sortKey = parent.modelData.k;
-                            win.sortDesc = false;
-                        }
-                        win.saveSoon();
-                    }
-                }
-            }
-        }
-    }
-
-    // ---- parent column (Miller / Yazi style) -------------------------------------------------
-    Rectangle {
-        id: pcol
-        visible: win.view === "columns" && !pane.isPc && pane.path !== "/"
-        anchors.top: head.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.leftMargin: 6
-        anchors.topMargin: 4
-        width: visible ? Math.min(240, pane.width * 0.28) : 0
-        radius: 22
-        color: AppTheme.low
-        ListView {
-            anchors.fill: parent
-            anchors.margins: 6
-            clip: true
-            model: pane.parentEntries
-            boundsBehavior: Flickable.StopAtBounds
-            delegate: Rectangle {
-                id: pr
-                required property var modelData
-                readonly property bool here: modelData.path === pane.path
-                width: ListView.view.width
-                height: 38
-                radius: 12
-                color: here ? AppTheme.accent : (pm.pressed ? AppTheme.hover : "transparent")
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    text: pr.modelData.name + (pr.modelData.dir ? "/" : "")
-                    elide: Text.ElideRight
-                    color: pr.here ? AppTheme.accentInk : (pr.modelData.dir ? AppTheme.text : AppTheme.dim)
-                    font.pixelSize: 14
-                }
-                MouseArea {
-                    id: pm
-                    anchors.fill: parent
-                    onClicked: if (pr.modelData.dir) pane.go(pr.modelData.path)
-                }
-            }
-        }
-    }
-
-    // ---- main file view ----------------------------------------------------------------------
-    GridView {
-        id: view
-        visible: !pane.isPc
-        anchors.top: head.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: pcol.right
-        anchors.right: parent.right
-        anchors.leftMargin: 6
-        anchors.rightMargin: 6
-        anchors.topMargin: 4
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-        readonly property bool isGrid: win.view === "grid"
-        readonly property real tileW: win.zoom * 1.7
-        readonly property int cols: isGrid ? Math.max(1, Math.floor(width / tileW)) : 1
-        cellWidth: isGrid ? Math.floor(width / cols) : width
-        cellHeight: isGrid ? win.zoom + 78 : (win.view === "list" ? 56 : 40)
-        model: pane.entries
-
-        delegate: Item {
-            id: cell
-            required property var modelData
-            required property int index
-            readonly property bool picked: pane.isSel(modelData.path)
-            readonly property bool isCur: pane.isActive && pane.cursor === index
-            readonly property string k: Fx.kind(modelData)
-            readonly property string iconSrc: Quickshell.iconPath(Fx.icon(k), "text-x-generic")
-            property bool held: false
-            width: view.cellWidth
-            height: view.cellHeight
-
-            Loader {
-                anchors.fill: parent
-                sourceComponent: win.view === "grid" ? tileC : rowC
-            }
-            MouseArea {
-                id: ma
-                anchors.fill: parent
-                hoverEnabled: true
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onPressed: cell.held = false
-                onClicked: mouse => {
-                    if (cell.held) {
-                        cell.held = false;
-                        return;
-                    }
-                    if (mouse.button === Qt.RightButton) {
-                        pane.win.focusPane(pane);
-                        if (!pane.isSel(cell.modelData.path))
-                            pane.sel = [cell.modelData.path];
-                        pane.cursor = cell.index;
-                        const p = cell.mapToItem(null, mouse.x, mouse.y);
-                        pane.win.itemMenu(pane, p.x, p.y);
-                    } else {
-                        pane.tap(cell.index, mouse.modifiers);
-                    }
-                }
-                onDoubleClicked: mouse => {
-                    if (!pane.win.singleClick && mouse.button === Qt.LeftButton)
-                        pane.open(cell.modelData);
-                }
-                onPressAndHold: mouse => {
-                    if (mouse.button === Qt.LeftButton) {
-                        cell.held = true;
-                        pane.win.focusPane(pane);
-                        pane.toggle(cell.modelData.path);
-                        pane.anchorIdx = cell.index;
-                        pane.cursor = cell.index;
-                    }
-                }
-            }
-
-            // Grid tile: tonal card, rounded thumbnail
-            Component {
-                id: tileC
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 5
-                    radius: 24
-                    color: cell.picked ? AppTheme.accentSoft : (ma.containsMouse ? AppTheme.cardHigh : AppTheme.card)
-                    border.width: cell.picked || cell.isCur ? 2 : 0
-                    border.color: AppTheme.accent
-                    scale: ma.pressed ? 0.96 : 1
-                    Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutBack } }
-                    Item {
-                        id: th
-                        x: 10
-                        y: 10
-                        width: parent.width - 20
-                        height: parent.height - 64
-                        RoundImg {
-                            anchors.fill: parent
-                            visible: cell.k === "image"
-                            radius: 16
-                            source: cell.k === "image" ? "file://" + cell.modelData.path : ""
-                        }
-                        Image {
+                            Ico { anchors.centerIn: parent; name: "fwd"; size: 14; color: AppTheme.dim }
+                        }''',s,flags=re.S)
+# tile icon
+s=s.replace('''                        Image {
                             visible: cell.k !== "image"
                             anchors.centerIn: parent
                             width: Math.min(parent.width, parent.height) * 0.85
@@ -1031,49 +256,15 @@ Item {
                             source: cell.iconSrc
                             sourceSize: Qt.size(128, 128)
                             fillMode: Image.PreserveAspectFit
-                        }
-                    }
-                    Text {
-                        x: 8
-                        y: th.y + th.height + 6
-                        width: parent.width - 16
-                        horizontalAlignment: Text.AlignHCenter
-                        text: cell.modelData.rel === cell.modelData.name ? cell.modelData.name : cell.modelData.rel
-                        elide: Text.ElideMiddle
-                        color: AppTheme.text
-                        font.pixelSize: 13
-                    }
-                    Text {
-                        x: 8
-                        y: th.y + th.height + 26
-                        width: parent.width - 16
-                        horizontalAlignment: Text.AlignHCenter
-                        text: cell.modelData.dir ? "Folder" : Fx.human(cell.modelData.size)
-                        elide: Text.ElideRight
-                        color: AppTheme.dim
-                        font.pixelSize: 11
-                    }
-                }
-            }
-
-            // List / columns row
-            Component {
-                id: rowC
-                Rectangle {
-                    readonly property bool cols3: win.view === "columns"
-                    anchors.fill: parent
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 4
-                    anchors.topMargin: 2
-                    anchors.bottomMargin: 2
-                    radius: cols3 ? 12 : 20
-                    color: cell.picked ? (cols3 ? AppTheme.accent : AppTheme.accentSoft) : (ma.containsMouse ? AppTheme.hover : "transparent")
-                    border.width: cell.isCur && !cell.picked ? 1 : 0
-                    border.color: AppTheme.accent
-                    readonly property color ink: cell.picked && cols3 ? AppTheme.accentInk : AppTheme.text
-                    readonly property color inkDim: cell.picked && cols3 ? AppTheme.accentInk : AppTheme.dim
-                    readonly property real ic: cols3 ? 22 : 34
-                    Image {
+                        }''','''                        Ico {
+                            visible: cell.k !== "image"
+                            anchors.centerIn: parent
+                            size: Math.min(parent.width, parent.height) * 0.62
+                            name: Fx.ico(cell.k)
+                            color: cell.k === "folder" ? AppTheme.accent : AppTheme.dim
+                        }''')
+# row icon
+s=s.replace('''                    Image {
                         id: ri
                         x: 12
                         y: (parent.height - height) / 2
@@ -1082,376 +273,48 @@ Item {
                         source: cell.iconSrc
                         sourceSize: Qt.size(64, 64)
                         fillMode: Image.PreserveAspectFit
-                    }
-                    Text {
-                        x: ri.x + ri.width + 12
-                        width: Math.max(40, parent.width - x - (pane.showCols ? 400 : 60))
-                        height: parent.height
-                        verticalAlignment: Text.AlignVCenter
-                        text: cell.modelData.rel === cell.modelData.name ? cell.modelData.name : cell.modelData.rel
-                        elide: Text.ElideMiddle
-                        color: parent.ink
-                        font.pixelSize: 15
-                    }
-                    Text {
-                        visible: pane.showCols
-                        x: parent.width - 380
-                        width: 90
-                        height: parent.height
-                        verticalAlignment: Text.AlignVCenter
-                        text: cell.modelData.dir ? "\u2014" : Fx.human(cell.modelData.size)
-                        color: parent.inkDim
-                        font.pixelSize: 13
-                    }
-                    Text {
-                        visible: pane.showCols
-                        x: parent.width - 290
-                        width: 150
-                        height: parent.height
-                        verticalAlignment: Text.AlignVCenter
-                        text: Fx.date(cell.modelData.mtime)
-                        color: parent.inkDim
-                        font.pixelSize: 13
-                    }
-                    Text {
-                        visible: pane.showCols
-                        x: parent.width - 130
-                        width: 120
-                        height: parent.height
-                        verticalAlignment: Text.AlignVCenter
-                        text: Fx.typeLabel(cell.modelData)
-                        elide: Text.ElideRight
-                        color: parent.inkDim
-                        font.pixelSize: 13
-                    }
-                    Text {
+                    }''','''                    Item {
+                        id: ri
+                        x: 12
+                        y: (parent.height - height) / 2
+                        width: parent.ic
+                        height: width
+                        Ico { anchors.centerIn: parent; size: parent.width; name: Fx.ico(cell.k); color: cell.picked && parent.parent.cols3 ? AppTheme.accentInk : (cell.k === "folder" ? AppTheme.accent : AppTheme.dim) }
+                    }''')
+# row chevron
+s=s.replace('''                    Text {
                         visible: cell.modelData.dir && win.view === "columns"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "\u203a"
+                        text: "\\u203a"
                         color: parent.inkDim
                         font.pixelSize: 18
-                    }
-                    Text {
-                        visible: !pane.showCols && win.view === "list"
+                    }''','''                    Ico {
+                        visible: cell.modelData.dir && win.view === "columns"
                         anchors.right: parent.right
-                        anchors.rightMargin: 16
+                        anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        text: cell.modelData.dir ? "" : Fx.human(cell.modelData.size)
+                        name: "fwd"
+                        size: 16
                         color: parent.inkDim
-                        font.pixelSize: 12
-                    }
-                }
-            }
-        }
-
-        Text {
-            visible: pane.entries.length === 0
-            anchors.centerIn: parent
-            text: pane.searching ? "No results" : (pane.query !== "" ? "No match" : "Empty")
-            color: AppTheme.dim
-            font.pixelSize: 18
-        }
-    }
-
-    // Empty-area interactions: right click / long-press = folder menu, tap clears selection, drag scrolls.
-    MouseArea {
-        id: bg
-        visible: !pane.isPc
-        anchors.fill: view
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        property real lastY: 0
-        property bool moved: false
-        property bool held: false
-        onPressed: mouse => {
-            const hit = view.indexAt(mouse.x + view.contentX, mouse.y + view.contentY);
-            if (hit >= 0) {
-                mouse.accepted = false;
-                return;
-            }
-            lastY = mouse.y;
-            moved = false;
-            held = false;
-        }
-        onPositionChanged: mouse => {
-            const dy = mouse.y - lastY;
-            if (Math.abs(dy) > 2)
-                moved = true;
-            view.contentY = Math.max(0, Math.min(Math.max(0, view.contentHeight - view.height), view.contentY - dy));
-            lastY = mouse.y;
-        }
-        onPressAndHold: mouse => {
-            if (!moved) {
-                held = true;
-                pane.win.focusPane(pane);
-                const p = bg.mapToItem(null, mouse.x, mouse.y);
-                pane.win.bgMenu(pane, p.x, p.y);
-            }
-        }
-        onClicked: mouse => {
-            pane.win.focusPane(pane);
-            if (mouse.button === Qt.RightButton) {
-                const p = bg.mapToItem(null, mouse.x, mouse.y);
-                pane.win.bgMenu(pane, p.x, p.y);
-            } else if (!moved && !held) {
-                pane.sel = [];
-                pane.cursor = -1;
-            }
-        }
-    }
-
-    // ---- This PC dashboard -------------------------------------------------------------------
-    Flickable {
-        visible: pane.isPc
-        anchors.top: bar.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 10
-        clip: true
-        contentWidth: width
-        contentHeight: pcc.implicitHeight + 40
-        boundsBehavior: Flickable.StopAtBounds
-        Column {
-            id: pcc
-            width: parent.width
-            spacing: 14
-            Text { text: "Devices"; color: AppTheme.dim; font.pixelSize: 14; font.weight: Font.DemiBold; leftPadding: 8; topPadding: 8 }
-            Flow {
-                width: parent.width
-                spacing: 12
-                Repeater {
-                    model: pane.win.drives
-                    Rectangle {
-                        id: dc
-                        required property var modelData
-                        readonly property real frac: modelData.total > 0 ? modelData.used / modelData.total : 0
-                        width: Math.min(340, pcc.width)
-                        height: 132
-                        radius: 28
-                        color: AppTheme.card
-                        Image {
+                    }''')
+# PC drive icon
+s=s.replace('''                        Image {
                             x: 18
                             y: 18
                             width: 40
                             height: 40
                             source: Quickshell.iconPath("drive-harddisk", "folder")
                             sourceSize: Qt.size(80, 80)
-                        }
-                        Text { x: 70; y: 16; width: parent.width - 86; text: dc.modelData.title; color: AppTheme.text; font.pixelSize: 17; font.weight: Font.DemiBold; elide: Text.ElideRight }
-                        Text {
-                            x: 70
-                            y: 40
-                            width: parent.width - 86
-                            text: dc.modelData.mount === "" ? (dc.modelData.fs + " \u00b7 not mounted") : (Fx.human(dc.modelData.total - dc.modelData.used) + " free of " + Fx.human(dc.modelData.total))
-                            color: AppTheme.dim
-                            font.pixelSize: 13
-                            elide: Text.ElideRight
-                        }
-                        Rectangle {
-                            x: 18
-                            y: 74
-                            width: parent.width - 36
-                            height: 10
-                            radius: 5
-                            color: AppTheme.cardHigh
-                            Rectangle { width: parent.width * dc.frac; height: parent.height; radius: 5; color: dc.frac > 0.9 ? "#ff8a80" : AppTheme.accent }
-                        }
-                        Pill {
-                            x: 14
-                            y: 86
-                            height: 38
-                            flat: true
-                            label: dc.modelData.mount === "" ? "Mount" : "Open"
-                            onClicked: dc.modelData.mount === "" ? pane.win.mountDrive(dc.modelData, pane) : pane.go(dc.modelData.mount)
-                        }
-                        Pill {
-                            visible: dc.modelData.mount !== "" && dc.modelData.mount.indexOf("/run/media") === 0
-                            x: 100
-                            y: 86
-                            height: 38
-                            flat: true
-                            label: "Unmount"
-                            onClicked: pane.win.unmountDrive(dc.modelData)
-                        }
-                    }
-                }
-            }
-            Text { text: "Folders"; color: AppTheme.dim; font.pixelSize: 14; font.weight: Font.DemiBold; leftPadding: 8; topPadding: 8 }
-            Flow {
-                width: parent.width
-                spacing: 12
-                Repeater {
-                    model: pane.win.places.filter(p => p.n !== "Home" && p.n !== "Trash")
-                    Rectangle {
-                        id: fc
-                        required property var modelData
-                        width: 160
-                        height: 110
-                        radius: 28
-                        color: fm.pressed ? AppTheme.cardHigh : AppTheme.card
-                        Image { x: 18; y: 16; width: 44; height: 44; source: Quickshell.iconPath(fc.modelData.icon, "folder"); sourceSize: Qt.size(88, 88) }
-                        Text { x: 18; y: 70; width: parent.width - 36; text: fc.modelData.n; color: AppTheme.text; font.pixelSize: 16; elide: Text.ElideRight }
-                        MouseArea { id: fm; anchors.fill: parent; onClicked: pane.go(fc.modelData.p) }
-                    }
-                }
-            }
-        }
-    }
-}
-EOF
-python3 -c "
-s=open('Pane.qml').read();print(s.count('{')-s.count('}'),s.count('(')-s.count(')'),s.count('[')-s.count(']'))"
-Salida
+                        }''','''                        Ico { x: 18; y: 18; size: 40; name: dc.modelData.removable ? "sd" : "drive"; color: AppTheme.accent }''')
+s=s.replace('Image { x: 18; y: 16; width: 44; height: 44; source: Quickshell.iconPath(fc.modelData.icon, "folder"); sourceSize: Qt.size(88, 88) }','Ico { x: 18; y: 16; size: 44; name: fc.modelData.ico; color: AppTheme.accent }')
+s=s.replace('label: dc.modelData.mount === "" ? "Mount" : "Open"','label: dc.modelData.mount === "" ? "Mount" : "Open"')
+open(p,'w').write(s)
 
-0 0 0
-Debugging property declaration order and view change handling.
-
-Checking mouse event handling for right-click and item interactions.
-
-bash
-
-cd /home/claude/repo/shell/halo/apps/files && cat > TabView.qml <<'EOF'
-import QtQuick
-import qs.common
-
-// One tab: a pane, or two side by side (split view).
-Item {
-    id: tv
-    required property var win
-    required property int uid
-    property string start: ""
-    property bool split: false
-    property int activeIdx: 0
-    readonly property var active: split && activeIdx === 1 ? p2 : p1
-    readonly property var other: split ? (activeIdx === 1 ? p1 : p2) : null
-    property alias first: p1
-    property alias second: p2
-    readonly property string title: active.title
-    onTitleChanged: win.setTabTitle(uid, title)
-    onSplitChanged: {
-        if (split && p2.path === "")
-            p2.go(p1.path);
-        if (!split)
-            activeIdx = 0;
-    }
-
-    Pane {
-        id: p1
-        win: tv.win
-        isActive: tv.activeIdx === 0
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: tv.split ? tv.width / 2 - 3 : tv.width
-        Component.onCompleted: go(tv.start)
-    }
-    Rectangle {
-        visible: tv.split
-        x: tv.width / 2 - 1
-        y: 12
-        width: 2
-        height: parent.height - 24
-        radius: 1
-        color: AppTheme.line
-    }
-    Pane {
-        id: p2
-        win: tv.win
-        visible: tv.split
-        isActive: tv.split && tv.activeIdx === 1
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: tv.width / 2 - 3
-    }
-}
-EOF
-cat > InfoPanel.qml <<'EOF'
-import QtQuick
-import Quickshell
-import qs.common
-
-// Details / preview of the selected item (or of the current folder).
-Rectangle {
-    id: ip
-    required property var win
-    readonly property var pane: win.activePane()
-    property string target: ""
-    property var rows: []
-    property string mime: ""
-    property string preview: ""
-    readonly property var ent: {
-        const p = win.infoTick, a = win.activePane();
-        if (!a)
-            return null;
-        const s = a.selEntries();
-        return s.length === 1 ? s[0] : null;
-    }
-    readonly property string kind: ent ? Fx.kind(ent) : "folder"
-    radius: 28
-    color: AppTheme.low
-    clip: true
-
-    onTargetChanged: {
-        rows = [];
-        preview = "";
-        if (target !== "" && visible)
-            win.statOf(target, false, t => ip.parseStat(t));
-    }
-    Timer {
-        interval: 120
-        running: true
-        repeat: true
-        onTriggered: {
-            const a = ip.win.activePane();
-            if (!a)
-                return;
-            const s = a.selEntries();
-            const t = s.length === 1 ? s[0].path : (s.length === 0 && !a.isPc ? a.path : "");
-            if (t !== ip.target)
-                ip.target = t;
-        }
-    }
-    function parseStat(t) {
-        const l = t.split("\n");
-        if (l.length < 3)
-            return;
-        const f = l[0].split("|");
-        mime = l[1];
-        const r = [["Type", f[0]], ["Modified", (f[3] || "").substring(0, 16)], ["Permissions", f[1] + "  " + f[2]]];
-        if (ent && !ent.dir)
-            r.unshift(["Size", Fx.human(parseInt(f[4]))]);
-        else
-            r.unshift(["Items", l[2]]);
-        r.push(["Path", target]);
-        rows = r;
-        preview = l.slice(4).join("\n");
-    }
-
-    Flickable {
-        anchors.fill: parent
-        anchors.margins: 18
-        contentWidth: width
-        contentHeight: col.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-        Column {
-            id: col
-            width: parent.width
-            spacing: 14
-            Item {
-                width: parent.width
-                height: 180
-                RoundImg {
-                    anchors.fill: parent
-                    visible: ip.ent !== null && ip.kind === "image"
-                    radius: 22
-                    px: 600
-                    source: ip.ent && ip.kind === "image" ? "file://" + ip.ent.path : ""
-                }
-                Image {
+# InfoPanel
+p='files/InfoPanel.qml'; s=open(p).read()
+s=s.replace('''                Image {
                     visible: !(ip.ent && ip.kind === "image")
                     anchors.centerIn: parent
                     width: 120
@@ -1459,680 +322,269 @@ Rectangle {
                     source: Quickshell.iconPath(Fx.icon(ip.kind), "folder")
                     sourceSize: Qt.size(240, 240)
                     fillMode: Image.PreserveAspectFit
-                }
-            }
-            Text {
-                width: parent.width
-                text: ip.ent ? ip.ent.name : (ip.target === "" ? "Nothing selected" : Fx.base(ip.target))
-                color: AppTheme.text
-                font.pixelSize: 18
-                font.weight: Font.DemiBold
-                wrapMode: Text.WrapAnywhere
-            }
-            Repeater {
-                model: ip.rows
-                Column {
-                    required property var modelData
-                    width: col.width
-                    Text { text: modelData[0]; color: AppTheme.dim; font.pixelSize: 12 }
-                    Text { width: parent.width; text: modelData[1]; color: AppTheme.text; font.pixelSize: 14; wrapMode: Text.WrapAnywhere }
-                }
-            }
-            Rectangle {
-                visible: ip.preview !== ""
-                width: parent.width
-                height: pv.implicitHeight + 24
-                radius: 18
-                color: AppTheme.card
-                Text {
-                    id: pv
-                    x: 12
-                    y: 12
-                    width: parent.width - 24
-                    text: ip.preview
-                    color: AppTheme.dim
-                    font.pixelSize: 12
-                    font.family: "monospace"
-                    wrapMode: Text.Wrap
-                    maximumLineCount: 14
-                    elide: Text.ElideRight
-                }
-            }
-        }
-    }
-}
+                }''','''                Ico {
+                    visible: !(ip.ent && ip.kind === "image")
+                    anchors.centerIn: parent
+                    size: 110
+                    name: Fx.ico(ip.kind)
+                    color: ip.kind === "folder" ? AppTheme.accent : AppTheme.dim
+                }''')
+open(p,'w').write(s)
 EOF
-echo ok
+grep -c "Ico" files/Pane.qml files/InfoPanel.qml; grep -n "Image {" files/Pane.qml files/InfoPanel.qml
 Salida
 
-ok
-Fixing panel binding to update via timer-driven property.
+files/Pane.qml:6
+files/InfoPanel.qml:1
+Searching the codebase for matching icon references.
 bash
 
 cd /home/claude/repo/shell/halo/apps/files && python3 - <<'EOF'
-s=open('InfoPanel.qml').read()
-a=s.index('    readonly property var pane')
-b=s.index('    readonly property string kind')
-s=s[:a]+'''    property string target: ""
-    property var rows: []
-    property string mime: ""
-    property string preview: ""
-    property var ent: null
-'''+s[b:]
-s=s.replace('''            const t = s.length === 1''','''            ip.ent = s.length === 1 ? s[0] : null;
-            const t = s.length === 1''')
-open('InfoPanel.qml','w').write(s)
-EOF
-sed -n 1,30p InfoPanel.qml
-Salida
+s=open('FilesWindow.qml').read()
+def rep(a,b,cnt=1):
+    global s
+    assert s.count(a)>=1, a[:70]
+    s=s.replace(a,b) if cnt==0 else s.replace(a,b,cnt)
 
-import QtQuick
-import Quickshell
-import qs.common
+# --- places with ico
+for n,i in [("Home","home"),("Documents","doc"),("Downloads","download"),("Pictures","image"),("Music","music"),("Videos","video"),("Trash","trash")]:
+    s=s.replace('{ n: "%s", p:'%n,'{ n: "%s", ico: "%s", p:'%(n,i))
 
-// Details / preview of the selected item (or of the current folder).
-Rectangle {
-    id: ip
-    required property var win
-    property string target: ""
-    property var rows: []
-    property string mime: ""
-    property string preview: ""
-    property var ent: null
-    readonly property string kind: ent ? Fx.kind(ent) : "folder"
-    radius: 28
-    color: AppTheme.low
-    clip: true
+# --- state
+rep('    property bool pathEditing: false\n','    property bool pathEditing: false\n    property var tried: ({})\n    property string drivesJson: ""\n')
 
-    onTargetChanged: {
-        rows = [];
-        preview = "";
-        if (target !== "" && visible)
-            win.statOf(target, false, t => ip.parseStat(t));
-    }
-    Timer {
-        interval: 120
-        running: true
-        repeat: true
-        onTriggered: {
-            const a = ip.win.activePane();
-Building a files window with visibility-aware timer logic.
-
-Wiring tabs, panes, and repeater roles into the window.
-
-Wiring settings persistence and background job execution helpers.
-
-Implementing undo-aware file operations with conflict checks.
-
-Assembling context menus for trash, compression, and app launching.
-
-Defining background menu entries for folder and trash actions.
-
-Laying out toolbar controls, dialogs, and prompt handling.
-
-Refining toolbar glyphs, filter behavior, and status bar reactivity.
-
-Building sidebar layout with reusable place and device items.
-
-Styling main layout panels and mapping out keyboard shortcuts.
-
-Parsing drive listings to track mounted storage usage.
-
-Adding a filter field with live search behavior.
-
-bash
-
-cd /home/claude/repo/shell/halo/apps/files && python3 - <<'EOF'
-s=open('TabView.qml').read()
-s=s.replace('    required property int uid\n    property string start: ""','    required property int uid\n    required property int index\n    required property string start')
-s=s.replace('    property bool split: false','    visible: index === win.cur\n    property bool split: false')
-open('TabView.qml','w').write(s)
-s=open('Pane.qml').read()
-s=s.replace('        editing = false;\n        refresh();\n    }\n    function back','        editing = false;\n        if (isActive)\n            win.filterClear();\n        refresh();\n    }\n    function back')
-open('Pane.qml','w').write(s)
-s=open('InfoPanel.qml').read()
-s=s.replace('        running: true\n        repeat: true','        running: ip.visible\n        repeat: true')
-open('InfoPanel.qml','w').write(s)
-EOF
-grep -n "filterClear" Pane.qml; grep -n "visible: index" TabView.qml
-Salida
-
-125:            win.filterClear();
-11:    visible: index === win.cur
-Now the main window.
-
-Ejecutó un comando
-bash
-
-cd /home/claude/repo/shell/halo/apps/files && cat > FilesWindow.qml <<'EOF'
-import QtQuick
-import Quickshell
-import Quickshell.Io
-import qs.common
-
-// Halo Files: Dolphin features (tabs, split view, details/columns, undo/redo, archives, trash, drives, info panel)
-// in a Material 3 Expressive look (drawer, tonal surfaces, pill chips; Yazi-style columns).
-FloatingWindow {
-    id: win
-    title: "Files"
-    color: AppTheme.bg
-    implicitWidth: 1180
-    implicitHeight: 760
-
-    readonly property string home: AppTheme.home
-    readonly property string trashRoot: home + "/.local/share/Trash"
-    readonly property string trashFiles: trashRoot + "/files"
-    readonly property string sd: Qt.resolvedUrl("scripts/").toString().replace("file://", "")
-    readonly property bool wide: width >= 900
-    readonly property var places: [
-        { n: "Home", p: home, icon: "user-home" }, { n: "Documents", p: home + "/Documents", icon: "folder-documents" },
-        { n: "Downloads", p: home + "/Downloads", icon: "folder-download" }, { n: "Pictures", p: home + "/Pictures", icon: "folder-pictures" },
-        { n: "Music", p: home + "/Music", icon: "folder-music" }, { n: "Videos", p: home + "/Videos", icon: "folder-videos" },
-        { n: "Trash", p: trashFiles, icon: "user-trash" }
-    ]
-
-    // settings (saved to ~/.config/halo/files.json)
-    property string view: "grid"     // grid | list | columns
-    property int zoom: 72
-    property bool showHidden: false
-    property string sortKey: "name"
-    property bool sortDesc: false
-    property bool singleClick: true
-    property bool info: false
-    property bool sidebarOpen: true
-    property var bookmarks: []
-    readonly property bool showInfo: (info || view === "columns") && width >= 800
-
-    // state
-    property int cur: 0
-    property int nextUid: 2
-    property var clipPaths: []
-    property bool cutMode: false
-    property var undoStack: []
-    property var redoStack: []
-    property var drives: []
-    property string lsText: ""
-    property var dlg: null
-    property var props: null
-    property string owPath: ""
-    property string owQuery: ""
-    property var mctx: ({})
-    property bool pathEditing: false
-    property var ap: null
-    readonly property bool typing: filterIn.activeFocus || dlg !== null || props !== null || owPath !== "" || pathEditing
-
-    readonly property string statusText: {
-        const p = ap;
-        if (!p)
-            return "";
-        if (p.isPc)
-            return drives.length + " drives";
-        const s = p.sel.length;
-        if (s > 0) {
-            let b = 0;
-            for (const e of p.selEntries())
-                if (!e.dir)
-                    b += e.size;
-            return s + " selected" + (b > 0 ? " \u00b7 " + Fx.human(b) : "");
-        }
-        return p.entries.length + (p.searching ? " results" : " items");
-    }
-
-    onViewChanged: saveSoon()
-    onZoomChanged: saveSoon()
-    onShowHiddenChanged: saveSoon()
-    onSortKeyChanged: saveSoon()
-    onSortDescChanged: saveSoon()
-    onSingleClickChanged: saveSoon()
-    onInfoChanged: saveSoon()
-    onBookmarksChanged: saveSoon()
-
-    ListModel { id: tabs }
-
-    // ---- helpers -----------------------------------------------------------------------------
-    function activeTab() { return tabRep.itemAt(cur); }
-    function activePane() {
-        const t = tabRep.itemAt(cur);
-        return t ? t.active : null;
-    }
-    function otherPane() {
-        const t = tabRep.itemAt(cur);
-        return t ? t.other : null;
-    }
-    function focusPane(p) {
-        const t = tabRep.itemAt(cur);
-        if (t && t.split)
-            t.activeIdx = (p === t.second ? 1 : 0);
-        ap = activePane();
-    }
-    function goActive(p) {
-        const a = activePane();
-        if (a)
-            a.go(p);
-    }
-    function setTabTitle(uid, t) {
-        for (let i = 0; i < tabs.count; i++)
-            if (tabs.get(i).uid === uid)
-                tabs.setProperty(i, "title", t);
-    }
-    function newTab(p) {
-        const a = activePane();
-        tabs.append({ uid: nextUid++, title: "", start: p || (a && !a.isPc ? a.path : home) });
-        cur = tabs.count - 1;
-        ap = activePane();
-    }
-    function closeTab(i) {
-        if (tabs.count <= 1) {
-            Qt.quit();
-            return;
-        }
-        tabs.remove(i);
-        cur = Math.min(cur, tabs.count - 1);
-        ap = activePane();
-    }
-    function toggleSplit() {
-        const t = activeTab();
-        if (t)
-            t.split = !t.split;
-        ap = activePane();
-    }
-    function filterClear() {
-        filterIn.text = "";
-    }
-    function refreshAll() {
-        for (let i = 0; i < tabs.count; i++) {
-            const t = tabRep.itemAt(i);
-            if (t) {
-                t.first.refresh();
-                if (t.split)
-                    t.second.refresh();
-            }
-        }
-    }
-    function toast(m) {
-        toastText.text = m;
-        toastBox.show = true;
-        toastTimer.restart();
-    }
-    function exec(cmd, cb, quiet) {
-        const j = jobC.createObject(win, { command: cmd, cb: cb || null, quiet: !!quiet });
-        j.running = true;
-    }
-    function sh(script, args) {
-        return ["bash", sd + script].concat(args);
-    }
-    function statOf(path, deep, cb) {
-        exec(["bash", sd + "stat.sh", path, deep ? "deep" : ""], cb, true);
-    }
-    function openFile(p) {
-        Quickshell.execDetached(["xdg-open", p]);
-        Quickshell.execDetached(["sh", "-c", "mkdir -p \"$HOME/.cache/halo\"; f=\"$HOME/.cache/halo/recent-files\"; { printf '%s\\n' \"$1\"; grep -vxF -- \"$1\" \"$f\" 2>/dev/null; } | head -20 > \"$f.tmp\" && mv \"$f.tmp\" \"$f\"", "sh", p]);
-    }
-    function ask(title, text, ok, fn) {
-        dlg = { kind: "prompt", title: title, text: text, ok: ok, fn: fn };
-        Qt.callLater(() => { dlgIn.text = text; dlgIn.forceActiveFocus(); dlgIn.selectAll(); });
-    }
-    function confirm(title, msg, ok, fn) {
-        dlg = { kind: "confirm", title: title, text: msg, ok: ok, fn: fn };
-    }
-
-    // ---- file operations (with undo / redo) --------------------------------------------------
-    function pushUndo(e) {
-        undoStack = undoStack.concat([e]);
-        redoStack = [];
-    }
-    function undo() {
-        if (undoStack.length === 0) {
-            toast("Nothing to undo");
-            return;
-        }
-        const e = undoStack[undoStack.length - 1];
-        undoStack = undoStack.slice(0, -1);
-        e.bwd();
-        redoStack = redoStack.concat([e]);
-        toast("Undo: " + e.label);
-    }
-    function redo() {
-        if (redoStack.length === 0) {
-            toast("Nothing to redo");
-            return;
-        }
-        const e = redoStack[redoStack.length - 1];
-        redoStack = redoStack.slice(0, -1);
-        e.fwd();
-        undoStack = undoStack.concat([e]);
-        toast("Redo: " + e.label);
-    }
-    function pairs(out) {
-        return out.trim() === "" ? [] : out.trim().split("\n").map(l => l.split("\t"));
-    }
-    function copyMove(mode, srcs, dst) {
-        if (srcs.length === 0)
-            return;
-        const e = { label: mode === "cp" ? "Copy" : "Move", pr: [] };
-        e.fwd = () => exec(sh("cpmv.sh", [mode, dst].concat(srcs)), out => { e.pr = pairs(out); });
-        e.bwd = () => {
-            if (mode === "cp")
-                exec(["rm", "-rf", "--"].concat(e.pr.map(p => p[1])));
-            else
-                exec(sh("reverse.sh", [].concat(...e.pr.map(p => [p[1], p[0]]))));
-        };
-        e.fwd();
-        pushUndo(e);
-    }
-    function paste() {
-        const p = activePane();
-        if (!p || p.isPc || p.inTrash || clipPaths.length === 0)
-            return;
-        copyMove(cutMode ? "mv" : "cp", clipPaths, p.path);
-        if (cutMode)
-            clipPaths = [];
-    }
-    function setClip(cut) {
-        const p = activePane();
-        if (!p || p.sel.length === 0)
-            return;
-        clipPaths = p.sel.slice();
-        cutMode = cut;
-        toast((cut ? "Cut " : "Copied ") + clipPaths.length);
-        p.sel = [];
-    }
-    function exists(p, name) {
-        return p.raw.some(x => x.name === name);
-    }
-    function rename(old, name) {
-        const p = activePane();
-        const dst = Fx.dirOf(old) + "/" + name;
-        if (name === "" || dst === old)
-            return;
-        if (p && exists(p, name)) {
-            toast("\u201c" + name + "\u201d already exists");
-            return;
-        }
-        const e = { label: "Rename", fwd: () => exec(["mv", "-n", "--", old, dst]), bwd: () => exec(["mv", "-n", "--", dst, old]) };
-        e.fwd();
-        pushUndo(e);
-        if (p)
-            p.sel = [];
-    }
-    function create(isDir, name) {
-        const p = activePane();
-        name = name.trim().replace(/\//g, "");
-        if (!p || name === "")
-            return;
-        if (exists(p, name)) {
-            toast("\u201c" + name + "\u201d already exists");
-            return;
-        }
-        const f = p.path + "/" + name;
-        const e = isDir ? { label: "New folder", fwd: () => exec(["mkdir", "-p", "--", f]), bwd: () => exec(["rmdir", "--", f]) } : { label: "New file", fwd: () => exec(["touch", "--", f]), bwd: () => exec(["rm", "-f", "--", f]) };
-        e.fwd();
-        pushUndo(e);
-    }
-    function trashSel(paths) {
-        if (paths.length === 0)
-            return;
-        const e = { label: "Trash", pr: [] };
-        e.fwd = () => exec(sh("trash.sh", paths), out => { e.pr = pairs(out); });
-        e.bwd = () => exec(sh("restore.sh", e.pr.map(p => p[1])));
-        e.fwd();
-        pushUndo(e);
-        const p = activePane();
-        if (p)
-            p.sel = [];
-    }
-    function restoreSel(paths) {
-        exec(sh("restore.sh", paths.map(p => Fx.base(p))));
-        const p = activePane();
-        if (p)
-            p.sel = [];
-    }
-    function deleteForever(paths) {
-        confirm("Delete permanently?", paths.length + " item(s) will be gone for good.", "Delete", () => {
-            exec(["rm", "-rf", "--"].concat(paths));
-            const p = activePane();
-            if (p)
-                p.sel = [];
-        });
-    }
-    function emptyTrash() {
-        confirm("Empty Trash?", "Everything in the Trash will be deleted.", "Empty", () => exec(sh("emptytrash.sh", [])));
-    }
-    function compress(fmt, base, paths) {
-        const p = activePane();
-        const ext = { zip: ".zip", tgz: ".tar.gz", txz: ".tar.xz", "7z": ".7z" }[fmt];
-        const out = base.trim() + ext;
-        if (!p || base.trim() === "")
-            return;
-        if (exists(p, out)) {
-            toast("\u201c" + out + "\u201d already exists");
-            return;
-        }
-        const e = { label: "Compress", made: "" };
-        e.fwd = () => {
-            toast("Compressing\u2026");
-            exec(sh("compress.sh", [p.path, out, fmt].concat(paths.map(x => Fx.base(x)))), t => { e.made = t.trim(); toast(e.made !== "" ? "Created " + out : "Compression failed"); });
-        };
-        e.bwd = () => { if (e.made !== "") exec(["rm", "-f", "--", e.made]); };
-        e.fwd();
-        pushUndo(e);
-        p.sel = [];
-    }
-    function extract(path) {
-        const e = { label: "Extract", made: "" };
-        e.fwd = () => {
-            toast("Extracting\u2026");
-            exec(sh("extract.sh", [path]), t => { e.made = t.trim(); toast(e.made !== "" ? "Extracted" : "Extraction failed"); });
-        };
-        e.bwd = () => { if (e.made !== "") exec(["rm", "-rf", "--", e.made]); };
-        e.fwd();
-        pushUndo(e);
-    }
-    function showProps(path, name) {
-        props = { name: name, rows: [["Path", path]] };
-        statOf(path, true, t => {
-            const l = t.split("\n");
-            if (l.length < 4)
-                return;
-            const f = l[0].split("|");
-            const dir = f[0].indexOf("directory") >= 0;
-            props = { name: name, rows: [["Path", path], ["Type", f[0] + " \u00b7 " + l[1]], [dir ? "Total size" : "Size", Fx.human(parseInt(dir ? l[3] : f[4]))], dir ? ["Items", l[2]] : ["", ""], ["Modified", (f[3] || "").substring(0, 19)], ["Permissions", f[1] + "  " + f[2]]].filter(r => r[0] !== "") };
-        });
-    }
-
-    // ---- drives ------------------------------------------------------------------------------
-    function refreshDrives() {
-        lsblk.running = false;
-        lsblk.running = true;
-    }
-    function parseDrives(ls, df) {
-        const use = {};
-        for (const l of df.split("\n").slice(1)) {
-            const m = /^(.+?)\s+(\d+)\s+(\d+)\s*$/.exec(l);
-            if (m)
-                use[m[1]] = { total: +m[2], used: +m[3] };
-        }
-        const out = [];
-        const skip = ["swap", "crypto_LUKS", "LVM2_member", "linux_raid_member", "squashfs"];
-        const walk = n => {
-            const mps = (n.mountpoints || (n.mountpoint ? [n.mountpoint] : [])).filter(x => x);
-            const fs = n.fstype || "";
-            if (fs !== "" && skip.indexOf(fs) < 0 && n.type !== "loop") {
-                const mp = mps.length ? mps[0] : "";
-                if (mp === "" || mp === "/" || /^\/(home|run\/media|media|mnt)(\/|$)/.test(mp)) {
-                    const u = use[mp] || { total: +n.size || 0, used: 0 };
-                    out.push({ path: n.path || ("/dev/" + n.name), title: mp === "/" ? "Filesystem" : (n.label || Fx.base(n.path || n.name)), mount: mp, fs: fs, total: u.total, used: u.used });
-                }
-            }
-            for (const c of (n.children || []))
-                walk(c);
-        };
-        try {
-            for (const n of JSON.parse(ls).blockdevices)
-                walk(n);
-        } catch (e) {}
-        drives = out;
-    }
-    function mountDrive(d, pane) {
-        exec(["udisksctl", "mount", "-b", d.path], out => {
-            const m = /at (.+?)\.?\s*$/m.exec(out);
-            refreshDrives();
+# --- drives: removable + automount + dedupe
+rep('NAME,PATH,LABEL,SIZE,FSTYPE,MOUNTPOINTS,TYPE,RM"','NAME,PATH,LABEL,SIZE,FSTYPE,MOUNTPOINTS,TYPE,RM,HOTPLUG"')
+rep('        const walk = n => {\n','        const walk = (n, hot) => {\n            const h = hot || n.rm === true || n.rm === "1" || n.hotplug === true || n.hotplug === "1";\n')
+rep('mount: mp, fs: fs, total: u.total, used: u.used });','mount: mp, fs: fs, total: u.total, used: u.used, removable: h });')
+rep('                walk(c);\n        };','                walk(c, h);\n        };')
+rep('                walk(n);\n        } catch (e) {}\n        drives = out;','                walk(n, false);\n        } catch (e) {}\n        const js = JSON.stringify(out);\n        if (js === drivesJson)\n            return;\n        drivesJson = js;\n        drives = out;\n        for (const d of out)\n            if (d.removable && d.mount === "" && !tried[d.path]) {\n                tried[d.path] = true;\n                mountDrive(d, null);\n            }')
+rep('''            refreshDrives();
             if (m)
                 pane.go(m[1]);
             else
-                toast("Could not mount");
-        }, true);
-    }
-    function unmountDrive(d) {
-        exec(["udisksctl", "unmount", "-b", d.path], () => refreshDrives(), true);
-    }
-
-    // ---- settings persistence ----------------------------------------------------------------
-    function saveSoon() {
-        saveT.restart();
-    }
-    FileView {
-        id: cfg
-        path: AppTheme.home + "/.config/halo/files.json"
-        atomicWrites: true
-        onLoaded: {
-            try {
-                const j = JSON.parse(text());
-                if (j.view)
-                    win.view = j.view;
-                if (j.zoom)
-                    win.zoom = j.zoom;
-                if (j.sortKey)
-                    win.sortKey = j.sortKey;
-                win.showHidden = !!j.showHidden;
-                win.sortDesc = !!j.sortDesc;
-                win.info = !!j.info;
-                if (j.singleClick !== undefined)
-                    win.singleClick = !!j.singleClick;
-                if (j.bookmarks)
-                    win.bookmarks = j.bookmarks;
-            } catch (e) {}
-        }
-    }
-    Timer {
-        id: saveT
-        interval: 700
-        onTriggered: cfg.setText(JSON.stringify({ view: win.view, zoom: win.zoom, showHidden: win.showHidden, sortKey: win.sortKey, sortDesc: win.sortDesc, info: win.info, singleClick: win.singleClick, bookmarks: win.bookmarks }))
-    }
-    Timer {
-        interval: 200
+                toast("Could not mount");''','''            refreshDrives();
+            if (m && pane)
+                pane.go(m[1]);
+            else if (m)
+                toast("Mounted " + d.title);
+            else if (pane)
+                toast("Could not mount");''')
+rep('''    Process {
+        id: lsblk''','''    Timer {
+        interval: 4000
         running: true
         repeat: true
-        onTriggered: {
-            const a = win.activePane();
-            if (a !== win.ap)
-                win.ap = a;
-        }
+        onTriggered: win.refreshDrives()
     }
     Process {
-        id: lsblk
-        command: ["lsblk", "-J", "-b", "-o", "NAME,PATH,LABEL,SIZE,FSTYPE,MOUNTPOINTS,TYPE,RM"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                win.lsText = text;
-                dfp.running = false;
-                dfp.running = true;
-            }
-        }
-    }
-    Process {
-        id: dfp
-        command: ["df", "-B1", "--output=target,size,used"]
-        stdout: StdioCollector { onStreamFinished: win.parseDrives(win.lsText, text) }
-    }
-    Component {
-        id: jobC
-        Process {
-            id: jp
-            property var cb: null
-            property bool quiet: false
-            stdout: StdioCollector {
-                onStreamFinished: {
-                    if (jp.cb)
-                        jp.cb(text);
-                    if (!jp.quiet)
-                        win.refreshAll();
-                    jp.destroy(1500);
-                }
-            }
-            onExited: code => {
-                if (code !== 0 && !jp.quiet)
-                    win.toast("Operation failed");
-            }
-        }
-    }
-    Component.onCompleted: {
-        tabs.append({ uid: 1, title: "Home", start: home });
-        refreshDrives();
-        Qt.callLater(() => { win.ap = win.activePane(); });
-    }
+        id: lsblk''')
+rep('+ (modelData.mount === "" ? "  \\u00b7  eject" : "")','+ (modelData.mount === "" ? "  \\u00b7  tap to mount" : "")')
 
-    // ---- menus -------------------------------------------------------------------------------
+# --- sidebar SideItem icon
+rep('Image { x: 16; y: 12; width: 24; height: 24; source: Quickshell.iconPath(si.icon, "folder"); sourceSize: Qt.size(48, 48); fillMode: Image.PreserveAspectFit }','Ico { x: 16; y: 12; size: 24; name: si.icon; color: si.current ? AppTheme.accent : AppTheme.dim }')
+rep('                            icon: modelData.icon\n                            label: modelData.n\n                            current: win.ap !== null && win.ap.path === modelData.p\n                            onClicked: win.goActive(modelData.p)\n',
+    '                            icon: modelData.ico\n                            label: modelData.n\n                            current: win.ap !== null && win.ap.path === modelData.p\n                            onClicked: win.goActive(modelData.p)\n                            onHeld: {\n                                const g = mapToItem(null, 40, 30);\n                                win.placeMenu(modelData.p, g.x, g.y);\n                            }\n')
+rep('icon: "folder"\n                            label: modelData.n','icon: "folder"\n                            label: modelData.n')
+rep('{ id: "rmbm", label: "Remove bookmark", danger: true }]);','{ id: "placetab", ico: "plus", label: "Open in new tab" }, { id: "rmbm", ico: "close", label: "Remove bookmark", danger: true }]);')
+rep('SideItem { icon: "computer"; label: "This PC"','SideItem { icon: "computer"; label: "This PC"')
+rep('''                            icon: "drive-harddisk"
+                            label: modelData.title''','''                            icon: modelData.removable ? "sd" : "drive"
+                            label: modelData.title''')
+rep('onClicked: modelData.mount === "" ? win.mountDrive(modelData, win.activePane()) : win.goActive(modelData.mount)\n','onClicked: modelData.mount === "" ? win.mountDrive(modelData, win.activePane()) : win.goActive(modelData.mount)\n                            onHeld: {\n                                const g = mapToItem(null, 40, 30);\n                                win.driveMenu(modelData, g.x, g.y);\n                            }\n')
+
+# --- toolbar glyphs -> icons
+for a,b in [('glyph: "\\u2261"','icon: "menu"'),('glyph: "\\u2039"','icon: "back"'),('glyph: "\\u203a"','icon: "fwd"'),('glyph: "\\u2191"','icon: "up"'),
+            ('glyph: "\\u25a6"','icon: "grid"'),('glyph: "\\u2630"','icon: "list"'),('glyph: "\\u25a5"','icon: "columns"'),('glyph: "\\u25eb"','icon: "split"'),
+            ('glyph: "\\u2139"','icon: "info"'),('glyph: "\\u22ee"','icon: "more"'),('glyph: "\\u2715"','icon: "close"'),('Pill { glyph: "+"','Pill { icon: "plus"')]:
+    assert a in s,a
+    s=s.replace(a,b)
+rep('Text { x: 14; height: parent.height; verticalAlignment: Text.AlignVCenter; text: "\\u2315"; color: AppTheme.dim; font.pixelSize: 20 }','Ico { x: 14; anchors.verticalCenter: parent.verticalCenter; name: "search"; size: 20; color: AppTheme.dim }')
+rep('''Text { anchors.right: parent.right; anchors.rightMargin: 12; height: parent.height; verticalAlignment: Text.AlignVCenter; text: "\\u2715"; color: AppTheme.dim; font.pixelSize: 13
+                                MouseArea { anchors.fill: parent; anchors.margins: -8; onClicked: win.closeTab(tc.index) } }
+                            MouseArea { anchors.fill: parent; anchors.rightMargin: 36; onClicked: { win.cur = tc.index; win.ap = win.activePane(); } }''',
+'''Ico { anchors.right: parent.right; anchors.rightMargin: 12; anchors.verticalCenter: parent.verticalCenter; name: "close"; size: 14; color: AppTheme.dim
+                                MouseArea { anchors.fill: parent; anchors.margins: -8; onClicked: win.closeTab(tc.index) } }
+                            MouseArea {
+                                anchors.fill: parent
+                                anchors.rightMargin: 36
+                                onClicked: { win.cur = tc.index; win.ap = win.activePane(); }
+                                onPressAndHold: { const g = tc.mapToItem(null, 20, 40); win.tabMenu(tc.index, g.x, g.y); }
+                            }''')
+# selection bar icons
+rep('Pill { visible: win.ap !== null && !win.ap.inTrash; label: "Copy"; flat: true; height: 40','Pill { visible: win.ap !== null && !win.ap.inTrash; icon: "copy"; flat: true; height: 40')
+rep('Pill { visible: win.ap !== null && !win.ap.inTrash; label: "Cut"; flat: true; height: 40','Pill { visible: win.ap !== null && !win.ap.inTrash; icon: "cut"; flat: true; height: 40')
+rep('Pill { visible: win.ap !== null && win.ap.inTrash; label: "Restore"; flat: true; height: 40','Pill { visible: win.ap !== null && win.ap.inTrash; icon: "restore"; label: "Restore"; flat: true; height: 40')
+rep('Pill { label: win.ap !== null && win.ap.inTrash ? "Delete" : "Trash"; danger: true','Pill { icon: "trash"; label: win.ap !== null && win.ap.inTrash ? "Delete" : ""; danger: true')
+rep('''                        glyph: "\\u22ee"
+                        flat: true
+                        height: 40''','''                        icon: "more"
+                        flat: true
+                        height: 40''') if 'glyph: "\\u22ee"\n                        flat: true' in s else None
+# trash toolbar
+rep('            // FAB: New\n','''            // Trash toolbar
+            Row {
+                visible: win.ap !== null && win.ap.inTrash
+                anchors.right: parent.right
+                anchors.rightMargin: 20
+                anchors.bottom: status.top
+                anchors.bottomMargin: 8
+                spacing: 8
+                Pill { icon: "restore"; label: "Restore all"; onClicked: win.menuAct("restoreall") }
+                Pill { icon: "trash"; label: "Empty Trash"; filled: true; danger: true; onClicked: win.emptyTrash() }
+            }
+            // FAB: New\n''')
+rep('Text { id: fl; anchors.centerIn: parent; text: "+  New"; color: AppTheme.accentInk; font.pixelSize: 16; font.weight: Font.DemiBold }',
+    'Row { anchors.centerIn: parent; spacing: 8; Ico { name: "plus"; size: 20; color: AppTheme.accentInk; anchors.verticalCenter: parent.verticalCenter } Text { id: fl; text: "New"; color: AppTheme.accentInk; font.pixelSize: 16; font.weight: Font.DemiBold } }')
+rep('width: fl.implicitWidth + 36','width: fl.implicitWidth + 64')
+rep('ctxMenu.popup(g.x - 200, g.y - 150, [{ id: "newfolder", label: "New folder" }, { id: "newfile", label: "New text file" }, { sep: true }, { id: "paste", label: "Paste", disabled: win.clipPaths.length === 0 }]);',
+    'ctxMenu.popup(g.x - 200, g.y - 150, [{ id: "newfolder", ico: "newfolder", label: "New folder" }, { id: "newfile", ico: "newfile", label: "New text file" }, { id: "newlink", ico: "link", label: "New link\\u2026" }, { sep: true }, { id: "paste", ico: "paste", label: "Paste", disabled: win.clipPaths.length === 0 }]);')
+
+# --- replace menus block
+a=s.index('    // ---- menus ----')
+b=s.index('    // ================================ UI')
+new=r'''    // ---- menus (modelled on Dolphin's context menus) -----------------------------------------
+    function I(id, label, ico, o) {
+        return Object.assign({ id: id, label: label, ico: ico }, o || {});
+    }
+    readonly property var sortSub: [
+        { id: "s:name", label: "Name" + (sortKey === "name" ? "  \u2713" : "") }, { id: "s:size", label: "Size" + (sortKey === "size" ? "  \u2713" : "") },
+        { id: "s:date", label: "Modified" + (sortKey === "date" ? "  \u2713" : "") }, { id: "s:type", label: "Type" + (sortKey === "type" ? "  \u2713" : "") },
+        { sep: true }, { id: "s:desc", label: "Descending" + (sortDesc ? "  \u2713" : "") }
+    ]
+    readonly property var viewSub: [
+        { id: "v:grid", ico: "grid", label: "Icons" + (view === "grid" ? "  \u2713" : "") }, { id: "v:list", ico: "list", label: "Details" + (view === "list" ? "  \u2713" : "") },
+        { id: "v:columns", ico: "columns", label: "Columns" + (view === "columns" ? "  \u2713" : "") }, { sep: true },
+        { id: "zoomin", ico: "zoomin", label: "Zoom in" }, { id: "zoomout", ico: "zoomout", label: "Zoom out" }, { sep: true },
+        { id: "hidden", ico: "eye", label: "Show hidden files" + (showHidden ? "  \u2713" : "") }, { id: "info", ico: "info", label: "Information panel" + (info ? "  \u2713" : "") },
+        { id: "split", ico: "split", label: "Split view" }, { id: "single", ico: "select", label: "Single-click to open" + (singleClick ? "  \u2713" : "") }
+    ]
+    readonly property var selSub: [
+        { id: "selall", ico: "select", label: "Select all" }, { id: "selnone", label: "Select none" }, { id: "invert", label: "Invert selection" }, { id: "selmatch", label: "Select matching\u2026" }
+    ]
     function itemMenu(pane, x, y) {
         const es = pane.selEntries();
-        const one = es.length === 1 ? es[0] : null;
+        const n = es.length;
+        const one = n === 1 ? es[0] : null;
         const t = activeTab();
         const sp = t && t.split;
+        const allArch = n > 0 && es.every(e => Fx.isArchive(e.name));
+        const img = one && Fx.kind(one) === "image";
         const m = [];
         if (pane.inTrash) {
-            m.push({ id: "restore", label: "Restore" }, { id: "delperm", label: "Delete permanently", danger: true }, { sep: true }, { id: "props", label: "Properties", disabled: !one });
+            m.push(I("restore", "Restore", "restore"), I("delperm", "Delete permanently", "trash", { danger: true }), { sep: true }, I("props", "Properties", "info"));
         } else {
-            m.push({ id: "open", label: "Open" });
-            if (one && one.dir)
-                m.push({ id: "newtab", label: "Open in new tab" });
-            if (one && one.dir && sp)
-                m.push({ id: "inother", label: "Open in other pane" });
+            m.push(I("open", n > 1 ? "Open " + n + " items" : "Open", "open"));
             if (one && !one.dir)
-                m.push({ id: "openwith", label: "Open with\u2026" });
-            m.push({ sep: true }, { id: "cut", label: "Cut" }, { id: "copy", label: "Copy" });
-            if (one && one.dir && clipPaths.length > 0)
-                m.push({ id: "pasteinto", label: "Paste into folder" });
-            if (one)
-                m.push({ id: "rename", label: "Rename\u2026" });
-            if (sp)
-                m.push({ sep: true }, { id: "copyother", label: "Copy to other pane" }, { id: "moveother", label: "Move to other pane" });
-            m.push({ sep: true }, { id: "compress", label: "Compress\u2026" });
-            if (one && Fx.isArchive(one.name))
-                m.push({ id: "extract", label: "Extract here" });
-            m.push({ sep: true }, { id: "copypath", label: "Copy path" });
+                m.push(I("openwith", "Open with\u2026", "open"));
             if (one && one.dir)
-                m.push({ id: "bookmark", label: "Add to places" });
-            m.push({ id: "props", label: "Properties", disabled: !one }, { sep: true }, { id: "trash", label: "Move to Trash", danger: true });
+                m.push(I("newtab", "Open in new tab", "plus"), I("terminal", "Open terminal here", "terminal"));
+            if (one && one.dir && sp)
+                m.push(I("inother", "Open in other pane", "split"));
+            m.push({ sep: true }, I("cut", "Cut", "cut"), I("copy", "Copy", "copy"));
+            if (one && one.dir && clipPaths.length > 0)
+                m.push(I("pasteinto", "Paste into folder", "paste"));
+            m.push(I("dup", "Duplicate here", "copy"), I("rename", n > 1 ? "Rename " + n + " items\u2026" : "Rename\u2026", "edit"));
+            m.push({ sep: true }, I("copyto", "Copy to\u2026", "copy"), I("moveto", "Move to\u2026", "fwd"));
+            if (sp)
+                m.push(I("copyother", "Copy to other pane", "split"), I("moveother", "Move to other pane", "split"));
+            if (one)
+                m.push(I("link", "Create link here", "link"));
+            m.push({ sep: true }, { label: "Compress", ico: "compress", sub: [I("cz:zip", ".zip"), I("cz:tgz", ".tar.gz"), I("cz:txz", ".tar.xz"), I("cz:7z", ".7z")] });
+            if (allArch)
+                m.push(I("extract", "Extract here", "extract"));
+            m.push({ sep: true }, I("copypath", "Copy location", "copy"));
+            if (one && one.dir)
+                m.push(I("bookmark", "Add to places", "star"));
+            if (img)
+                m.push(I("wallpaper", "Add to wallpapers", "image"));
+            if (one && !one.dir)
+                m.push(I("checksum", "SHA-256 checksum", "hash"));
+            m.push(I("perms", "Permissions\u2026", "lock"), I("props", "Properties", "info"), { sep: true }, I("trash", "Move to Trash", "trash", { danger: true }), I("delperm", "Delete permanently", "close", { danger: true }));
         }
         mctx = { pane: pane, x: x, y: y };
         ctxMenu.popup(x, y, m);
     }
     function bgMenu(pane, x, y) {
-        const m = pane.inTrash ? [{ id: "emptytrash", label: "Empty Trash", danger: true }, { id: "selall", label: "Select all" }] : [{ id: "newfolder", label: "New folder" }, { id: "newfile", label: "New text file" }, { sep: true }, { id: "paste", label: "Paste", disabled: clipPaths.length === 0 }, { id: "selall", label: "Select all" }, { sep: true }, { id: "hidden", label: (showHidden ? "\u2713  " : "") + "Show hidden files" }, { id: "refresh", label: "Refresh" }, { id: "folderprops", label: "Properties" }];
+        let m;
+        if (pane.inTrash)
+            m = [I("emptytrash", "Empty Trash", "trash", { danger: true }), I("restoreall", "Restore all", "restore"), { sep: true }, { label: "Select", ico: "select", sub: selSub }, { label: "Sort by", ico: "sort", sub: sortSub }, I("refresh", "Refresh", "refresh")];
+        else
+            m = [{ label: "Create new", ico: "plus", sub: [I("newfolder", "Folder", "newfolder"), I("newfile", "Text file", "newfile"), I("newlink", "Link to\u2026", "link")] },
+                 I("paste", "Paste", "paste", { disabled: clipPaths.length === 0 }), { sep: true },
+                 { label: "Select", ico: "select", sub: selSub }, { label: "View", ico: "grid", sub: viewSub }, { label: "Sort by", ico: "sort", sub: sortSub }, { sep: true },
+                 I("terminal", "Open terminal here", "terminal"), I("bookmark", "Add to places", "star"), I("refresh", "Refresh", "refresh"), I("folderprops", "Properties", "info")];
         mctx = { pane: pane, x: x, y: y };
         ctxMenu.popup(x, y, m);
     }
     function moreMenu(x, y) {
-        const m = [
-            { id: "hidden", label: (showHidden ? "\u2713  " : "") + "Show hidden files" },
-            { id: "single", label: (singleClick ? "\u2713  " : "") + "Single-click to open" },
-            { id: "info", label: (info ? "\u2713  " : "") + "Information panel" },
-            { id: "split", label: "Split view" },
-            { sep: true },
-            { id: "s:name", label: (sortKey === "name" ? "\u25cf  " : "") + "Sort by name" },
-            { id: "s:size", label: (sortKey === "size" ? "\u25cf  " : "") + "Sort by size" },
-            { id: "s:date", label: (sortKey === "date" ? "\u25cf  " : "") + "Sort by modified" },
-            { id: "s:type", label: (sortKey === "type" ? "\u25cf  " : "") + "Sort by type" },
-            { id: "s:desc", label: (sortDesc ? "\u2713  " : "") + "Descending" },
-            { sep: true },
-            { id: "undo", label: "Undo", disabled: undoStack.length === 0 },
-            { id: "redo", label: "Redo", disabled: redoStack.length === 0 },
-            { id: "refresh", label: "Refresh" },
-            { id: "selall", label: "Select all" },
-            { id: "invert", label: "Invert selection" }
-        ];
-        mctx = { pane: activePane(), x: x, y: y };
+        const p = activePane();
+        const m = [{ label: "View", ico: "grid", sub: viewSub }, { label: "Sort by", ico: "sort", sub: sortSub }, { label: "Select", ico: "select", sub: selSub }, { sep: true },
+                   I("undo", "Undo", "restore", { disabled: undoStack.length === 0 }), I("redo", "Redo", "redo", { disabled: redoStack.length === 0 }), { sep: true },
+                   I("newtab", "New tab", "plus"), I("terminal", "Open terminal here", "terminal"), I("refresh", "Refresh", "refresh")];
+        if (p && p.inTrash)
+            m.push({ sep: true }, I("emptytrash", "Empty Trash", "trash", { danger: true }));
+        mctx = { pane: p, x: x, y: y };
         ctxMenu.popup(x, y, m);
+    }
+    function placeMenu(path, x, y) {
+        mctx = { pane: activePane(), p: path };
+        const m = [I("placetab", "Open in new tab", "plus")];
+        if (path === trashFiles)
+            m.push(I("emptytrash", "Empty Trash", "trash", { danger: true }));
+        ctxMenu.popup(x, y, m);
+    }
+    function driveMenu(d, x, y) {
+        mctx = { pane: activePane(), drive: d };
+        const m = [];
+        if (d.mount !== "")
+            m.push(I("drvopen", "Open", "open"), I("drvtab", "Open in new tab", "plus"));
+        else
+            m.push(I("drvmount", "Mount", "sd"));
+        if (d.mount.indexOf("/run/media") === 0)
+            m.push(I("drvunmount", "Unmount", "eject"));
+        ctxMenu.popup(x, y, m);
+    }
+    function tabMenu(i, x, y) {
+        mctx = { pane: activePane(), tab: i };
+        ctxMenu.popup(x, y, [I("tabdup", "Duplicate tab", "copy"), I("tabclose", "Close tab", "close"), I("tabothers", "Close other tabs", "close", { disabled: tabs.count < 2 })]);
+    }
+    function terminalAt(path) {
+        Quickshell.execDetached(["sh", "-c", "cd \"$1\" || exit; for t in foot kitty alacritty wezterm konsole xterm; do command -v $t >/dev/null && exec $t; done", "sh", path]);
+    }
+    function showPropsMulti(es) {
+        let b = 0, f = 0, d = 0;
+        for (const e of es) {
+            if (e.dir)
+                d++;
+            else {
+                f++;
+                b += e.size;
+            }
+        }
+        props = { name: es.length + " items", rows: [["Files", "" + f], ["Folders", "" + d], ["Total size (files)", Fx.human(b)], ["Location", Fx.dirOf(es[0].path)]] };
+    }
+    function bulkRename(es, pat) {
+        pat = pat.trim();
+        if (pat === "")
+            return;
+        if (pat.indexOf("#") < 0)
+            pat += " #";
+        const w = String(es.length).length;
+        const pr = [], back = [];
+        es.forEach((e, i) => {
+            const num = String(i + 1).padStart(w, "0");
+            const x = e.dir ? "" : Fx.ext(e.name);
+            const nn = pat.replace("#", num) + (x !== "" ? "." + x : "");
+            pr.push(e.path, Fx.dirOf(e.path) + "/" + nn);
+            back.push(Fx.dirOf(e.path) + "/" + nn, e.path);
+        });
+        const e = { label: "Rename", fwd: () => exec(sh("reverse.sh", pr)), bwd: () => exec(sh("reverse.sh", back)) };
+        e.fwd();
+        pushUndo(e);
+        const p = activePane();
+        if (p)
+            p.sel = [];
     }
     function menuAct(id) {
         const p = mctx.pane || activePane();
@@ -2149,6 +601,10 @@ FloatingWindow {
                 sortKey = k;
             return;
         }
+        if (id.indexOf("v:") === 0) {
+            view = id.substring(2);
+            return;
+        }
         if (id.indexOf("cz:") === 0) {
             const fmt = id.substring(3);
             const suggested = paths.length === 1 ? Fx.base(paths[0]).replace(/\.[^.]*$/, "") || Fx.base(paths[0]) : "Archive";
@@ -2157,637 +613,183 @@ FloatingWindow {
         }
         switch (id) {
         case "open": for (const e of es) p.open(e); break;
-        case "newtab": if (one) newTab(one.path); break;
+        case "newtab": if (one && one.dir) newTab(one.path); else newTab(p.path); break;
         case "inother": { const o = otherPane(); if (one && o) o.go(one.path); break; }
         case "openwith": if (one) { owPath = one.path; owQuery = ""; } break;
+        case "terminal": terminalAt(one && one.dir ? one.path : p.path); break;
         case "cut": setClip(true); break;
         case "copy": setClip(false); break;
         case "paste": paste(); break;
         case "pasteinto": if (one && clipPaths.length) { copyMove(cutMode ? "mv" : "cp", clipPaths, one.path); if (cutMode) clipPaths = []; } break;
-        case "rename": if (one) ask("Rename", one.name, "Rename", n => rename(one.path, n.trim())); break;
+        case "dup": copyMove("cp", paths, p.path); p.sel = []; break;
+        case "rename":
+            if (one)
+                ask("Rename", one.name, "Rename", n => rename(one.path, n.trim()));
+            else if (es.length > 1)
+                ask("Rename " + es.length + " items (# = number)", "Item #", "Rename", n => bulkRename(es, n));
+            break;
+        case "copyto": case "moveto": {
+            const o = otherPane();
+            const mode = id === "copyto" ? "cp" : "mv";
+            if (paths.length)
+                ask((mode === "cp" ? "Copy" : "Move") + " " + paths.length + " item(s) to", o ? o.path : p.path, mode === "cp" ? "Copy" : "Move", d => copyMove(mode, paths, d.trim().replace(/^~/, home)));
+            break;
+        }
         case "copyother": { const o = otherPane(); if (o && paths.length) copyMove("cp", paths, o.path); break; }
         case "moveother": { const o = otherPane(); if (o && paths.length) copyMove("mv", paths, o.path); break; }
-        case "compress": ctxMenu.popup(mctx.x, mctx.y, [{ id: "cz:zip", label: ".zip" }, { id: "cz:tgz", label: ".tar.gz" }, { id: "cz:txz", label: ".tar.xz" }, { id: "cz:7z", label: ".7z" }]); break;
-        case "extract": if (one) extract(one.path); break;
-        case "copypath": Quickshell.execDetached(["wl-copy", paths.join("\n")]); toast("Path copied"); break;
-        case "bookmark": if (one && bookmarks.every(b => b.p !== one.path)) bookmarks = bookmarks.concat([{ n: one.name, p: one.path }]); break;
+        case "link":
+            if (one) {
+                const dst = p.path + "/Link to " + one.name;
+                const e = { label: "Link", fwd: () => exec(["ln", "-s", "--", one.path, dst]), bwd: () => exec(["rm", "-f", "--", dst]) };
+                e.fwd();
+                pushUndo(e);
+            }
+            break;
+        case "newlink":
+            ask("Link to (path)", home, "Create", t => {
+                const tgt = t.trim().replace(/^~/, home);
+                const dst = p.path + "/Link to " + Fx.base(tgt);
+                const e = { label: "Link", fwd: () => exec(["ln", "-s", "--", tgt, dst]), bwd: () => exec(["rm", "-f", "--", dst]) };
+                e.fwd();
+                pushUndo(e);
+            });
+            break;
+        case "wallpaper":
+            if (one) {
+                exec(["sh", "-c", "mkdir -p \"$HOME/Pictures/Wallpapers\" && cp -n -- \"$1\" \"$HOME/Pictures/Wallpapers/\"", "sh", one.path], null, true);
+                toast("Added to wallpapers");
+            }
+            break;
+        case "checksum":
+            if (one)
+                exec(["sha256sum", "--", one.path], t => { props = { name: one.name, rows: [["SHA-256", t.split(" ")[0]], ["Path", one.path]] }; }, true);
+            break;
+        case "perms":
+            if (paths.length)
+                ask("Permissions (e.g. 644, 755, +x)", "+x", "Apply", m => exec(["chmod", m.trim(), "--"].concat(paths)));
+            break;
+        case "compress": break;
+        case "extract": for (const e of es) extract(e.path); break;
+        case "copypath": Quickshell.execDetached(["wl-copy", (paths.length ? paths : [p.path]).join("\n")]); toast("Location copied"); break;
+        case "bookmark": {
+            const bp = one && one.dir ? one.path : p.path;
+            if (!p.isPc && bookmarks.every(b => b.p !== bp))
+                bookmarks = bookmarks.concat([{ n: Fx.base(bp) || "/", p: bp }]);
+            break;
+        }
         case "rmbm": bookmarks = bookmarks.filter(b => b.p !== mctx.bm); break;
-        case "props": if (one) showProps(one.path, one.name); break;
+        case "placetab": newTab(mctx.p || mctx.bm); break;
+        case "props": if (one) showProps(one.path, one.name); else if (es.length > 1) showPropsMulti(es); break;
         case "folderprops": showProps(p.path, Fx.base(p.path) || "/"); break;
         case "trash": trashSel(paths); break;
         case "restore": restoreSel(paths); break;
+        case "restoreall": restoreSel(p.raw.map(e => e.path)); break;
         case "delperm": deleteForever(paths); break;
         case "emptytrash": emptyTrash(); break;
         case "newfolder": ask("New folder", "New folder", "Create", n => create(true, n)); break;
         case "newfile": ask("New text file", "New file.txt", "Create", n => create(false, n)); break;
         case "selall": p.selectAll(); break;
+        case "selnone": p.sel = []; break;
         case "invert": p.invert(); break;
+        case "selmatch":
+            ask("Select matching (e.g. *.png)", "*", "Select", g => {
+                const re = new RegExp("^" + g.trim().replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".") + "$", "i");
+                p.sel = p.entries.filter(e => re.test(e.name)).map(e => e.path);
+            });
+            break;
         case "hidden": showHidden = !showHidden; break;
         case "single": singleClick = !singleClick; break;
         case "info": info = !info; break;
         case "split": toggleSplit(); break;
+        case "zoomin": zoom = Math.min(128, zoom + 16); break;
+        case "zoomout": zoom = Math.max(48, zoom - 16); break;
         case "undo": undo(); break;
         case "redo": redo(); break;
         case "refresh": refreshAll(); break;
+        case "drvopen": goActive(mctx.drive.mount); break;
+        case "drvtab": newTab(mctx.drive.mount); break;
+        case "drvmount": mountDrive(mctx.drive, activePane()); break;
+        case "drvunmount": unmountDrive(mctx.drive); break;
+        case "tabclose": closeTab(mctx.tab); break;
+        case "tabdup": { const t = tabRep.itemAt(mctx.tab); newTab(t ? t.active.path : home); break; }
+        case "tabothers":
+            for (let j = tabs.count - 1; j >= 0; j--)
+                if (j !== mctx.tab)
+                    tabs.remove(j);
+            cur = 0;
+            ap = activePane();
+            break;
         }
     }
 
-    // ================================ UI =========================================================
-    Item {
-        id: content
-        anchors.fill: parent
-
-        // Navigation drawer
-        Item {
-            id: side
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: win.sidebarOpen ? 270 : 0
-            clip: true
-            Behavior on width { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
-
-            component SideItem: Rectangle {
-                id: si
-                property string icon: ""
-                property string label: ""
-                property string sub: ""
-                property bool current: false
-                signal clicked
-                signal held
-                width: 246
-                height: 48
-                radius: 24
-                color: current ? AppTheme.accentSoft : (sm.pressed ? AppTheme.hover : "transparent")
-                Image { x: 16; y: 12; width: 24; height: 24; source: Quickshell.iconPath(si.icon, "folder"); sourceSize: Qt.size(48, 48); fillMode: Image.PreserveAspectFit }
-                Text {
-                    x: 54
-                    width: parent.width - 66
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
-                    text: si.label
-                    elide: Text.ElideRight
-                    color: si.current ? AppTheme.accent : AppTheme.text
-                    font.pixelSize: 15
-                    font.weight: si.current ? Font.DemiBold : Font.Normal
-                }
-                MouseArea { id: sm; anchors.fill: parent; onClicked: si.clicked(); onPressAndHold: si.held() }
-            }
-
-            Flickable {
-                anchors.fill: parent
-                anchors.topMargin: 8
-                contentWidth: width
-                contentHeight: sc.implicitHeight + 24
-                clip: true
-                boundsBehavior: Flickable.StopAtBounds
-                Column {
-                    id: sc
-                    x: 12
-                    width: 246
-                    spacing: 2
-                    Text { text: "Files"; color: AppTheme.accent; font.pixelSize: 24; font.weight: Font.DemiBold; leftPadding: 16; topPadding: 6; bottomPadding: 12 }
-                    Repeater {
-                        model: win.places
-                        SideItem {
-                            required property var modelData
-                            icon: modelData.icon
-                            label: modelData.n
-                            current: win.ap !== null && win.ap.path === modelData.p
-                            onClicked: win.goActive(modelData.p)
-                        }
-                    }
-                    Text { visible: win.bookmarks.length > 0; text: "Bookmarks"; color: AppTheme.dim; font.pixelSize: 13; font.weight: Font.DemiBold; leftPadding: 16; topPadding: 14; bottomPadding: 4 }
-                    Repeater {
-                        model: win.bookmarks
-                        SideItem {
-                            required property var modelData
-                            icon: "folder"
-                            label: modelData.n
-                            current: win.ap !== null && win.ap.path === modelData.p
-                            onClicked: win.goActive(modelData.p)
-                            onHeld: {
-                                win.mctx = { bm: modelData.p, pane: win.activePane() };
-                                const g = mapToItem(null, 40, 30);
-                                ctxMenu.popup(g.x, g.y, [{ id: "rmbm", label: "Remove bookmark", danger: true }]);
-                            }
-                        }
-                    }
-                    Text { text: "Devices"; color: AppTheme.dim; font.pixelSize: 13; font.weight: Font.DemiBold; leftPadding: 16; topPadding: 14; bottomPadding: 4 }
-                    SideItem { icon: "computer"; label: "This PC"; current: win.ap !== null && win.ap.isPc; onClicked: win.goActive("pc://") }
-                    Repeater {
-                        model: win.drives
-                        SideItem {
-                            required property var modelData
-                            icon: "drive-harddisk"
-                            label: modelData.title + (modelData.mount === "" ? "  \u00b7  eject" : "")
-                            current: win.ap !== null && modelData.mount !== "" && win.ap.path === modelData.mount
-                            onClicked: modelData.mount === "" ? win.mountDrive(modelData, win.activePane()) : win.goActive(modelData.mount)
-                        }
-                    }
-                }
-            }
-        }
-
-        // Info panel (right)
-        InfoPanel {
-            id: infoP
-            win: win
-            visible: win.showInfo
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.margins: 8
-            anchors.leftMargin: 0
-            width: visible ? 320 : 0
-        }
-
-        // Main surface
-        Rectangle {
-            id: main
-            anchors.left: side.right
-            anchors.right: infoP.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.margins: 8
-            anchors.leftMargin: win.sidebarOpen ? 0 : 8
-            anchors.rightMargin: win.showInfo ? 8 : 0
-            radius: 32
-            color: AppTheme.low
-
-            // toolbar
-            Item {
-                id: tb
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 64
-                Row {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-                    Pill { glyph: "\u2261"; flat: true; onClicked: win.sidebarOpen = !win.sidebarOpen }
-                    Pill { glyph: "\u2039"; flat: true; enabled: win.ap !== null && win.ap.hpos > 0; onClicked: win.ap.back() }
-                    Pill { glyph: "\u203a"; flat: true; enabled: win.ap !== null && win.ap.hpos < win.ap.hist.length - 1; onClicked: win.ap.forward() }
-                    Pill { glyph: "\u2191"; flat: true; enabled: win.ap !== null && !win.ap.isPc && win.ap.path !== "/"; onClicked: win.ap.up() }
-                }
-                Row {
-                    anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 6
-                    Rectangle {
-                        width: filterIn.activeFocus ? 250 : (win.wide ? 190 : 120)
-                        height: 44
-                        radius: 22
-                        color: AppTheme.card
-                        Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-                        Text { x: 14; height: parent.height; verticalAlignment: Text.AlignVCenter; text: "\u2315"; color: AppTheme.dim; font.pixelSize: 20 }
-                        Text { x: 40; height: parent.height; verticalAlignment: Text.AlignVCenter; visible: filterIn.text === ""; text: "Filter \u00b7 Enter searches"; color: AppTheme.dim; font.pixelSize: 14; width: parent.width - 52; elide: Text.ElideRight }
-                        TextInput {
-                            id: filterIn
-                            x: 40
-                            width: parent.width - 52
-                            height: parent.height
-                            verticalAlignment: TextInput.AlignVCenter
-                            color: AppTheme.text
-                            font.pixelSize: 15
-                            clip: true
-                            onTextChanged: {
-                                const p = win.activePane();
-                                if (p && !p.searching)
-                                    p.query = text;
-                            }
-                            onAccepted: {
-                                const p = win.activePane();
-                                if (p && text.trim() !== "") {
-                                    p.query = "";
-                                    p.search(text);
-                                }
-                            }
-                            Keys.onEscapePressed: {
-                                const p = win.activePane();
-                                text = "";
-                                if (p) {
-                                    p.query = "";
-                                    if (p.searching) {
-                                        p.searchTerm = "";
-                                        p.refresh();
-                                    }
-                                }
-                                focus = false;
-                            }
-                        }
-                    }
-                    Rectangle {
-                        width: seg.width + 8
-                        height: 44
-                        radius: 22
-                        color: AppTheme.card
-                        Row {
-                            id: seg
-                            anchors.centerIn: parent
-                            spacing: 0
-                            Pill { glyph: "\u25a6"; flat: true; on: win.view === "grid"; height: 38; onClicked: win.view = "grid" }
-                            Pill { glyph: "\u2630"; flat: true; on: win.view === "list"; height: 38; onClicked: win.view = "list" }
-                            Pill { glyph: "\u25a5"; flat: true; on: win.view === "columns"; height: 38; onClicked: win.view = "columns" }
-                        }
-                    }
-                    Pill { glyph: "\u25eb"; visible: win.wide; on: win.activeTab() !== null && win.activeTab() !== undefined && win.activeTab().split; onClicked: win.toggleSplit() }
-                    Pill { glyph: "\u2139"; visible: win.wide; on: win.info; onClicked: win.info = !win.info }
-                    Pill {
-                        glyph: "\u22ee"
-                        onClicked: {
-                            const g = mapToItem(null, 0, height + 6);
-                            win.moreMenu(g.x - 190, g.y);
-                        }
-                    }
-                    Pill { glyph: "\u2715"; onClicked: Qt.quit() }
-                }
-            }
-
-            // tab bar
-            Item {
-                id: tbar
-                anchors.top: tb.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: tabs.count > 1 ? 46 : 0
-                visible: tabs.count > 1
-                Row {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 6
-                    Repeater {
-                        model: tabs
-                        Rectangle {
-                            id: tc
-                            required property int index
-                            required property string title
-                            width: Math.min(200, tt.implicitWidth + 62)
-                            height: 38
-                            radius: 19
-                            color: tc.index === win.cur ? AppTheme.accentSoft : AppTheme.card
-                            Text { id: tt; x: 16; height: parent.height; verticalAlignment: Text.AlignVCenter; width: parent.width - 52; text: tc.title; elide: Text.ElideRight; color: tc.index === win.cur ? AppTheme.accent : AppTheme.text; font.pixelSize: 14 }
-                            Text { anchors.right: parent.right; anchors.rightMargin: 12; height: parent.height; verticalAlignment: Text.AlignVCenter; text: "\u2715"; color: AppTheme.dim; font.pixelSize: 13
-                                MouseArea { anchors.fill: parent; anchors.margins: -8; onClicked: win.closeTab(tc.index) } }
-                            MouseArea { anchors.fill: parent; anchors.rightMargin: 36; onClicked: { win.cur = tc.index; win.ap = win.activePane(); } }
-                        }
-                    }
-                    Pill { glyph: "+"; flat: true; height: 38; onClicked: win.newTab("") }
-                }
-            }
-
-            // panes
-            Item {
-                id: tabHost
-                anchors.top: tbar.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: status.top
-                anchors.leftMargin: 4
-                anchors.rightMargin: 4
-                Repeater {
-                    id: tabRep
-                    model: tabs
-                    TabView {
-                        win: win
-                        anchors.fill: parent
-                    }
-                }
-            }
-
-            // status bar
-            Item {
-                id: status
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 44
-                Text { x: 22; height: parent.height; verticalAlignment: Text.AlignVCenter; text: win.statusText; color: AppTheme.dim; font.pixelSize: 13 }
-                Item {
-                    visible: win.view === "grid" && win.wide
-                    anchors.right: parent.right
-                    anchors.rightMargin: 24
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 150
-                    height: 30
-                    Rectangle { anchors.verticalCenter: parent.verticalCenter; width: parent.width; height: 6; radius: 3; color: AppTheme.cardHigh }
-                    Rectangle { anchors.verticalCenter: parent.verticalCenter; width: parent.width * (win.zoom - 48) / 80; height: 6; radius: 3; color: AppTheme.accent }
-                    Rectangle { anchors.verticalCenter: parent.verticalCenter; x: parent.width * (win.zoom - 48) / 80 - 9; width: 18; height: 18; radius: 9; color: AppTheme.accent }
-                    MouseArea {
-                        anchors.fill: parent
-                        onPressed: mouse => win.zoom = Math.round(48 + 80 * Math.max(0, Math.min(1, mouse.x / width)))
-                        onPositionChanged: mouse => win.zoom = Math.round(48 + 80 * Math.max(0, Math.min(1, mouse.x / width)))
-                    }
-                }
-            }
-
-            // selection action bar
-            Rectangle {
-                id: selBar
-                readonly property bool shown: win.ap !== null && win.ap.sel.length > 0
-                visible: shown
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: status.top
-                anchors.bottomMargin: 6
-                width: selRow.width + 16
-                height: 56
-                radius: 28
-                color: AppTheme.cardHigh
-                border.width: 1
-                border.color: AppTheme.line
-                Row {
-                    id: selRow
-                    anchors.centerIn: parent
-                    spacing: 2
-                    Pill { label: win.ap ? win.ap.sel.length + " \u2715" : ""; on: true; height: 40; onClicked: win.ap.sel = [] }
-                    Pill { visible: win.ap !== null && !win.ap.inTrash; label: "Copy"; flat: true; height: 40; onClicked: win.setClip(false) }
-                    Pill { visible: win.ap !== null && !win.ap.inTrash; label: "Cut"; flat: true; height: 40; onClicked: win.setClip(true) }
-                    Pill { visible: win.ap !== null && win.ap.inTrash; label: "Restore"; flat: true; height: 40; onClicked: win.menuAct("restore") }
-                    Pill { label: win.ap !== null && win.ap.inTrash ? "Delete" : "Trash"; danger: true; flat: true; height: 40; onClicked: win.ap.inTrash ? win.menuAct("delperm") : win.trashSel(win.ap.sel.slice()) }
-                    Pill {
-                        glyph: "\u22ee"
-                        flat: true
-                        height: 40
-                        onClicked: {
-                            const g = mapToItem(null, 0, 0);
-                            win.mctx = { pane: win.ap, x: g.x, y: g.y };
-                            win.itemMenu(win.ap, g.x - 100, g.y - 420);
-                        }
-                    }
-                }
-            }
-            // paste chip when something is on the clipboard
-            Pill {
-                visible: win.clipPaths.length > 0 && !selBar.shown && win.ap !== null && !win.ap.isPc && !win.ap.inTrash
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: status.top
-                anchors.bottomMargin: 8
-                filled: true
-                label: "Paste " + win.clipPaths.length
-                onClicked: win.paste()
-            }
-            // FAB: New
-            Rectangle {
-                id: fab
-                visible: win.ap !== null && !win.ap.isPc && !win.ap.inTrash
-                anchors.right: parent.right
-                anchors.rightMargin: 20
-                anchors.bottom: status.top
-                anchors.bottomMargin: 8
-                width: fl.implicitWidth + 36
-                height: 56
-                radius: 20
-                color: AppTheme.accent
-                scale: fm.pressed ? 0.94 : 1
-                Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutBack } }
-                Text { id: fl; anchors.centerIn: parent; text: "+  New"; color: AppTheme.accentInk; font.pixelSize: 16; font.weight: Font.DemiBold }
-                MouseArea {
-                    id: fm
-                    anchors.fill: parent
-                    onClicked: {
-                        const g = fab.mapToItem(null, 0, 0);
-                        win.mctx = { pane: win.ap, x: g.x, y: g.y };
-                        ctxMenu.popup(g.x - 200, g.y - 150, [{ id: "newfolder", label: "New folder" }, { id: "newfile", label: "New text file" }, { sep: true }, { id: "paste", label: "Paste", disabled: win.clipPaths.length === 0 }]);
-                    }
-                }
-            }
-        }
-
-        // toast
-        Rectangle {
-            id: toastBox
-            property bool show: false
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 70
-            width: toastText.implicitWidth + 40
-            height: 44
-            radius: 22
-            color: AppTheme.cardHigh
-            border.width: 1
-            border.color: AppTheme.line
-            opacity: show ? 1 : 0
-            visible: opacity > 0
-            z: 150
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-            Text { id: toastText; anchors.centerIn: parent; color: AppTheme.text; font.pixelSize: 14 }
-            Timer { id: toastTimer; interval: 2600; onTriggered: toastBox.show = false }
-        }
-
-        MenuPop {
-            id: ctxMenu
-            onPicked: id => win.menuAct(id)
-        }
-
-        // prompt / confirm dialog
-        Rectangle {
-            visible: win.dlg !== null
-            anchors.fill: parent
-            color: Qt.rgba(0, 0, 0, 0.55)
-            z: 200
-            MouseArea { anchors.fill: parent; onClicked: win.dlg = null }
-            Rectangle {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: -parent.height * 0.12
-                width: Math.min(480, parent.width - 40)
-                height: win.dlg && win.dlg.kind === "prompt" ? 190 : 170
-                radius: 32
-                color: AppTheme.cardHigh
-                MouseArea { anchors.fill: parent }
-                Text { x: 28; y: 22; text: win.dlg ? win.dlg.title : ""; color: AppTheme.text; font.pixelSize: 20; font.weight: Font.DemiBold }
-                Rectangle {
-                    visible: win.dlg !== null && win.dlg.kind === "prompt"
-                    x: 24
-                    y: 64
-                    width: parent.width - 48
-                    height: 50
-                    radius: 16
-                    color: AppTheme.bg
-                    border.width: 2
-                    border.color: AppTheme.accent
-                    TextInput {
-                        id: dlgIn
-                        anchors.fill: parent
-                        anchors.margins: 14
-                        color: AppTheme.text
-                        font.pixelSize: 17
-                        clip: true
-                        selectByMouse: true
-                        onAccepted: {
-                            const d = win.dlg;
-                            win.dlg = null;
-                            if (d)
-                                d.fn(text);
-                        }
-                        Keys.onEscapePressed: win.dlg = null
-                    }
-                }
-                Text { visible: win.dlg !== null && win.dlg.kind === "confirm"; x: 28; y: 62; width: parent.width - 56; text: win.dlg ? win.dlg.text : ""; color: AppTheme.dim; font.pixelSize: 15; wrapMode: Text.Wrap }
-                Pill { anchors.right: parent.right; anchors.rightMargin: 20; anchors.bottom: parent.bottom; anchors.bottomMargin: 16; filled: true; label: win.dlg ? win.dlg.ok : "OK"; onClicked: { const d = win.dlg; const v = dlgIn.text; win.dlg = null; if (d) d.fn(v); } }
-                Pill { anchors.right: parent.right; anchors.rightMargin: 130; anchors.bottom: parent.bottom; anchors.bottomMargin: 16; flat: true; label: "Cancel"; onClicked: win.dlg = null }
-            }
-        }
-
-        // properties dialog
-        Rectangle {
-            visible: win.props !== null
-            anchors.fill: parent
-            color: Qt.rgba(0, 0, 0, 0.55)
-            z: 200
-            MouseArea { anchors.fill: parent; onClicked: win.props = null }
-            Rectangle {
-                anchors.centerIn: parent
-                width: Math.min(520, parent.width - 40)
-                height: Math.min(parent.height - 60, pc.implicitHeight + 100)
-                radius: 32
-                color: AppTheme.cardHigh
-                MouseArea { anchors.fill: parent }
-                Text { x: 28; y: 22; width: parent.width - 56; text: win.props ? win.props.name : ""; color: AppTheme.text; font.pixelSize: 20; font.weight: Font.DemiBold; elide: Text.ElideMiddle }
-                Flickable {
-                    x: 28
-                    y: 62
-                    width: parent.width - 56
-                    height: parent.height - 120
-                    contentHeight: pc.implicitHeight
-                    clip: true
-                    Column {
-                        id: pc
-                        width: parent.width
-                        spacing: 10
-                        Repeater {
-                            model: win.props ? win.props.rows : []
-                            Column {
-                                required property var modelData
-                                width: pc.width
-                                Text { text: modelData[0]; color: AppTheme.dim; font.pixelSize: 12 }
-                                Text { width: parent.width; text: modelData[1]; color: AppTheme.text; font.pixelSize: 15; wrapMode: Text.WrapAnywhere }
-                            }
-                        }
-                    }
-                }
-                Pill { anchors.right: parent.right; anchors.rightMargin: 20; anchors.bottom: parent.bottom; anchors.bottomMargin: 14; filled: true; label: "Close"; onClicked: win.props = null }
-            }
-        }
-
-        // open with
-        Rectangle {
-            visible: win.owPath !== ""
-            anchors.fill: parent
-            color: Qt.rgba(0, 0, 0, 0.55)
-            z: 200
-            MouseArea { anchors.fill: parent; onClicked: win.owPath = "" }
-            Rectangle {
-                anchors.centerIn: parent
-                width: Math.min(460, parent.width - 40)
-                height: Math.min(560, parent.height - 60)
-                radius: 32
-                color: AppTheme.cardHigh
-                MouseArea { anchors.fill: parent }
-                Text { x: 28; y: 20; text: "Open with"; color: AppTheme.text; font.pixelSize: 20; font.weight: Font.DemiBold }
-                Rectangle {
-                    x: 20
-                    y: 60
-                    width: parent.width - 40
-                    height: 44
-                    radius: 22
-                    color: AppTheme.bg
-                    TextInput {
-                        id: owIn
-                        anchors.fill: parent
-                        anchors.leftMargin: 18
-                        anchors.rightMargin: 18
-                        verticalAlignment: TextInput.AlignVCenter
-                        color: AppTheme.text
-                        font.pixelSize: 16
-                        onTextChanged: win.owQuery = text
-                        onVisibleChanged: if (visible) { text = ""; forceActiveFocus(); }
-                        Keys.onEscapePressed: win.owPath = ""
-                    }
-                }
-                ListView {
-                    x: 14
-                    y: 114
-                    width: parent.width - 28
-                    height: parent.height - 130
-                    clip: true
-                    model: {
-                        const q = win.owQuery.toLowerCase();
-                        return DesktopEntries.applications.values.filter(e => !e.noDisplay && e.name.toLowerCase().indexOf(q) >= 0).sort((a, b) => a.name.localeCompare(b.name));
-                    }
-                    delegate: Rectangle {
-                        required property var modelData
-                        width: ListView.view.width
-                        height: 52
-                        radius: 18
-                        color: om.pressed ? AppTheme.accentSoft : "transparent"
-                        Image { x: 12; y: 10; width: 32; height: 32; source: Quickshell.iconPath(modelData.icon, "application-x-executable"); sourceSize: Qt.size(64, 64) }
-                        Text { x: 56; width: parent.width - 70; height: parent.height; verticalAlignment: Text.AlignVCenter; text: modelData.name; elide: Text.ElideRight; color: AppTheme.text; font.pixelSize: 16 }
-                        MouseArea {
-                            id: om
-                            anchors.fill: parent
-                            onClicked: {
-                                Quickshell.execDetached(modelData.command.concat([win.owPath]));
-                                win.owPath = "";
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // keyboard shortcuts
-        Shortcut { sequence: "Ctrl+C"; enabled: !win.typing; onActivated: win.setClip(false) }
-        Shortcut { sequence: "Ctrl+X"; enabled: !win.typing; onActivated: win.setClip(true) }
-        Shortcut { sequence: "Ctrl+V"; enabled: !win.typing; onActivated: win.paste() }
-        Shortcut { sequence: "Ctrl+A"; enabled: !win.typing; onActivated: if (win.ap) win.ap.selectAll() }
-        Shortcut { sequence: "Ctrl+Z"; enabled: !win.typing; onActivated: win.undo() }
-        Shortcut { sequences: ["Ctrl+Y", "Ctrl+Shift+Z"]; enabled: !win.typing; onActivated: win.redo() }
-        Shortcut { sequence: "Ctrl+H"; onActivated: win.showHidden = !win.showHidden }
-        Shortcut { sequence: "Ctrl+L"; onActivated: if (win.ap) win.ap.startEdit() }
-        Shortcut { sequence: "Ctrl+F"; onActivated: filterIn.forceActiveFocus() }
-        Shortcut { sequence: "Ctrl+T"; enabled: !win.typing; onActivated: win.newTab("") }
-        Shortcut { sequence: "Ctrl+W"; enabled: !win.typing; onActivated: win.closeTab(win.cur) }
-        Shortcut { sequence: "Ctrl+I"; enabled: !win.typing; onActivated: win.info = !win.info }
-        Shortcut { sequence: "F3"; enabled: !win.typing; onActivated: win.toggleSplit() }
-        Shortcut { sequence: "F5"; enabled: !win.typing; onActivated: win.refreshAll() }
-        Shortcut { sequence: "Ctrl+Shift+N"; enabled: !win.typing; onActivated: win.menuAct("newfolder") }
-        Shortcut { sequence: "F2"; enabled: !win.typing; onActivated: win.menuAct("rename") }
-        Shortcut { sequence: "Delete"; enabled: !win.typing; onActivated: if (win.ap && win.ap.sel.length) win.menuAct(win.ap.inTrash ? "delperm" : "trash") }
-        Shortcut { sequence: "Shift+Delete"; enabled: !win.typing; onActivated: if (win.ap && win.ap.sel.length) win.deleteForever(win.ap.sel.slice()) }
-        Shortcut { sequence: "Alt+Left"; enabled: !win.typing; onActivated: if (win.ap) win.ap.back() }
-        Shortcut { sequence: "Alt+Right"; enabled: !win.typing; onActivated: if (win.ap) win.ap.forward() }
-        Shortcut { sequences: ["Alt+Up", "Backspace"]; enabled: !win.typing; onActivated: if (win.ap) win.ap.up() }
-        Shortcut { sequences: ["Return", "Enter"]; enabled: !win.typing; onActivated: if (win.ap) win.ap.openCursor() }
-        Shortcut { sequence: "Up"; enabled: !win.typing; onActivated: if (win.ap) win.ap.move(0, -1) }
-        Shortcut { sequence: "Down"; enabled: !win.typing; onActivated: if (win.ap) win.ap.move(0, 1) }
-        Shortcut { sequence: "Left"; enabled: !win.typing; onActivated: if (win.ap) { if (win.view === "grid") win.ap.move(-1, 0); else win.ap.up(); } }
-        Shortcut { sequence: "Right"; enabled: !win.typing; onActivated: if (win.ap) { if (win.view === "grid") win.ap.move(1, 0); else win.ap.openCursor(); } }
-        Shortcut {
-            sequence: "Escape"
-            onActivated: {
-                if (ctxMenu.visible)
-                    ctxMenu.visible = false;
-                else if (win.dlg !== null)
-                    win.dlg = null;
-                else if (win.props !== null)
-                    win.props = null;
-                else if (win.owPath !== "")
-                    win.owPath = "";
-                else if (win.ap) {
-                    win.ap.sel = [];
-                    win.ap.cursor = -1;
-                }
-            }
-        }
-    }
-}
+'''
+s=s[:a]+new+s[b:]
+open('FilesWindow.qml','w').write(s)
 EOF
-python3 -c "
-s=open('FilesWindow.qml').read();print(s.count('{')-s.count('}'),s.count('(')-s.count(')'),s.count('[')-s.count(']'))"
+python3 - <<'EOF'
+import re,glob
+for f in glob.glob('/home/claude/repo/shell/halo/apps/*/*.qml'):
+    t=re.sub(r'"(\\.|[^"\\])*"','""',open(f).read())
+    print(f.split('apps/')[1], t.count('{')-t.count('}'), t.count('(')-t.count(')'), t.count('[')-t.count(']'))
+EOF
+grep -n 'glyph' FilesWindow.qml | head
 Salida
 
-0 0 0
+common/AppWindow.qml 0 0 0
+common/Ico.qml 0 0 0
+common/AppTheme.qml 0 0 0
+common/Ic.qml 0 0 0
+common/Pill.qml 0 0 0
+common/MenuPop.qml 0 0 0
+common/RoundImg.qml 0 0 0
+files/InfoPanel.qml 0 0 0
+files/Pane.qml 0 0 0
+files/FilesWindow.qml 0 0 0
+files/TabView.qml 0 0 0
+files/Fx.qml 0 0 0
+gallery/GalleryWindow.qml 0 0 0
+Checking that icon replacements cover the selection bar menu.
+bash
+
+cd /home/claude/repo/shell/halo/apps/files && python3 - <<'EOF'
+import re
+s=open('FilesWindow.qml').read()
+a=s.index('    function I(id'); b=s.index('    // ================================ UI')
+t=s[a:b]
+t=re.sub(r'readonly property var (\w+): \[',r'var \1 = [',t)
+open('/tmp/m.js','w').write("(function(){\n"+t+"\n})();")
+EOF
+node --check /tmp/m.js && echo JS-OK
+# also check the other patched functions
+python3 - <<'EOF'
+import re
+s=open('/home/claude/repo/shell/halo/apps/files/FilesWindow.qml').read()
+a=s.index('    function parseDrives'); b=s.index('    function mountDrive')
+open('/tmp/d.js','w').write("(function(){\n"+s[a:b]+"\n})();")
+EOF
+node --check /tmp/d.js && echo DRIVES-OK
+Salida
+
+JS-OK
+DRIVES-OK
+bash
+
+node -e 'const g="*.PNG";const re=new RegExp("^"+g.trim().replace(/[.+^${}()|[\]\\]/g,"\\$&").replace(/\*/g,".*").replace(/\?/g,".")+"$","i");console.log(re, re.test("a.png"), re.test("a.pngx"))'
+cd /home/claude/repo && python3 - <<'EOF'
+s=open('HANDOFF.md').read()
+s=s.replace("Next number: **33**","Next number: **35**",1)
+row='''| 33-34 | **Untested.** 33: `win: win` in a delegate resolves to the delegate's own property (undefined): TabView/InfoPanel now take `host`. Files opened and rendered (user: "looks good"); app_id is `org.quickshell` (Apps.qml title fallback covers it). 34: **Files v2.** (a) **Arcticons-style line icons everywhere**: `common/Ic.qml` (SVG path table, 48 grid), `Ico.qml` (QtQuick.Shapes, `CurveRenderer`, tinted), `Pill.icon`; file tiles, sidebar, toolbar, menus, drives all use it (Quickshell.iconPath only remains for the Open-with app list). (b) **Auto-mount** of removable/hotplug partitions (`lsblk` RM/HOTPLUG, `udisksctl`, once per device, lsblk polled every 4 s, list only republished when changed). (c) **Dolphin-style menus**: `MenuPop` has submenus (`sub`), icons, scrolling. Item menu: open/with/new tab/terminal/other pane, cut/copy/paste-into, duplicate, rename (multi = bulk `Name #`), copy to/move to (path prompt), link, compress submenu, extract, copy location, places, add to wallpapers, SHA-256, chmod prompt, properties (multi = summary), trash/delete. Background menu: create new (folder/file/link), paste, select (all/none/invert/matching glob), View, Sort by, terminal, places, properties. Trash: restore, delete, Restore all, Empty Trash (toolbar + menu). Long-press menus on places, bookmarks, drives (mount/unmount/open) and tabs (duplicate/close/close others). **Unverified:** CurveRenderer needs Qt >= 6.6, `udisksctl` polkit for automount, microSD showing RM/HOTPLUG, terminal list (foot kitty alacritty wezterm konsole xterm). |
+'''
+i=s.index('| 32 |'); j=s.index('\n',i)+1
+s=s[:j]+row+s[j:]
+open('HANDOFF.md','w').write(s)
+EOF
+tar czf /mnt/user-data/outputs/halo-update-34.tar.gz HANDOFF.md shell/halo/apps/common shell/halo/apps/files && tar tzf /mnt/user-data/outputs/halo-update-34.tar.gz | wc -l
+Salida
+
+/^.*\.PNG$/i true false
+24
+Presented file
+Halo update 34.tar
+GZ
+En
