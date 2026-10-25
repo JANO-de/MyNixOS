@@ -79,7 +79,7 @@ Singleton {
     Process {
         id: gen
         property string src: ""
-        command: ["sh", "-c", "command -v matugen >/dev/null || exit 0; matugen image \"$1\" -j hex --dry-run -m dark 2>/dev/null || matugen image \"$1\" -j hex --dry-run 2>/dev/null", "halo-theme", src]
+        command: ["sh", "-c", "command -v matugen >/dev/null || exit 0; matugen image \"$1\" -j hex --dry-run --source-color-index 0 -m dark 2>/dev/null || matugen image \"$1\" -j hex --dry-run --source-color-index 0 2>/dev/null", "halo-theme", src]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
