@@ -29,6 +29,7 @@ in
     ./shell/chronos.nix
     ./shell/halo.nix
     ./greeter.nix
+    ./splash.nix
   ];
 
   options.modules.desktop = {

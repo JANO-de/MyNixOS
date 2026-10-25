@@ -18,6 +18,7 @@ ShellRoot {
         property string msg: ""
         property bool busy: false
         property string pending: ""
+        property bool leaving: false
 
         function submit() {
             if (busy || field.text === "")
@@ -48,8 +49,15 @@ ShellRoot {
             }
             function onReadyToLaunch() {
                 win.pending = "";
-                Greetd.launch([win.uwsm, "start", "hyprland-uwsm.desktop"], [], true);
+                win.leaving = true;
+                launchT.start();
             }
+        }
+
+        Timer {
+            id: launchT
+            interval: 650
+            onTriggered: Greetd.launch([win.uwsm, "start", "hyprland-uwsm.desktop"], [], true)
         }
 
         SystemClock { id: clock; precision: SystemClock.Minutes }
@@ -155,6 +163,30 @@ ShellRoot {
             height: implicitHeight
             target: field
             onEnter: win.submit()
+        }
+
+        // Fade to the same breathing ring as the boot splash while the session starts.
+        Rectangle {
+            anchors.fill: parent
+            color: "#0a1112"
+            opacity: win.leaving ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 450 } }
+            Rectangle {
+                anchors.centerIn: parent
+                width: 150
+                height: 150
+                radius: 75
+                color: "transparent"
+                border.width: 11
+                border.color: "#bef0e8"
+                SequentialAnimation on opacity {
+                    running: win.leaving
+                    loops: Animation.Infinite
+                    NumberAnimation { from: 1; to: 0.4; duration: 800; easing.type: Easing.InOutSine }
+                    NumberAnimation { from: 0.4; to: 1; duration: 800; easing.type: Easing.InOutSine }
+                }
+            }
         }
     }
 }

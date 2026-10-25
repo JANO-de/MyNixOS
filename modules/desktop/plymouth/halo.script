@@ -1,0 +1,15 @@
+# Halo boot splash: a breathing ring on the greeter's background colour.
+Window.SetBackgroundTopColor(0.086, 0.161, 0.169);
+Window.SetBackgroundBottomColor(0.039, 0.067, 0.071);
+
+ring = Image("ring.png");
+sprite = Sprite(ring);
+sprite.SetX(Window.GetWidth() / 2 - ring.GetWidth() / 2);
+sprite.SetY(Window.GetHeight() / 2 - ring.GetHeight() / 2);
+
+t = 0;
+fun refresh() {
+    t++;
+    sprite.SetOpacity(0.6 + 0.4 * Math.Sin(t / 16));
+}
+Plymouth.SetRefreshFunction(refresh);
