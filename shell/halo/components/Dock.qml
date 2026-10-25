@@ -81,10 +81,24 @@ PanelWindow {
                     id: cell
                     required property var modelData
 
+                    readonly property bool pinnedItem: modelData.pinIndex >= 0
+                    property real dragDx: 0
+                    property bool dragging: false
+
                     width: root.iconSize
                     height: root.iconSize
-                    scale: area.pressed ? 0.88 : 1
+                    z: dragging ? 10 : 0
+                    scale: dragging ? 1.12 : (area.pressed && !UI.dockEditing ? 0.88 : 1)
                     Behavior on scale { NumberAnimation { duration: 90 } }
+                    transform: Translate { x: cell.dragDx }
+
+                    SequentialAnimation on rotation {
+                        running: UI.dockEditing && !cell.dragging
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 2; duration: 100 }
+                        NumberAnimation { to: -2; duration: 100 }
+                        onRunningChanged: if (!running) cell.rotation = 0
+                    }
 
                     Image {
                         anchors.fill: parent
@@ -108,11 +122,103 @@ PanelWindow {
                     MouseArea {
                         id: area
                         anchors.fill: parent
+                        property real startX: 0
+
+                        onPressed: m => startX = mapToItem(null, m.x, 0).x
+                        onPositionChanged: m => {
+                            if (!UI.dockEditing || !pressed || !cell.pinnedItem)
+                                return;
+                            const dx = mapToItem(null, m.x, 0).x - startX;
+                            if (Math.abs(dx) > 8)
+                                cell.dragging = true;
+                            if (cell.dragging)
+                                cell.dragDx = dx;
+                        }
+                        onReleased: {
+                            if (cell.dragging) {
+                                // Reorder: how many slots did it travel? (visible pinned items only)
+                                const list = Apps.items.filter(i => i.pinIndex >= 0);
+                                const vi = list.findIndex(i => i.key === cell.modelData.key);
+                                const steps = Math.round(cell.dragDx / (root.iconSize + row.spacing));
+                                const ti = Math.max(0, Math.min(list.length - 1, vi + steps));
+                                cell.dragging = false;
+                                cell.dragDx = 0;
+                                if (vi >= 0 && ti !== vi)
+                                    Apps.movePin(cell.modelData.pinIndex, list[ti].pinIndex);
+                            }
+                        }
+                        onCanceled: {
+                            cell.dragging = false;
+                            cell.dragDx = 0;
+                        }
                         onClicked: {
+                            if (UI.dockEditing)
+                                return;
                             UI.closeHome();
                             Apps.activate(cell.modelData);
                         }
+                        onPressAndHold: {
+                            if (!UI.dockEditing && !cell.dragging)
+                                UI.dockEditing = true;
+                        }
                     }
+
+                    // Jiggle-mode badge: "-" unpins, "+" pins a running app.
+                    Rectangle {
+                        visible: UI.dockEditing && (cell.pinnedItem || cell.modelData.entry)
+                        x: -6
+                        y: -6
+                        width: 26
+                        height: 26
+                        radius: 13
+                        color: "#3a3a3c"
+                        border.color: Qt.rgba(1, 1, 1, 0.3)
+                        border.width: 1
+                        Text {
+                            anchors.centerIn: parent
+                            text: cell.pinnedItem ? "\u2212" : "+"
+                            color: Theme.text
+                            font.pixelSize: 16
+                            font.weight: Font.Bold
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -8
+                            onClicked: {
+                                if (cell.pinnedItem)
+                                    Apps.unpin(cell.modelData.pinIndex);
+                                else
+                                    Apps.pin(cell.modelData.entry);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Leaves dock edit mode.
+            Item {
+                visible: UI.dockEditing
+                width: doneText.implicitWidth + 32
+                height: root.iconSize
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: 38
+                    radius: 19
+                    color: Theme.accent
+                    Text {
+                        id: doneText
+                        anchors.centerIn: parent
+                        text: "Done"
+                        color: "#0b1b33"
+                        font.pixelSize: 15
+                        font.weight: Font.DemiBold
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: UI.dockEditing = false
                 }
             }
         }

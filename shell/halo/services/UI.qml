@@ -24,6 +24,7 @@ Singleton {
     // iPad-style dock reveal: first stretch of the bottom swipe inside an app pulls the dock up.
     property bool dockDragging: false
     property real dockPeek: 0 // 0..1 while the finger is down
+    property bool dockEditing: false // jiggle mode on the dock (long-press an icon)
     property bool dockPinned: false // stays after a short swipe, hides after 5 s or on any app change
 
     // Tablet: an app is in front -> the dock and the island slide away.
@@ -31,7 +32,7 @@ Singleton {
     // No app window focused (home screen / empty workspace).
     readonly property bool onHome: ToplevelManager.activeToplevel === null
     readonly property bool chromeShown: !appOpen || homeOpen || overviewOpen || overviewDragging
-    readonly property bool dockShown: chromeShown || dockPinned || dockDragging
+    readonly property bool dockShown: chromeShown || dockPinned || dockDragging || dockEditing
 
     // Home and shade are mutually exclusive.
     function openHome() { shadeOpen = false; overviewOpen = false; dockPinned = false; homeOpen = true; }
@@ -73,7 +74,7 @@ Singleton {
     Timer {
         id: dockTimer
         interval: 5000
-        onTriggered: root.dockPinned = false
+        onTriggered: if (!root.dockEditing) root.dockPinned = false
     }
 
     // Most recently used apps (newest first), for the swipe along the bottom edge.
@@ -87,6 +88,7 @@ Singleton {
         function onActiveToplevelChanged() {
             const t = ToplevelManager.activeToplevel;
             root.dockPinned = false;
+            root.dockEditing = false;
             if (t)
                 root.recent = [t].concat(root.recent.filter(x => x !== t));
         }

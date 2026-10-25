@@ -111,6 +111,7 @@ in
       pkgs.bluez # bluetoothctl (Bluetooth tile)
       pkgs.grim # screenshot tile
       pkgs.libnotify # notify-send
+      pkgs.matugen # wallpaper-derived theme colours (Theme.qml)
     ];
     services.udev.packages = [ pkgs.brightnessctl ]; # backlight writable without root
     # Bundled wallpapers (assets/wallpapers) -> /etc/halo/wallpapers; its own store path, so shell edits do not copy them again.

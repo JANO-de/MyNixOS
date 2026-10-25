@@ -123,3 +123,14 @@ hl.bind("SUPER + K", hl.dsp.exec_cmd("kbd-toggle"))
 -- Lock screen: SUPER+L. If the lock client restarts, a new one may take over the lock.
 hl.bind("SUPER + L", hl.dsp.exec_cmd("halo-ctl call lock lock"))
 pcall(hl.config, { misc = { allow_session_lock_restore = true } })
+
+-- Animations tuned for touch: ease-out-quint everywhere, workspaces slide (swipe and app switch).
+-- Each call is in its own pcall: if a key/signature is wrong in this Hyprland build only that line is lost.
+pcall(hl.curve, "quint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
+pcall(hl.curve, "snap", { type = "bezier", points = { { 0.16, 1 }, { 0.3, 1 } } })
+pcall(hl.animation, { leaf = "workspaces", enabled = true, speed = 5, bezier = "quint", style = "slide" })
+pcall(hl.animation, { leaf = "windowsIn", enabled = true, speed = 4, bezier = "quint", style = "popin 88%" })
+pcall(hl.animation, { leaf = "windowsOut", enabled = true, speed = 3, bezier = "snap", style = "popin 92%" })
+pcall(hl.animation, { leaf = "windowsMove", enabled = true, speed = 4, bezier = "quint" })
+pcall(hl.animation, { leaf = "fade", enabled = true, speed = 3, bezier = "quint" })
+pcall(hl.animation, { leaf = "layers", enabled = true, speed = 4, bezier = "quint", style = "fade" })

@@ -230,6 +230,33 @@ PanelWindow {
                 }
 
                 Rectangle {
+                    width: parent.width
+                    height: 44
+                    radius: 14
+                    color: dockTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                    Text {
+                        anchors.centerIn: parent
+                        text: Apps.isPinned(root.menuEntry) ? "Remove from Dock" : "Add to Dock"
+                        color: Theme.text
+                        font.pixelSize: 15
+                    }
+                    MouseArea {
+                        id: dockTap
+                        anchors.fill: parent
+                        onClicked: {
+                            const e = root.menuEntry;
+                            if (e) {
+                                if (Apps.isPinned(e))
+                                    Apps.unpinEntry(e);
+                                else
+                                    Apps.pin(e);
+                            }
+                            root.menuEntry = null;
+                        }
+                    }
+                }
+
+                Rectangle {
                     visible: root.menuOnHome && !root.menuInFolder
                     width: parent.width
                     height: 44

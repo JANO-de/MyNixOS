@@ -190,6 +190,53 @@ Singleton {
         save();
     }
 
+    // ---- App library (last page): every app grouped by freedesktop category --------------------
+    readonly property var libOrder: ["Productivity", "Creativity", "Media", "Internet", "Games", "Developer", "Utilities", "System", "Other"]
+
+    function catOf(e) {
+        const c = e.categories || [];
+        const has = k => c.indexOf(k) >= 0;
+        if (has("Game"))
+            return "Games";
+        if (has("Development"))
+            return "Developer";
+        if (has("WebBrowser") || has("Network"))
+            return "Internet";
+        if (has("Office"))
+            return "Productivity";
+        if (has("Graphics") || has("Photography"))
+            return "Creativity";
+        if (has("AudioVideo") || has("Audio") || has("Video") || has("Player"))
+            return "Media";
+        if (has("Settings") || has("System") || has("Monitor"))
+            return "System";
+        if (has("Utility"))
+            return "Utilities";
+        return "Other";
+    }
+
+    function buildLibrary() {
+        const by = {};
+        for (const e of DesktopEntries.applications.values) {
+            if (e.noDisplay)
+                continue;
+            const c = catOf(e);
+            if (!by[c])
+                by[c] = [];
+            by[c].push(e);
+        }
+        const out = [];
+        for (const c of libOrder) {
+            if (!by[c])
+                continue;
+            by[c].sort((a, b) => String(a.name).localeCompare(String(b.name)));
+            out.push({ title: c, items: by[c] });
+        }
+        return out;
+    }
+
+    property var libCats: buildLibrary()
+
     function entry(id) {
         if (isFolder(id)) {
             const f = folders[id];

@@ -15,6 +15,7 @@ PanelWindow {
     property string sheet: "" // "", "menu", "wallpapers", "widgets", "settings"
     property point menuAt: Qt.point(0, 0)
     property string openFolder: "" // folder id currently shown in its own sheet, or ""
+    property string libCat: "" // App Library category shown in its sheet, or ""
     property string menuFor: "" // eid whose long-press context menu is open, or ""
     property point menuAt2: Qt.point(0, 0)
 
@@ -127,7 +128,8 @@ PanelWindow {
             readonly property int cap0: cols * rows0
             readonly property int capN: cols * rowsFull
             readonly property int n: Home.icons.count
-            readonly property int pageCount: n <= cap0 ? 1 : 1 + Math.ceil((n - cap0) / capN)
+            readonly property int iconPages: n <= cap0 ? 1 : 1 + Math.ceil((n - cap0) / capN)
+            readonly property int pageCount: iconPages + 1 // + the App Library page
             readonly property int curPage: Math.max(0, Math.min(pageCount - 1, Math.round(flick.contentX / Math.max(1, width))))
 
             property bool dragActive: false
@@ -162,7 +164,7 @@ PanelWindow {
                 return (s.page === 0 ? widgetsH : 0) + s.row * cellH;
             }
             function indexAt(px, py) {
-                const p = Math.max(0, Math.min(pageCount - 1, Math.floor(px / width)));
+                const p = Math.max(0, Math.min(iconPages - 1, Math.floor(px / width)));
                 const col = Math.max(0, Math.min(cols - 1, Math.floor((px - p * width - xPad) / cellW)));
                 const rows = p === 0 ? rows0 : rowsFull;
                 const row = Math.max(0, Math.min(rows - 1, Math.floor((py - (p === 0 ? widgetsH : 0)) / cellH)));
@@ -229,7 +231,7 @@ PanelWindow {
                     if (vx < 70)
                         pager.goTo(pager.curPage - 1);
                     else if (vx > pager.width - 70)
-                        pager.goTo(pager.curPage + 1);
+                        pager.goTo(Math.min(pager.curPage + 1, pager.iconPages - 1));
                 }
             }
 
@@ -296,6 +298,7 @@ PanelWindow {
                         anchors.fill: parent
                         onClicked: {
                             root.menuFor = "";
+                            UI.dockEditing = false;
                             if (Home.editing)
                                 Home.editing = false;
                         }
@@ -354,6 +357,97 @@ PanelWindow {
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: Home.addWidget(parent.modelData.id)
+                                }
+                            }
+                        }
+                    }
+
+                    // App Library (last page): all apps by category, tap a card to open it.
+                    Item {
+                        id: libPage
+                        x: pager.iconPages * pager.width
+                        width: pager.width
+                        height: container.height
+
+                        readonly property int cols: pager.areaW > 900 ? 3 : 2
+                        readonly property real cardW: (pager.areaW - (cols - 1) * 18) / cols
+
+                        Text {
+                            x: pager.xPad
+                            y: 4
+                            text: "App Library"
+                            color: Theme.text
+                            font.pixelSize: 24
+                            font.weight: Font.DemiBold
+                        }
+
+                        Flickable {
+                            x: pager.xPad
+                            y: 52
+                            width: pager.areaW
+                            height: libPage.height - 60
+                            contentHeight: libFlow.height + 24
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick
+                            boundsBehavior: Flickable.StopAtBounds
+
+                            Flow {
+                                id: libFlow
+                                width: parent.width
+                                spacing: 18
+
+                                Repeater {
+                                    model: Home.libCats
+
+                                    Rectangle {
+                                        id: card
+                                        required property var modelData
+                                        width: libPage.cardW
+                                        height: libPage.cardW * 0.78
+                                        radius: 30
+                                        color: Theme.glass
+                                        border.color: Theme.glassStroke
+                                        border.width: 1
+                                        scale: cardTap.pressed ? 0.97 : 1
+                                        Behavior on scale { NumberAnimation { duration: 100 } }
+
+                                        Grid {
+                                            x: 20
+                                            y: 20
+                                            columns: 2
+                                            spacing: 10
+
+                                            Repeater {
+                                                model: card.modelData.items.slice(0, 4)
+
+                                                Image {
+                                                    required property var modelData
+                                                    width: card.width * 0.2
+                                                    height: width
+                                                    source: Apps.iconSource(modelData.icon)
+                                                    sourceSize: Qt.size(96, 96)
+                                                    fillMode: Image.PreserveAspectFit
+                                                    smooth: true
+                                                }
+                                            }
+                                        }
+
+                                        Text {
+                                            x: 20
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: 16
+                                            text: card.modelData.title + "  \u00b7  " + card.modelData.items.length
+                                            color: Theme.text
+                                            font.pixelSize: 15
+                                            font.weight: Font.DemiBold
+                                        }
+
+                                        MouseArea {
+                                            id: cardTap
+                                            anchors.fill: parent
+                                            onClicked: root.libCat = card.modelData.title
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -587,6 +681,34 @@ PanelWindow {
             }
 
             Rectangle {
+                visible: !Home.isFolder(root.menuFor)
+                width: parent.width
+                height: 44
+                radius: 14
+                color: dockMenuTap.pressed ? Qt.rgba(0.2, 0.32, 0.33, 0.98) : Qt.rgba(0.11, 0.19, 0.2, 0.97)
+                Text {
+                    anchors.centerIn: parent
+                    text: Apps.isPinned(Home.entry(root.menuFor)) ? "Remove from Dock" : "Add to Dock"
+                    color: Theme.text
+                    font.pixelSize: 15
+                }
+                MouseArea {
+                    id: dockMenuTap
+                    anchors.fill: parent
+                    onClicked: {
+                        const e = Home.entry(root.menuFor);
+                        root.menuFor = "";
+                        if (e) {
+                            if (Apps.isPinned(e))
+                                Apps.unpinEntry(e);
+                            else
+                                Apps.pin(e);
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
                 width: parent.width
                 height: 44
                 radius: 14
@@ -615,13 +737,13 @@ PanelWindow {
             id: overlay
             anchors.fill: parent
             z: 20
-            visible: root.sheet !== "" || root.openFolder !== "" || dim.opacity > 0.01
+            visible: root.sheet !== "" || root.openFolder !== "" || root.libCat !== "" || dim.opacity > 0.01
 
             Rectangle {
                 id: dim
                 anchors.fill: parent
                 color: Qt.rgba(0, 0, 0, 0.4)
-                opacity: (root.sheet !== "" || root.openFolder !== "") ? 1 : 0
+                opacity: (root.sheet !== "" || root.openFolder !== "" || root.libCat !== "") ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
                 MouseArea {
@@ -629,6 +751,7 @@ PanelWindow {
                     onClicked: {
                         root.sheet = "";
                         root.openFolder = "";
+                        root.libCat = "";
                     }
                 }
             }
@@ -994,6 +1117,42 @@ PanelWindow {
                             onClicked: {
                                 Home.reset();
                                 root.sheet = "";
+                            }
+                        }
+                    }
+                }
+            }
+
+            // App Library category
+            Sheet {
+                id: libSheet
+                visible: root.libCat !== ""
+                anchors.centerIn: parent
+                title: root.libCat
+
+                readonly property var items: {
+                    for (const c of Home.libCats)
+                        if (c.title === root.libCat)
+                            return c.items;
+                    return [];
+                }
+                onClosed: root.libCat = ""
+
+                Flow {
+                    width: parent.width
+                    spacing: 6
+
+                    Repeater {
+                        model: libSheet.items
+
+                        AppIcon {
+                            required property var modelData
+                            width: Home.cellW
+                            height: Home.cellH
+                            entry: modelData
+                            onActivated: {
+                                root.libCat = "";
+                                Home.launch(modelData);
                             }
                         }
                     }
