@@ -14,19 +14,44 @@ Singleton {
     readonly property int cellH: [124, 140, 160][density]
     readonly property int tile: [68, 80, 92][density]
     property alias icons: iconModel
-    property var widgets: ["clock", "calendar", "media"]
     property var savedOrder: []
     property var folders: ({}) // folderId -> { name, items: [eid,...] }
     property var hidden: ({}) // eid -> true, for apps removed from the home screen
 
-    // Widget row holds at most 4 units.
-    readonly property int maxSpan: 4
+    // Widget catalog. w/h = default size in units (1 unit = one square widget cell); comp = Widget<comp>.qml;
+    // bare = no glass card (stickers); edge = content fills the card edge to edge; pick = what the edit-mode
+    // pencil lets you choose ("photos" | "sticker" | "app" | "apps").
+    // To add a widget for a new app: add a line here + a Widget<Name>.qml (declare `property var inst: null` for config).
     readonly property var widgetTypes: [
-        { id: "clock", title: "Clock", span: 1 },
-        { id: "calendar", title: "Calendar", span: 1 },
-        { id: "battery", title: "Battery", span: 1 },
-        { id: "media", title: "Now playing", span: 2 }
+        { id: "clock", title: "Clock", w: 1, h: 1, comp: "Clock" },
+        { id: "digital", title: "Digital clock", w: 2, h: 1, comp: "Digital" },
+        { id: "date", title: "Date", w: 1, h: 1, comp: "Date" },
+        { id: "calendar", title: "Calendar", w: 1, h: 1, comp: "Calendar" },
+        { id: "weather", title: "Weather", w: 1, h: 1, comp: "Weather" },
+        { id: "battery", title: "Battery", w: 1, h: 1, comp: "Battery" },
+        { id: "system", title: "System", w: 1, h: 1, comp: "System" },
+        { id: "media", title: "Now playing", w: 2, h: 1, comp: "Media" },
+        { id: "stopwatch", title: "Stopwatch", w: 2, h: 1, comp: "Stopwatch" },
+        { id: "timer", title: "Timer", w: 2, h: 1, comp: "Timer" },
+        { id: "calculator", title: "Calculator", w: 2, h: 2, comp: "Calculator" },
+        { id: "brightness", title: "Brightness", w: 2, h: 1, comp: "Brightness" },
+        { id: "volume", title: "Volume", w: 2, h: 1, comp: "Volume" },
+        { id: "toggles", title: "Quick toggles", w: 2, h: 1, comp: "Toggles" },
+        { id: "year", title: "Year progress", w: 1, h: 1, comp: "Year" },
+        { id: "moon", title: "Moon phase", w: 1, h: 1, comp: "Moon" },
+        { id: "stack", title: "Smart stack", w: 2, h: 1, comp: "Stack" },
+        { id: "photo", title: "Photo frame", w: 2, h: 2, comp: "Photo", edge: true, pick: "photos" },
+        { id: "sticker", title: "Sticker", w: 1, h: 1, comp: "Sticker", bare: true, edge: true, pick: "sticker" },
+        { id: "shortcut", title: "App shortcut", w: 1, h: 1, comp: "Shortcut", pick: "app" },
+        { id: "appsrow", title: "App row", w: 2, h: 1, comp: "AppsRow", pick: "apps" }
     ]
+    // Members of the Smart stack (swipe to flip).
+    readonly property var stackItems: ["weather", "system", "date", "year", "moon", "battery"]
+
+    // Placed widgets: { id, type, page, fx, fy (fractions of the page), w, h (units), cfg }.
+    property var winst: []
+    property bool snapGrid: false // widgets snap to a half-unit grid while moving
+    property string pickFor: "" // instance id being configured in the picker sheet
     readonly property string dir: Quickshell.env("HOME") + "/.config/halo"
 
     ListModel { id: iconModel }
@@ -38,36 +63,65 @@ Singleton {
         return null;
     }
 
-    function usedSpan() {
-        let n = 0;
-        for (const id of widgets) {
-            const t = typeOf(id);
-            if (t)
-                n += t.span;
-        }
-        return n;
-    }
-
-    function addable() {
+    function defaultWidgets() {
         const out = [];
-        const free = maxSpan - usedSpan();
-        for (const t of widgetTypes)
-            if (widgets.indexOf(t.id) < 0 && t.span <= free)
-                out.push(t);
+        let x = 0;
+        for (const t of ["clock", "calendar", "media"]) {
+            const ty = typeOf(t);
+            out.push({ id: t + "#" + (out.length + 1), type: t, page: 0, fx: 0.08 + x * 0.21, fy: 0.0, w: ty.w, h: ty.h, cfg: {} });
+            x += ty.w;
+        }
         return out;
     }
 
-    function addWidget(id) {
-        const t = typeOf(id);
-        if (!t || widgets.indexOf(id) >= 0 || usedSpan() + t.span > maxSpan)
-            return;
-        widgets = widgets.concat([id]);
+    function winstById(id) {
+        for (const w of winst)
+            if (w.id === id)
+                return w;
+        return null;
+    }
+
+    function newWidgetId(type) {
+        let n = 1;
+        for (const w of winst) {
+            const k = parseInt(String(w.id).split("#")[1]);
+            if (!isNaN(k) && k >= n)
+                n = k + 1;
+        }
+        return type + "#" + n;
+    }
+
+    function addWidget(type, page) {
+        const t = typeOf(type);
+        if (!t)
+            return "";
+        const k = winst.length % 5;
+        const id = newWidgetId(type);
+        winst = winst.concat([{ id: id, type: type, page: Math.max(0, page || 0), fx: 0.1 + k * 0.03, fy: 0.05 + k * 0.03, w: t.w, h: t.h, cfg: {} }]);
         save();
+        return id;
     }
 
     function removeWidget(id) {
-        widgets = widgets.filter(w => w !== id);
+        winst = winst.filter(w => w.id !== id);
         save();
+    }
+
+    function patchWidget(id, patch) {
+        winst = winst.map(w => w.id === id ? Object.assign({}, w, patch) : w);
+        save();
+    }
+
+    function moveWidget(id, page, fx, fy) {
+        patchWidget(id, { page: page, fx: fx, fy: fy });
+    }
+
+    function resizeWidget(id, w, h) {
+        patchWidget(id, { w: w, h: h });
+    }
+
+    function setCfg(id, cfg) {
+        patchWidget(id, { cfg: cfg });
     }
 
     // ---- Folders --------------------------------------------------------------------------
@@ -190,6 +244,25 @@ Singleton {
         save();
     }
 
+    // Library drag: put an app on the home screen at `index` (un-hides it, takes it out of a folder, moves it if already there).
+    function addToHomeAt(eid, index) {
+        const nh = Object.assign({}, hidden);
+        delete nh[eid];
+        hidden = nh;
+        for (const fid in folders)
+            if (folders[fid].items.indexOf(eid) >= 0) {
+                removeFromFolder(fid, eid);
+                break;
+            }
+        const cur = indexOfIcon(eid);
+        if (cur >= 0) {
+            moveIcon(cur, Math.max(0, Math.min(iconModel.count - 1, index)));
+        } else {
+            iconModel.insert(Math.max(0, Math.min(iconModel.count, index)), { eid });
+        }
+        save();
+    }
+
     // ---- App library (last page): every app grouped by freedesktop category --------------------
     readonly property var libOrder: ["Productivity", "Creativity", "Media", "Internet", "Games", "Developer", "Utilities", "System", "Other"]
 
@@ -294,7 +367,7 @@ Singleton {
     function reset() {
         editing = false;
         savedOrder = [];
-        widgets = ["clock", "calendar", "media"];
+        winst = defaultWidgets();
         folders = ({});
         hidden = ({});
         showLabels = true;
@@ -344,7 +417,7 @@ Singleton {
         for (let i = 0; i < iconModel.count; i++)
             ids.push(iconModel.get(i).eid);
         savedOrder = ids;
-        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density, folders: folders, hidden: hidden }));
+        file.setText(JSON.stringify({ order: ids, winst: winst, snap: snapGrid, labels: showLabels, density: density, folders: folders, hidden: hidden }));
     }
 
     function apply(raw) {
@@ -352,8 +425,26 @@ Singleton {
             const p = JSON.parse(raw);
             if (Array.isArray(p.order))
                 savedOrder = p.order;
-            if (Array.isArray(p.widgets))
-                widgets = p.widgets.filter(w => typeOf(w) !== null);
+            if (Array.isArray(p.winst)) {
+                winst = p.winst.filter(w => w && typeOf(w.type) !== null);
+            } else if (Array.isArray(p.widgets)) {
+                // Old format: one widget per type in a single row.
+                const out = [];
+                let x = 0;
+                for (const tid of p.widgets) {
+                    const ty = typeOf(tid);
+                    if (!ty)
+                        continue;
+                    const w = (p.sizes && p.sizes[tid]) ? p.sizes[tid] : ty.w;
+                    out.push({ id: tid + "#" + (out.length + 1), type: tid, page: 0, fx: 0.08 + x * 0.21, fy: 0.0, w: w, h: ty.h, cfg: {} });
+                    x += w;
+                }
+                winst = out;
+            } else {
+                winst = defaultWidgets();
+            }
+            if (typeof p.snap === "boolean")
+                snapGrid = p.snap;
             if (typeof p.labels === "boolean")
                 showLabels = p.labels;
             if (typeof p.density === "number" && p.density >= 0 && p.density <= 2)
@@ -381,5 +472,8 @@ Singleton {
         }
     }
 
-    Component.onCompleted: Quickshell.execDetached(["mkdir", "-p", root.dir])
+    Component.onCompleted: {
+        winst = defaultWidgets();
+        Quickshell.execDetached(["mkdir", "-p", root.dir]);
+    }
 }

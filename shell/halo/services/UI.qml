@@ -33,6 +33,8 @@ Singleton {
     property string dockDragScreen: ""
     property real dockDragX: 0
     property real dockDragY: 0
+    property string libQuery: "" // App Library search text
+    property bool libSearchOpen: false // the search bar window (keyboard focus) is up
     property double inputFocusAt: 0 // last time a SetInput gained focus
     property double inputTapAt: 0 // last press on a SetInput (Settings uses it to tell field taps from other taps)
     property string dockDragZone: "" // "", slide-left, slide-right, split-left, split-right
@@ -72,8 +74,13 @@ Singleton {
         Quickshell.execDetached(["hyprctl", "eval", "go_home()"]);
     }
 
-    function openSettings() { homeOpen = false; shadeOpen = false; overviewOpen = false; dockPinned = false; settingsOpen = true; }
+    function openSettings() { appInfoId = ""; homeOpen = false; shadeOpen = false; overviewOpen = false; dockPinned = false; settingsOpen = true; }
     function closeSettings() { settingsOpen = false; }
+    property string settingsPage: "" // page to show on the next open (consumed by HaloSettings)
+    function openSettingsPage(key) { settingsPage = key; openSettings(); }
+    // Per-app info page (Settings > Apps > app). Set AFTER openSettings(): a plain open clears it.
+    property string appInfoId: ""
+    function openAppInfo(id) { openSettingsPage("apps"); appInfoId = id || ""; }
     function toggleSettings() { if (settingsOpen) closeSettings(); else openSettings(); }
 
     function openOverview() { settingsOpen = false; homeOpen = false; shadeOpen = false; dockPinned = false; overviewOpen = true; }

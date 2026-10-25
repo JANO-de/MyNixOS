@@ -44,7 +44,8 @@ PanelWindow {
 
     onShownChanged: {
         if (shown) {
-            page = "";
+            page = UI.settingsPage;
+            UI.settingsPage = "";
             Info.refresh();
         } else if (Mode.tablet && Kbd.visible) {
             Kbd.hideQuiet();

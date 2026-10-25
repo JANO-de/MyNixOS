@@ -121,7 +121,8 @@ Singleton {
             f.maximized = false;
         }
 
-        const cls = p.item.windows.length > 0 ? p.item.windows[0].appId : "";
+        // item.pick = one specific window (previews): after activate() it is the active window; class matching would hit the first window of that class.
+        const cls = p.item.pick ? "@ACTIVE@" : (p.item.windows.length > 0 ? p.item.windows[0].appId : "");
         if (p.item.windows.length > 0)
             p.item.windows[0].activate();
         else if (p.item.entry)
@@ -147,7 +148,9 @@ Singleton {
         const script = '{ CL="$1"; BEFORE="$2"; N=""; i=0\n'
             + 'echo "ws=$5 side=$6 cls=$1"\n'
             + 'while [ $i -lt 60 ] && [ -z "$N" ]; do\n'
-            + '  if [ -n "$CL" ]; then\n'
+            + '  if [ "$CL" = "@ACTIVE@" ]; then\n'
+            + '    sleep 0.3; N=$(hyprctl activewindow | awk \'NR==1{print $2}\')\n'
+            + '  elif [ -n "$CL" ]; then\n'
             + '    N=$(hyprctl clients | awk -v c="$CL" \'/^Window /{a=$2} $1=="class:" && $2==c {print a; exit}\')\n'
             + '  else\n'
             + '    for a in $(hyprctl clients | awk \'/^Window /{print $2}\'); do\n'

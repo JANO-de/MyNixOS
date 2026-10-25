@@ -22,7 +22,20 @@ Column {
     width: parent ? parent.width : 600
     spacing: 22
 
+    // Per-app info page (like Android's App info): shown while UI.appInfoId is set.
+    readonly property var info: UI.appInfoId !== "" ? DesktopEntries.heuristicLookup(UI.appInfoId) : null
+    readonly property var infoItem: {
+        if (!info)
+            return null;
+        for (const i of Apps.items)
+            if (i.entry && i.entry.id === info.id)
+                return i;
+        return null;
+    }
+    readonly property var infoWins: infoItem ? infoItem.windows : []
+
     SetGroup {
+        visible: !page.info
         title: page.apps.length + " apps"
 
         Repeater {
@@ -42,7 +55,9 @@ Column {
                 icon: String(modelData.icon || "")
                 title: modelData.name
                 subtitle: (inDock ? "In dock" : "Not in dock") + "  ·  " + (onHome ? "On home screen" : "Not on home screen")
-                tappable: false
+                tappable: true
+                chevron: true
+                onClicked: UI.appInfoId = modelData.id
 
                 Row {
                     spacing: 8
@@ -75,6 +90,7 @@ Column {
     }
 
     Text {
+        visible: !page.info
         width: parent.width
         leftPadding: 8
         rightPadding: 8
@@ -82,5 +98,134 @@ Column {
         color: Theme.dim
         font.pixelSize: 13
         wrapMode: Text.WordWrap
+    }
+
+    // ---- App info page ---------------------------------------------------------------------------
+    Column {
+        id: detail
+        visible: !!page.info
+        width: parent.width
+        spacing: 22
+
+        SetButton {
+            text: "\u2039 Apps"
+            onClicked: UI.appInfoId = ""
+        }
+
+        Row {
+            spacing: 18
+            Image {
+                width: 72
+                height: 72
+                source: page.info ? Apps.iconSource(page.info.icon) : ""
+                sourceSize: Qt.size(144, 144)
+                fillMode: Image.PreserveAspectFit
+            }
+            Column {
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
+                Text {
+                    text: page.info ? page.info.name : ""
+                    color: Theme.text
+                    font.pixelSize: 24
+                    font.weight: Font.DemiBold
+                }
+                Text {
+                    visible: text !== ""
+                    text: page.info ? (page.info.comment || page.info.genericName || "") : ""
+                    color: Theme.dim
+                    font.pixelSize: 14
+                }
+            }
+        }
+
+        Row {
+            spacing: 10
+            SetButton {
+                text: "Open"
+                accent: true
+                onClicked: {
+                    UI.closeSettings();
+                    if (page.infoItem)
+                        Apps.activateNow(page.infoItem);
+                    else if (page.info)
+                        Home.launch(page.info);
+                }
+            }
+            SetButton {
+                text: "Force stop"
+                danger: true
+                visible: page.infoWins.length > 0
+                onClicked: {
+                    for (const w of page.infoWins)
+                        w.close();
+                }
+            }
+        }
+
+        SetGroup {
+            title: "Shortcuts"
+            SetRow {
+                title: "In dock"
+                tappable: false
+                SetButton {
+                    readonly property bool isOn: page.info ? Apps.isPinned(page.info) : false
+                    text: isOn ? "Remove" : "Add"
+                    accent: !isOn
+                    onClicked: {
+                        if (isOn)
+                            Apps.unpinEntry(page.info);
+                        else
+                            Apps.pin(page.info);
+                    }
+                }
+            }
+            SetRow {
+                title: "On home screen"
+                tappable: false
+                SetButton {
+                    readonly property bool isOn: {
+                        page.tick;
+                        Home.icons.count;
+                        return page.info ? (Home.indexOfIcon(page.info.id) >= 0 || !!Home.folderedIds()[page.info.id]) : false;
+                    }
+                    text: isOn ? "Remove" : "Add"
+                    accent: !isOn
+                    onClicked: {
+                        const i = Home.indexOfIcon(page.info.id);
+                        if (i >= 0)
+                            Home.hideIconAt(i);
+                        else if (!Home.folderedIds()[page.info.id])
+                            Home.addToHome(page.info.id);
+                        page.tick++;
+                    }
+                }
+            }
+        }
+
+        SetGroup {
+            title: "Details"
+            SetRow {
+                title: "Status"
+                subtitle: page.infoWins.length > 0 ? "Running, " + page.infoWins.length + (page.infoWins.length === 1 ? " window" : " windows") : "Not running"
+                tappable: false
+            }
+            SetRow {
+                title: "Command"
+                subtitle: page.info ? (page.info.command || []).join(" ") : ""
+                tappable: false
+            }
+            SetRow {
+                title: "Categories"
+                subtitle: page.info ? (page.info.categories || []).join(", ") : ""
+                visible: subtitle !== ""
+                tappable: false
+            }
+            SetRow {
+                title: "Desktop entry"
+                subtitle: page.info ? page.info.id : ""
+                tappable: false
+            }
+        }
     }
 }

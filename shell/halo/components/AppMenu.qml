@@ -16,6 +16,8 @@ PanelWindow {
         const r = [];
         if (!item)
             return r;
+        // Android SystemShortcut.AppInfo comes first; here it opens Settings > Apps.
+        r.push({ id: "info", label: "App info" });
         // Android TaskbarPopupController: split options are NOT shown in desktop windowing; there the menu
         // offers "New window" (NewWindowTaskbarShortcut: launches the app intent again, FLAG_ACTIVITY_MULTIPLE_TASK).
         if (Mode.tablet) {
@@ -60,6 +62,8 @@ PanelWindow {
             return;
         if (id === "left" || id === "right")
             UI.splitFromMenu(it, id, scr);
+        else if (id === "info")
+            UI.openAppInfo(it.entry ? it.entry.id : "");
         else if (id === "newwin")
             Home.launch(it.entry);
         else if (id === "manage")

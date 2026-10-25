@@ -1,3 +1,4 @@
+
 halo-ha
 ndoff.tar
 .gz
@@ -197,3 +198,1708 @@ ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 40 --no-pager | grep -
 Not matched to Android yet: I couldn’t find the taskbar icon-size numbers in the source, so icon sizes and spacing are unchanged. A running-app dot still shows in tablet mode, which Android only does in desktop windowing.
 
 After you confirm this, I’ll do per-app window previews (“Manage windows”) from the long-press menu.
+
+halo-upda
+te-18.tar
+.gz
+GZ
+src.tar.xz
+src.tar.xz
+XZ
+
+halo-ha ndoff.tar .gz GZ HANDOFF.md 75 líneas MD Handoff read. The tarball only contains the same HANDOFF.md, with no repo files, so I can’t touch the code yet. Open problem #1 is the vanished shell after update 12. Run this and send me the output: ssh jano@192.168.0.115 'journalctl --user -u hal
+
+pasted
+
+
+# Halo handoff v4 (read ALL of this first) ## 0. How to work with this user (guidelines) - **Write as little as possible while staying explanatory. Always send the commands to run.** Replies in English (user writes English; memory notes in Spanish). - The repo is 79 MB, too big to upload. The user
+
+pasted
+
+Continue
+
+Se ejecutaron 3 comandos, se agregaron 2 recuerdos
+Reading the update-18 files and the app menu before I build the “Manage windows” previews.
+
+Se leyeron 6 páginas, se ejecutaron 5 comandos, archivos compartidos
+halo-update-19.tar.gz is ready: a “Manage windows” row in the long-press menu that opens a carousel of window previews. It is untested (brace-checked only). It changes WindowsMenu.qml (new), AppMenu.qml, UI.qml, shell.qml and HANDOFF.md.
+
+I didn’t need to wait for update 18 feedback, since it touches different files.
+
+tar xzf ~/Downloads/halo-update-19.tar.gz && scripts/halo-dev.sh
+What it does (from AOSP ManageWindowsTaskbarShortcut.kt):
+
+The menu shows Manage windows only for apps with more than one open window.
+The carousel shows a live thumbnail and title of each window. It floats above the dock, lined up with the icon and kept inside the screen edge.
+Tapping a thumbnail brings that window to the front and closes the carousel. Tapping outside closes it.
+Test:
+
+Open 2 windows of the same app, e.g. alacritty twice.
+Long-press its dock icon and tap Manage windows.
+Tap a thumbnail and check that it comes to the front.
+Send me this plus anything that looks wrong on screen:
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 40 --no-pager | grep -E "ERROR|WARN" | grep -viE "portal|screencopy"'
+Not from source:
+
+Thumbnail and card sizes, corner radius and edge margin are my guesses. The real numbers live in a WM Shell file I haven’t read yet.
+The row shows in tablet mode too, while Android only shows it in desktop windowing.
+There is no “New window” row yet.
+Still waiting on your result for update 18: the dock with All Apps first and only 2 recents in tablet mode.
+
+Halo update 19.tar
+GZ
+remember to always write as less as possible
+
+Understood, I’ll keep replies as short as possible.
+
+Waiting on your test results for updates 18 and 19.
+
+ssh jano@192.168.0.115 'journalctl --user -u halo-test -n 40 --no-pager | grep -E "ERROR|WARN" | grep -viE "portal|screencopy"'
+(jano@192.168.0.115) Password: 
+
+All works good. whats next
+
+Leyó y actualizó la memoria
+Updates 18 and 19 confirmed. Proposed next (update 20), in order:
+
+Menu polish from AOSP: “New window” row and hide Split in desktop mode (small).
+Dock icon sizes and spacing from dimens.xml (still unmatched).
+Long-press then drag a dock icon to the split zones.
+Taskbar stash/unstash.
+I’ll start with 1 and 2 unless you say otherwise.
+
+Memoria actualizada halo.md
+Good. The dock and taskbar work is now done. Next from the roadmap:
+
+Library search and drag to home.
+Folders: drag out, multi-page, drop highlight.
+Widgets: resize and stacks.
+Back-swipe from the sides.
+Which one?
+
+All, and add a whole lot of widgets too
+
+Se ejecutaron 6 comandos
+Planning improvements to home screen and widget features.
+bash
+
+cd /home/claude/src/shell/halo; wc -l components/Widget*.qml components/Desktop.qml services/Home.qml components/BottomEdge.qml components/TopEdge.qml; cat components/WidgetHost.qml; grep -n "widget\|Widget" services/Home.qml | head -50
+Salida
+
+   51 components/WidgetBattery.qml
+   75 components/WidgetCalendar.qml
+   76 components/WidgetClock.qml
+   72 components/WidgetHost.qml
+   84 components/WidgetMedia.qml
+ 1327 components/Desktop.qml
+  385 services/Home.qml
+  178 components/BottomEdge.qml
+   73 components/TopEdge.qml
+ 2321 total
+import QtQuick
+import qs.services
+
+// Glass card around one widget. Long-press enters edit mode; "-" removes it.
+Item {
+    id: root
+
+    required property string wid
+
+    scale: Home.editing ? 0.97 : 1
+    Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+
+    SequentialAnimation on rotation {
+        running: Home.editing
+        loops: Animation.Infinite
+        NumberAnimation { to: 0.8; duration: 120 }
+        NumberAnimation { to: -0.8; duration: 120 }
+        onRunningChanged: if (!running) root.rotation = 0
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: 30
+        color: Theme.glass
+        border.color: Theme.glassStroke
+        border.width: 1
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onPressAndHold: Home.editing = true
+    }
+
+    Loader {
+        anchors.fill: parent
+        anchors.margins: 16
+        sourceComponent: root.wid === "clock" ? clockC
+            : root.wid === "calendar" ? calendarC
+            : root.wid === "battery" ? batteryC
+            : root.wid === "media" ? mediaC : null
+    }
+
+    Component { id: clockC; WidgetClock {} }
+    Component { id: calendarC; WidgetCalendar {} }
+    Component { id: batteryC; WidgetBattery {} }
+    Component { id: mediaC; WidgetMedia {} }
+
+    Rectangle {
+        visible: Home.editing
+        x: -6
+        y: -6
+        width: 30
+        height: 30
+        radius: 15
+        color: "#3a3a3c"
+        border.color: Qt.rgba(1, 1, 1, 0.3)
+        border.width: 1
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: 12
+            height: 2
+            radius: 1
+            color: Theme.text
+        }
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -8
+            onClicked: Home.removeWidget(root.wid)
+        }
+    }
+}
+6:// Home screen state: icon order (all apps, flat) and widgets. Saved to ~/.config/halo/home.json.
+17:    property var widgets: ["clock", "calendar", "media"]
+22:    // Widget row holds at most 4 units.
+24:    readonly property var widgetTypes: [
+35:        for (const t of widgetTypes)
+43:        for (const id of widgets) {
+54:        for (const t of widgetTypes)
+55:            if (widgets.indexOf(t.id) < 0 && t.span <= free)
+60:    function addWidget(id) {
+62:        if (!t || widgets.indexOf(id) >= 0 || usedSpan() + t.span > maxSpan)
+64:        widgets = widgets.concat([id]);
+68:    function removeWidget(id) {
+69:        widgets = widgets.filter(w => w !== id);
+297:        widgets = ["clock", "calendar", "media"];
+347:        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density, folders: folders, hidden: hidden }));
+355:            if (Array.isArray(p.widgets))
+356:                widgets = p.widgets.filter(w => typeOf(w) !== null);
+bash
+
+cd /home/claude/src/shell/halo; sed -n 1,75p services/Home.qml; sed -n 340,385p services/Home.qml; cat components/WidgetBattery.qml; grep -n "WidgetHost\|widgets\|span\|widgetTypes" components/Desktop.qml | head -40
+Salida
+
+pragma Singleton
+import QtQuick
+import Quickshell
+import Quickshell.Io
+
+// Home screen state: icon order (all apps, flat) and widgets. Saved to ~/.config/halo/home.json.
+Singleton {
+    id: root
+
+    property bool editing: false
+    property bool showLabels: true
+    property int density: 1 // 0 small, 1 medium, 2 large
+    readonly property int cellW: [116, 132, 152][density]
+    readonly property int cellH: [124, 140, 160][density]
+    readonly property int tile: [68, 80, 92][density]
+    property alias icons: iconModel
+    property var widgets: ["clock", "calendar", "media"]
+    property var savedOrder: []
+    property var folders: ({}) // folderId -> { name, items: [eid,...] }
+    property var hidden: ({}) // eid -> true, for apps removed from the home screen
+
+    // Widget row holds at most 4 units.
+    readonly property int maxSpan: 4
+    readonly property var widgetTypes: [
+        { id: "clock", title: "Clock", span: 1 },
+        { id: "calendar", title: "Calendar", span: 1 },
+        { id: "battery", title: "Battery", span: 1 },
+        { id: "media", title: "Now playing", span: 2 }
+    ]
+    readonly property string dir: Quickshell.env("HOME") + "/.config/halo"
+
+    ListModel { id: iconModel }
+
+    function typeOf(id) {
+        for (const t of widgetTypes)
+            if (t.id === id)
+                return t;
+        return null;
+    }
+
+    function usedSpan() {
+        let n = 0;
+        for (const id of widgets) {
+            const t = typeOf(id);
+            if (t)
+                n += t.span;
+        }
+        return n;
+    }
+
+    function addable() {
+        const out = [];
+        const free = maxSpan - usedSpan();
+        for (const t of widgetTypes)
+            if (widgets.indexOf(t.id) < 0 && t.span <= free)
+                out.push(t);
+        return out;
+    }
+
+    function addWidget(id) {
+        const t = typeOf(id);
+        if (!t || widgets.indexOf(id) >= 0 || usedSpan() + t.span > maxSpan)
+            return;
+        widgets = widgets.concat([id]);
+        save();
+    }
+
+    function removeWidget(id) {
+        widgets = widgets.filter(w => w !== id);
+        save();
+    }
+
+    // ---- Folders --------------------------------------------------------------------------
+    function isFolder(id) {
+        return typeof id === "string" && id.indexOf("folder:") === 0;
+    }
+
+    function save() {
+        const ids = [];
+        for (let i = 0; i < iconModel.count; i++)
+            ids.push(iconModel.get(i).eid);
+        savedOrder = ids;
+        file.setText(JSON.stringify({ order: ids, widgets: widgets, labels: showLabels, density: density, folders: folders, hidden: hidden }));
+    }
+
+    function apply(raw) {
+        try {
+            const p = JSON.parse(raw);
+            if (Array.isArray(p.order))
+                savedOrder = p.order;
+            if (Array.isArray(p.widgets))
+                widgets = p.widgets.filter(w => typeOf(w) !== null);
+            if (typeof p.labels === "boolean")
+                showLabels = p.labels;
+            if (typeof p.density === "number" && p.density >= 0 && p.density <= 2)
+                density = p.density;
+            if (p.folders && typeof p.folders === "object")
+                folders = p.folders;
+            if (p.hidden && typeof p.hidden === "object")
+                hidden = p.hidden;
+        } catch (e) {}
+        sync();
+    }
+
+    FileView {
+        id: file
+        path: root.dir + "/home.json"
+        atomicWrites: true
+        onLoaded: root.apply(text())
+        onLoadFailed: root.apply("")
+    }
+
+    Connections {
+        target: DesktopEntries.applications
+        function onValuesChanged() {
+            root.sync();
+        }
+    }
+
+    Component.onCompleted: Quickshell.execDetached(["mkdir", "-p", root.dir])
+}
+import QtQuick
+import Quickshell.Services.UPower
+import qs.services
+
+Item {
+    id: root
+
+    readonly property var dev: UPower.displayDevice
+    readonly property int pct: dev ? Math.round(dev.percentage * 100) : -1
+    readonly property bool charging: dev ? dev.state === UPowerDeviceState.Charging : false
+
+    Text {
+        anchors.top: parent.top
+        text: "Battery"
+        color: Theme.dim
+        font.pixelSize: 13
+    }
+
+    Text {
+        anchors.centerIn: parent
+        text: root.pct >= 0 ? root.pct + "%" : "--"
+        color: Theme.text
+        font.pixelSize: Math.min(root.width, root.height) * 0.3
+        font.weight: Font.Light
+    }
+
+    Rectangle {
+        anchors.bottom: parent.bottom
+        width: parent.width
+        height: 10
+        radius: 5
+        color: Qt.rgba(1, 1, 1, 0.14)
+
+        Rectangle {
+            width: parent.width * Math.max(0, root.pct) / 100
+            height: parent.height
+            radius: 5
+            color: root.charging ? "#7bd88f" : (root.pct >= 0 && root.pct < 20 ? "#ff6b6b" : Theme.text)
+            Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+        }
+    }
+
+    Text {
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 18
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: root.charging ? "Charging" : ""
+        color: Theme.dim
+        font.pixelSize: 12
+    }
+}
+6:// The home screen: wallpaper + widgets + paged app icons, always behind the windows.
+15:    property string sheet: "" // "", "menu", "wallpapers", "widgets", "settings"
+48:        // Soft scrim so icons and widgets stay readable on any wallpaper.
+107:        // ---- Pages: widgets + icons -----------------------------------------------------------
+125:            readonly property real widgetsH: unit + 24 + 46
+127:            readonly property int rows0: Math.max(1, Math.floor((height - widgetsH) / cellH))
+165:                return (s.page === 0 ? widgetsH : 0) + s.row * cellH;
+171:                const row = Math.max(0, Math.min(rows - 1, Math.floor((py - (p === 0 ? widgetsH : 0)) / cellH)));
+355:                            model: Home.widgets
+357:                            WidgetHost {
+360:                                width: (Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) * pager.unit
+361:                                    + ((Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) - 1) * pager.gap
+367:                    // Edit mode: add widgets
+871:                        { glyph: "⊞", label: "Widgets", target: "widgets" },
+963:                visible: root.sheet === "widgets"
+973:                        model: Home.widgetTypes
+977:                            readonly property bool placed: Home.widgets.indexOf(modelData.id) >= 0
+978:                            readonly property bool fits: placed || Home.usedSpan() + modelData.span <= Home.maxSpan
+979:                            width: modelData.span * 150 + (modelData.span - 1) * 14
+983:                            WidgetHost {
+Designing a widget layout system with sizing and limits.
+bash
+
+cd /home/claude/src/shell/halo; sed -n 107,180p components/Desktop.qml; sed -n 340,420p components/Desktop.qml; sed -n 955,1040p components/Desktop.qml
+Salida
+
+        // ---- Pages: widgets + icons -----------------------------------------------------------
+        Item {
+            id: pager
+            anchors.top: parent.top
+            anchors.topMargin: 76
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: root.dockSpace + 30
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            readonly property int cellW: Home.cellW
+            readonly property int cellH: Home.cellH
+            readonly property int gap: 16
+            readonly property int cols: Math.max(3, Math.floor((width - 80) / cellW))
+            readonly property real areaW: cols * cellW
+            readonly property real xPad: (width - areaW) / 2
+            readonly property real unit: Math.max(110, Math.min(200, (areaW - 3 * gap) / 4))
+            // Widget band (card + room for the "+" chips in edit mode); constant so editing never reflows icons.
+            readonly property real widgetsH: unit + 24 + 46
+            readonly property int rowsFull: Math.max(1, Math.floor(height / cellH))
+            readonly property int rows0: Math.max(1, Math.floor((height - widgetsH) / cellH))
+            readonly property int cap0: cols * rows0
+            readonly property int capN: cols * rowsFull
+            readonly property int n: Home.icons.count
+            readonly property int iconPages: n <= cap0 ? 1 : 1 + Math.ceil((n - cap0) / capN)
+            readonly property int pageCount: iconPages + 1 // + the App Library page
+            readonly property int curPage: Math.max(0, Math.min(pageCount - 1, Math.round(flick.contentX / Math.max(1, width))))
+
+            property bool dragActive: false
+            property var dragSlot: null
+            property real fx: 0
+            property real fy: 0
+
+            // Drag-to-merge: the slot index currently dwelt on, plus its eid (looked up fresh at
+            // merge/release time so a shift during the 550ms dwell can't merge the wrong icon).
+            // Crossing into a new index arms mergeTimer; if the finger lingers there it merges
+            // into a folder, otherwise it settles as a plain reorder (refreshDrag / mergeTimer / Slot.finish()).
+            property var mergeTarget: null
+            property string mergeTargetEid: ""
+            property bool overTrash: false
+            property bool overDock: false // an icon is held over the dock: release = pin it there
+
+            function slotOf(i) {
+                let p = 0;
+                let k = i;
+                if (i >= cap0) {
+                    const j = i - cap0;
+                    p = 1 + Math.floor(j / capN);
+                    k = j % capN;
+                }
+                return { page: p, col: k % cols, row: Math.floor(k / cols) };
+            }
+            function slotX(i) {
+                const s = slotOf(i);
+                return s.page * width + xPad + s.col * cellW;
+            }
+            function slotY(i) {
+                const s = slotOf(i);
+                return (s.page === 0 ? widgetsH : 0) + s.row * cellH;
+            }
+            function indexAt(px, py) {
+                const p = Math.max(0, Math.min(iconPages - 1, Math.floor(px / width)));
+                const col = Math.max(0, Math.min(cols - 1, Math.floor((px - p * width - xPad) / cellW)));
+                const rows = p === 0 ? rows0 : rowsFull;
+                const row = Math.max(0, Math.min(rows - 1, Math.floor((py - (p === 0 ? widgetsH : 0)) / cellH)));
+                const k = row * cols + col;
+                return Math.max(0, Math.min(n - 1, p === 0 ? k : cap0 + (p - 1) * capN + k));
+            }
+
+            function dockHit(x, y) {
+                const r = UI.dockRect;
+                return r.width > 0 && x >= r.x - 48 && x <= r.x + r.width + 48 && y >= r.y - 56;
+            }
+            // Insertion position among the dock's pinned items for a finger at screen x.
+                        onPressAndHold: mouse => {
+                            if (Home.editing)
+                                return;
+                            const p = mapToItem(desk, mouse.x, mouse.y);
+                            root.openMenu(p.x, p.y);
+                        }
+                    }
+
+                    // Widgets (page 1)
+                    Row {
+                        x: pager.xPad
+                        y: 0
+                        spacing: pager.gap
+
+                        Repeater {
+                            model: Home.widgets
+
+                            WidgetHost {
+                                required property string modelData
+                                wid: modelData
+                                width: (Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) * pager.unit
+                                    + ((Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) - 1) * pager.gap
+                                height: pager.unit
+                            }
+                        }
+                    }
+
+                    // Edit mode: add widgets
+                    Flow {
+                        visible: Home.editing
+                        x: pager.xPad
+                        y: pager.unit + 12
+                        width: pager.areaW
+                        spacing: 8
+
+                        Repeater {
+                            model: Home.editing ? Home.addable() : []
+
+                            Rectangle {
+                                required property var modelData
+                                width: chipText.implicitWidth + 32
+                                height: 34
+                                radius: 17
+                                color: Qt.rgba(1, 1, 1, 0.16)
+
+                                Text {
+                                    id: chipText
+                                    anchors.centerIn: parent
+                                    text: "+  " + parent.modelData.title
+                                    color: Theme.text
+                                    font.pixelSize: 13
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: Home.addWidget(parent.modelData.id)
+                                }
+                            }
+                        }
+                    }
+
+                    // App Library (last page): all apps by category, tap a card to open it.
+                    Item {
+                        id: libPage
+                        x: pager.iconPages * pager.width
+                        width: pager.width
+                        height: container.height
+
+                        readonly property int cols: pager.areaW > 900 ? 3 : 2
+                        readonly property real cardW: (pager.areaW - (cols - 1) * 18) / cols
+
+                        Text {
+                            x: pager.xPad
+                            y: 4
+                            text: "App Library"
+                            color: Theme.text
+                            font.pixelSize: 24
+                            font.weight: Font.DemiBold
+                        }
+
+                        Flickable {
+                            x: pager.xPad
+                        color: Theme.dim
+                        font.pixelSize: 13
+                    }
+                }
+            }
+
+            // Widgets gallery
+            Sheet {
+                visible: root.sheet === "widgets"
+                anchors.centerIn: parent
+                title: "Widgets"
+                onClosed: root.sheet = "menu"
+
+                Flow {
+                    width: parent.width
+                    spacing: 14
+
+                    Repeater {
+                        model: Home.widgetTypes
+
+                        Column {
+                            required property var modelData
+                            readonly property bool placed: Home.widgets.indexOf(modelData.id) >= 0
+                            readonly property bool fits: placed || Home.usedSpan() + modelData.span <= Home.maxSpan
+                            width: modelData.span * 150 + (modelData.span - 1) * 14
+                            spacing: 8
+                            opacity: fits ? 1 : 0.4
+
+                            WidgetHost {
+                                wid: parent.modelData.id
+                                width: parent.width
+                                height: 150
+                            }
+                            Rectangle {
+                                width: parent.width
+                                height: 36
+                                radius: 18
+                                color: parent.placed ? Qt.rgba(1, 1, 1, 0.12) : Theme.accent
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: parent.parent.placed ? parent.parent.modelData.title + "  ·  Remove" : "Add " + parent.parent.modelData.title
+                                    color: parent.parent.placed ? Theme.text : Theme.accentInk
+                                    font.pixelSize: 14
+                                    font.weight: Font.DemiBold
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    enabled: parent.parent.fits
+                                    onClicked: {
+                                        if (parent.parent.placed)
+                                            Home.removeWidget(parent.parent.modelData.id);
+                                        else
+                                            Home.addWidget(parent.parent.modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        width: parent.width
+                        topPadding: 6
+                        text: "The widget row holds " + Home.maxSpan + " units. Long-press the home screen items to rearrange."
+                        color: Theme.dim
+                        font.pixelSize: 13
+                        wrapMode: Text.Wrap
+                    }
+                }
+            }
+
+            // Launcher settings
+            Sheet {
+                visible: root.sheet === "settings"
+                anchors.centerIn: parent
+                title: "Launcher settings"
+                onClosed: root.sheet = "menu"
+
+                Column {
+                    width: parent.width
+                    spacing: 12
+
+                    // Show app names
+                    Rectangle {
+                        width: parent.width
+                        height: 60
+Designing a widget-based data model for a home screen.
+
+Listing widget types and planning data sources for each.
+
+Brainstorming more widget ideas and their data needs.
+
+bash
+
+cd /home/claude/src/shell/halo; for f in Controls Net Notifs Info Wallpaper System; do echo "=== $f"; grep -n "property\|function\|Process\|signal" services/$f.qml | cut -c1-150 | head -40; done; cat components/WidgetClock.qml | head -50; grep -n "readonly property\|property color" services/Theme.qml | cut -c1-120 | head -40
+Salida
+
+=== Controls
+11:    readonly property var all: ["wifi", "bluetooth", "airplane", "dnd", "rotation", "mode", "keyboard", "screenshot", "lock"]
+12:    readonly property var defaults: ["wifi", "bluetooth", "airplane", "dnd", "rotation", "mode", "keyboard", "screenshot", "lock"]
+14:    property alias model: enabledModel
+15:    property int rev: 0
+16:    readonly property var available: {
+24:    readonly property string dir: Quickshell.env("HOME") + "/.config/halo"
+28:    function apply(raw) {
+41:    function save() {
+49:    function move(from, to) {
+54:    function remove(index) {
+59:    function add(tid) {
+64:    function closesShade(tid) {
+68:    function info(tid) {
+92:    function trigger(tid) {
+=== Net
+11:    property var networks: [] // { ssid, signal, secured, active, saved }
+12:    property var devices: [] // { mac, name, connected, paired }
+13:    property string status: ""
+14:    property bool wifiBusy: false
+15:    property bool btBusy: false
+16:    property string profile: "" // "" = powerprofilesctl not available
+19:    function splitNm(line) {
+38:    function isSaved(ssid) {
+46:    function scanWifi() {
+53:    function connectWifi(ssid, password) {
+67:    function disconnectWifi() {
+72:    function forgetWifi(ssid) {
+86:    Process {
+101:                        const n = { ssid: f[1], signal: sig, secured: f[3] !== "" && f[3] !== "--", active: f[0] === "*", saved: false };
+103:                        if (!o || n.active || (!o.active && sig > o.signal))
+112:                list.sort((a, b) => ((b.active ? 1 : 0) - (a.active ? 1 : 0)) || (b.signal - a.signal));
+120:    Process {
+122:        property string ssid: ""
+131:    function refreshBt() {
+138:    function scanBt() {
+143:    function toggleDevice(d) {
+155:    function forgetDevice(d) {
+160:    Process {
+181:    Process {
+195:    Process {
+201:    function refreshProfile() {
+205:    function setProfile(p) {
+210:    Process {
+=== Notifs
+10:    property alias list: server.trackedNotifications
+11:    property bool dnd: false
+12:    readonly property int count: server.trackedNotifications.values.length
+15:    property var banner: null
+17:    function clearAll() {
+23:    function hideBanner() {
+=== Info
+10:    property var kv: ({})
+11:    property var gens: [] // { name, date, target }, newest first
+12:    readonly property string haloVersion: "Halo 0.1 (Quickshell + Hyprland)"
+14:    function refresh() {
+20:    function get(k) {
+25:    function disk(k) {
+32:    function gb(bytes) {
+37:    Process {
+=== Wallpaper
+11:    property string current: "preset:contours"
+12:    property var files: []
+14:    readonly property var presets: [
+21:    readonly property string dir: Quickshell.env("HOME") + "/.config/halo"
+22:    readonly property string picsDir: Quickshell.env("HOME") + "/Pictures/Wallpapers"
+24:    function preset(id) {
+32:    readonly property var specs: {
+40:    function quick(n) {
+51:    function set(spec) {
+56:    function rescan() {
+60:    Process {
+=== System
+11:    property real brightness: 0.5
+12:    property real volume: 0.5
+13:    property bool muted: false
+14:    property bool wifi: false
+15:    property string wifiName: ""
+16:    property bool bluetooth: false
+17:    property bool rotationLocked: false
+18:    readonly property bool airplane: !wifi && !bluetooth
+20:    function refresh() {
+28:    function clamp(v) {
+32:    function setBrightness(v) {
+37:    function setVolume(v) {
+44:    function toggleWifi() {
+49:    function toggleBluetooth() {
+54:    function toggleAirplane() {
+62:    function toggleRotationLock() {
+67:    Process {
+75:    Process {
+91:    Process {
+105:    Process {
+117:    Process {
+import QtQuick
+import Quickshell
+import qs.services
+
+// Analog clock.
+Item {
+    id: root
+
+    readonly property real s: Math.min(width, height)
+
+    SystemClock {
+        id: clock
+        precision: SystemClock.Minutes
+    }
+
+    Rectangle {
+        anchors.centerIn: parent
+        width: root.s
+        height: root.s
+        radius: root.s / 2
+        color: Qt.rgba(1, 1, 1, 0.07)
+    }
+
+    Repeater {
+        model: 12
+        Item {
+            required property int index
+            anchors.centerIn: parent
+            width: 2
+            height: root.s - 14
+            rotation: index * 30
+            Rectangle {
+                width: 2
+                height: index % 3 === 0 ? 11 : 5
+                radius: 1
+                color: index % 3 === 0 ? Theme.text : Theme.dim
+            }
+        }
+    }
+
+    // Hour hand
+    Item {
+        anchors.centerIn: parent
+        width: 6
+        height: root.s * 0.5
+        rotation: ((clock.date.getHours() % 12) + clock.date.getMinutes() / 60) * 30
+        Rectangle {
+            width: 6
+            height: root.s * 0.25
+            radius: 3
+12:    property color glass: Qt.rgba(0.13, 0.13, 0.16, 0.62)
+13:    property color glassStroke: Qt.rgba(1, 1, 1, 0.14)
+14:    property color text: "#ffffff"
+15:    property color dim: "#8e8e93"
+16:    property color accent: "#a6c8ff"
+17:    property color accentInk: "#0b1b33"
+18:    property color accentInkDim: Qt.rgba(0.04, 0.11, 0.2, 0.7)
+19:    property color surfaceHigh: Qt.rgba(0.11, 0.19, 0.2, 0.97)
+20:    property color surfacePress: Qt.rgba(0.2, 0.32, 0.33, 0.98)
+21:    property color scrim: Qt.rgba(0.04, 0.07, 0.08, 0.85)
+22:    property color iconTile: Qt.rgba(1, 1, 1, 0.10)
+23:    property color iconInk: "#ffffff" // unused (icons are really recoloured now)
+24:    readonly property bool themedIcons: iconDir !== ""
+29:    readonly property var schemes: ["tonal-spot", "content", "expressive", "fidelity", "fruit-salad", "monochrome", "
+37:    readonly property int radius: 26
+38:    readonly property string dir: Quickshell.env("HOME") + "/.config/halo"
+Building a widget-based dashboard with clock and calendar components.
+
+bash
+
+cd /home/claude/src/shell/halo; sed -n 60,125p services/Controls.qml; sed -n 8,60p services/Info.qml; sed -n 1,40p services/Notifs.qml; grep -n "Wallpaper\|WallpaperView" components/Desktop.qml | head -5; sed -n 1,30p components/WallpaperView.qml
+Salida
+
+        enabledModel.append({ tid: tid });
+        save();
+    }
+
+    function closesShade(tid) {
+        return tid === "mode" || tid === "keyboard" || tid === "screenshot" || tid === "lock";
+    }
+
+    function info(tid) {
+        switch (tid) {
+        case "wifi":
+            return { title: "Wi-Fi", sub: System.wifi ? (System.wifiName !== "" ? System.wifiName : "On") : "Off", active: System.wifi };
+        case "bluetooth":
+            return { title: "Bluetooth", sub: System.bluetooth ? "On" : "Off", active: System.bluetooth };
+        case "airplane":
+            return { title: "Airplane", sub: System.airplane ? "On" : "Off", active: System.airplane };
+        case "dnd":
+            return { title: "Do not disturb", sub: Notifs.dnd ? "On" : "Off", active: Notifs.dnd };
+        case "rotation":
+            return { title: "Rotation", sub: System.rotationLocked ? "Locked" : "Auto", active: System.rotationLocked };
+        case "mode":
+            return { title: Mode.tablet ? "Tablet" : "Desktop", sub: "Switch mode", active: Mode.tablet };
+        case "keyboard":
+            return { title: "Keyboard", sub: Kbd.visible ? "Shown" : "Hidden", active: Kbd.visible };
+        case "screenshot":
+            return { title: "Screenshot", sub: "Full screen", active: false };
+        case "lock":
+            return { title: "Lock", sub: "Lock screen", active: false };
+        }
+        return { title: tid, sub: "", active: false };
+    }
+
+    function trigger(tid) {
+        switch (tid) {
+        case "wifi":
+            System.toggleWifi();
+            break;
+        case "bluetooth":
+            System.toggleBluetooth();
+            break;
+        case "airplane":
+            System.toggleAirplane();
+            break;
+        case "dnd":
+            Notifs.dnd = !Notifs.dnd;
+            break;
+        case "rotation":
+            System.toggleRotationLock();
+            break;
+        case "mode":
+            Quickshell.execDetached(["hyprctl", "eval", "set_mode(\"" + (Mode.tablet ? "desktop" : "tablet") + "\")"]);
+            break;
+        case "keyboard":
+            Kbd.toggle();
+            break;
+        case "lock":
+            Lock.lock();
+            break;
+        case "screenshot":
+            Quickshell.execDetached(["sh", "-c", "sleep 0.6; mkdir -p ~/Pictures/Screenshots; f=~/Pictures/Screenshots/$(date +%F_%H-%M-%S).png; grim \"$f\" && notify-send -t 2000 Screenshot \"Saved to Pictures/Screenshots\""]);
+            break;
+        }
+    }
+
+    FileView {
+        id: file
+    id: root
+
+    property var kv: ({})
+    property var gens: [] // { name, date, target }, newest first
+    readonly property string haloVersion: "Halo 0.1 (Quickshell + Hyprland)"
+
+    function refresh() {
+        if (proc.running)
+            return;
+        proc.running = true;
+    }
+
+    function get(k) {
+        return kv[k] !== undefined && kv[k] !== "" ? kv[k] : "-";
+    }
+
+    // "size used avail" in bytes (df output) -> { size, used, avail }
+    function disk(k) {
+        const f = String(kv[k] || "").trim().split(/\s+/).map(x => parseFloat(x));
+        if (f.length < 3 || isNaN(f[0]))
+            return { size: 0, used: 0, avail: 0 };
+        return { size: f[0], used: f[1], avail: f[2] };
+    }
+
+    function gb(bytes) {
+        const g = bytes / 1073741824;
+        return (g >= 100 ? g.toFixed(0) : g.toFixed(1)) + " GB";
+    }
+
+    Process {
+        id: proc
+        command: ["sh", "-c", [
+            "echo \"host=$(hostname)\"",
+            "echo \"model=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null)\"",
+            "echo \"os=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)\"",
+            "echo \"nixver=$(nixos-version 2>/dev/null)\"",
+            "echo \"kernel=$(uname -r)\"",
+            "echo \"uptime=$(uptime -p 2>/dev/null)\"",
+            "echo \"cpu=$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | sed 's/^ //')\"",
+            "echo \"memtotal=$(awk '/MemTotal/{print $2*1024}' /proc/meminfo)\"",
+            "echo \"memavail=$(awk '/MemAvailable/{print $2*1024}' /proc/meminfo)\"",
+            "echo \"root=$(df -B1 --output=size,used,avail / | tail -n1)\"",
+            "echo \"home=$(df -B1 --output=size,used,avail \"$HOME\" | tail -n1)\"",
+            "echo \"gen=$(readlink /nix/var/nix/profiles/system)\"",
+            "for g in $(ls -1 /nix/var/nix/profiles 2>/dev/null | grep '^system-[0-9]*-link$' | sort -t- -k2 -n | tail -8); do echo \"G|$g|$(stat -c %y /nix/var/nix/profiles/$g | cut -d. -f1)|$(readlink /nix/var/nix/profiles/$g)\"; done"
+        ].join("; ")]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const kv = {};
+                const gens = [];
+                for (const line of text.split("\n")) {
+                    if (line.indexOf("G|") === 0) {
+                        const f = line.split("|");
+pragma Singleton
+import QtQuick
+import Quickshell
+import Quickshell.Services.Notifications
+
+// Halo is the notification daemon (org.freedesktop.Notifications).
+Singleton {
+    id: root
+
+    property alias list: server.trackedNotifications
+    property bool dnd: false
+    readonly property int count: server.trackedNotifications.values.length
+
+    // Latest banner as a plain copy (the notification object may be gone by the time it renders).
+    property var banner: null
+
+    function clearAll() {
+        const all = server.trackedNotifications.values.slice();
+        for (const n of all)
+            n.dismiss();
+    }
+
+    function hideBanner() {
+        banner = null;
+    }
+
+    NotificationServer {
+        id: server
+        bodySupported: true
+        actionsSupported: true
+        imageSupported: true
+        keepOnReload: false
+
+        onNotification: n => {
+            n.tracked = true;
+            if (!root.dnd) {
+                root.banner = { app: n.appName, summary: n.summary, body: n.body };
+                bannerTimer.restart();
+            }
+        }
+24:        Wallpaper.rescan();
+43:        WallpaperView {
+45:            spec: Wallpaper.current
+800:            // Wallpaper menu (Android-launcher style)
+825:                            model: Wallpaper.quick(4)
+import QtQuick
+import qs.services
+
+// Renders a wallpaper spec ("preset:<id>" or "file:<path>") at any size.
+Item {
+    id: root
+
+    property string spec: ""
+    readonly property var preset: spec.indexOf("preset:") === 0 ? Wallpaper.preset(spec.substring(7)) : null
+    readonly property bool isFile: spec.indexOf("file:") === 0
+    readonly property bool isTopo: preset !== null && preset.kind === "topo"
+    readonly property bool isGradient: preset !== null && preset.kind === "gradient"
+
+    clip: true
+
+    Rectangle {
+        anchors.fill: parent
+        visible: !root.isFile
+        color: root.isTopo ? root.preset.bg : "#101014"
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        visible: root.isGradient
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: root.isGradient ? root.preset.c1 : "#000000" }
+            GradientStop { position: 1.0; color: root.isGradient ? root.preset.c2 : "#000000" }
+        }
+    }
+
+Building a widget framework update with supporting code.
+
+Designing widget resizing, stacking, and gallery interactions.
+
+Sharing widget data across preview instances to limit polling.
+
+bash
+
+cd /home/claude/src/shell/halo; cat components/Sheet.qml | head -70; cat components/WidgetCalendar.qml | head -30; sed -n 1,30p services/Mode.qml | head -5; grep -n "WidgetHost\|Home.widgets\|Home.typeOf\|usedSpan\|addable\|maxSpan\|Home.addWidget\|removeWidget" -r . | grep -v "^./services/Home.qml\|^./components/WidgetHost.qml"
+Salida
+
+import QtQuick
+import qs.services
+
+// Centered glass sheet with a title and an X. Put content in as children (it scrolls if tall).
+Rectangle {
+    id: root
+
+    property string title: ""
+    default property alias content: body.data
+    signal closed
+
+    readonly property real maxH: parent ? parent.height - 120 : 600
+
+    width: parent ? Math.min(parent.width - 48, 640) : 600
+    height: Math.min(maxH, body.childrenRect.height + 96)
+    radius: 36
+    color: Theme.surfaceHigh
+    border.color: Theme.glassStroke
+    border.width: 1
+
+    // Swallow taps so the backdrop does not close the sheet.
+    MouseArea { anchors.fill: parent }
+
+    Text {
+        anchors.left: parent.left
+        anchors.leftMargin: 28
+        anchors.top: parent.top
+        anchors.topMargin: 24
+        text: root.title
+        color: Theme.text
+        font.pixelSize: 20
+        font.weight: Font.DemiBold
+    }
+
+    Rectangle {
+        anchors.right: parent.right
+        anchors.rightMargin: 20
+        anchors.top: parent.top
+        anchors.topMargin: 18
+        width: 36
+        height: 36
+        radius: 18
+        color: Qt.rgba(1, 1, 1, 0.14)
+
+        Text {
+            anchors.centerIn: parent
+            text: "✕"
+            color: Theme.text
+            font.pixelSize: 15
+        }
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -6
+            onClicked: root.closed()
+        }
+    }
+
+    Flickable {
+        anchors.fill: parent
+        anchors.topMargin: 72
+        anchors.leftMargin: 24
+        anchors.rightMargin: 24
+        anchors.bottomMargin: 24
+        clip: true
+        contentWidth: width
+        contentHeight: body.childrenRect.height
+        boundsBehavior: Flickable.StopAtBounds
+
+        Item {
+            id: body
+import QtQuick
+import Quickshell
+import qs.services
+
+// Month view, weeks start on Monday.
+Item {
+    id: root
+
+    readonly property var now: clock.date
+    readonly property int offset: (new Date(now.getFullYear(), now.getMonth(), 1).getDay() + 6) % 7
+    readonly property int daysIn: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+    readonly property real cs: width / 7
+
+    SystemClock {
+        id: clock
+        precision: SystemClock.Hours
+    }
+
+    Text {
+        id: title
+        text: Qt.formatDate(root.now, "MMMM")
+        color: Theme.accent
+        font.pixelSize: Math.max(12, root.cs * 0.62)
+        font.weight: Font.DemiBold
+    }
+
+    Grid {
+        anchors.top: title.bottom
+        anchors.topMargin: 4
+        columns: 7
+pragma Singleton
+import QtQuick
+import Quickshell
+import Quickshell.Io
+
+./components/Desktop.qml:355:                            model: Home.widgets
+./components/Desktop.qml:357:                            WidgetHost {
+./components/Desktop.qml:360:                                width: (Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) * pager.unit
+./components/Desktop.qml:361:                                    + ((Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) - 1) * pager.gap
+./components/Desktop.qml:376:                            model: Home.editing ? Home.addable() : []
+./components/Desktop.qml:394:                                    onClicked: Home.addWidget(parent.modelData.id)
+./components/Desktop.qml:977:                            readonly property bool placed: Home.widgets.indexOf(modelData.id) >= 0
+./components/Desktop.qml:978:                            readonly property bool fits: placed || Home.usedSpan() + modelData.span <= Home.maxSpan
+./components/Desktop.qml:983:                            WidgetHost {
+./components/Desktop.qml:1006:                                            Home.removeWidget(parent.parent.modelData.id);
+./components/Desktop.qml:1008:                                            Home.addWidget(parent.parent.modelData.id);
+./components/Desktop.qml:1018:                        text: "The widget row holds " + Home.maxSpan + " units. Long-press the home screen items to rearrange."
+Designing a scrollable sheet with a gallery preview layout.
+
+Lazy-loading widget previews and planning system and weather data polling.
+
+Drafting each individual widget’s features and interaction logic.
+
+Working out the geometry for rendering a moon-phase icon.
+
+Sketching a shortlist of remaining useful widget types.
+
+Building the widget manager’s data model and resize logic.
+
+Mapping widget components to their loader source files.
+
+Balancing long-press editing with interactive widget content gestures.
+
+Laying out the widget gallery sheet and chip-to-add flow.
+
+Parsing system stats into CPU, memory, and disk usage.
+
+Fetching and parsing weather data from an external service.
+
+Designing stopwatch, timer, and calculator widget state logic.
+
+Writing each widget’s display layout and live-updating bindings.
+
+Defining calculator button logic and wallpaper photo widget rendering.
+
+Designing slider and toggle widget layouts and interactions.
+
+Listing each widget type’s title, default span, and supported sizes.
+
+Building update 23 now: widget framework (multi-row, resize, stacks) plus 14 new widgets. Library search, folders and back-swipe follow as updates 24 and 25.
+
+Se ejecutaron 2 comandos
+bash
+
+cd /home/claude && rm -rf o23 && mkdir -p o23/shell/halo/components o23/shell/halo/services && cd o23/shell/halo && grep -n "function setBrightness" -A5 /home/claude/src/shell/halo/services/System.qml | head -8
+cat > services/WidgetData.qml <<'EOF'
+pragma Singleton
+import QtQuick
+import Quickshell
+import Quickshell.Io
+
+// Shared data for home-screen widgets: pollers run only while a widget uses them (use("sys"|"wx", +1/-1)),
+// and timer/stopwatch state lives here so it survives a widget being re-created (stack swipe, page change).
+Singleton {
+    id: root
+
+    property int sysUsers: 0
+    property int wxUsers: 0
+    function use(kind, d) {
+        if (kind === "sys")
+            sysUsers = Math.max(0, sysUsers + d);
+        else if (kind === "wx")
+            wxUsers = Math.max(0, wxUsers + d);
+    }
+
+    // ---- system stats -------------------------------------------------------------------------
+    property real cpu: 0
+    property real mem: 0
+    property real memUsed: 0
+    property real memTotal: 0
+    property real disk: 0
+    property real diskUsed: 0
+    property real diskSize: 0
+    property string uptime: ""
+    property var prevCpu: null
+
+    function gb(bytes) {
+        const g = bytes / 1073741824;
+        return (g >= 100 ? g.toFixed(0) : g.toFixed(1)) + " GB";
+    }
+
+    Timer {
+        interval: 2000
+        repeat: true
+        running: root.sysUsers > 0
+        triggeredOnStart: true
+        onTriggered: if (!sysProc.running) sysProc.running = true
+    }
+    Process {
+        id: sysProc
+        command: ["sh", "-c", "head -n1 /proc/stat; awk '/MemTotal/{t=$2} /MemAvailable/{a=$2} END{print t, a}' /proc/meminfo; df -B1 --output=size,used / | tail -n1; uptime -p"]
+        stdout: StdioCollector {
+            onStreamFinished: root.parseSys(text)
+        }
+    }
+    function parseSys(t) {
+        const l = t.split("\n");
+        const c = (l[0] || "").trim().split(/\s+/).slice(1).map(x => parseFloat(x));
+        if (c.length >= 5) {
+            const idle = c[3] + c[4];
+            const total = c.reduce((a, b) => a + b, 0);
+            if (prevCpu) {
+                const dt = total - prevCpu.total;
+                const di = idle - prevCpu.idle;
+                if (dt > 0)
+                    cpu = Math.max(0, Math.min(1, 1 - di / dt));
+            }
+            prevCpu = { total: total, idle: idle };
+        }
+        const m = (l[1] || "").trim().split(/\s+/).map(x => parseFloat(x) * 1024);
+        if (m.length >= 2 && m[0] > 0) {
+            memTotal = m[0];
+            memUsed = m[0] - m[1];
+            mem = memUsed / memTotal;
+        }
+        const d = (l[2] || "").trim().split(/\s+/).map(x => parseFloat(x));
+        if (d.length >= 2 && d[0] > 0) {
+            diskSize = d[0];
+            diskUsed = d[1];
+            disk = d[1] / d[0];
+        }
+        uptime = (l[3] || "").replace(/^up /, "");
+    }
+
+    // ---- weather (wttr.in, location by IP) ------------------------------------------------------
+    property var wx: ({ ok: false })
+    property double wxAt: 0
+    function fetchWx() {
+        if (!wxProc.running)
+            wxProc.running = true;
+    }
+    onWxUsersChanged: if (wxUsers > 0 && Date.now() - wxAt > 900000) fetchWx()
+    Timer {
+        interval: 1800000
+        repeat: true
+        running: root.wxUsers > 0
+        onTriggered: root.fetchWx()
+    }
+    Process {
+        id: wxProc
+        command: ["curl", "-s", "-m", "10", "wttr.in/?format=%t|%C|%l|%h|%w"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const f = text.trim().split("|");
+                if (f.length >= 5 && f[0] !== "" && text.indexOf("Unknown") < 0 && text.indexOf("<") < 0) {
+                    root.wx = { ok: true, temp: f[0].replace("+", ""), cond: f[1], loc: f[2], hum: f[3], wind: f[4] };
+                    root.wxAt = Date.now();
+                } else if (!root.wx.ok) {
+                    root.wx = { ok: false };
+                }
+            }
+        }
+    }
+
+    // ---- stopwatch ------------------------------------------------------------------------------
+    property bool swRun: false
+    property double swStart: 0
+    property real swAcc: 0 // ms
+    function swElapsed() { return swAcc + (swRun ? Date.now() - swStart : 0); }
+    function swToggle() {
+        if (swRun) {
+            swAcc += Date.now() - swStart;
+            swRun = false;
+        } else {
+            swStart = Date.now();
+            swRun = true;
+        }
+    }
+    function swReset() { swRun = false; swAcc = 0; }
+
+    // ---- countdown timer ------------------------------------------------------------------------
+    property int tmDur: 300 // seconds
+    property bool tmRun: false
+    property double tmEnd: 0
+    property real tmLeft: 300
+    function tmRemaining() { return tmRun ? Math.max(0, (tmEnd - Date.now()) / 1000) : tmLeft; }
+    function tmStart() {
+        if (tmRun || tmLeft <= 0)
+            return;
+        tmEnd = Date.now() + tmLeft * 1000;
+        tmRun = true;
+    }
+    function tmPause() {
+        if (!tmRun)
+            return;
+        tmLeft = Math.max(0, (tmEnd - Date.now()) / 1000);
+        tmRun = false;
+    }
+    function tmSet(sec) { tmRun = false; tmDur = sec; tmLeft = sec; }
+    Timer {
+        interval: 250
+        repeat: true
+        running: root.tmRun
+        onTriggered: {
+            if (Date.now() >= root.tmEnd) {
+                root.tmRun = false;
+                root.tmLeft = 0;
+                Quickshell.execDetached(["notify-send", "-t", "8000", "Timer", "Time is up"]);
+            }
+        }
+    }
+}
+EOF
+echo ok
+Salida
+
+32:    function setBrightness(v) {
+33-        brightness = clamp(v);
+34-        Quickshell.execDetached(["brightnessctl", "-q", "set", Math.max(1, Math.round(brightness * 100)) + "%"]);
+35-    }
+36-
+37-    function setVolume(v) {
+ok
+Setting up Quickshell singleton registration.
+bash
+
+cd /home/claude/o23/shell/halo/components && ls /home/claude/src/shell/halo/services | head -3; ls /home/claude/src/shell/halo/ | head; 
+cat > WidgetDate.qml <<'EOF'
+import QtQuick
+import Quickshell
+import qs.services
+
+// Big day number.
+Item {
+    id: root
+    readonly property real s: Math.min(width, height)
+
+    SystemClock { id: clock; precision: SystemClock.Minutes }
+
+    Text {
+        anchors.top: parent.top
+        text: Qt.formatDate(clock.date, "dddd").toUpperCase()
+        color: Theme.accent
+        font.pixelSize: Math.max(11, root.s * 0.1)
+        font.weight: Font.DemiBold
+    }
+    Text {
+        anchors.centerIn: parent
+        text: Qt.formatDate(clock.date, "d")
+        color: Theme.text
+        font.pixelSize: root.s * 0.5
+        font.weight: Font.Light
+    }
+    Text {
+        anchors.bottom: parent.bottom
+        text: Qt.formatDate(clock.date, "MMMM yyyy")
+        color: Theme.dim
+        font.pixelSize: Math.max(11, root.s * 0.09)
+    }
+}
+EOF
+cat > WidgetDigital.qml <<'EOF'
+import QtQuick
+import Quickshell
+import qs.services
+
+// Digital clock + date.
+Item {
+    id: root
+    readonly property real s: Math.min(width * 0.45, height)
+
+    SystemClock { id: clock; precision: SystemClock.Minutes }
+
+    Text {
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: -root.s * 0.08
+        text: Qt.formatTime(clock.date, "hh:mm")
+        color: Theme.text
+        font.pixelSize: root.s * 0.55
+        font.weight: Font.Light
+    }
+    Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        text: Qt.formatDate(clock.date, "dddd, d MMMM")
+        color: Theme.dim
+        font.pixelSize: Math.max(11, root.s * 0.12)
+    }
+}
+EOF
+cat > WidgetWeather.qml <<'EOF'
+import QtQuick
+import qs.services
+
+// Weather from wttr.in (location by IP). Tap to refresh.
+Item {
+    id: root
+    readonly property var wx: WidgetData.wx
+    readonly property real s: Math.min(width, height)
+
+    Component.onCompleted: WidgetData.use("wx", 1)
+    Component.onDestruction: WidgetData.use("wx", -1)
+
+    Text {
+        anchors.top: parent.top
+        width: parent.width
+        elide: Text.ElideRight
+        text: root.wx.ok ? root.wx.loc : "Weather"
+        color: Theme.dim
+        font.pixelSize: Math.max(11, root.s * 0.09)
+    }
+    Text {
+        anchors.centerIn: parent
+        text: root.wx.ok ? root.wx.temp : "--"
+        color: Theme.text
+        font.pixelSize: root.s * 0.38
+        font.weight: Font.Light
+    }
+    Text {
+        anchors.bottom: parent.bottom
+        width: parent.width
+        elide: Text.ElideRight
+        horizontalAlignment: Text.AlignHCenter
+        text: root.wx.ok ? root.wx.cond + (root.width > 200 ? "  \u00b7  " + root.wx.hum + "  \u00b7  " + root.wx.wind : "") : "No data (tap to retry)"
+        color: Theme.dim
+        font.pixelSize: Math.max(11, root.s * 0.09)
+    }
+    MouseArea {
+        anchors.fill: parent
+        onClicked: WidgetData.fetchWx()
+    }
+}
+EOF
+cat > WidgetSystem.qml <<'EOF'
+import QtQuick
+import qs.services
+
+// CPU / memory / disk usage.
+Item {
+    id: root
+
+    Component.onCompleted: WidgetData.use("sys", 1)
+    Component.onDestruction: WidgetData.use("sys", -1)
+
+    readonly property var rows: [
+        { n: "CPU", v: WidgetData.cpu, t: Math.round(WidgetData.cpu * 100) + "%" },
+        { n: "RAM", v: WidgetData.mem, t: WidgetData.gb(WidgetData.memUsed) },
+        { n: "Disk", v: WidgetData.disk, t: Math.round(WidgetData.disk * 100) + "%" }
+    ]
+
+    Text {
+        id: head
+        anchors.top: parent.top
+        text: "System"
+        color: Theme.dim
+        font.pixelSize: 13
+    }
+
+    Column {
+        anchors.top: head.bottom
+        anchors.topMargin: 8
+        anchors.left: parent.left
+        anchors.right: parent.right
+        spacing: Math.max(4, (root.height - 24 - 3 * 34) / 3)
+
+        Repeater {
+            model: root.rows
+
+            Item {
+                id: r
+                required property var modelData
+                width: root.width
+                height: 34
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    text: r.modelData.n
+                    color: Theme.text
+                    font.pixelSize: 13
+                }
+                Text {
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    text: r.modelData.t
+                    color: Theme.dim
+                    font.pixelSize: 13
+                }
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    height: 8
+                    radius: 4
+                    color: Qt.rgba(1, 1, 1, 0.14)
+                    Rectangle {
+                        width: parent.width * Math.max(0, Math.min(1, r.modelData.v))
+                        height: parent.height
+                        radius: 4
+                        color: r.modelData.v > 0.9 ? "#ff6b6b" : Theme.accent
+                        Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+                    }
+                }
+            }
+        }
+    }
+}
+EOF
+cat > WidgetStopwatch.qml <<'EOF'
+import QtQuick
+import qs.services
+
+// Stopwatch (state in WidgetData).
+Item {
+    id: root
+    property double tick: 0
+    readonly property real ms: { root.tick; return WidgetData.swElapsed(); }
+    readonly property real s: Math.min(width * 0.4, height)
+
+    function two(n) { return (n < 10 ? "0" : "") + n; }
+
+    Timer {
+        interval: 50
+        repeat: true
+        running: WidgetData.swRun
+        onTriggered: root.tick = Date.now()
+    }
+
+    Text {
+        anchors.top: parent.top
+        text: "Stopwatch"
+        color: Theme.dim
+        font.pixelSize: 13
+    }
+    Text {
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: -root.s * 0.06
+        text: root.two(Math.floor(root.ms / 60000)) + ":" + root.two(Math.floor(root.ms / 1000) % 60) + "." + root.two(Math.floor(root.ms / 10) % 100)
+        color: Theme.text
+        font.pixelSize: Math.max(18, root.s * 0.3)
+        font.weight: Font.Light
+    }
+    Row {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 10
+
+        Rectangle {
+            width: 76
+            height: 32
+            radius: 16
+            color: WidgetData.swRun ? Qt.rgba(1, 1, 1, 0.16) : Theme.accent
+            Text {
+                anchors.centerIn: parent
+                text: WidgetData.swRun ? "Stop" : "Start"
+                color: WidgetData.swRun ? Theme.text : Theme.accentInk
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+            }
+            MouseArea { anchors.fill: parent; onClicked: WidgetData.swToggle() }
+        }
+        Rectangle {
+            width: 76
+            height: 32
+            radius: 16
+            color: Qt.rgba(1, 1, 1, 0.16)
+            Text {
+                anchors.centerIn: parent
+                text: "Reset"
+                color: Theme.text
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+            }
+            MouseArea { anchors.fill: parent; onClicked: WidgetData.swReset() }
+        }
+    }
+}
+EOF
+cat > WidgetTimer.qml <<'EOF'
+import QtQuick
+import qs.services
+
+// Countdown timer (state in WidgetData); notifies when it ends.
+Item {
+    id: root
+    property double tick: 0
+    readonly property real left: { root.tick; return WidgetData.tmRemaining(); }
+    readonly property real s: Math.min(width * 0.4, height)
+
+    function two(n) { return (n < 10 ? "0" : "") + n; }
+
+    Timer {
+        interval: 250
+        repeat: true
+        running: WidgetData.tmRun
+        onTriggered: root.tick = Date.now()
+    }
+
+    Text {
+        anchors.top: parent.top
+        text: "Timer"
+        color: Theme.dim
+        font.pixelSize: 13
+    }
+    Row {
+        id: presets
+        anchors.top: parent.top
+        anchors.right: parent.right
+        spacing: 6
+        visible: root.width > 180
+
+        Repeater {
+            model: [60, 300, 600, 1500]
+
+            Rectangle {
+                required property int modelData
+                width: 38
+                height: 24
+                radius: 12
+                color: WidgetData.tmDur === modelData ? Theme.accent : Qt.rgba(1, 1, 1, 0.14)
+                Text {
+                    anchors.centerIn: parent
+                    text: parent.modelData / 60
+                    color: WidgetData.tmDur === parent.modelData ? Theme.accentInk : Theme.text
+                    font.pixelSize: 12
+                }
+                MouseArea { anchors.fill: parent; onClicked: WidgetData.tmSet(parent.modelData) }
+            }
+        }
+    }
+    Text {
+        anchors.centerIn: parent
+        text: root.two(Math.floor(root.left / 60)) + ":" + root.two(Math.floor(root.left) % 60)
+        color: root.left <= 0 ? "#ff6b6b" : Theme.text
+        font.pixelSize: Math.max(18, root.s * 0.34)
+        font.weight: Font.Light
+    }
+    Row {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 10
+
+        Rectangle {
+            width: 76
+            height: 32
+            radius: 16
+            color: WidgetData.tmRun ? Qt.rgba(1, 1, 1, 0.16) : Theme.accent
+            Text {
+                anchors.centerIn: parent
+                text: WidgetData.tmRun ? "Pause" : "Start"
+                color: WidgetData.tmRun ? Theme.text : Theme.accentInk
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (WidgetData.tmRun)
+                        WidgetData.tmPause();
+                    else
+                        WidgetData.tmStart();
+                }
+            }
+        }
+        Rectangle {
+            width: 76
+            height: 32
+            radius: 16
+            color: Qt.rgba(1, 1, 1, 0.16)
+            Text {
+                anchors.centerIn: parent
+                text: "Reset"
+                color: Theme.text
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+            }
+            MouseArea { anchors.fill: parent; onClicked: WidgetData.tmSet(WidgetData.tmDur) }
+        }
+    }
+}
+EOF
+echo done
+Salida
+
+Apps.qml
+Controls.qml
+Home.qml
+components
+services
+shell.qml
+done

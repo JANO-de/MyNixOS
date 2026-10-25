@@ -25,6 +25,7 @@ ShellRoot {
             Shade { screen: scope.modelData }
             Overview { screen: scope.modelData }
             HaloSettings { screen: scope.modelData }
+            LibSearch { screen: scope.modelData }
             TopEdge { screen: scope.modelData }
             BottomEdge { screen: scope.modelData }
             Banner { screen: scope.modelData }

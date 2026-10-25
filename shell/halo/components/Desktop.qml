@@ -19,6 +19,45 @@ PanelWindow {
     property string menuFor: "" // eid whose long-press context menu is open, or ""
     property point menuAt2: Qt.point(0, 0)
 
+    // Library drag (long-press an App Library icon, drop on a home page or the dock).
+    property var libDragEntry: null
+    property real libGX: 0
+    property real libGY: 0
+
+    function libDragBegin(e, gx, gy) {
+        libDragEntry = e;
+        libGX = gx;
+        libGY = gy;
+        pager.widgetDrag = true;
+    }
+
+    function libDragMove(gx, gy) {
+        libGX = gx;
+        libGY = gy;
+        const hot = pager.dockHit(gx, gy);
+        UI.dockDropHot = hot;
+        if (hot)
+            UI.dockDropIndex = pager.dockIndexAt(gx);
+    }
+
+    function libDragEnd(gx, gy) {
+        const e = libDragEntry;
+        libDragEntry = null;
+        pager.widgetDrag = false;
+        UI.dockDropHot = false;
+        if (!e)
+            return;
+        if (pager.dockHit(gx, gy)) {
+            Apps.pinAtVisible(e, UI.dockDropIndex);
+        } else if (pager.curPage < pager.iconPages) {
+            const p = container.mapFromItem(null, gx, gy);
+            Home.addToHomeAt(e.id, pager.indexAt(p.x, p.y));
+        } else {
+            return;
+        }
+        root.libCat = "";
+    }
+
     function openMenu(x, y) {
         menuAt = Qt.point(x, y);
         Wallpaper.rescan();
@@ -133,6 +172,7 @@ PanelWindow {
             readonly property int curPage: Math.max(0, Math.min(pageCount - 1, Math.round(flick.contentX / Math.max(1, width))))
 
             property bool dragActive: false
+            property bool widgetDrag: false
             property var dragSlot: null
             property real fx: 0
             property real fy: 0
@@ -249,6 +289,12 @@ PanelWindow {
             }
 
             onPageCountChanged: if (curPage >= pageCount) goTo(pageCount - 1)
+            onCurPageChanged: {
+                if (curPage !== iconPages && UI.libSearchOpen) {
+                    UI.libSearchOpen = false;
+                    Kbd.hideQuiet();
+                }
+            }
 
             Timer {
                 id: edgeTimer
@@ -298,7 +344,7 @@ PanelWindow {
                 contentWidth: pager.width * pager.pageCount
                 contentHeight: height
                 flickableDirection: Flickable.HorizontalFlick
-                interactive: !pager.dragActive
+                interactive: !pager.dragActive && !pager.widgetDrag
                 boundsBehavior: Flickable.DragAndOvershootBounds
 
                 onMovementStarted: snapAnim.stop()
@@ -345,54 +391,78 @@ PanelWindow {
                         }
                     }
 
-                    // Widgets (page 1)
-                    Row {
-                        x: pager.xPad
-                        y: 0
-                        spacing: pager.gap
+                    // Widgets: free placement on any icon page (move/resize in edit mode).
+                    Repeater {
+                        model: Home.winst
 
-                        Repeater {
-                            model: Home.widgets
-
-                            WidgetHost {
-                                required property string modelData
-                                wid: modelData
-                                width: (Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) * pager.unit
-                                    + ((Home.typeOf(modelData) ? Home.typeOf(modelData).span : 1) - 1) * pager.gap
-                                height: pager.unit
+                        WidgetHost {
+                            required property var modelData
+                            inst: modelData
+                            unit: pager.unit
+                            gap: pager.gap
+                            pw: pager.width
+                            ph: pager.height
+                            xPad: pager.xPad
+                            pagerItem: pager
+                            flickRef: flick
+                            maxPage: pager.iconPages - 1
+                            onConfigure: {
+                                Home.pickFor = modelData.id;
+                                root.sheet = "pick";
                             }
+                            onWantPage: d => pager.goTo(Math.max(0, Math.min(pager.iconPages - 1, pager.curPage + d)))
+                            onDraggingChanged: pager.widgetDrag = dragging
                         }
                     }
 
-                    // Edit mode: add widgets
-                    Flow {
+                    // Edit mode: open the widget gallery
+                    Rectangle {
+                        id: addBtn
                         visible: Home.editing
                         x: pager.xPad
-                        y: pager.unit + 12
-                        width: pager.areaW
-                        spacing: 8
+                        y: pager.unit + 14
+                        width: addText.implicitWidth + 36
+                        height: 36
+                        radius: 18
+                        color: Theme.accent
 
-                        Repeater {
-                            model: Home.editing ? Home.addable() : []
+                        Text {
+                            id: addText
+                            anchors.centerIn: parent
+                            text: "+  Add widget"
+                            color: Theme.accentInk
+                            font.pixelSize: 14
+                            font.weight: Font.DemiBold
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: root.sheet = "widgets"
+                        }
+                    }
 
-                            Rectangle {
-                                required property var modelData
-                                width: chipText.implicitWidth + 32
-                                height: 34
-                                radius: 17
-                                color: Qt.rgba(1, 1, 1, 0.16)
+                    // Edit mode: free move vs snap to grid
+                    Rectangle {
+                        visible: Home.editing
+                        x: pager.xPad + addBtn.width + 10
+                        y: pager.unit + 14
+                        width: snapText.implicitWidth + 36
+                        height: 36
+                        radius: 18
+                        color: Home.snapGrid ? Theme.accent : Qt.rgba(1, 1, 1, 0.16)
 
-                                Text {
-                                    id: chipText
-                                    anchors.centerIn: parent
-                                    text: "+  " + parent.modelData.title
-                                    color: Theme.text
-                                    font.pixelSize: 13
-                                }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: Home.addWidget(parent.modelData.id)
-                                }
+                        Text {
+                            id: snapText
+                            anchors.centerIn: parent
+                            text: Home.snapGrid ? "Snap to grid: on" : "Free move"
+                            color: Home.snapGrid ? Theme.accentInk : Theme.text
+                            font.pixelSize: 14
+                            font.weight: Font.DemiBold
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                Home.snapGrid = !Home.snapGrid;
+                                Home.save();
                             }
                         }
                     }
@@ -404,6 +474,26 @@ PanelWindow {
                         width: pager.width
                         height: container.height
 
+                        readonly property string q: UI.libQuery
+                        readonly property var results: {
+                            const t = q.trim().toLowerCase();
+                            if (t === "")
+                                return [];
+                            const out = [];
+                            const seen = {};
+                            for (const c of Home.libCats)
+                                for (const e of c.items) {
+                                    if (seen[e.id])
+                                        continue;
+                                    const hay = (String(e.name) + " " + String(e.genericName || "") + " " + String(e.comment || "")).toLowerCase();
+                                    if (hay.indexOf(t) >= 0) {
+                                        seen[e.id] = true;
+                                        out.push(e);
+                                    }
+                                }
+                            out.sort((a, b) => String(a.name).toLowerCase().indexOf(t) - String(b.name).toLowerCase().indexOf(t) || String(a.name).localeCompare(String(b.name)));
+                            return out;
+                        }
                         readonly property int cols: pager.areaW > 900 ? 3 : 2
                         readonly property real cardW: (pager.areaW - (cols - 1) * 18) / cols
 
@@ -416,7 +506,99 @@ PanelWindow {
                             font.weight: Font.DemiBold
                         }
 
+                        // Search pill: tapping opens the LibSearch bar (its own window, so it can take keyboard focus).
+                        Rectangle {
+                            x: pager.xPad + 230
+                            y: 0
+                            width: pager.areaW - 230
+                            height: 44
+                            radius: 22
+                            color: Qt.rgba(1, 1, 1, 0.12)
+                            border.width: UI.libSearchOpen ? 2 : 0
+                            border.color: Theme.accent
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                x: 18
+                                width: parent.width - 70
+                                elide: Text.ElideRight
+                                text: UI.libQuery !== "" ? UI.libQuery : "Search apps"
+                                color: UI.libQuery !== "" ? Theme.text : Theme.dim
+                                font.pixelSize: 18
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: UI.libSearchOpen = true
+                            }
+                            Rectangle {
+                                visible: UI.libQuery !== ""
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 30
+                                height: 30
+                                radius: 15
+                                color: Qt.rgba(1, 1, 1, 0.2)
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "\u2715"
+                                    color: Theme.text
+                                    font.pixelSize: 13
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    onClicked: UI.libQuery = ""
+                                }
+                            }
+                        }
+
+                        // Search results (long-press + drag an icon to put it on the home screen or dock)
                         Flickable {
+                            visible: libPage.q.trim() !== ""
+                            x: pager.xPad
+                            y: 52
+                            width: pager.areaW
+                            height: libPage.height - 60
+                            contentHeight: resFlow.height + 24
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick
+                            boundsBehavior: Flickable.StopAtBounds
+
+                            Flow {
+                                id: resFlow
+                                width: parent.width
+                                spacing: 6
+
+                                Repeater {
+                                    model: libPage.results
+
+                                    LibItem {
+                                        required property var modelData
+                                        width: Home.cellW
+                                        height: Home.cellH
+                                        entry: modelData
+                                        onActivated: {
+                                            UI.libSearchOpen = false;
+                                            Kbd.hideQuiet();
+                                            Home.launch(modelData);
+                                        }
+                                        onDragBegan: (gx, gy) => root.libDragBegin(modelData, gx, gy)
+                                        onDragMoved: (gx, gy) => root.libDragMove(gx, gy)
+                                        onDragEnded: (gx, gy) => root.libDragEnd(gx, gy)
+                                    }
+                                }
+                            }
+                            Text {
+                                visible: libPage.results.length === 0
+                                text: "No apps found"
+                                color: Theme.dim
+                                font.pixelSize: 16
+                            }
+                        }
+
+                        Flickable {
+                            visible: libPage.q.trim() === ""
                             x: pager.xPad
                             y: 52
                             width: pager.areaW
@@ -698,6 +880,64 @@ PanelWindow {
                 }
             }
 
+            // Same split options as the dock menu (Android TaskbarPopupController); nothing in front -> staging.
+            Repeater {
+                model: Mode.tablet && !Home.isFolder(root.menuFor) ? ["left", "right"] : []
+
+                Rectangle {
+                    id: splitRow
+                    required property string modelData
+                    width: iconMenu.width
+                    height: 44
+                    radius: 14
+                    color: splitTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
+                    Text {
+                        anchors.centerIn: parent
+                        text: splitRow.modelData === "left" ? "Split left" : "Split right"
+                        color: Theme.text
+                        font.pixelSize: 15
+                    }
+                    MouseArea {
+                        id: splitTap
+                        anchors.fill: parent
+                        onClicked: {
+                            const e = Home.entry(root.menuFor);
+                            root.menuFor = "";
+                            Home.editing = false;
+                            if (!e)
+                                return;
+                            const it = Apps.items.find(i => i.entry && i.entry.id === e.id)
+                                || { key: "launch:" + e.id, pinIndex: -1, entry: e, windows: [], name: e.name, icon: e.icon };
+                            UI.splitFromMenu(it, splitRow.modelData, root.screen);
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: !Home.isFolder(root.menuFor)
+                width: parent.width
+                height: 44
+                radius: 14
+                color: infoTap.pressed ? Theme.surfacePress : Theme.surfaceHigh
+                Text {
+                    anchors.centerIn: parent
+                    text: "App info"
+                    color: Theme.text
+                    font.pixelSize: 15
+                }
+                MouseArea {
+                    id: infoTap
+                    anchors.fill: parent
+                    onClicked: {
+                        const e = Home.entry(root.menuFor);
+                        root.menuFor = "";
+                        Home.editing = false;
+                        UI.openAppInfo(e ? e.id : "");
+                    }
+                }
+            }
+
             Rectangle {
                 visible: Home.isFolder(root.menuFor)
                 width: parent.width
@@ -773,6 +1013,50 @@ PanelWindow {
             }
         }
 
+        // Library drag: ghost icon, drop marker on the home page, edge page flip.
+        Rectangle {
+            visible: root.libDragEntry !== null && pager.curPage < pager.iconPages && !pager.dockHit(root.libGX, root.libGY)
+            readonly property int ti: visible ? pager.indexAt(container.mapFromItem(null, root.libGX, root.libGY).x, container.mapFromItem(null, root.libGX, root.libGY).y) : 0
+            x: pager.mapToItem(desk, pager.slotX(ti) - flick.contentX, pager.slotY(ti)).x
+            y: pager.mapToItem(desk, pager.slotX(ti) - flick.contentX, pager.slotY(ti)).y
+            width: pager.cellW
+            height: pager.cellH
+            radius: 24
+            color: Qt.rgba(1, 1, 1, 0.12)
+            border.color: Theme.accent
+            border.width: 2
+            z: 25
+        }
+        Item {
+            visible: root.libDragEntry !== null
+            x: root.libGX - 44
+            y: root.libGY - 44
+            width: 88
+            height: 88
+            z: 30
+            scale: 1.1
+
+            Rectangle {
+                anchors.fill: parent
+                radius: 22
+                color: Theme.iconTile
+            }
+            Image {
+                anchors.centerIn: parent
+                width: 62
+                height: 62
+                source: root.libDragEntry ? Apps.iconSource(root.libDragEntry.icon) : ""
+                sourceSize: Qt.size(128, 128)
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+        Timer {
+            interval: 700
+            repeat: true
+            running: root.libDragEntry !== null && (root.libGX < 70 || root.libGX > desk.width - 70)
+            onTriggered: pager.goTo(pager.curPage + (root.libGX < 70 ? -1 : 1))
+        }
+
         // ---- Long-press menu and sheets ----------------------------------------------------------
         Item {
             id: overlay
@@ -784,7 +1068,7 @@ PanelWindow {
                 id: dim
                 anchors.fill: parent
                 color: Qt.rgba(0, 0, 0, 0.4)
-                opacity: (root.sheet !== "" || root.openFolder !== "" || root.libCat !== "") ? 1 : 0
+                opacity: (root.sheet !== "" || root.openFolder !== "" || root.libCat !== "") && !root.libDragEntry ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
                 MouseArea {
@@ -867,6 +1151,7 @@ PanelWindow {
 
                 Repeater {
                     model: [
+                        { glyph: "✎", label: "Edit home screen", target: "edit-home" },
                         { glyph: "▣", label: "Wallpapers", target: "wallpapers" },
                         { glyph: "⊞", label: "Widgets", target: "widgets" },
                         { glyph: "⚙", label: "Halo Settings", target: "halo-settings" },
@@ -899,7 +1184,10 @@ PanelWindow {
                             id: rowTap
                             anchors.fill: parent
                             onClicked: {
-                                if (parent.modelData.target === "halo-settings") {
+                                if (parent.modelData.target === "edit-home") {
+                                    root.sheet = "";
+                                    Home.editing = true;
+                                } else if (parent.modelData.target === "halo-settings") {
                                     root.sheet = "";
                                     UI.openSettings();
                                 } else {
@@ -958,30 +1246,28 @@ PanelWindow {
                 }
             }
 
-            // Widgets gallery
+            // Widgets gallery: Add places a new copy on the current page (any number of each).
             Sheet {
                 visible: root.sheet === "widgets"
                 anchors.centerIn: parent
                 title: "Widgets"
-                onClosed: root.sheet = "menu"
+                onClosed: root.sheet = Home.editing ? "" : "menu"
 
                 Flow {
                     width: parent.width
                     spacing: 14
 
                     Repeater {
-                        model: Home.widgetTypes
+                        model: root.sheet === "widgets" ? Home.widgetTypes : []
 
                         Column {
                             required property var modelData
-                            readonly property bool placed: Home.widgets.indexOf(modelData.id) >= 0
-                            readonly property bool fits: placed || Home.usedSpan() + modelData.span <= Home.maxSpan
-                            width: modelData.span * 150 + (modelData.span - 1) * 14
+                            width: Math.min(300, modelData.w * 150 + (modelData.w - 1) * 14)
                             spacing: 8
-                            opacity: fits ? 1 : 0.4
 
                             WidgetHost {
-                                wid: parent.modelData.id
+                                preview: true
+                                inst: ({ id: "", type: parent.modelData.id, page: 0, fx: 0, fy: 0, w: parent.modelData.w, h: parent.modelData.h, cfg: ({}) })
                                 width: parent.width
                                 height: 150
                             }
@@ -989,23 +1275,21 @@ PanelWindow {
                                 width: parent.width
                                 height: 36
                                 radius: 18
-                                color: parent.placed ? Qt.rgba(1, 1, 1, 0.12) : Theme.accent
+                                color: Theme.accent
 
                                 Text {
                                     anchors.centerIn: parent
-                                    text: parent.parent.placed ? parent.parent.modelData.title + "  ·  Remove" : "Add " + parent.parent.modelData.title
-                                    color: parent.parent.placed ? Theme.text : Theme.accentInk
+                                    text: "Add " + parent.parent.modelData.title
+                                    color: Theme.accentInk
                                     font.pixelSize: 14
                                     font.weight: Font.DemiBold
                                 }
                                 MouseArea {
                                     anchors.fill: parent
-                                    enabled: parent.parent.fits
                                     onClicked: {
-                                        if (parent.parent.placed)
-                                            Home.removeWidget(parent.parent.modelData.id);
-                                        else
-                                            Home.addWidget(parent.parent.modelData.id);
+                                        Home.addWidget(parent.parent.modelData.id, Math.min(pager.curPage, pager.iconPages - 1));
+                                        Home.editing = true;
+                                        root.sheet = "";
                                     }
                                 }
                             }
@@ -1015,10 +1299,31 @@ PanelWindow {
                     Text {
                         width: parent.width
                         topPadding: 6
-                        text: "The widget row holds " + Home.maxSpan + " units. Long-press the home screen items to rearrange."
+                        text: "Widgets go anywhere: long-press one, drag it, resize with the corner handle. Stickers and photo frames use the pencil."
                         color: Theme.dim
                         font.pixelSize: 13
                         wrapMode: Text.Wrap
+                    }
+                }
+            }
+
+            // Widget picker (photos / sticker / app)
+            Sheet {
+                visible: root.sheet === "pick"
+                anchors.centerIn: parent
+                title: "Customize widget"
+                onClosed: root.sheet = ""
+
+                Item {
+                    width: parent.width
+                    height: 460
+
+                    Loader {
+                        anchors.fill: parent
+                        active: root.sheet === "pick"
+                        sourceComponent: WidgetPicker {
+                            onDone: root.sheet = ""
+                        }
                     }
                 }
             }
@@ -1221,6 +1526,7 @@ PanelWindow {
             // App Library category
             Sheet {
                 id: libSheet
+                opacity: root.libDragEntry ? 0 : 1
                 visible: root.libCat !== ""
                 anchors.centerIn: parent
                 title: root.libCat
@@ -1240,7 +1546,7 @@ PanelWindow {
                     Repeater {
                         model: libSheet.items
 
-                        AppIcon {
+                        LibItem {
                             required property var modelData
                             width: Home.cellW
                             height: Home.cellH
@@ -1249,6 +1555,9 @@ PanelWindow {
                                 root.libCat = "";
                                 Home.launch(modelData);
                             }
+                            onDragBegan: (gx, gy) => root.libDragBegin(modelData, gx, gy)
+                            onDragMoved: (gx, gy) => root.libDragMove(gx, gy)
+                            onDragEnded: (gx, gy) => root.libDragEnd(gx, gy)
                         }
                     }
                 }

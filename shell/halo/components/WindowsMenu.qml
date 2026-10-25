@@ -13,7 +13,16 @@ PanelWindow {
 
     property string screenName: "" // plain string: reading `screen` inside `visible` makes a binding loop
     readonly property var item: UI.winItem
-    readonly property var wins: item ? item.windows : []
+    // Live list: Apps.items is rebuilt when windows open/close, UI.winItem would go stale.
+    readonly property var wins: {
+        if (!item)
+            return [];
+        for (const i of Apps.items)
+            if (i.key === item.key)
+                return i.windows;
+        return [];
+    }
+    onWinsChanged: if (UI.winItem && wins.length === 0) UI.closeWindowsMenu()
     readonly property real margin: 12 // taskbar_multi_instance_menu_min_padding_from_screen_edge (value assumed)
     readonly property real thumbW: 220
     readonly property real thumbH: 150
@@ -40,7 +49,7 @@ PanelWindow {
         id: card
         readonly property real contentW: root.wins.length * root.thumbW + Math.max(0, root.wins.length - 1) * 10
         width: Math.min(root.width - 2 * root.margin, contentW + 24)
-        height: root.thumbH + 24 + 28
+        height: root.thumbH + 24 + 28 + 40
         x: Math.max(root.margin, Math.min(root.width - width - root.margin, UI.winX - 32))
         y: Math.max(root.margin, UI.winY - height - root.margin)
         radius: 24
@@ -105,6 +114,65 @@ PanelWindow {
                             const w = cell.modelData;
                             UI.closeWindowsMenu();
                             w.activate();
+                        }
+                    }
+
+                    // Close this window (extra: Android's carousel only has tap-to-open).
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.margins: 8
+                        width: 30
+                        height: 30
+                        radius: 15
+                        color: Qt.rgba(0, 0, 0, 0.6)
+                        Text {
+                            anchors.centerIn: parent
+                            text: "\u2715"
+                            color: "white"
+                            font.pixelSize: 14
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -6
+                            onClicked: cell.modelData.close()
+                        }
+                    }
+                }
+
+                // Move this window into a split half (extra, not in Android's carousel).
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: 28 + root.thumbH + 8
+                    spacing: 8
+                    visible: !cell.modelData.activated
+
+                    Repeater {
+                        model: ["left", "right"]
+
+                        Rectangle {
+                            id: sp
+                            required property string modelData
+                            width: 100
+                            height: 32
+                            radius: 16
+                            color: spTap.pressed ? Qt.rgba(1, 1, 1, 0.24) : Qt.rgba(1, 1, 1, 0.14)
+                            Text {
+                                anchors.centerIn: parent
+                                text: sp.modelData === "left" ? "Split left" : "Split right"
+                                color: Theme.text
+                                font.pixelSize: 13
+                            }
+                            MouseArea {
+                                id: spTap
+                                anchors.fill: parent
+                                onClicked: {
+                                    const w = cell.modelData;
+                                    const it = root.item;
+                                    UI.closeWindowsMenu();
+                                    UI.splitFromMenu({ key: it.key, pinIndex: -1, entry: it.entry, windows: [w], pick: true, name: it.name, icon: it.icon }, sp.modelData, root.screen);
+                                }
+                            }
                         }
                     }
                 }
