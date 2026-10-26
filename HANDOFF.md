@@ -226,3 +226,7 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - `src.tar.xz` untracked + gitignored (`7b216f2`).
 - Cleaned: 1.7G coredumps were drkonqi (Plasma), not art_exec. Verify dex2oat with `coredumpctl list --since <boot> | grep -c art_exec` (journal count 616 is historical).
 - P0 gate: dex2oat fix done. Remaining: A5 Gallery log.
+
+## 0g. A5 Gallery log 2026-10-26
+- Closed: `vthumbs.sh` skipped videos in the Trash (scan.sh indexes it, vthumbs did not), so Gallery asked for a missing thumbnail (`Cannot open ... gthumbs/<md5>.jpg`). Fixed by adding the Trash root to vthumbs.sh (`53670ae`). Verified: thumbnail generated, no `r=1` warning.
+- P0 gate: A5 + dex2oat fix done. Next: F1 baseline rerun, then P2 (B1: read AOSP Settings).
