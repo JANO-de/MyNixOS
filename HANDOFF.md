@@ -220,3 +220,9 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - Not investigated: `netd` (uid 0) SIGABRTs 14:34-15:42. Unapplied mitigation: `LimitCORE=0` on droidloomd, or coredump Storage=none.
 - F3 note: `blkio` and `cpuset` cgroup backends are unavailable (host owns cgroup v2). Use systemd limits on `droidloomd` (MemoryMax, CPUQuota) instead.
 - Pending: A5 Gallery log; `ssh-copy-id halos1`; `ipts_poll` (197 ctx/s, 58% of wakeups, F3); lower-brightness baseline rerun; dex2oat fix. P0 gate = A5 + dex2oat fix verified. Then P2 (B1: read AOSP Settings).
+
+## 0f. dex2oat fix 2026-10-26
+- Closed: `dex2oatProp` (ExecStartPre in droidloom.nix) appends `dalvik.vm.dex2oat64.enabled=true` to /var/lib/droidloom/vendor-build.prop and repoints the cell.json mount. Deployed (`2a8b46d`). Verified: prop `true` in cell, art_exec core dumps stay at 616 after cold start.
+- `src.tar.xz` untracked + gitignored (`7b216f2`).
+- Residual: 616 old dumps (~1.7 GB) in /var/lib/systemd/coredump. Cleanup: `sudo rm /var/lib/systemd/coredump/core.art_exec.*`
+- P0 gate: dex2oat fix done. Remaining: A5 Gallery log.
