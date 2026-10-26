@@ -20,7 +20,7 @@ let
       hash = "sha256-qCQpQFcmdHH425swDmADWxP7JpaZvN4LGfg/WADpJcE=";
     };
     nativeBuildInputs = [ pkgs.zstd pkgs.autoPatchelfHook ];
-    buildInputs = [ pkgs.stdenv.cc.cc.lib pkgs.libgbm pkgs.libxkbcommon ];
+    buildInputs = [ pkgs.stdenv.cc.cc.lib pkgs.libgbm pkgs.libxkbcommon pkgs.pipewire ]; # autoPatchelf only searches buildInputs (droidloom-audio needs libpipewire)
     # libraries the Rust code may dlopen (wayland-sys, drm, pipewire, EGL/Vulkan)
     runtimeDependencies = [ pkgs.wayland pkgs.libdrm pkgs.libxkbcommon pkgs.libgbm pkgs.pipewire pkgs.libGL pkgs.vulkan-loader ];
     dontUnpack = true;
