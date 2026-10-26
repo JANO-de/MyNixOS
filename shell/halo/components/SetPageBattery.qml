@@ -29,7 +29,7 @@ Column {
             width: parent.width
             height: 150
             radius: 22
-            color: Qt.rgba(1, 1, 1, 0.07)
+            color: Theme.tint(0.07)
 
             Text {
                 anchors.centerIn: parent
@@ -54,7 +54,7 @@ Column {
                 anchors.margins: 20
                 height: 8
                 radius: 4
-                color: Qt.rgba(1, 1, 1, 0.14)
+                color: Theme.tint(0.14)
 
                 Rectangle {
                     width: parent.width * Math.max(0, page.pct) / 100

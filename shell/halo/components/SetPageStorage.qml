@@ -23,7 +23,7 @@ Column {
         width: parent ? parent.width : 600
         height: 92
         radius: 22
-        color: Qt.rgba(1, 1, 1, 0.07)
+        color: Theme.tint(0.07)
 
         Text {
             x: 24
@@ -46,7 +46,7 @@ Column {
             width: parent.width - 48
             height: 10
             radius: 5
-            color: Qt.rgba(1, 1, 1, 0.14)
+            color: Theme.tint(0.14)
 
             Rectangle {
                 width: total > 0 ? parent.width * Math.min(1, used / total) : 0

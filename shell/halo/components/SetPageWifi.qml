@@ -92,7 +92,7 @@ Column {
                     width: parent.width
                     height: panel.height + 28
                     radius: 22
-                    color: Qt.rgba(1, 1, 1, 0.05)
+                    color: Theme.tint(0.05)
 
                     Column {
                         id: panel

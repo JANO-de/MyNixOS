@@ -29,7 +29,7 @@ Rectangle {
 
     height: 48
     radius: 24
-    color: Qt.rgba(1, 1, 1, 0.12)
+    color: Theme.tint(0.12)
     border.width: field.activeFocus ? 2 : 0
     border.color: Theme.accent
 

@@ -13,7 +13,7 @@ Rectangle {
     width: label.implicitWidth + 28
     height: 36
     radius: 18
-    color: danger ? "#ff5f5f" : (accent ? Theme.accent : Qt.rgba(1, 1, 1, 0.16))
+    color: danger ? "#ff5f5f" : (accent ? Theme.accent : Theme.tint(0.16))
     scale: tap.pressed ? 0.94 : 1
     Behavior on scale { NumberAnimation { duration: 80 } }
 

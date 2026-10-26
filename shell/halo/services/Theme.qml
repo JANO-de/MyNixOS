@@ -10,7 +10,8 @@ Singleton {
     id: root
 
     property color glass: Qt.rgba(0.13, 0.13, 0.16, 0.62)
-    property color glassStroke: Qt.rgba(1, 1, 1, 0.14)
+    property bool light: false
+    property color glassStroke: light ? Qt.rgba(0, 0, 0, 0.14) : Qt.rgba(1, 1, 1, 0.14)
     property color text: "#ffffff"
     property color dim: "#8e8e93"
     property color accent: "#a6c8ff"
@@ -31,11 +32,22 @@ Singleton {
 
     function setScheme(n) {
         scheme = n;
-        schemeFile.setText(JSON.stringify({ scheme: n }));
+        schemeFile.setText(JSON.stringify({ scheme: n, light: light }));
         regen();
     }
     readonly property int radius: 26
     readonly property string dir: Quickshell.env("HOME") + "/.config/halo"
+
+    // White overlay on dark, black overlay on light: use instead of Qt.rgba(1, 1, 1, a).
+    function tint(a) {
+        return light ? Qt.rgba(0, 0, 0, a) : Qt.rgba(1, 1, 1, a);
+    }
+
+    function setLight(v) {
+        light = v;
+        schemeFile.setText(JSON.stringify({ scheme: scheme, light: v }));
+        regen();
+    }
 
     function rgba(hex, a) {
         const c = Qt.color(hex);
@@ -43,15 +55,29 @@ Singleton {
     }
 
     function applyDefaults() {
-        glass = Qt.rgba(0.13, 0.13, 0.16, 0.62);
-        dim = "#8e8e93";
-        accent = "#a6c8ff";
-        accentInk = "#0b1b33";
-        accentInkDim = Qt.rgba(0.04, 0.11, 0.2, 0.7);
-        surfaceHigh = Qt.rgba(0.11, 0.19, 0.2, 0.97);
-        surfacePress = Qt.rgba(0.2, 0.32, 0.33, 0.98);
-        scrim = Qt.rgba(0.04, 0.07, 0.08, 0.85);
-        iconTile = Qt.rgba(1, 1, 1, 0.10);
+        if (light) {
+            glass = Qt.rgba(0.96, 0.96, 0.98, 0.72);
+            text = "#1b1b1f";
+            dim = "#5b5f66";
+            accent = "#2b5fb0";
+            accentInk = "#ffffff";
+            accentInkDim = Qt.rgba(1, 1, 1, 0.7);
+            surfaceHigh = Qt.rgba(0.92, 0.93, 0.96, 0.97);
+            surfacePress = Qt.rgba(0.84, 0.86, 0.9, 0.98);
+            scrim = Qt.rgba(0.97, 0.97, 0.99, 0.92);
+            iconTile = Qt.rgba(0, 0, 0, 0.08);
+        } else {
+            glass = Qt.rgba(0.13, 0.13, 0.16, 0.62);
+            text = "#ffffff";
+            dim = "#8e8e93";
+            accent = "#a6c8ff";
+            accentInk = "#0b1b33";
+            accentInkDim = Qt.rgba(0.04, 0.11, 0.2, 0.7);
+            surfaceHigh = Qt.rgba(0.11, 0.19, 0.2, 0.97);
+            surfacePress = Qt.rgba(0.2, 0.32, 0.33, 0.98);
+            scrim = Qt.rgba(0.04, 0.07, 0.08, 0.85);
+            iconTile = Qt.rgba(1, 1, 1, 0.10);
+        }
         iconDir = "";
         iconNames = {};
     }
@@ -65,6 +91,7 @@ Singleton {
     }
 
     function applyColors(c) {
+        text = c.on_surface ? c.on_surface : (light ? "#1b1b1f" : "#ffffff");
         if (c.primary)
             accent = c.primary;
         if (c.surface_container)
@@ -106,14 +133,15 @@ Singleton {
             return x;
         if (!x)
             return null;
-        return x.hex || x.color || (x.dark ? val(x.dark) : null) || (x.default ? val(x.default) : null);
+        return x.hex || x.color || (x[light ? "light" : "dark"] ? val(x[light ? "light" : "dark"]) : null) || (x.default ? val(x.default) : null);
     }
 
     function pick(j) {
         const c = j.colors || j;
         const out = {};
-        for (const role of ["primary", "on_primary", "on_primary_container", "primary_container", "surface_container", "surface_container_high", "surface_container_highest", "surface", "on_surface_variant"]) {
-            const v = c.dark ? val(c.dark[role]) : val(c[role]);
+        for (const role of ["primary", "on_primary", "on_primary_container", "primary_container", "surface_container", "surface_container_high", "surface_container_highest", "surface", "on_surface_variant", "on_surface"]) {
+            const m = light ? "light" : "dark";
+            const v = c[m] ? val(c[m][role]) : val(c[role]);
             if (v)
                 out[role] = v;
         }
@@ -142,7 +170,7 @@ Singleton {
         id: gen
         property string src: ""
         property string scheme: "tonal-spot"
-        command: ["sh", "-c", "command -v matugen >/dev/null || exit 0; matugen image \"$1\" -j hex --dry-run --source-color-index 0 -m dark -t \"scheme-$2\" 2>/dev/null || matugen image \"$1\" -j hex --dry-run --source-color-index 0 2>/dev/null", "halo-theme", src, scheme]
+        command: ["sh", "-c", "command -v matugen >/dev/null || exit 0; matugen image \"$1\" -j hex --dry-run --source-color-index 0 -m \"$3\" -t \"scheme-$2\" 2>/dev/null || matugen image \"$1\" -j hex --dry-run --source-color-index 0 2>/dev/null", "halo-theme", src, scheme, root.light ? "light" : "dark"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -184,6 +212,10 @@ Singleton {
                 const n = JSON.parse(text()).scheme;
                 if (root.schemes.indexOf(n) >= 0)
                     root.scheme = n;
+                if (JSON.parse(text()).light === true) {
+                    root.light = true;
+                    root.regen();
+                }
             } catch (e) {}
         }
     }

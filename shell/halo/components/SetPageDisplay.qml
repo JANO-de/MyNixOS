@@ -41,6 +41,20 @@ Column {
     }
 
     SetGroup {
+        SetRow {
+            glyph: "◐"
+            title: "Light theme"
+            subtitle: "Dark is the default"
+            onClicked: Theme.setLight(!Theme.light)
+
+            SetSwitch {
+                checked: Theme.light
+                onToggled: Theme.setLight(!Theme.light)
+            }
+        }
+    }
+
+    SetGroup {
         title: "Colour scheme (from the wallpaper)"
         SetChips {
             options: Theme.schemes

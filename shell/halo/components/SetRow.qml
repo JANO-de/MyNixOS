@@ -18,7 +18,7 @@ Rectangle {
     width: parent ? parent.width : 600
     height: Math.max(64, texts.implicitHeight + 28)
     radius: 22
-    color: tap.pressed && tappable ? Theme.surfacePress : Qt.rgba(1, 1, 1, 0.07)
+    color: tap.pressed && tappable ? Theme.surfacePress : Theme.tint(0.07)
     Behavior on color { ColorAnimation { duration: 90 } }
 
     readonly property bool hasLead: glyph !== "" || icon !== ""

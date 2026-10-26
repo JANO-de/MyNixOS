@@ -11,7 +11,7 @@ Rectangle {
     width: 58
     height: 34
     radius: 17
-    color: checked ? Theme.accent : Qt.rgba(1, 1, 1, 0.22)
+    color: checked ? Theme.accent : Theme.tint(0.22)
     Behavior on color { ColorAnimation { duration: 120 } }
 
     Rectangle {

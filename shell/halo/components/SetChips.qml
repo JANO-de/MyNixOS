@@ -22,7 +22,7 @@ Flow {
             width: label.implicitWidth + 32
             height: 40
             radius: 20
-            color: index === root.current ? Theme.accent : Qt.rgba(1, 1, 1, 0.14)
+            color: index === root.current ? Theme.accent : Theme.tint(0.14)
             Behavior on color { ColorAnimation { duration: 100 } }
 
             Text {

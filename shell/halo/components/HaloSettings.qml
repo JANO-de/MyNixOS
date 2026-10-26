@@ -14,17 +14,18 @@ FloatingWindow {
     property string page: "" // "" = category list (narrow) / first category (wide)
     readonly property string cur: wide ? (page === "" ? "wifi" : page) : page
 
+    // Order follows AOSP top_level_settings.xml (see docs/B1-aosp-settings.md).
     readonly property var cats: [
-        { key: "wifi", glyph: "≋", label: "Wi-Fi" },
-        { key: "bluetooth", glyph: "✧", label: "Bluetooth" },
-        { key: "display", glyph: "☀", label: "Display" },
-        { key: "sound", glyph: "♪", label: "Sound" },
-        { key: "notifs", glyph: "◔", label: "Notifications" },
-        { key: "home", glyph: "⌂", label: "Home screen" },
-        { key: "security", glyph: "⚑", label: "Security" },
+        { key: "wifi", glyph: "≋", label: "Network & internet" },
+        { key: "bluetooth", glyph: "✧", label: "Connected devices" },
         { key: "apps", glyph: "▦", label: "Apps" },
+        { key: "notifs", glyph: "◔", label: "Notifications" },
         { key: "battery", glyph: "▮", label: "Battery" },
         { key: "storage", glyph: "▤", label: "Storage" },
+        { key: "sound", glyph: "♪", label: "Sound" },
+        { key: "display", glyph: "☀", label: "Display" },
+        { key: "home", glyph: "⌂", label: "Home screen" },
+        { key: "security", glyph: "⚑", label: "Security & privacy" },
         { key: "updates", glyph: "⟳", label: "Updates" },
         { key: "about", glyph: "ⓘ", label: "About" }
     ]
@@ -139,7 +140,7 @@ FloatingWindow {
                 width: 44
                 height: 44
                 radius: 22
-                color: Qt.rgba(1, 1, 1, 0.14)
+                color: Theme.tint(0.14)
 
                 Text {
                     anchors.centerIn: parent
@@ -171,7 +172,7 @@ FloatingWindow {
                 width: 44
                 height: 44
                 radius: 22
-                color: Qt.rgba(1, 1, 1, 0.14)
+                color: Theme.tint(0.14)
 
                 Text {
                     anchors.centerIn: parent

@@ -30,7 +30,7 @@ Rectangle {
 
     height: 60
     radius: height / 2
-    color: Qt.rgba(1, 1, 1, 0.14)
+    color: Theme.tint(0.14)
     clip: true
     scale: dragging ? 1.025 : 1
     Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
@@ -46,7 +46,7 @@ Rectangle {
         width: Math.max(root.height, root.width * root.shown)
         height: parent.height
         radius: root.radius
-        color: Qt.rgba(1, 1, 1, 0.88)
+        color: Theme.tint(0.88)
         Behavior on width {
             enabled: !root.dragging
             NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
