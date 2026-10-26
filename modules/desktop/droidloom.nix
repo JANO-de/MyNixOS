@@ -78,6 +78,22 @@ let
       && ${pkgs.coreutils}/bin/cat "$tmp" > "$f"
     ${pkgs.coreutils}/bin/rm -f "$tmp"
   '';
+
+  # dex2oat32 is absent in the image: force dex2oat64. Copies vendor build.prop with the prop
+  # appended and repoints the cell.json mount. Idempotent; survives a regenerated cell.json.
+  dex2oatProp = pkgs.writeShellScript "droidloom-dex2oat-prop" ''
+    f=/etc/droidloom/cell.json
+    src=/usr/lib/droidloom/current/overrides/vendor/build.prop
+    out=/var/lib/droidloom/vendor-build.prop
+    [ -f "$f" ] && [ -f "$src" ] || exit 0
+    ${pkgs.coreutils}/bin/mkdir -p /var/lib/droidloom
+    { ${pkgs.coreutils}/bin/cat "$src"; echo "dalvik.vm.dex2oat64.enabled=true"; } > "$out"
+    tmp=$(${pkgs.coreutils}/bin/mktemp)
+    ${pkgs.jq}/bin/jq --arg s "$src" --arg o "$out" \
+      'walk(if type == "object" and .source == $s then .source = $o else . end)' "$f" > "$tmp" \
+      && ${pkgs.coreutils}/bin/cat "$tmp" > "$f"
+    ${pkgs.coreutils}/bin/rm -f "$tmp"
+  '';
 in
 {
   options.modules.desktop.droidloom = {
@@ -122,7 +138,7 @@ in
     # systemd attaches sd_fw_egress/ingress (BPF_F_ALLOW_MULTI) to every cgroup; netd's own
     # BPF_PROG_ATTACH (flags=0) on the cell cgroup then fails with EPERM and the cell reboots.
     systemd.services.droidloomd.serviceConfig.IPAccounting = false;
-    systemd.services.droidloomd.serviceConfig.ExecStartPre = [ "${noShareFolders}" ];
+    systemd.services.droidloomd.serviceConfig.ExecStartPre = [ "${noShareFolders}" "${dex2oatProp}" ];
     systemd.user.services.droidloom = {
       path = with pkgs; [ coreutils systemd ];
       wantedBy = lib.optional cfg.autoStart "graphical-session.target";
