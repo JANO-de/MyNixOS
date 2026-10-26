@@ -230,3 +230,9 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 ## 0g. A5 Gallery log 2026-10-26
 - Closed: `vthumbs.sh` skipped videos in the Trash (scan.sh indexes it, vthumbs did not), so Gallery asked for a missing thumbnail (`Cannot open ... gthumbs/<md5>.jpg`). Fixed by adding the Trash root to vthumbs.sh (`53670ae`). Verified: thumbnail generated, no `r=1` warning.
 - P0 gate: A5 + dex2oat fix done. Next: F1 baseline rerun, then P2 (B1: read AOSP Settings).
+
+## 0h. P2 start 2026-10-26
+- B1 started: `docs/B1-aosp-settings.md` (top-level order from AOSP `top_level_settings.xml`; dimens/strings pending).
+- B2 partial: `Theme.light` + `Theme.tint(a)` + `Theme.setLight()` (persisted in `~/.config/halo/scheme.json`, matugen `-m light`); Set* components use `Theme.tint`. Settings categories follow AOSP order. Light switch in Display.
+- Known: dock, shade, widgets and apps still use hard-coded white overlays (look wrong in light).
+- Next: B2 (collapsing large title, preference row, group card, slider/dropdown/radio, search field), migrate remaining `Qt.rgba(1, 1, 1, a)` to `Theme.tint`, then B3 (two-pane).
