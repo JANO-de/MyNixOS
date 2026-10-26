@@ -104,6 +104,7 @@ in
 
     # The Arch unit has [Install] WantedBy=multi-user.target: here it starts on demand (droidloom.service pulls it in).
     systemd.services.droidloomd.path = with pkgs; [ coreutils iproute2 nftables iptables util-linux e2fsprogs android-tools kmod systemd ];
+    systemd.services.droidloomd.serviceConfig.IPAccounting = false;
     systemd.user.services.droidloom = {
       path = with pkgs; [ coreutils systemd ];
       wantedBy = lib.optional cfg.autoStart "graphical-session.target";
