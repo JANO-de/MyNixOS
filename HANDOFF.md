@@ -236,3 +236,9 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - B2 partial: `Theme.light` + `Theme.tint(a)` + `Theme.setLight()` (persisted in `~/.config/halo/scheme.json`, matugen `-m light`); Set* components use `Theme.tint`. Settings categories follow AOSP order. Light switch in Display.
 - Known: dock, shade, widgets and apps still use hard-coded white overlays (look wrong in light).
 - Next: B2 (collapsing large title, preference row, group card, slider/dropdown/radio, search field), migrate remaining `Qt.rgba(1, 1, 1, a)` to `Theme.tint`, then B3 (two-pane).
+
+## 0i. B2 kit 2026-10-26
+- New components in `shell/halo/components`: `SetRadio`, `SetDropdown` (inline expand), `SetSearch` (SetInput + magnifier). Collapsing large title in `HaloSettings` (wide layout: heading fades, header switches to page label past 40 px scroll).
+- Dev page `SetPageKit` (category "Component kit (dev)"): shows every component; remove after B4. Verified by user incl. light theme.
+- Row chevron has no navigation yet (B3: two-pane + subpages).
+- Next: B3, then migrate remaining `Qt.rgba(1, 1, 1, a)` in dock/shade/widgets to `Theme.tint`.
