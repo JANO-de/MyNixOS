@@ -107,6 +107,8 @@ in
       ln -sfn ${config.systemd.package}/bin/systemctl /usr/bin/systemctl
       ln -sfn ${pkgs.glibc.getent}/bin/getent /usr/bin/getent
       ln -sfn /run/wrappers/bin/pkexec /usr/bin/pkexec
+      ln -sfn ${pkgs.coreutils}/bin/timeout /usr/bin/timeout
+      ln -sfn ${pkgs.util-linux}/bin/nsenter /usr/bin/nsenter
     '';
 
     environment.systemPackages = [
