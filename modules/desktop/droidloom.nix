@@ -65,6 +65,19 @@ let
   '';
 
   bins = [ "droidloomd" "droidloom-wayland" "droidloom-audio" "droidloom-applications" "droidloom-doctor" "droidloom-supervisor" "droidloomctl" ];
+
+  # share_user_folders=true makes the supervisor fail ("read initialized Android package ownership
+  # for shared storage") because Downloads = $HOME. Runs before every droidloomd start, so it also
+  # survives a regenerated /etc/droidloom/cell.json. Idempotent; no-op if the file is missing.
+  noShareFolders = pkgs.writeShellScript "droidloom-no-share-folders" ''
+    f=/etc/droidloom/cell.json
+    [ -f "$f" ] || exit 0
+    ${pkgs.jq}/bin/jq -e 'any(..; type == "object" and .share_user_folders == true)' "$f" >/dev/null || exit 0
+    tmp=$(${pkgs.coreutils}/bin/mktemp)
+    ${pkgs.jq}/bin/jq 'walk(if type == "object" and has("share_user_folders") then .share_user_folders = false else . end)' "$f" > "$tmp" \
+      && ${pkgs.coreutils}/bin/cat "$tmp" > "$f"
+    ${pkgs.coreutils}/bin/rm -f "$tmp"
+  '';
 in
 {
   options.modules.desktop.droidloom = {
@@ -104,7 +117,10 @@ in
 
     # The Arch unit has [Install] WantedBy=multi-user.target: here it starts on demand (droidloom.service pulls it in).
     systemd.services.droidloomd.path = with pkgs; [ coreutils iproute2 nftables iptables util-linux e2fsprogs android-tools kmod systemd ];
+    # systemd attaches sd_fw_egress/ingress (BPF_F_ALLOW_MULTI) to every cgroup; netd's own
+    # BPF_PROG_ATTACH (flags=0) on the cell cgroup then fails with EPERM and the cell reboots.
     systemd.services.droidloomd.serviceConfig.IPAccounting = false;
+    systemd.services.droidloomd.serviceConfig.ExecStartPre = [ "${noShareFolders}" ];
     systemd.user.services.droidloom = {
       path = with pkgs; [ coreutils systemd ];
       wantedBy = lib.optional cfg.autoStart "graphical-session.target";
