@@ -1,6 +1,6 @@
 # MyNixOS
 
-Three hosts, one flake: `desktop`, `laptop`, `surface`.
+Three hosts, one flake: `desktop`, `laptop`, `halos1`.
 
 ```
 flake.nix                 inputs + the three nixosConfigurations
@@ -9,7 +9,7 @@ modules/core.nix          boot, nix, user, locale, fonts, zsh, Home Manager wiri
 modules/hardware.nix      bluetooth, firmware, NVIDIA (switch), Elements drive (switch)
 modules/services.nix      networking, audio, printing, ssh, flatpak, qmk + switchable
                           extras: sunshine, waydroid, powertop, smartd
-modules/programs.nix      "full" profile (desktop, laptop) or "lean" (surface)
+modules/programs.nix      "full" profile (desktop, laptop) or "lean" (halos1)
 modules/desktop/          session (mango | niri), shell (dynisland | chronos), SDDM
 modules/extras/           host-specific big services: xampp (laptop), matrix (desktop)
 modules/home.nix          Home Manager: GTK/Qt theme + alacritty
@@ -20,12 +20,12 @@ modules/theme.nix         one palette for everything (catppuccin mocha / mauve)
 |---|---|---|---|
 | desktop | mango | dynisland | full |
 | laptop | mango | dynisland | full |
-| surface | mango (tablet experiment) | dynisland | lean |
+| halos1 | mango (tablet experiment) | dynisland | lean |
 
 ```
 git add -A                                   # flakes only see tracked files
 nix flake lock                               # first time: adds mango, prunes old inputs
-sudo nixos-rebuild switch --flake .#desktop  # or .#laptop / .#surface
+sudo nixos-rebuild switch --flake .#desktop  # or .#laptop / .#halos1
 ```
 
 mango's config is `wayland.windowManager.mango.settings` in `modules/desktop/mango.nix`

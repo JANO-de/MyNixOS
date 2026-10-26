@@ -1,13 +1,13 @@
 # HALOS1 = Microsoft Surface Pro 5 (2017, i5-7300U / 8 GB / 128 GB): lean tablet host.
-# niri (chronos fork) + the chronos shell, SDDM greeter with an on-screen
-# keyboard, lean program set. Deployed from the desktop over SSH.
+# Hyprland + Halo shell (greetd + cage greeter), lean program set. Deployed from the
+# desktop over SSH.
 #
 #   default.nix       this file: identity, disk, SP5 quirks, session, memory
 #   network-aula.nix  school-network proxy dispatcher
 { config, pkgs, lib, inputs, ... }:
 
-# !!!! To revert to niri/chronos: sed -i '55s|"mango"|"niri"|; 56s|"dynisland"|"chronos"|' hosts/surface/default.nix
-#ip routegit add -A && sudo nixos-rebuild switch --flake .#surface
+# !!!! To revert to niri/chronos: sed -i '55s|"mango"|"niri"|; 56s|"dynisland"|"chronos"|' hosts/halos1/default.nix
+#ip routegit add -A && sudo nixos-rebuild switch --flake .#halos1
 
 let
   # Fully transparent cursor theme: every cursor name Adwaita knows points at
@@ -51,7 +51,7 @@ in
     ./network-aula.nix
   ];
 
-  networking.hostName = "surface";
+  networking.hostName = "halos1";
 
   # ---- session -------------------------------------------------------------
   modules.desktop = {

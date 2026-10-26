@@ -1,5 +1,5 @@
 {
-  description = "MyNixOS: desktop, laptop and surface";
+  description = "MyNixOS: desktop, laptop and halos1";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
@@ -96,7 +96,7 @@
           host = "laptop";
           cachyos = true;
         };
-        surface = mkHost { host = "surface"; };
+        halos1 = mkHost { host = "halos1"; };
       };
     };
 }

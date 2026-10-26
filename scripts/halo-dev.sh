@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Hot-reload loop for the Halo shell: no rebuild, no reboot.
-# Usage: scripts/halo-dev.sh [surface-ip]     (default 192.168.0.115)
+# Usage: scripts/halo-dev.sh [halos1-ip]     (default 192.168.0.115)
 # The Surface must be logged into the *hyprland* boot entry.
 set -euo pipefail
 IP="${1:-192.168.0.115}"
@@ -27,7 +27,7 @@ sig=$(ls /run/user/1000/hypr 2>/dev/null | grep -v chronos-shell | head -1 || tr
 sock=$(ls /run/user/1000 2>/dev/null | grep -E '^wayland-[0-9]+$' | head -1 || true)
 if [ -z "$sig" ] || [ -z "$sock" ]; then
   echo "!! Hyprland is not running on the Surface (you are in mango or logged out)."
-  echo "   Boot the hyprland entry first: scripts/surface-deploy.sh, or on the Surface:"
+  echo "   Boot the hyprland entry first: scripts/halos1-deploy.sh, or on the Surface:"
   echo "   sudo bootctl set-oneshot <id from: bootctl list | grep hyprland>; reboot"
   exit 1
 fi

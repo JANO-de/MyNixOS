@@ -10,7 +10,7 @@
 let
   cfg = config.modules.desktop;
   mod = "SUPER";
-  surfaceTouchDisabled = config.networking.hostName == "surface";
+  surfaceTouchDisabled = config.networking.hostName == "halos1";
 
   # theme color -> mango's 0xRRGGBBAA
   hex = key: "0x${lib.removePrefix "#" (theme.color key)}ff";
