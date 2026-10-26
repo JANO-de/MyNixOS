@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Services.UPower
 import qs.services
 
 // Settings app (Android-style). Wide screens: category list on the left, page on the right.
@@ -37,6 +38,40 @@ FloatingWindow {
         updates: cUpdates, about: cAbout, kit: cKit
     })
 
+    readonly property string pageTitle: UI.settingsSub !== "" ? UI.settingsSubTitle : labelOf(cur)
+    readonly property bool backVisible: UI.settingsSub !== "" || (!wide && page !== "")
+    readonly property var subs: ({ "kit/demo": cKitSub })
+
+    function goBack() {
+        if (UI.settingsSub !== "")
+            UI.settingsSub = "";
+        else if (!wide && page !== "")
+            page = "";
+        else
+            UI.closeSettings();
+    }
+
+    // Second line of the category list (AOSP top-level summaries).
+    function summaryOf(key) {
+        if (key === "wifi")
+            return System.wifi ? (System.wifiName !== "" ? System.wifiName : "On") : "Off";
+        if (key === "bluetooth")
+            return System.bluetooth ? "On" : "Off";
+        if (key === "battery") {
+            const d = UPower.displayDevice;
+            return d ? Math.round(d.percentage * 100) + "%" + (d.state === UPowerDeviceState.Charging ? ", charging" : "") : "";
+        }
+        if (key === "storage") {
+            const k = Info.disk("root");
+            return k.size > 0 ? Info.gb(k.used) + " used of " + Info.gb(k.size) : "";
+        }
+        if (key === "sound")
+            return System.muted ? "Muted" : "Volume " + Math.round(System.volume * 100) + "%";
+        if (key === "display")
+            return "Brightness " + Math.round(System.brightness * 100) + "%";
+        return "";
+    }
+
     function labelOf(key) {
         for (const c of cats)
             if (c.key === key)
@@ -49,15 +84,21 @@ FloatingWindow {
         function onSettingsBackTickChanged() {
             if (!root.shown)
                 return;
-            if (!root.wide && root.page !== "")
-                root.page = "";
-            else
-                UI.closeSettings();
+            root.goBack();
+        }
+    }
+
+    onPageChanged: UI.settingsSub = ""
+    Connections {
+        target: UI
+        function onSettingsSubChanged() {
+            content.contentY = 0;
         }
     }
 
     onShownChanged: {
         if (shown) {
+            UI.settingsSub = "";
             page = UI.settingsPage;
             UI.settingsPage = "";
             Info.refresh();
@@ -90,6 +131,7 @@ FloatingWindow {
     Component { id: cUpdates; SetPageUpdates {} }
     Component { id: cAbout; SetPageAbout {} }
     Component { id: cKit; SetPageKit {} }
+    Component { id: cKitSub; SetPageKitSub {} }
 
     Rectangle {
         id: card
@@ -135,7 +177,7 @@ FloatingWindow {
             height: 84
 
             Rectangle {
-                visible: !root.wide && root.page !== ""
+                visible: root.backVisible
                 anchors.left: parent.left
                 anchors.leftMargin: 24
                 anchors.verticalCenter: parent.verticalCenter
@@ -153,15 +195,15 @@ FloatingWindow {
                 MouseArea {
                     anchors.fill: parent
                     anchors.margins: -6
-                    onClicked: root.page = ""
+                    onClicked: root.goBack()
                 }
             }
 
             Text {
                 anchors.left: parent.left
-                anchors.leftMargin: (!root.wide && root.page !== "") ? 84 : 32
+                anchors.leftMargin: root.backVisible ? 84 : 32
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.wide ? (content.contentY > 40 ? root.labelOf(root.cur) : "Settings") : (root.page === "" ? "Settings" : root.labelOf(root.page))
+                text: root.wide ? (UI.settingsSub !== "" || content.contentY > 40 ? root.pageTitle : "Settings") : (root.page === "" ? "Settings" : root.pageTitle)
                 color: Theme.text
                 font.pixelSize: 30
                 font.weight: Font.DemiBold
@@ -238,12 +280,26 @@ FloatingWindow {
                                 font.pixelSize: 20
                             }
                         }
-                        Text {
+                        Column {
                             x: 68
+                            width: parent.width - 68 - (root.wide ? 12 : 44)
                             anchors.verticalCenter: parent.verticalCenter
-                            text: cat.modelData.label
-                            color: Theme.text
-                            font.pixelSize: 18
+
+                            Text {
+                                width: parent.width
+                                text: cat.modelData.label
+                                color: Theme.text
+                                font.pixelSize: 18
+                                elide: Text.ElideRight
+                            }
+                            Text {
+                                visible: text !== ""
+                                width: parent.width
+                                text: root.summaryOf(cat.modelData.key)
+                                color: Theme.dim
+                                font.pixelSize: 13
+                                elide: Text.ElideRight
+                            }
                         }
                         Text {
                             visible: !root.wide
@@ -284,7 +340,7 @@ FloatingWindow {
                 visible: root.wide
                 opacity: Math.max(0, 1 - content.contentY / 40)
                 y: 4
-                text: root.labelOf(root.cur)
+                text: root.pageTitle
                 color: Theme.text
                 font.pixelSize: 26
                 font.weight: Font.DemiBold
@@ -294,7 +350,7 @@ FloatingWindow {
                 id: loader
                 y: root.wide ? 56 : 8
                 width: content.width
-                sourceComponent: root.comps[root.cur] || null
+                sourceComponent: (UI.settingsSub !== "" ? root.subs[root.cur + "/" + UI.settingsSub] : null) || root.comps[root.cur] || null
             }
         }
     }

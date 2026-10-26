@@ -27,7 +27,7 @@ Column {
             onClicked: page.sw = !page.sw
             SetSwitch { checked: page.sw; onToggled: page.sw = !page.sw }
         }
-        SetRow { glyph: "≋"; title: "Row with chevron"; subtitle: "Opens a subpage"; chevron: true }
+        SetRow { glyph: "≋"; title: "Row with chevron"; subtitle: "Opens a subpage"; chevron: true; onClicked: UI.openSettingsSub("demo", "Subpage demo") }
     }
     SetGroup {
         title: "Radio"

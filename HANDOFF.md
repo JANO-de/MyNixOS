@@ -242,3 +242,9 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - Dev page `SetPageKit` (category "Component kit (dev)"): shows every component; remove after B4. Verified by user incl. light theme.
 - Row chevron has no navigation yet (B3: two-pane + subpages).
 - Next: B3, then migrate remaining `Qt.rgba(1, 1, 1, a)` in dock/shade/widgets to `Theme.tint`.
+
+## 0j. B3 navigation 2026-10-26
+- `UI.settingsSub` / `UI.settingsSubTitle` / `UI.openSettingsSub(key, title)`: subpage inside a category. `HaloSettings.subs` maps `"<category>/<key>"` to a Component; `goBack()` handles header arrow, back gesture and Back key (subpage, then page in narrow layout, then close).
+- Category list shows an AOSP-style summary line (`HaloSettings.summaryOf`): Wi-Fi SSID, Bluetooth, Battery %, Storage, Sound, Display.
+- Dev: kit page row "Row with chevron" opens `SetPageKitSub`. Verified by user (wide layout; narrow layout untested).
+- Next: B4 (migrate the 12 pages: Wi-Fi, Bluetooth, Display, Sound, Battery first) onto the kit; remove the kit pages after.

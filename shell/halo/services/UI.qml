@@ -105,6 +105,10 @@ Singleton {
     function closeSettings() { settingsOpen = false; }
     property string settingsPage: "" // page to show on the next open (consumed by HaloSettings)
     function openSettingsPage(key) { settingsPage = key; openSettings(); }
+    // Subpage inside a Settings category (HaloSettings looks up "<category>/<key>").
+    property string settingsSub: ""
+    property string settingsSubTitle: ""
+    function openSettingsSub(key, title) { settingsSubTitle = title || ""; settingsSub = key; }
     // Per-app info page (Settings > Apps > app). Set AFTER openSettings(): a plain open clears it.
     property string appInfoId: ""
     function openAppInfo(id) { openSettingsPage("apps"); appInfoId = id || ""; }
