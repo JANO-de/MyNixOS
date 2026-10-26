@@ -92,7 +92,7 @@ in
       ln -sfn ${root}/usr/share/droidloom /usr/share/droidloom
       ${lib.concatMapStringsSep "\n" (b: "ln -sfn ${root}/usr/bin/${b} /usr/bin/${b}") bins}
       ln -sfn ${config.systemd.package}/bin/systemctl /usr/bin/systemctl
-      ln -sfn ${pkgs.glibc.bin}/bin/getent /usr/bin/getent
+      ln -sfn ${pkgs.glibc.getent}/bin/getent /usr/bin/getent
       ln -sfn /run/wrappers/bin/pkexec /usr/bin/pkexec
     '';
 

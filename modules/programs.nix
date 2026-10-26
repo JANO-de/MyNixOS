@@ -89,6 +89,8 @@ in
         # --- IDEs ---
         vscodium
         eclipses.eclipse-java
+        jetbrains.idea
+        netbeans
 
         # --- languages and tools the editors call ---
         jdk25 maven gradle
