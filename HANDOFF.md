@@ -224,5 +224,5 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 ## 0f. dex2oat fix 2026-10-26
 - Closed: `dex2oatProp` (ExecStartPre in droidloom.nix) appends `dalvik.vm.dex2oat64.enabled=true` to /var/lib/droidloom/vendor-build.prop and repoints the cell.json mount. Deployed (`2a8b46d`). Verified: prop `true` in cell, art_exec core dumps stay at 616 after cold start.
 - `src.tar.xz` untracked + gitignored (`7b216f2`).
-- Residual: 616 old dumps (~1.7 GB) in /var/lib/systemd/coredump. Cleanup: `sudo rm /var/lib/systemd/coredump/core.art_exec.*`
+- Cleaned: 1.7G coredumps were drkonqi (Plasma), not art_exec. Verify dex2oat with `coredumpctl list --since <boot> | grep -c art_exec` (journal count 616 is historical).
 - P0 gate: dex2oat fix done. Remaining: A5 Gallery log.
