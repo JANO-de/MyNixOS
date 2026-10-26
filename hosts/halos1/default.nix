@@ -1,4 +1,4 @@
-# HALOS1 = Microsoft Surface Pro 5 (2017, i5-7300U / 8 GB / 128 GB): lean tablet host.
+# HALOS1 = Microsoft Surface Pro 5 (2017, i5-7300U / 4 GB / 128 GB): lean tablet host.
 # Hyprland + Halo shell (greetd + cage greeter), lean program set. Deployed from the
 # desktop over SSH.
 #
@@ -92,7 +92,7 @@ in
   # The UEFI shows no boot menu of its own, so keep systemd-boot's short.
   boot.loader.timeout = 2;
 
-  # ---- memory: 8 GB RAM / 128 GB disk ------------------------------------------
+  # ---- memory: 4 GB RAM / 128 GB disk ------------------------------------------
   # zram below half of RAM (overrides modules/core.nix), plus an 8 GB swapfile
   # for suspend/hibernate headroom (created on first activation). Verify a real
   # hibernate/resume cycle before relying on it.

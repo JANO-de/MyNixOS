@@ -45,7 +45,7 @@
   };
 
   # zram: compressed in-memory swap. RAM-backed, so the effective ceiling is
-  # about your RAM size. The Surface overrides this (8 GB machine).
+  # about your RAM size. halos1 overrides this (4 GB machine).
   zramSwap = {
     enable = true;
     memoryPercent = 100;

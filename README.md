@@ -10,7 +10,7 @@ modules/hardware.nix      bluetooth, firmware, NVIDIA (switch), Elements drive (
 modules/services.nix      networking, audio, printing, ssh, flatpak, qmk + switchable
                           extras: sunshine, waydroid, powertop, smartd
 modules/programs.nix      "full" profile (desktop, laptop) or "lean" (halos1)
-modules/desktop/          session (mango | niri), shell (dynisland | chronos), SDDM
+modules/desktop/          session (mango | niri | hyprland), shell (dynisland | chronos), SDDM
 modules/extras/           host-specific big services: xampp (laptop), matrix (desktop)
 modules/home.nix          Home Manager: GTK/Qt theme + alacritty
 modules/theme.nix         one palette for everything (catppuccin mocha / mauve)
@@ -20,7 +20,7 @@ modules/theme.nix         one palette for everything (catppuccin mocha / mauve)
 |---|---|---|---|
 | desktop | mango | dynisland | full |
 | laptop | mango | dynisland | full |
-| halos1 | mango (tablet experiment) | dynisland | lean |
+| halos1 | Hyprland (tablet) | Halo (Quickshell) | lean |
 
 ```
 git add -A                                   # flakes only see tracked files
