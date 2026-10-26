@@ -1,6 +1,6 @@
 # HALOS1 Roadmap v1.1
 
-Date: 2026-10-26. Next update number: 63 (61 = roadmap + HANDOFF sync, 62 = rename script A2).
+Date: 2026-10-26. Next update number: 64 (63 = C4 shared folder, 61 = roadmap + HANDOFF sync, 62 = rename script A2).
 
 ## Decisions (user)
 - Update 60 is applied; numbering continues at 61.
@@ -42,7 +42,7 @@ Size: S = one update, M = 2-4, L = 5+.
 | C1 | Android apps in Library, Home, dock with Halo-themed icons | M | A3 |
 | C2 | Runtime lifecycle: minimal idle profile (notifications + backend only), full start on first app launch | M | A3, F1 |
 | C3 | Split, Manage windows, back gesture as Android Back | M | C1 |
-| C4 | Shared folder instead of `share_user_folders`; clipboard | M | A3 |
+| C4 | **Shipped in 63 (verify).** Shared folder `~/Shared` via `shared_storage_directories`; clipboard already works | M | A3 |
 | C5 | Android notifications into Halo notification centre | L | C1, C2 |
 | C6 | F-Droid + Aurora Store install path (Settings page); Droidloom version bump script | M | B6 |
 | D1 | Clock (+ widget) | M | none |

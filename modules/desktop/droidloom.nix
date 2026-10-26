@@ -79,6 +79,28 @@ let
     ${pkgs.coreutils}/bin/rm -f "$tmp"
   '';
 
+  # Shared folder (C4). shared_storage_directories entries are {source, android_name, host_gid} (found by serde
+  # errors from droidloomctl on update 63). The runtime requires: source owned by host_uid:host_gid, setgid bit,
+  # android_name = one non-reserved path component ("Android" is reserved). Android sees it as /sdcard/<name>.
+  # Runs before every droidloomd start; idempotent; survives a regenerated cell.json.
+  sharedStorage = pkgs.writeShellScript "droidloom-shared-storage" ''
+    f=/etc/droidloom/cell.json
+    u=${cfg.user}
+    n=${cfg.sharedFolder}
+    [ -n "$n" ] && [ -f "$f" ] || exit 0
+    home=$(${pkgs.glibc.getent}/bin/getent passwd "$u" | ${pkgs.coreutils}/bin/cut -d: -f6)
+    gid=$(${pkgs.coreutils}/bin/id -g "$u")
+    [ -n "$home" ] || exit 0
+    ${pkgs.coreutils}/bin/install -d -m 2775 -o "$u" -g "$gid" "$home/$n"
+    ${pkgs.coreutils}/bin/chmod 2775 "$home/$n"
+    want='[{"source": $s, "android_name": $n, "host_gid": ($g | tonumber)}]'
+    ${pkgs.jq}/bin/jq -e --arg s "$home/$n" --arg n "$n" --arg g "$gid" ".shared_storage_directories == $want" "$f" >/dev/null && exit 0
+    tmp=$(${pkgs.coreutils}/bin/mktemp)
+    ${pkgs.jq}/bin/jq --arg s "$home/$n" --arg n "$n" --arg g "$gid" ".shared_storage_directories = $want" "$f" > "$tmp" \
+      && ${pkgs.coreutils}/bin/cat "$tmp" > "$f"
+    ${pkgs.coreutils}/bin/rm -f "$tmp"
+  '';
+
   # dex2oat32 is absent in the image: force dex2oat64. Copies vendor build.prop with the prop
   # appended and repoints the cell.json mount. Idempotent; survives a regenerated cell.json.
   dex2oatProp = pkgs.writeShellScript "droidloom-dex2oat-prop" ''
@@ -102,6 +124,11 @@ in
       type = lib.types.str;
       default = "jano";
       description = "Desktop user that runs Android apps (needs the video and render groups).";
+    };
+    sharedFolder = lib.mkOption {
+      type = lib.types.str;
+      default = "Shared";
+      description = "Folder in the user's home shared with Android as /sdcard/<name> (empty = off). Not \"Android\" (reserved).";
     };
     autoStart = lib.mkOption {
       type = lib.types.bool;
@@ -138,7 +165,7 @@ in
     # systemd attaches sd_fw_egress/ingress (BPF_F_ALLOW_MULTI) to every cgroup; netd's own
     # BPF_PROG_ATTACH (flags=0) on the cell cgroup then fails with EPERM and the cell reboots.
     systemd.services.droidloomd.serviceConfig.IPAccounting = false;
-    systemd.services.droidloomd.serviceConfig.ExecStartPre = [ "${noShareFolders}" "${dex2oatProp}" ];
+    systemd.services.droidloomd.serviceConfig.ExecStartPre = [ "${noShareFolders}" "${dex2oatProp}" "${sharedStorage}" ];
     systemd.user.services.droidloom = {
       path = with pkgs; [ coreutils systemd ];
       wantedBy = lib.optional cfg.autoStart "graphical-session.target";
