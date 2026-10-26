@@ -46,6 +46,8 @@
       url = "github:Donnnno/Arcticons";
       flake = false;
     };
+
+    nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
     # --- hardware ---
     # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
     # override its nixpkgs input.
@@ -61,6 +63,7 @@
       mango,
       forge,
       nix-cachyos-kernel,
+      nixos-conf-editor,
       ...
     }@inputs:
     let
