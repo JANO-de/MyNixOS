@@ -27,13 +27,14 @@ FloatingWindow {
         { key: "home", glyph: "⌂", label: "Home screen" },
         { key: "security", glyph: "⚑", label: "Security & privacy" },
         { key: "updates", glyph: "⟳", label: "Updates" },
-        { key: "about", glyph: "ⓘ", label: "About" }
+        { key: "about", glyph: "ⓘ", label: "About" },
+        { key: "kit", glyph: "✦", label: "Component kit (dev)" }
     ]
 
     readonly property var comps: ({
         wifi: cWifi, bluetooth: cBluetooth, display: cDisplay, sound: cSound, notifs: cNotifs,
         home: cHome, security: cSecurity, apps: cApps, battery: cBattery, storage: cStorage,
-        updates: cUpdates, about: cAbout
+        updates: cUpdates, about: cAbout, kit: cKit
     })
 
     function labelOf(key) {
@@ -88,6 +89,7 @@ FloatingWindow {
     Component { id: cStorage; SetPageStorage {} }
     Component { id: cUpdates; SetPageUpdates {} }
     Component { id: cAbout; SetPageAbout {} }
+    Component { id: cKit; SetPageKit {} }
 
     Rectangle {
         id: card
@@ -159,7 +161,7 @@ FloatingWindow {
                 anchors.left: parent.left
                 anchors.leftMargin: (!root.wide && root.page !== "") ? 84 : 32
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.wide ? "Settings" : (root.page === "" ? "Settings" : root.labelOf(root.page))
+                text: root.wide ? (content.contentY > 40 ? root.labelOf(root.cur) : "Settings") : (root.page === "" ? "Settings" : root.labelOf(root.page))
                 color: Theme.text
                 font.pixelSize: 30
                 font.weight: Font.DemiBold
@@ -280,6 +282,7 @@ FloatingWindow {
             // Heading above the page (wide layout; the header already names the page when narrow).
             Text {
                 visible: root.wide
+                opacity: Math.max(0, 1 - content.contentY / 40)
                 y: 4
                 text: root.labelOf(root.cur)
                 color: Theme.text
