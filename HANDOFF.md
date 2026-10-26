@@ -248,3 +248,14 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - Category list shows an AOSP-style summary line (`HaloSettings.summaryOf`): Wi-Fi SSID, Bluetooth, Battery %, Storage, Sound, Display.
 - Dev: kit page row "Row with chevron" opens `SetPageKitSub`. Verified by user (wide layout; narrow layout untested).
 - Next: B4 (migrate the 12 pages: Wi-Fi, Bluetooth, Display, Sound, Battery first) onto the kit; remove the kit pages after.
+
+## 0k. End state 2026-10-26 (late)
+- HEAD `b5ea9a0` (pushed). Done: P0 (A1, A3, A4, A5, dex2oat fix, F1 baseline); P1 rename; P2 (B1 notes in `docs/B1-aosp-settings.md`, B2 kit, B3 navigation). Entries 0f to 0j above.
+- Workflow: Claude delivers a python patch script (`python3 ~/Downloads/<name>.py`, run from the repo root, asserts on mismatch) plus a test checklist. Shell changes: `scripts/halo-dev.sh`. System changes: `scripts/halos1-deploy.sh && scripts/halos1-reboot.sh`. `grep` is an alias of `rg` (no `-E`). Commands must be sent without leading spaces. Preferences: minimal text; on delivery only the test checklist.
+- Open:
+  - F1 low-brightness baseline: command sent, result not read (`~/halos1-baseline-*-low-bright.txt`). Restore brightness to 7500 afterwards.
+  - Remaining `Qt.rgba(1, 1, 1, a)` in dock, shade, widgets and apps: migrate to `Theme.tint` (they look wrong in light theme).
+  - Kit pages `SetPageKit` / `SetPageKitSub` and the "Component kit (dev)" category: remove after B4.
+  - Narrow layout (list, page, subpage) untested. B1 remainder: dimens, strings, current-main order check.
+  - `ssh-copy-id halos1`; `ipts_poll` (F3); `netd` SIGABRTs (not investigated); `drkonqi` core dumps (1823 files, Plasma; consider `Storage=none` or `LimitCORE=0`).
+- Next: B4 (migrate the 12 pages onto the kit: Wi-Fi, Bluetooth, Display, Sound, Battery first) or P3 (C1 Android apps in Home, C2 runtime lifecycle, C4 shared folder). The user chooses.
