@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import qs.services
 
 // Settings > Updates: NixOS generations (read-only for now). Rollback is run from a terminal.
@@ -10,12 +11,48 @@ Column {
 
     Component.onCompleted: Info.refresh()
 
+    property bool armed: false
+    property string result: ""
+    Timer {
+        id: armT
+        interval: 4000
+        onTriggered: page.armed = false
+    }
+    Process {
+        id: rb
+        command: ["pkexec", "halo-rollback"]
+        onExited: code => {
+            page.result = code === 0 ? "Rolled back. Reboot to use the previous generation." : "Rollback failed (code " + code + ")";
+            Info.refresh();
+        }
+    }
+
     SetGroup {
         title: "System update"
         SetRow {
             title: Info.get("nixver")
             subtitle: "Running generation: " + Info.get("gen")
             tappable: false
+        }
+    }
+
+    SetGroup {
+        title: "Rollback"
+        SetRow {
+            glyph: "↺"
+            title: page.armed ? "Tap again to roll back" : "Roll back to the previous generation"
+            subtitle: page.result !== "" ? page.result : (rb.running ? "Working..." : "Takes effect at the next boot")
+            tappable: !rb.running
+            onClicked: {
+                if (!page.armed) {
+                    page.armed = true;
+                    armT.restart();
+                } else {
+                    page.armed = false;
+                    page.result = "";
+                    rb.running = true;
+                }
+            }
         }
     }
 
@@ -39,15 +76,5 @@ Column {
             subtitle: "This does not look like a NixOS system"
             tappable: false
         }
-    }
-
-    Text {
-        width: parent.width
-        leftPadding: 8
-        rightPadding: 8
-        text: "To go back one generation, run: sudo nixos-rebuild switch --rollback\nOne-tap rollback and Flatpak updates arrive with the Store app."
-        color: Theme.dim
-        font.pixelSize: 13
-        wrapMode: Text.WordWrap
     }
 }

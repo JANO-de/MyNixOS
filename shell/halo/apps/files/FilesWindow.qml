@@ -535,8 +535,19 @@ FloatingWindow {
                 win.ap = a;
         }
     }
+    // Drives (F2): refresh on block-device udev events; the slow timer only catches mounts done elsewhere.
+    Process {
+        running: true
+        command: ["/run/current-system/sw/bin/udevadm", "monitor", "--udev", "--subsystem-match=block"]
+        stdout: SplitParser { onRead: drvT.restart() }
+    }
     Timer {
-        interval: 4000
+        id: drvT
+        interval: 700
+        onTriggered: win.refreshDrives()
+    }
+    Timer {
+        interval: 30000
         running: true
         repeat: true
         onTriggered: win.refreshDrives()

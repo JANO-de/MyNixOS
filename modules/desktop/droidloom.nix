@@ -165,6 +165,10 @@ in
     # systemd attaches sd_fw_egress/ingress (BPF_F_ALLOW_MULTI) to every cgroup; netd's own
     # BPF_PROG_ATTACH (flags=0) on the cell cgroup then fails with EPERM and the cell reboots.
     systemd.services.droidloomd.serviceConfig.IPAccounting = false;
+    # Battery / RAM (F3): no core files, soft memory ceiling, lower CPU priority than the shell.
+    systemd.services.droidloomd.serviceConfig.LimitCORE = 0;
+    systemd.services.droidloomd.serviceConfig.MemoryHigh = "2500M";
+    systemd.services.droidloomd.serviceConfig.CPUWeight = 70;
     systemd.services.droidloomd.serviceConfig.ExecStartPre = [ "${noShareFolders}" "${dex2oatProp}" "${sharedStorage}" ];
     systemd.user.services.droidloom = {
       path = with pkgs; [ coreutils systemd ];

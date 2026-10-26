@@ -13,6 +13,12 @@ let
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir}
   '';
 
+  # One-tap rollback (Settings > Updates): previous generation, applied at the next boot.
+  haloRollback = pkgs.writeShellScriptBin "halo-rollback" ''
+    set -e
+    ${pkgs.nix}/bin/nix-env --rollback -p /nix/var/nix/profiles/system
+    /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+  '';
   # halo-ctl call home toggle|open|close  (talks to the running shell by its config path)
   haloCtl = pkgs.writeShellScriptBin "halo-ctl" ''
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir} ipc "$@"
@@ -120,7 +126,27 @@ in
 {
   options.modules.desktop.autoMode = lib.mkEnableOption "automatic tablet/desktop mode from attached keyboards (halo-autokbd)";
   config = lib.mkIf (cfg.shell == "halo") {
+    # Battery (F3): fewer disk wakeups, no NMI watchdog, no core dump files.
+    boot.kernel.sysctl = {
+      "vm.dirty_writeback_centisecs" = 1500;
+      "vm.laptop_mode" = 5;
+      "kernel.nmi_watchdog" = 0;
+    };
+    systemd.coredump.settings.Coredump.Storage = "none";
+
+    # Settings > Updates > Roll back: pkexec without a password for the wheel group, this one program only.
+    security.polkit.extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.policykit.exec" &&
+            (action.lookup("program") == "${haloRollback}/bin/halo-rollback" ||
+             action.lookup("program") == "/run/current-system/sw/bin/halo-rollback") &&
+            subject.isInGroup("wheel"))
+          return polkit.Result.YES;
+      });
+    '';
+
     environment.systemPackages = [
+      haloRollback
       haloCtl
       haloRecolorIcons
       haloSetPin

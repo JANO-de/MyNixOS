@@ -34,7 +34,7 @@ Singleton {
     }
 
     Timer {
-        interval: 2000
+        interval: 5000
         repeat: true
         running: root.sysUsers > 0
         triggeredOnStart: true

@@ -221,7 +221,7 @@ Singleton {
     }
 
     Timer {
-        interval: 1000
+        interval: 2000
         repeat: true
         running: root.splitAlive
         onTriggered: if (!poll.running) poll.running = true

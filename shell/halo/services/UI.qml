@@ -14,6 +14,7 @@ Singleton {
     property double shadeOpenedAt: 0
     property bool overviewOpen: false
     property bool settingsOpen: false
+    property bool reduceMotion: false
 
     // Dock drag-and-drop.
     //  home screen -> dock: Desktop.qml sets dockDropHot / dockDropIndex while an icon hovers the dock.

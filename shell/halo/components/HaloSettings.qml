@@ -13,28 +13,50 @@ FloatingWindow {
     readonly property bool shown: UI.settingsOpen
     readonly property bool wide: card.width >= 900
     property string page: "" // "" = category list (narrow) / first category (wide)
+    property string query: ""
     readonly property string cur: wide ? (page === "" ? "wifi" : page) : page
 
     // Order follows AOSP top_level_settings.xml (see docs/B1-aosp-settings.md).
-    readonly property var cats: [
+    readonly property var allCats: [
         { key: "wifi", glyph: "≋", label: "Network & internet" },
         { key: "bluetooth", glyph: "✧", label: "Connected devices" },
         { key: "apps", glyph: "▦", label: "Apps" },
+        { key: "android", glyph: "◈", label: "Android apps" },
         { key: "notifs", glyph: "◔", label: "Notifications" },
         { key: "battery", glyph: "▮", label: "Battery" },
         { key: "storage", glyph: "▤", label: "Storage" },
         { key: "sound", glyph: "♪", label: "Sound" },
         { key: "display", glyph: "☀", label: "Display" },
+        { key: "style", glyph: "✦", label: "Wallpaper & style" },
+        { key: "accessibility", glyph: "A", label: "Accessibility" },
         { key: "home", glyph: "⌂", label: "Home screen" },
         { key: "security", glyph: "⚑", label: "Security & privacy" },
         { key: "updates", glyph: "⟳", label: "Updates" },
         { key: "about", glyph: "ⓘ", label: "About" }
     ]
 
+    readonly property var cats: {
+        const q = root.query.trim().toLowerCase();
+        const kw = {
+            wifi: "network internet wireless connect saved", bluetooth: "pair devices headphones", apps: "app info dock pin home",
+            android: "droidloom runtime shared folder", notifs: "silence banners mute dnd", battery: "power mode saver",
+            storage: "disk space", sound: "media volume mute audio", display: "brightness screen rotate dark",
+            style: "wallpaper colour color theme light dark", accessibility: "text size motion", home: "icon grid widget",
+            security: "pin password lock", updates: "nixos generation rollback", about: "device version kernel"
+        };
+        if (q === "")
+            return root.allCats;
+        const out = [];
+        for (const c of root.allCats)
+            if ((c.label + " " + (kw[c.key] || "")).toLowerCase().indexOf(q) >= 0)
+                out.push(c);
+        return out;
+    }
+
     readonly property var comps: ({
         wifi: cWifi, bluetooth: cBluetooth, display: cDisplay, sound: cSound, notifs: cNotifs,
-        home: cHome, security: cSecurity, apps: cApps, battery: cBattery, storage: cStorage,
-        updates: cUpdates, about: cAbout
+        home: cHome, security: cSecurity, apps: cApps, android: cAndroid, battery: cBattery, storage: cStorage,
+        style: cStyle, accessibility: cAccessibility, updates: cUpdates, about: cAbout
     })
 
     readonly property string pageTitle: UI.settingsSub !== "" ? UI.settingsSubTitle : labelOf(cur)
@@ -125,6 +147,9 @@ FloatingWindow {
     Component { id: cHome; SetPageHome {} }
     Component { id: cSecurity; SetPageSecurity {} }
     Component { id: cApps; SetPageApps {} }
+    Component { id: cAndroid; SetPageAndroid {} }
+    Component { id: cStyle; SetPageStyle {} }
+    Component { id: cAccessibility; SetPageAccessibility {} }
     Component { id: cBattery; SetPageBattery {} }
     Component { id: cStorage; SetPageStorage {} }
     Component { id: cUpdates; SetPageUpdates {} }
@@ -248,6 +273,21 @@ FloatingWindow {
                 id: catCol
                 width: parent.width
                 spacing: 4
+
+                SetSearch {
+                    id: srch
+                    width: catCol.width
+                    placeholder: "Search settings"
+                    onTextChanged: root.query = text
+                }
+                Text {
+                    visible: root.query.trim() !== "" && root.cats.length === 0
+                    width: catCol.width
+                    leftPadding: 12
+                    text: "No results"
+                    color: Theme.dim
+                    font.pixelSize: 15
+                }
 
                 Repeater {
                     model: root.cats

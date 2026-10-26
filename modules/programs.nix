@@ -8,6 +8,12 @@ let
   system = pkgs.stdenv.hostPlatform.system;
   full = cfg.profile == "full";
   llama = pkgs.llama-cpp.override { vulkanSupport = true; };
+  nixos-conf-editor = import (pkgs.fetchFromGitHub {
+    owner = "snowfallorg";
+    repo = "nixos-conf-editor";
+    rev = "0.1.2";
+    sha256 = "sha256-/ktLbmF1pU3vFHeGooDYswJipNE2YINm0WpF9Wd1gw8=";
+  });
 in
 {
   options.modules.programs = {
@@ -47,7 +53,9 @@ in
         # sharing one keyboard/mouse and streaming the screen
         deskflow
         moonlight-qt # on the Surface this renders a Sunshine server's screen
-
+        # NixOS Package searcher: GUI for searching and installing packages from Nixpkgs, Flakes, and FlatHub
+        (nixos-conf-editor.defaultPackage.${pkgs.stdenv.hostPlatform.system})
+        
         # zathura: small keyboard-driven PDF viewer, pen-friendly. Plugin set
         # narrowed to the two PDF backends to keep the closure small.
         (zathura.override {

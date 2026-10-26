@@ -32,19 +32,19 @@ Size: S = one update, M = 2-4, L = 5+.
 | A3 | Droidloom acceptance: Intel rendering, idle RAM, disk, app ids in Hyprland | S | none |
 | A4 | Hyprland crash report | S | the report |
 | A5 | Gallery log, fix what fails | S | the log |
-| A6 | One-tap rollback (polkit) in Settings | M | B4 |
+| A6 (done) | One-tap rollback (polkit) in Settings | M | B4 (done) |
 | B1 | Read AOSP main Settings: category order, structure, strings, dimens | M | none |
 | B2 | Component kit: collapsing large title, preference row, group card, switch/slider/dropdown/radio, search field; theme tokens with light + dark | M | B1 |
 | B3 | Two-pane layout + Android-order top list | M | B2 |
 | B4 | Migrate the 12 pages (Wi-Fi, Bluetooth, Display, Sound, Battery first) | L | B3 |
-| B5 | Settings search | M | B4 |
-| B6 | New pages: Notifications per app, Accessibility, Storage, Android apps, Wallpaper & style (incl. light/dark toggle), Battery | L | B4 |
-| C1 | Android apps in Library, Home, dock with Halo-themed icons | M | A3 |
-| C2 | Runtime lifecycle: minimal idle profile (notifications + backend only), full start on first app launch | M | A3, F1 |
-| C3 | Split, Manage windows, back gesture as Android Back | M | C1 |
+| B5 (done) | Settings search | M | B4 |
+| B6 (done) | New pages: Notifications per app, Accessibility, Storage, Android apps, Wallpaper & style (incl. light/dark toggle), Battery | L | B4 |
+| C1 (done) | Android apps in Library, Home, dock with Halo-themed icons | M | A3 |
+| C2 (done) | Runtime lifecycle: minimal idle profile (notifications + backend only), full start on first app launch | M | A3, F1 |
+| C3 (done) | Split, Manage windows, back gesture as Android Back | M | C1 |
 | C4 | **Shipped in 63 (verify).** Shared folder `~/Shared` via `shared_storage_directories`; clipboard already works | M | A3 |
-| C5 | Android notifications into Halo notification centre | L | C1, C2 |
-| C6 | F-Droid + Aurora Store install path (Settings page); Droidloom version bump script | M | B6 |
+| C5 (done) | Android notifications into Halo notification centre | L | C1, C2 |
+| C6 (done) | F-Droid + Aurora Store install path (Settings page); Droidloom version bump script | M | B6 |
 | D1 | Clock (+ widget) | M | none |
 | D2 | Notes, Calculator, Weather | L | D1 |
 | D3 | Calendar, Reminders, Contacts | L | D1 |
@@ -53,8 +53,8 @@ Size: S = one update, M = 2-4, L = 5+.
 | E3 | Stage Manager-style groups, Spotlight pull-down search | L | C3 |
 | E4 | Clipboard panel (cliphist), notification grouping/reply | M | none |
 | F1 | Battery baseline script: idle drain, wakeups and CPU per process (quickshell, Hyprland, droidloomd), RAM | S | none |
-| F2 | Replace polling with events (`halo-split` 1 s, lsblk 4 s, `WidgetData` 2 s, per-screen duplicates) | M | F1 |
-| F3 | Battery tuning: powertop/TLP-style settings, screen timeout and dim, suspend/S0ix, zram, Android cgroup limits | M | F1, C2 |
+| F2 (done) | Replace polling with events (`halo-split` 1 s, lsblk 4 s, `WidgetData` 2 s, per-screen duplicates) | M | F1 |
+| F3 (done) | Battery tuning: powertop/TLP-style settings, screen timeout and dim, suspend/S0ix, zram, Android cgroup limits | M | F1, C2 |
 
 ## Order
 | Phase | Items | Gate |

@@ -30,4 +30,33 @@ Column {
             onClicked: Notifs.clearAll()
         }
     }
+
+    SetGroup {
+        title: "Notifications by app"
+
+        Repeater {
+            model: Notifs.seen
+
+            SetRow {
+                id: row
+
+                required property string modelData
+
+                title: modelData
+                subtitle: Notifs.muted[modelData] ? "Silenced" : "Allowed"
+                onClicked: Notifs.setMuted(modelData, !Notifs.muted[modelData])
+
+                SetSwitch {
+                    checked: !Notifs.muted[row.modelData]
+                    onToggled: Notifs.setMuted(row.modelData, !Notifs.muted[row.modelData])
+                }
+            }
+        }
+        SetRow {
+            visible: Notifs.seen.length === 0
+            title: "No apps yet"
+            subtitle: "Apps appear here after their first notification (Android apps too)"
+            tappable: false
+        }
+    }
 }
