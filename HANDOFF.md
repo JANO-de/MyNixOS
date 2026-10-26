@@ -206,7 +206,7 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - Script: `scripts/halos1-baseline.sh [sec] [tag]`. Run on battery, brightness 7500/7500. Copy: `scp scripts/halos1-baseline.sh halos1:`. Run: `ssh halos1 'systemd-run --user --unit=baseline-X /home/jano/halos1-baseline.sh 600 TAG'`. Output: `~/halos1-baseline-*-TAG.txt`.
 - RAM is 4 GB (3832 MB total). zram 50% + 8 GB swapfile.
 - cell-idle (droidloomd active): 8.58 W, 347.5 ctx/s, 4.2% CPU, 2211 MB used.
-- cell-off (first run): 14.2 W, 344 ctx/s, 1818 MB. Power invalid (confounded); rerun `cell-off2` pending.
-- Android idle cost: +393 MB RAM, ~0 wakeups.
+- cell-off2 (droidloomd inactive): 8.16 W, 337.2 ctx/s, 1.57% CPU, 1920 MB used. First cell-off run (14.2 W) discarded, confounded.
+- Android idle cost (idle vs off2): +0.42 W (~5%), +10 ctx/s, +2.6% CPU, +291 MB RAM, swap 1 to 156 MB. Single runs, battery step 10 mWh.
 - `ipts_poll` = 196 ctx/s = 56% of all wakeups (F3 candidate). `kswapd0` is the top CPU consumer (memory pressure).
-- Open: cell-off2, lower-brightness runs, A4 crash report, A5 Gallery log, `ssh-copy-id halos1`, `droidloomctl logs` failure.
+- Open: lower-brightness runs, A4 crash report, A5 Gallery log, `ssh-copy-id halos1`, `droidloomctl logs` failure.
