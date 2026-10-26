@@ -209,4 +209,14 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - cell-off2 (droidloomd inactive): 8.16 W, 337.2 ctx/s, 1.57% CPU, 1920 MB used. First cell-off run (14.2 W) discarded, confounded.
 - Android idle cost (idle vs off2): +0.42 W (~5%), +10 ctx/s, +2.6% CPU, +291 MB RAM, swap 1 to 156 MB. Single runs, battery step 10 mWh.
 - `ipts_poll` = 196 ctx/s = 56% of all wakeups (F3 candidate). `kswapd0` is the top CPU consumer (memory pressure).
-- Open: lower-brightness runs, A4 crash report, A5 Gallery log, `ssh-copy-id halos1`, `droidloomctl logs` failure.
+- Open: see 0e.
+
+## 0e. End state 2026-10-26 (update 62, delivered via git, no tarball)
+- Workflow this session: sed one-liners + direct commits to origin/main (last: `4f060d5`). Commits `5171390` and `f90af36` carry pasted `git status` text as messages; already pushed, leave.
+- Done: P1 rename; A1 (4 GB comments, README row, HANDOFF); A3 measured; A4 closed (0 Hyprland core dumps, no `~/.cache/hyprland`); F1 baseline (0d).
+- In repo, NOT deployed: `modules/desktop/droidloom.nix` links `/usr/bin/timeout` and `/usr/bin/nsenter`. The daemon hardcodes both, which caused the `droidloomctl logs/crashes` ENOENT. Live symlinks were created by hand on halos1. Before `git add -A` in the deploy flow, decide on `src.tar.xz` (deleted in the worktree: `git restore src.tar.xz` or commit the deletion). Then: `scripts/halos1-deploy.sh && scripts/halos1-reboot.sh`.
+- BUG: every Droidloom cold start fails 75-100 dexopts. `art_exec` aborts with "Failed to execute (/apex/com.android.art/bin/dex2oat32 ...): No such file or directory". 587 art_exec core dumps, 1.7 GB in `/var/lib/systemd/coredump`. Hypothesis (unverified): the image has no dex2oat32, or `dalvik.vm.dex2oat64.enabled` is unset or false. Props can be overridden through the cell.json mount `/usr/lib/droidloom/current/overrides/vendor/build.prop` -> `/vendor/build.prop` (cell.json line 60).
+- Next check (PATH is empty inside the cell, use full paths): `ssh -t halos1 'sudo nsenter --target $(pgrep -x system_server | head -1) --mount --pid --root --wd -- /system/bin/sh -c "/system/bin/getprop dalvik.vm.dex2oat64.enabled; /system/bin/ls /apex/com.android.art/bin"'`
+- Not investigated: `netd` (uid 0) SIGABRTs 14:34-15:42. Unapplied mitigation: `LimitCORE=0` on droidloomd, or coredump Storage=none.
+- F3 note: `blkio` and `cpuset` cgroup backends are unavailable (host owns cgroup v2). Use systemd limits on `droidloomd` (MemoryMax, CPUQuota) instead.
+- Pending: A5 Gallery log; `ssh-copy-id halos1`; `ipts_poll` (197 ctx/s, 58% of wakeups, F3); lower-brightness baseline rerun; dex2oat fix. P0 gate = A5 + dex2oat fix verified. Then P2 (B1: read AOSP Settings).
