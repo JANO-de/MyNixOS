@@ -1,9 +1,12 @@
 import QtQuick
 import qs.services
 
-// Settings > Bluetooth: switch, 8 s discovery, device list (tap = connect/disconnect, unpaired = pair first).
+// Settings > Connected devices > Bluetooth (AOSP: Use Bluetooth, paired devices, available devices, pair new device).
 Column {
     id: page
+
+    readonly property var paired: Net.devices.filter(d => d.paired)
+    readonly property var avail: Net.devices.filter(d => !d.paired)
 
     width: parent ? parent.width : 600
     spacing: 22
@@ -16,7 +19,7 @@ Column {
     SetGroup {
         SetRow {
             glyph: "✧"
-            title: "Bluetooth"
+            title: "Use Bluetooth"
             subtitle: System.bluetooth ? "On" : "Off"
             onClicked: System.toggleBluetooth()
 
@@ -28,30 +31,35 @@ Column {
     }
 
     SetGroup {
-        visible: System.bluetooth
-        title: "Devices"
-
+        visible: System.bluetooth && page.paired.length > 0
+        title: "Paired devices"
         Repeater {
-            model: Net.devices
-
+            model: page.paired
             SetRow {
                 required property var modelData
-
                 title: modelData.name
-                subtitle: modelData.connected ? "Connected" : (modelData.paired ? "Paired" : "Not paired - tap to pair")
+                subtitle: modelData.connected ? "Connected" : "Paired - tap to connect"
                 onClicked: Net.toggleDevice(modelData)
-
-                SetButton {
-                    visible: modelData.paired
-                    text: "Forget"
-                    onClicked: Net.forgetDevice(modelData)
-                }
+                SetButton { text: "Forget"; onClicked: Net.forgetDevice(modelData) }
             }
         }
+    }
 
+    SetGroup {
+        visible: System.bluetooth
+        title: "Available devices"
+        Repeater {
+            model: page.avail
+            SetRow {
+                required property var modelData
+                title: modelData.name
+                subtitle: "Tap to pair"
+                onClicked: Net.toggleDevice(modelData)
+            }
+        }
         SetRow {
-            glyph: "⟳"
-            title: "Search for devices"
+            glyph: "＋"
+            title: "Pair new device"
             subtitle: Net.btBusy ? "Searching..." : "Scans for 8 seconds"
             onClicked: Net.scanBt()
         }

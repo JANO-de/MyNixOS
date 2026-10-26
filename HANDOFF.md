@@ -259,3 +259,28 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
   - Narrow layout (list, page, subpage) untested. B1 remainder: dimens, strings, current-main order check.
   - `ssh-copy-id halos1`; `ipts_poll` (F3); `netd` SIGABRTs (not investigated); `drkonqi` core dumps (1823 files, Plasma; consider `Storage=none` or `LimitCORE=0`).
 - Next: B4 (migrate the 12 pages onto the kit: Wi-Fi, Bluetooth, Display, Sound, Battery first) or P3 (C1 Android apps in Home, C2 runtime lifecycle, C4 shared folder). The user chooses.
+
+## 0l. B4 batch 1 (2026-10-26)
+- Pages on the kit with AOSP structure: Wi-Fi (Use Wi-Fi, Connected network, Available networks, Saved networks subpage `wifi/saved` via `Net.savedWifi`), Bluetooth (Use Bluetooth, Paired, Available, Pair new device), Display (brightness, auto-rotate, dark theme, display size radio, colour scheme dropdown), Sound (media volume, mute), Battery (Battery Saver switch + power mode dropdown). UNTESTED.
+- Next: B4 batch 2 (Notifications, Apps, Storage, Security, Home, Updates, About), then remove kit dev pages.
+
+## 0m. B4 batch 2 (2026-10-26)
+- Storage (summary card), Home screen (icon size radio), About (AOSP order), Security (Device security / Screen lock), Updates (System update). UNTESTED. Notifications and Apps pages untouched until B6 (per-app notifications, Android apps).
+- Next: remove kit dev pages (`SetPageKit`, `SetPageKitSub`, category `kit`, sub `kit/demo`), narrow-layout test, then P3.
+
+## 0n. B4 done (2026-10-26)
+- Kit dev pages removed. B4 closed (Notifications/Apps pages wait for B6). Next: P3 (C1, C2, C4).
+
+## 0o. C1a (2026-10-26)
+- Facts (device): Droidloom writes `~/.local/share/applications/droidloom-<hash>.desktop` (Exec `droidloomctl launch <pkg> --component ...`, `Icon=droidloom-<hash>`, `StartupWMClass=<package>`, keys `X-Droidloom-*`). Names clash with Halo apps (Settings, Files).
+- Done (UNTESTED): `Apps.isAndroid(entry)` (id prefix `droidloom-`), corner badge in `AppIcon`; `Theme.iconCmd` passes `icon@package`, `halo-recolor-icons.py` looks Arcticons up by package tokens (tested in sandbox with a fake dir). Needs `halos1-deploy` (script lives in the nix store); then clear `~/.cache/halo/icons` and restart the shell.
+- Unverified: the Hyprland class of a running Android window (expected = package), dock matching, dock badge (not added).
+- Next: C1b (dock badge, window class), C2 runtime lifecycle.
+
+## 0p. C2a (2026-10-26)
+- Cause of "Android Settings does not open": `modules.desktop.droidloom.autoStart` defaults to false, nothing started `droidloom.service`. Fix (UNTESTED): `Apps.run(entry)` starts `droidloom.service` and retries `droidloomctl launch` (20 x 3 s); Home.launch and Tiling use it. No idle-stop yet, no progress UI.
+- Next: verify cold start time, window class, then idle policy (stop after N min without Android windows) and a "Starting Android..." banner.
+
+## 0q. C1b/C2 decisions (2026-10-26)
+- Verified (user): Android Settings opens from Library; first launch starts droidloom.service (cold start ~15 s); Hyprland class = package (`com.android.settings`) = entry StartupWMClass. User decision: runtime is NEVER stopped when idle (starts on first launch, stays). Dock "A" badge added (UNTESTED). Dock running dot not checked yet.
+- Next: C4 shared folder (needs `/etc/droidloom/cell.json` mounts), then C3 split/back.

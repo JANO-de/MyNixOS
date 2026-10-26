@@ -11,7 +11,7 @@ Column {
     Component.onCompleted: Info.refresh()
 
     SetGroup {
-        title: "System"
+        title: "System update"
         SetRow {
             title: Info.get("nixver")
             subtitle: "Running generation: " + Info.get("gen")

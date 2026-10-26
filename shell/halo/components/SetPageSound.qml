@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import qs.services
 
-// Settings > Sound: volume and mute.
+// Settings > Sound: media volume and mute.
 Column {
     id: page
 
@@ -20,7 +20,7 @@ Column {
         title: "Volume"
         QsSlider {
             width: parent.width
-            label: "Volume"
+            label: "Media volume"
             value: System.muted ? 0 : System.volume
             onMoved: v => System.setVolume(v)
         }

@@ -44,8 +44,8 @@ Column {
 
     SetGroup {
         title: "Icon size"
-        SetChips {
-            options: ["Small", "Medium", "Large"]
+        SetRadio {
+            options: ["Small", "Default", "Large"]
             current: Home.density
             onPicked: i => {
                 Home.density = i;

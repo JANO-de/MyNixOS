@@ -10,6 +10,7 @@ Singleton {
 
     property var networks: [] // { ssid, signal, secured, active, saved }
     property var devices: [] // { mac, name, connected, paired }
+    property var savedWifi: [] // names of all saved Wi-Fi profiles (also out of range)
     property string status: ""
     property bool wifiBusy: false
     property bool btBusy: false
@@ -111,6 +112,7 @@ Singleton {
                 });
                 list.sort((a, b) => ((b.active ? 1 : 0) - (a.active ? 1 : 0)) || (b.signal - a.signal));
                 root.networks = list;
+                root.savedWifi = Object.keys(saved).sort();
                 root.wifiBusy = false;
             }
         }

@@ -48,6 +48,28 @@ Item {
                 }
             }
 
+            Rectangle {
+                visible: Apps.isAndroid(root.entry)
+                z: 2
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: -3
+                width: Math.max(18, Home.tile * 0.28)
+                height: width
+                radius: width / 2
+                color: Theme.accent
+                border.width: 2
+                border.color: Theme.iconTile
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "A"
+                    color: Theme.accentInk
+                    font.pixelSize: parent.width * 0.6
+                    font.weight: Font.Bold
+                }
+            }
+
             Image {
                 visible: !(root.entry && root.entry.isFolder)
                 anchors.centerIn: parent

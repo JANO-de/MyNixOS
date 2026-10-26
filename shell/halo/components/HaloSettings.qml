@@ -28,19 +28,18 @@ FloatingWindow {
         { key: "home", glyph: "⌂", label: "Home screen" },
         { key: "security", glyph: "⚑", label: "Security & privacy" },
         { key: "updates", glyph: "⟳", label: "Updates" },
-        { key: "about", glyph: "ⓘ", label: "About" },
-        { key: "kit", glyph: "✦", label: "Component kit (dev)" }
+        { key: "about", glyph: "ⓘ", label: "About" }
     ]
 
     readonly property var comps: ({
         wifi: cWifi, bluetooth: cBluetooth, display: cDisplay, sound: cSound, notifs: cNotifs,
         home: cHome, security: cSecurity, apps: cApps, battery: cBattery, storage: cStorage,
-        updates: cUpdates, about: cAbout, kit: cKit
+        updates: cUpdates, about: cAbout
     })
 
     readonly property string pageTitle: UI.settingsSub !== "" ? UI.settingsSubTitle : labelOf(cur)
     readonly property bool backVisible: UI.settingsSub !== "" || (!wide && page !== "")
-    readonly property var subs: ({ "kit/demo": cKitSub })
+    readonly property var subs: ({ "wifi/saved": cWifiSaved })
 
     function goBack() {
         if (UI.settingsSub !== "")
@@ -130,8 +129,7 @@ FloatingWindow {
     Component { id: cStorage; SetPageStorage {} }
     Component { id: cUpdates; SetPageUpdates {} }
     Component { id: cAbout; SetPageAbout {} }
-    Component { id: cKit; SetPageKit {} }
-    Component { id: cKitSub; SetPageKitSub {} }
+    Component { id: cWifiSaved; SetPageWifiSaved {} }
 
     Rectangle {
         id: card

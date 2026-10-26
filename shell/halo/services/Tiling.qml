@@ -126,7 +126,7 @@ Singleton {
         if (p.item.windows.length > 0)
             p.item.windows[0].activate();
         else if (p.item.entry)
-            p.item.entry.execute(); // not Home.launch: tablet mode would open a fresh workspace
+            Apps.run(p.item.entry); // not Home.launch: tablet mode would open a fresh workspace
         else
             return;
 

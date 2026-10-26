@@ -427,7 +427,7 @@ Singleton {
             Quickshell.execDetached(["hyprctl", "eval", "new_ws()"]);
             launchTimer.restart();
         } else {
-            entry.execute();
+            Apps.run(entry);
         }
     }
 
@@ -436,7 +436,7 @@ Singleton {
         interval: 140
         onTriggered: {
             if (root.pendingLaunch)
-                root.pendingLaunch.execute();
+                Apps.run(root.pendingLaunch);
             root.pendingLaunch = null;
         }
     }

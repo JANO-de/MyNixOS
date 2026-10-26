@@ -9,6 +9,7 @@ Column {
     spacing: 22
 
     SetGroup {
+        title: "Device security"
         SetRow {
             glyph: "⚑"
             title: "Lock now"
@@ -22,7 +23,7 @@ Column {
     }
 
     SetGroup {
-        title: "Lock screen"
+        title: "Screen lock"
         SetRow {
             title: "PIN"
             subtitle: Lock.hasPin ? "Set (" + Lock.pinLen + " digits)" : "Not set. Run halo-set-pin in a terminal to choose one."

@@ -87,6 +87,21 @@ Singleton {
         return (a === "quickshell" || a === "org.quickshell") ? "halo-" + norm(t.title) : a;
     }
 
+    // Android apps from Droidloom: desktop id "droidloom-<hash>", StartupWMClass = Android package.
+    function isAndroid(e) {
+        return !!e && String(e.id || "").indexOf("droidloom-") === 0;
+    }
+
+    // Launch an entry. Android apps: the runtime is off until needed (droidloom autoStart = false), so start
+    // droidloom.service first and retry the launch for ~1 min while the cell boots.
+    function run(e) {
+        if (!isAndroid(e)) {
+            e.execute();
+            return;
+        }
+        Quickshell.execDetached(["sh", "-c", "systemctl --user start droidloom.service; for i in $(seq 1 20); do \"$@\" && exit 0; sleep 3; done", "sh"].concat(e.command));
+    }
+
     function matches(entry, appId) {
         const a = norm(appId);
         if (a === "")

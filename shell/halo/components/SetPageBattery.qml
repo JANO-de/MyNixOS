@@ -74,8 +74,19 @@ Column {
 
     SetGroup {
         visible: Net.profile !== ""
-        title: "Power mode"
-        SetChips {
+        SetRow {
+            glyph: "▮"
+            title: "Battery Saver"
+            subtitle: Net.profile === "power-saver" ? "On" : "Off"
+            onClicked: Net.setProfile(Net.profile === "power-saver" ? "balanced" : "power-saver")
+
+            SetSwitch {
+                checked: Net.profile === "power-saver"
+                onToggled: Net.setProfile(Net.profile === "power-saver" ? "balanced" : "power-saver")
+            }
+        }
+        SetDropdown {
+            title: "Power mode"
             options: ["Power saver", "Balanced", "Performance"]
             current: Math.max(0, ["power-saver", "balanced", "performance"].indexOf(Net.profile))
             onPicked: i => Net.setProfile(["power-saver", "balanced", "performance"][i])

@@ -57,6 +57,44 @@ Column {
         }
     }
 
+    Rectangle {
+        width: parent.width
+        height: 150
+        radius: 22
+        color: Theme.tint(0.07)
+
+        Text {
+            x: 24
+            y: 20
+            text: page.root.size > 0 ? Info.gb(page.root.used) + " used" : "-"
+            color: Theme.text
+            font.pixelSize: 34
+            font.weight: Font.Light
+        }
+        Text {
+            x: 24
+            y: 68
+            text: page.root.size > 0 ? "of " + Info.gb(page.root.size) + " total" : ""
+            color: Theme.dim
+            font.pixelSize: 15
+        }
+        Rectangle {
+            x: 24
+            y: 108
+            width: parent.width - 48
+            height: 10
+            radius: 5
+            color: Theme.tint(0.14)
+
+            Rectangle {
+                width: page.root.size > 0 ? parent.width * Math.min(1, page.root.used / page.root.size) : 0
+                height: parent.height
+                radius: 5
+                color: page.root.size > 0 && page.root.used / page.root.size > 0.9 ? "#ff5f5f" : Theme.accent
+            }
+        }
+    }
+
     SetGroup {
         title: "Disks"
         Meter { label: "System (/)"; used: page.root.used; total: page.root.size }

@@ -115,12 +115,14 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     done = []
     for name in sorted(set(NAMES)):
-        if not name or "/" in name or name.startswith("."):
+        if not name or "/" in name.partition("@")[0] or name.startswith("."):
             continue
-        src = find_arctic(name)
+        out, _, look = name.partition("@")
+        look = look or out
+        src = find_arctic(look)
         line_art = src is not None
         if not src:
-            src = find_svg(name)
+            src = find_svg(look)
         if not src:
             continue
         try:
@@ -128,9 +130,9 @@ def main():
                 text = fh.read()
             if line_art and "stroke-width" not in text:
                 text = text.replace("stroke-linecap", "stroke-width:1.5;stroke-linecap", 1)
-            with open(os.path.join(OUT, name + ".svg"), "w", encoding="utf-8") as fh:
+            with open(os.path.join(OUT, out + ".svg"), "w", encoding="utf-8") as fh:
                 fh.write(recolor(text))
-            done.append(name)
+            done.append(out)
         except (OSError, UnicodeDecodeError):
             pass
     print(json.dumps(done))

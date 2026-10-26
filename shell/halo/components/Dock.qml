@@ -153,6 +153,27 @@ PanelWindow {
                     }
 
                     Rectangle {
+                        visible: Apps.isAndroid(cell.modelData.entry)
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: -2
+                        width: Math.max(16, parent.width * 0.28)
+                        height: width
+                        radius: width / 2
+                        color: Theme.accent
+                        border.width: 2
+                        border.color: Theme.iconTile
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "A"
+                            color: Theme.accentInk
+                            font.pixelSize: parent.width * 0.6
+                            font.weight: Font.Bold
+                        }
+                    }
+
+                    Rectangle {
                         visible: cell.modelData.windows.length > 0
                         anchors.top: parent.bottom
                         anchors.topMargin: 4

@@ -121,7 +121,7 @@ Singleton {
         for (const e of DesktopEntries.applications.values) {
             const n = String(e.icon || "");
             if (n !== "" && n.charAt(0) !== "/")
-                names.push(n);
+                names.push(String(e.id || "").indexOf("droidloom-") === 0 && e.startupClass ? n + "@" + e.startupClass : n); // "icon@package": look up by package, write as icon
         }
         return ["halo-recolor-icons", c.primary_container, c.primary, c.primary,
                 Quickshell.env("HOME") + "/.cache/halo/icons/" + String(c.primary + c.primary_container).replace(/#/g, "")].concat(names);

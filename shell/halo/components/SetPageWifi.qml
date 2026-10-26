@@ -1,11 +1,14 @@
 import QtQuick
 import qs.services
 
-// Settings > Wi-Fi: switch, status and the network list (tap = connect; secured and unknown = password field).
+// Settings > Network & internet > Wi-Fi (AOSP layout: Use Wi-Fi, connected network, available networks, saved networks).
+// Tap = connect; secured and unknown = password field; the connected one opens Disconnect/Forget.
 Column {
     id: page
 
     property string sel: "" // ssid whose detail panel is open
+    readonly property var current: Net.networks.filter(n => n.active)
+    readonly property var others: Net.networks.filter(n => !n.active)
 
     width: parent ? parent.width : 600
     spacing: 22
@@ -22,7 +25,7 @@ Column {
     SetGroup {
         SetRow {
             glyph: "≋"
-            title: "Wi-Fi"
+            title: "Use Wi-Fi"
             subtitle: !System.wifi ? "Off" : (System.wifiName !== "" ? "Connected to " + System.wifiName : "Not connected")
             onClicked: System.toggleWifi()
 
@@ -44,108 +47,131 @@ Column {
     }
 
     SetGroup {
-        visible: System.wifi
-        title: "Networks"
-
+        visible: System.wifi && page.current.length > 0
+        title: "Connected network"
         Repeater {
-            model: Net.networks
-
-            Column {
-                id: net
-
-                required property var modelData
-                readonly property bool open: page.sel === modelData.ssid
-
-                width: parent.width
-                spacing: 3
-
-                SetRow {
-                    title: net.modelData.ssid
-                    subtitle: net.modelData.active ? "Connected" : (net.modelData.saved ? "Saved" : (net.modelData.secured ? "Secured" : "Open"))
-                    onClicked: {
-                        if (net.modelData.active || (!net.modelData.saved && net.modelData.secured))
-                            page.sel = net.open ? "" : net.modelData.ssid;
-                        else
-                            Net.connectWifi(net.modelData.ssid, "");
-                    }
-
-                    Row {
-                        spacing: 12
-                        SetButton {
-                            visible: net.modelData.saved && !net.modelData.active
-                            text: "Forget"
-                            onClicked: Net.forgetWifi(net.modelData.ssid)
-                        }
-                        Text {
-                            height: 36
-                            verticalAlignment: Text.AlignVCenter
-                            text: (net.modelData.secured ? "🔒 " : "") + page.bars(net.modelData.signal)
-                            color: net.modelData.active ? Theme.accent : Theme.dim
-                            font.pixelSize: 15
-                        }
-                    }
-                }
-
-                // Detail panel: disconnect/forget for the active network, password for a new secured one.
-                Rectangle {
-                    visible: net.open
-                    width: parent.width
-                    height: panel.height + 28
-                    radius: 22
-                    color: Theme.tint(0.05)
-
-                    Column {
-                        id: panel
-                        x: 16
-                        y: 14
-                        width: parent.width - 32
-                        spacing: 10
-
-                        Row {
-                            visible: net.modelData.active
-                            spacing: 10
-                            SetButton { text: "Disconnect"; onClicked: { Net.disconnectWifi(); page.sel = ""; } }
-                            SetButton { text: "Forget"; danger: true; onClicked: { Net.forgetWifi(net.modelData.ssid); page.sel = ""; } }
-                        }
-
-                        Item {
-                            visible: !net.modelData.active
-                            width: parent.width
-                            height: 48
-
-                            SetInput {
-                                id: pw
-                                anchors.left: parent.left
-                                anchors.right: go.left
-                                anchors.rightMargin: 10
-                                placeholder: "Password"
-                                password: true
-                                grab: net.open && !net.modelData.active
-                                onAccepted: go.clicked()
-                            }
-                            SetButton {
-                                id: go
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: "Connect"
-                                accent: true
-                                onClicked: {
-                                    Net.connectWifi(net.modelData.ssid, pw.text);
-                                    pw.text = "";
-                                    page.sel = "";
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            model: page.current
+            delegate: netItem
         }
+    }
 
+    SetGroup {
+        visible: System.wifi
+        title: "Available networks"
+        Repeater {
+            model: page.others
+            delegate: netItem
+        }
         SetRow {
             glyph: "⟳"
             title: "Scan for networks"
             subtitle: Net.wifiBusy ? "Scanning..." : (Net.networks.length + " found")
             onClicked: Net.scanWifi()
+        }
+    }
+
+    SetGroup {
+        visible: System.wifi
+        SetRow {
+            glyph: "★"
+            title: "Saved networks"
+            subtitle: Net.savedWifi.length + " saved"
+            chevron: true
+            onClicked: UI.openSettingsSub("saved", "Saved networks")
+        }
+    }
+
+    Component {
+        id: netItem
+
+        Column {
+            id: net
+
+            required property var modelData
+            readonly property bool open: page.sel === modelData.ssid
+
+            width: parent ? parent.width : 600
+            spacing: 3
+
+            SetRow {
+                title: net.modelData.ssid
+                subtitle: net.modelData.active ? "Connected" : (net.modelData.saved ? "Saved" : (net.modelData.secured ? "Secured" : "Open"))
+                onClicked: {
+                    if (net.modelData.active || (!net.modelData.saved && net.modelData.secured))
+                        page.sel = net.open ? "" : net.modelData.ssid;
+                    else
+                        Net.connectWifi(net.modelData.ssid, "");
+                }
+
+                Row {
+                    spacing: 12
+                    SetButton {
+                        visible: net.modelData.saved && !net.modelData.active
+                        text: "Forget"
+                        onClicked: Net.forgetWifi(net.modelData.ssid)
+                    }
+                    Text {
+                        height: 36
+                        verticalAlignment: Text.AlignVCenter
+                        text: (net.modelData.secured ? "🔒 " : "") + page.bars(net.modelData.signal)
+                        color: net.modelData.active ? Theme.accent : Theme.dim
+                        font.pixelSize: 15
+                    }
+                }
+            }
+
+            // Detail panel: disconnect/forget for the active network, password for a new secured one.
+            Rectangle {
+                visible: net.open
+                width: parent.width
+                height: panel.height + 28
+                radius: 22
+                color: Theme.tint(0.05)
+
+                Column {
+                    id: panel
+                    x: 16
+                    y: 14
+                    width: parent.width - 32
+                    spacing: 10
+
+                    Row {
+                        visible: net.modelData.active
+                        spacing: 10
+                        SetButton { text: "Disconnect"; onClicked: { Net.disconnectWifi(); page.sel = ""; } }
+                        SetButton { text: "Forget"; danger: true; onClicked: { Net.forgetWifi(net.modelData.ssid); page.sel = ""; } }
+                    }
+
+                    Item {
+                        visible: !net.modelData.active
+                        width: parent.width
+                        height: 48
+
+                        SetInput {
+                            id: pw
+                            anchors.left: parent.left
+                            anchors.right: go.left
+                            anchors.rightMargin: 10
+                            placeholder: "Password"
+                            password: true
+                            grab: net.open && !net.modelData.active
+                            onAccepted: go.clicked()
+                        }
+                        SetButton {
+                            id: go
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Connect"
+                            accent: true
+                            onClicked: {
+                                Net.connectWifi(net.modelData.ssid, pw.text);
+                                pw.text = "";
+                                page.sel = "";
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

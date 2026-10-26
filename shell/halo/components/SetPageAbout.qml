@@ -11,17 +11,21 @@ Column {
     Component.onCompleted: Info.refresh()
 
     SetGroup {
-        SetRow { title: "Device"; subtitle: Info.get("model"); tappable: false }
-        SetRow { title: "Name"; subtitle: Info.get("host"); tappable: false }
-        SetRow { title: "Processor"; subtitle: Info.get("cpu"); tappable: false }
-        SetRow { title: "Memory"; subtitle: Info.kv["memtotal"] ? Info.gb(parseFloat(Info.kv["memtotal"])) : "-"; tappable: false }
+        SetRow { title: "Device name"; subtitle: Info.get("host"); tappable: false }
+        SetRow { title: "Model"; subtitle: Info.get("model"); tappable: false }
     }
 
     SetGroup {
-        title: "Software"
-        SetRow { title: "Halo"; subtitle: Info.haloVersion; tappable: false }
+        title: "Software information"
+        SetRow { title: "Halo version"; subtitle: Info.haloVersion; tappable: false }
         SetRow { title: "System"; subtitle: Info.get("os") + " (" + Info.get("nixver") + ")"; tappable: false }
-        SetRow { title: "Kernel"; subtitle: Info.get("kernel"); tappable: false }
-        SetRow { title: "Up"; subtitle: Info.get("uptime"); tappable: false }
+        SetRow { title: "Kernel version"; subtitle: Info.get("kernel"); tappable: false }
+    }
+
+    SetGroup {
+        title: "Hardware"
+        SetRow { title: "Processor"; subtitle: Info.get("cpu"); tappable: false }
+        SetRow { title: "Memory"; subtitle: Info.kv["memtotal"] ? Info.gb(parseFloat(Info.kv["memtotal"])) : "-"; tappable: false }
+        SetRow { title: "Uptime"; subtitle: Info.get("uptime"); tappable: false }
     }
 }
