@@ -14,7 +14,7 @@ Rectangle {
     signal clicked
     signal pressAndHold
 
-    readonly property color ink: filled ? AppTheme.accentInk : (on ? AppTheme.accent : (danger ? "#ff8a80" : AppTheme.text))
+    readonly property color ink: filled ? AppTheme.accentInk : (on ? AppTheme.accent : (danger ? AppTheme.danger : AppTheme.text))
     implicitWidth: Math.max(44, row.implicitWidth + (label !== "" ? 28 : 0))
     implicitHeight: 44
     radius: height / 2

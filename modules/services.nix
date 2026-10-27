@@ -26,6 +26,7 @@ in
           { from = 8000; to = 8010; }
         ];
       };
+      networking.firewall.checkReversePath = false;
 
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;

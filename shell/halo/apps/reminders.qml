@@ -4,7 +4,7 @@ import qs.common
 import qs.suite
 
 ShellRoot {
-    AppWindow {
+    SuiteWindow {
         id: win
 
         title: "Reminders"
@@ -53,11 +53,15 @@ ShellRoot {
         JsonStore { id: store; name: "reminders"; fallback: [] }
 
         Column {
-            anchors.fill: parent
+            id: form
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.margins: 16
             spacing: 12
-            Field { id: input; width: parent.width; placeholder: "New reminder (Enter to add)"; onAccepted: win.add() }
-            Row {
+            Field { id: input; width: parent.width; icon: "plus"; placeholder: "New reminder (Enter to add)"; onAccepted: win.add() }
+            Flow {
+                width: parent.width
                 spacing: 8
                 Repeater {
                     model: ["No time", "In 10 min", "In 1 h", "Tomorrow 9:00"]
@@ -70,49 +74,40 @@ ShellRoot {
                     }
                 }
             }
-            ListView {
-                width: parent.width
-                height: parent.height - 120
-                clip: true
-                spacing: 6
-                model: store.value
-                delegate: Rectangle {
-                    required property var modelData
-                    required property int index
-                    width: ListView.view.width
-                    height: 64
-                    radius: 22
-                    color: AppTheme.card
-                    Rectangle {
-                        x: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 28
-                        height: 28
-                        radius: 14
-                        color: modelData.done ? AppTheme.accent : "transparent"
-                        border.width: 2
-                        border.color: AppTheme.accent
-                        Text { visible: modelData.done; anchors.centerIn: parent; text: "✓"; color: AppTheme.accentInk; font.pixelSize: 16 }
-                        MouseArea { anchors.fill: parent; anchors.margins: -10; onClicked: win.toggle(index) }
-                    }
-                    Column {
-                        x: 60
-                        width: parent.width - 120
-                        anchors.verticalCenter: parent.verticalCenter
-                        Text { width: parent.width; text: modelData.text; color: modelData.done ? AppTheme.dim : AppTheme.text; font.pixelSize: 17; font.strikeout: modelData.done; elide: Text.ElideRight }
-                        Text { visible: modelData.due !== ""; width: parent.width; text: modelData.due; color: AppTheme.dim; font.pixelSize: 12 }
-                    }
-                    Text {
-                        anchors.right: parent.right
-                        anchors.rightMargin: 20
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "✕"
-                        color: AppTheme.dim
-                        font.pixelSize: 16
-                        MouseArea { anchors.fill: parent; anchors.margins: -12; onClicked: win.del(index) }
-                    }
-                }
+        }
+
+        ListView {
+            anchors.top: form.bottom
+            anchors.topMargin: 14
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.bottomMargin: 16
+            clip: true
+            spacing: 8
+            boundsBehavior: Flickable.StopAtBounds
+            model: store.value
+            delegate: ListRow {
+                required property var modelData
+                required property int index
+                title: modelData.text
+                subtitle: modelData.due
+                dimTitle: modelData.done
+                strike: modelData.done
+                subtitleColor: (!modelData.done && modelData.due !== "" && modelData.due < win.stamp(new Date())) ? AppTheme.danger : AppTheme.dim
+                onClicked: win.toggle(index)
+                lead: [ Check { checked: modelData.done; onToggled: win.toggle(index) } ]
+                Pill { icon: "trash"; flat: true; danger: true; onClicked: win.del(index) }
             }
+        }
+
+        Empty {
+            visible: store.value.length === 0
+            anchors.centerIn: parent
+            icon: "bell"
+            text: "No reminders"
         }
     }
 }

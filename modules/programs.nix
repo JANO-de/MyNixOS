@@ -87,6 +87,7 @@ in
         bazaar # FlatHub-first app store
         inputs.claude-desktop.packages.${system}.claude-desktop-with-fhs
         inputs.opencode-flake.packages.${system}.opencode-avx
+        protonvpn-gui
 
         # --- IDEs ---
         vscodium

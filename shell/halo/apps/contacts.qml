@@ -4,7 +4,7 @@ import qs.common
 import qs.suite
 
 ShellRoot {
-    AppWindow {
+    SuiteWindow {
         id: win
 
         title: "Contacts"
@@ -13,6 +13,7 @@ ShellRoot {
 
         property string cur: ""
         property bool loading: false
+        readonly property bool narrow: width < 720   // one pane at a time (back button)
         readonly property var shown: {
             const q = search.text.trim().toLowerCase();
             const l = contacts.value.filter(c => q === "" || (c.name + " " + c.phone + " " + c.email).toLowerCase().indexOf(q) >= 0);
@@ -49,75 +50,82 @@ ShellRoot {
 
         JsonStore { id: contacts; name: "contacts"; fallback: [] }
 
+        canBack: narrow && cur !== ""
+        onBackClicked: cur = ""
+
         actions: [
-            Pill { glyph: "+"; onClicked: win.add() },
-            Pill { glyph: "🗑"; danger: true; enabled: win.cur !== ""; onClicked: win.del() }
+            Pill { icon: "plus"; filled: true; onClicked: win.add() },
+            Pill { icon: "trash"; danger: true; enabled: win.cur !== ""; onClicked: win.del() }
         ]
 
         Item {
             anchors.fill: parent
-            anchors.margins: 12
+            anchors.margins: 16
 
             Column {
                 id: side
-                width: 340
+                visible: !win.narrow || win.cur === ""
+                width: win.narrow ? parent.width : 340
                 height: parent.height
-                spacing: 8
-                Field { id: search; width: parent.width; placeholder: "Search contacts" }
+                spacing: 10
+                Field { id: search; width: parent.width; icon: "search"; placeholder: "Search contacts" }
                 ListView {
                     width: parent.width
-                    height: parent.height - 56
+                    height: parent.height - 54
                     clip: true
-                    spacing: 6
+                    spacing: 8
+                    boundsBehavior: Flickable.StopAtBounds
                     model: win.shown
-                    delegate: Rectangle {
+                    delegate: ListRow {
                         required property var modelData
-                        width: ListView.view.width
-                        height: 64
-                        radius: 20
-                        color: win.cur === modelData.id ? AppTheme.accentSoft : (ct.pressed ? AppTheme.cardHigh : AppTheme.card)
-                        Rectangle {
-                            x: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 40
-                            height: 40
-                            radius: 20
-                            color: AppTheme.accentSoft
-                            Text { anchors.centerIn: parent; text: modelData.name.charAt(0).toUpperCase(); color: AppTheme.accent; font.pixelSize: 20 }
-                        }
-                        Column {
-                            x: 66
-                            width: parent.width - 80
-                            anchors.verticalCenter: parent.verticalCenter
-                            Text { width: parent.width; text: modelData.name; color: AppTheme.text; font.pixelSize: 17; elide: Text.ElideRight }
-                            Text { width: parent.width; text: modelData.phone !== "" ? modelData.phone : modelData.email; color: AppTheme.dim; font.pixelSize: 12; elide: Text.ElideRight }
-                        }
-                        MouseArea { id: ct; anchors.fill: parent; onClicked: win.open(modelData.id) }
+                        title: modelData.name
+                        subtitle: modelData.phone !== "" ? modelData.phone : modelData.email
+                        letter: modelData.name.charAt(0).toUpperCase()
+                        selected: win.cur === modelData.id
+                        onClicked: win.open(modelData.id)
                     }
                 }
             }
 
-            Column {
+            Flickable {
                 visible: win.cur !== ""
-                anchors.left: side.right
-                anchors.leftMargin: 20
+                anchors.left: win.narrow ? parent.left : side.right
+                anchors.leftMargin: win.narrow ? 0 : 24
                 anchors.right: parent.right
                 anchors.top: parent.top
-                spacing: 12
-                Field { id: fName; width: parent.width; placeholder: "Name"; onTextChanged: win.commit() }
-                Field { id: fPhone; width: parent.width; placeholder: "Phone"; onTextChanged: win.commit() }
-                Field { id: fMail; width: parent.width; placeholder: "Email"; onTextChanged: win.commit() }
-                Field { id: fNote; width: parent.width; placeholder: "Note"; onTextChanged: win.commit() }
+                anchors.bottom: parent.bottom
+                contentWidth: width
+                contentHeight: form.height + 20
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+
+                Column {
+                    id: form
+                    width: parent.width
+                    spacing: 12
+                    Item {
+                        width: parent.width
+                        height: 120
+                        Badge {
+                            anchors.centerIn: parent
+                            diameter: 96
+                            letter: fName.text.charAt(0).toUpperCase()
+                            icon: fName.text === "" ? "user" : ""
+                        }
+                    }
+                    Field { id: fName; width: parent.width; icon: "user"; placeholder: "Name"; onTextChanged: win.commit() }
+                    Field { id: fPhone; width: parent.width; icon: "phone"; placeholder: "Phone"; onTextChanged: win.commit() }
+                    Field { id: fMail; width: parent.width; icon: "mail"; placeholder: "Email"; onTextChanged: win.commit() }
+                    Field { id: fNote; width: parent.width; icon: "note"; placeholder: "Note"; onTextChanged: win.commit() }
+                }
             }
-            Text {
-                visible: win.cur === ""
+            Item {
+                visible: win.cur === "" && !win.narrow
                 anchors.left: side.right
                 anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: Text.AlignHCenter
-                text: "Select a contact or tap +"
-                color: AppTheme.dim
-                font.pixelSize: 18
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                Empty { anchors.centerIn: parent; icon: "user"; text: "Select a contact or tap +" }
             }
         }
     }
