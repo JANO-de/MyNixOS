@@ -24,10 +24,10 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] A-5 Search engine
 - [x] A-6 Nix provider + IPC
 - [x] A-7 UI
-- [!] A-8 Nix packaging
-- [!] A-9 Module (+ optional timer)
+- [ ] A-8 Nix packaging (deferred: re-scope to minimal viable store, b)
+- [ ] A-9 Module (deferred)
 - [x] A-10 Tests
-- [!] A-11 MyNixOS integration
+- [ ] A-11 MyNixOS integration (deferred)
 - [x] A-12 Docs
 
 ## M3 Tokri → dynisland
@@ -36,11 +36,11 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] T-2 Spike: shake detection
 - [x] T-3 Store
 - [x] T-4 Drop-in
-- [~] T-5 Drag-out
+- [x] T-5 Drag-out
 - [x] T-6 Island UI
 - [x] T-7 Summon + settings
 - [x] T-8 Nix module
-- [ ] T-9 Test matrix
+- [x] T-9 Test matrix
 - [x] T-10 Docs
 
 ## Blockers / open questions

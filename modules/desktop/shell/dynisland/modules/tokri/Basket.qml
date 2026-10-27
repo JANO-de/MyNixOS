@@ -49,9 +49,18 @@ LazyLoader {
                         Layout.fillHeight: true
                         model: Tokri.items
                         delegate: Rectangle {
+                            id: row
                             width: parent.width
                             height: 32
                             color: "transparent"
+
+                            property var dragItem: modelData
+                            property string dragMime: {
+                                if (modelData.type === "file") return "file://" + modelData.value
+                                if (modelData.type === "url") return modelData.value
+                                return modelData.value
+                            }
+
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
                                 color: "white"
@@ -59,10 +68,26 @@ LazyLoader {
                                 elide: Text.ElideRight
                                 width: parent.width
                             }
-                            MouseArea {
-                                anchors.fill: parent
-                                drag.target: parent
-                                onReleased: if (drag.active) { /* drag-out handled by OS */ }
+
+                            // Drag-out: destination app + compositor negotiate copy vs move.
+                            // Ctrl-drag = copy (kept); plain drag = move (removed on finish).
+                            Drag.active: dg.active
+                            Drag.dragType: Drag.Automatic
+                            Drag.supportedActions: Qt.CopyAction | Qt.MoveAction
+                            Drag.mimeData: ({
+                                "text/uri-list": row.dragMime,
+                                "text/plain": row.dragMime
+                            })
+
+                            DragHandler {
+                                id: dg
+                                target: null
+                                onDragFinished: (drop, action) => {
+                                    if (action === Qt.MoveAction) Tokri.remove(index)
+                                }
+                            }
+                            TapHandler {
+                                onTapped: Quickshell.execDetached(["wl-copy", row.dragMime])
                             }
                         }
                     }
