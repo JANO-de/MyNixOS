@@ -5,12 +5,12 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/core
-    ../../modules/hardware.nix
-    ../../modules/services.nix
-    ../../modules/programs.nix
+    ../../modules/hardware
+    ../../modules/services
+    ../../modules/programs
     ../../modules/programs/orchard.nix
     ../../modules/desktop
-    ../../modules/extras/matrix.nix
+    ../../hosts/desktop/matrix.nix
   ];
 
   networking.hostName = "desktop";

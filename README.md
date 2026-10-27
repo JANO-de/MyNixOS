@@ -3,17 +3,19 @@
 Three hosts, one flake: `desktop`, `laptop`, `halos1`.
 
 ```
-flake.nix                 inputs + the three nixosConfigurations
+flake.nix                 inputs + the three nixosConfigurations (delegated to nix/)
+nix/                      assembler, hosts, packages, devShell
 hosts/<host>/             per-host config (+ hardware-configuration.nix)
-modules/core.nix          boot, nix, user, locale, fonts, zsh, Home Manager wiring
-modules/hardware.nix      bluetooth, firmware, NVIDIA (switch), Elements drive (switch)
-modules/services.nix      networking, audio, printing, ssh, flatpak, qmk + switchable
-                          extras: sunshine, waydroid, powertop, smartd
-modules/programs.nix      "full" profile (desktop, laptop) or "lean" (halos1)
-modules/desktop/          session (mango | niri | hyprland), shell (dynisland | chronos), SDDM
-modules/extras/           host-specific big services: xampp (laptop), matrix (desktop)
-modules/home.nix          Home Manager: GTK/Qt theme + alacritty
-modules/theme.nix         one palette for everything (catppuccin mocha / mauve)
+modules/core/             boot, nix, user, locale, fonts, shell, home-manager
+modules/hardware/         bluetooth, firmware, nvidia (switch), drives
+modules/services/         networking, audio, printing, ssh, flatpak, extras
+modules/programs/         default, lean, full, deskflow (+ orchard)
+modules/desktop/          sessions/{mango,niri,hyprland}, shells/{chronos,halo,dynisland}, greeter, splash, droidloom
+modules/theme/            palette, gtk-qt, alacritty, home
+shell/halo/               Halo QML shell (rsync source)
+```
+
+See docs/ for details.
 ```
 
 | host | session | shell | programs |

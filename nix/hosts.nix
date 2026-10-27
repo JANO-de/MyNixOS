@@ -8,7 +8,7 @@ let
     nix-cachyos-kernel
     self
     ;
-  theme = import ../modules/theme.nix;
+  theme = import ../modules/theme/palette.nix;
 
   mkHost =
     {

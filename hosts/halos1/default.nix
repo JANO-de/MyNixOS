@@ -41,9 +41,9 @@ in
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
     ../../modules/core
-    ../../modules/hardware.nix
-    ../../modules/services.nix
-    ../../modules/programs.nix
+    ../../modules/hardware
+    ../../modules/services
+    ../../modules/programs
     ../../modules/desktop
     ./network-aula.nix
   ];

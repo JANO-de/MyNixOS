@@ -7,6 +7,6 @@
     useUserPackages = true;
     backupFileExtension = "backup";
     extraSpecialArgs = { inherit inputs theme; };
-    users.jano = import ../home.nix;
+    users.jano = import ../theme/home.nix;
   };
 }

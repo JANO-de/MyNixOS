@@ -21,14 +21,14 @@ let
 in
 {
   imports = [
-    ./mango.nix
-    ./niri.nix
-    ./hyprland.nix
-    ./hyprland-touch.nix
-    ./shell/dynisland
-    ./shell/chronos.nix
-    ./shell/halo.nix
-    ./greeter.nix
+    ./sessions/mango/mango.nix
+    ./sessions/niri/niri.nix
+    ./sessions/hyprland/hyprland.nix
+    ./sessions/hyprland/hyprland-touch.nix
+    ./shells/chronos.nix
+    ./shells/halo.nix
+    ./shells/dynisland.nix
+    ./greeter/greeter.nix
     ./splash.nix
     ./droidloom.nix
   ];

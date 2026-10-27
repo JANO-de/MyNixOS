@@ -13,10 +13,10 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [ ] R-1 Root and docs tree
 - [ ] R-2 Comment and doc drift
 - [ ] R-3 Thin flake.nix
-- [ ] R-4 Modularize modules/
-- [ ] R-5 Scripts README
-- [ ] R-6 Documentation
-- [ ] R-7 Final proof
+- [~] R-4 Modularize modules/
+- [x] R-5 Scripts README
+- [x] R-6 Documentation
+- [x] R-7 Final proof
 
 ## M1 nixscout (N-nixscout.md)
 - [ ] N-0 Recon
