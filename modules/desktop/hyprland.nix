@@ -1,6 +1,6 @@
 # Hyprland session (Lua config, Hyprland >= 0.55), launched through UWSM so
 # graphical-session.target (and with it the dynisland user service) comes up.
-# Config template: ./hyprland.lua. Plan and next steps: HYPRLAND_PLAN.md.
+# Config template: ./hyprland.lua.
 #
 # Uses the Hyprland FLAKE package (plugins must match its exact version), so the
 # Cachix cache is configured here, ALWAYS on. Do not override the flake's nixpkgs.

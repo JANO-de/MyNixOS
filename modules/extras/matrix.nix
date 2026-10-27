@@ -1,3 +1,4 @@
+# Matrix (Element) client setup, host-only (desktop). Imported by hosts/desktop.
 { config, pkgs, lib, ... }:
 let
   fqdn    = "desktop.tailc8366c.ts.net";

@@ -1,3 +1,4 @@
+# Orchard program module (programs.orchard.enable). Imported by hosts.
 {
   config,
   lib,

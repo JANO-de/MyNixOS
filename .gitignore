@@ -1,6 +1,5 @@
-.vscode/
 result
 result-*
+.direnv/
+target/
 *.qcow2
-src.tar.xz
-*.AppImage

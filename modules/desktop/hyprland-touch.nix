@@ -1,3 +1,4 @@
+# Hyprland touch helpers (surface-rotate, on-screen keyboard height). Imported by modules/desktop.
 { config, lib, pkgs, inputs, ... }:
 
 # Step 2: touch plumbing for the Surface (hyprgrass, rotation, on-screen keyboard).

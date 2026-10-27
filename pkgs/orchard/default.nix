@@ -1,3 +1,4 @@
+# Orchard package (Qt6/QML app). Built via cargo + meson + npm.
 {
   lib,
   pkgs,

@@ -3,7 +3,7 @@
 # touch-only devices) and the Wayland session basics every host shares.
 #
 #   desktop, laptop:  session = "mango"  shell = "dynisland"   (defaults)
-#   surface:          session = "niri"   shell = "chronos"
+#   halos1:           session = "niri"   shell = "chronos"
 { config, lib, pkgs, ... }:
 
 let
@@ -37,7 +37,7 @@ in
     session = lib.mkOption {
       type = lib.types.enum [ "mango" "niri" "hyprland" ];
       default = "mango";
-      description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see HYPRLAND_PLAN.md).";
+      description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see hyprland.nix).";
     };
     shell = lib.mkOption {
       type = lib.types.enum [ "dynisland" "chronos" "halo" ];

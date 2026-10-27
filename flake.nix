@@ -1,3 +1,4 @@
+# Flake entry point: inputs + outputs. Assembled in nix/ (R-3).
 {
   description = "MyNixOS: desktop, laptop and halos1";
 
@@ -53,87 +54,12 @@
     };
 
     # --- hardware ---
-    # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
-    # override its nixpkgs input.
     # linux-surface kernel, IPTS touch, Marvell wifi firmware (surface).
     nixos-hardware.url = "github:NixOS/nixos-hardware";
-    # Pin to 7.2.8 build (avoid 7.3.0 compile).
+    # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
+    # override its nixpkgs input. Pin to 7.2.8 build (avoid 7.3.0 compile).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      mango,
-      forge,
-      nix-cachyos-kernel,
-      ...
-    }@inputs:
-    let
-      system = "x86_64-linux";
-      theme = import ./modules/theme.nix;
-
-      mkHost =
-        {
-          host,
-          cachyos ? false,
-        }:
-        nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs theme; };
-          modules = [
-            home-manager.nixosModules.home-manager
-            forge.nixosModules.default
-            mango.nixosModules.mango
-            ./hosts/${host}/default.nix
-          ]
-          # CachyOS kernel overlay: only the laptop boots that kernel. The
-          # Surface must NOT get it (it relies on nixos-hardware's patched
-          # linux-surface kernel).
-          ++ nixpkgs.lib.optional cachyos {
-            nixpkgs.overlays = [ nix-cachyos-kernel.overlays.pinned ];
-          }
-          ++ [
-            {
-              nixpkgs.overlays = [
-                inputs.rust-overlay.overlays.default
-                self.overlays.default
-              ];
-            }
-          ];
-        };
-    in
-    {
-      packages.x86_64-linux.orchard =
-        let
-          pkgs = import nixpkgs {
-            system = "x86_64-linux";
-            overlays = [ inputs.rust-overlay.overlays.default ];
-            config.allowUnfree = true;
-          };
-        in
-        pkgs.callPackage ./pkgs/orchard/default.nix { };
-
-      apps.x86_64-linux.orchard = {
-        type = "app";
-        program = "${self.packages.x86_64-linux.orchard}/bin/orchard";
-      };
-
-      overlays.default = final: prev: {
-        orchard = final.callPackage ./pkgs/orchard/default.nix { };
-      };
-
-      nixosModules.orchard = ./modules/programs/orchard.nix;
-
-      nixosConfigurations = {
-        desktop = mkHost { host = "desktop"; };
-        laptop = mkHost {
-          host = "laptop";
-          cachyos = true;
-        };
-        halos1 = mkHost { host = "halos1"; };
-      };
-    };
+  outputs = inputs: import ./nix inputs;
 }

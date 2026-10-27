@@ -7,7 +7,7 @@
 - **Check everything before sending**: run/test what the sandbox allows (shell scripts, python helpers, brace/paren/bracket count of every QML file, `tar tzf` of the update), verify paths, **say what is untested**. There is NO QML runtime, NO nix and NO Hyprland in the sandbox.
 - **Never ship a hand-edited host file blindly.** Update 45 overwrote the user's fixed `hosts/halos1/default.nix`. Before including a file the user may have edited (`hosts/*`, `flake.nix`), ask them to `grep`/`sed -n` it, or avoid shipping it and give a `sed -i` one-liner instead. After shipping a host file, grep it in the sandbox.
 - **Ask before creating or changing the TODO-list** (stored preference; also for dynisland: one complete change per request, then "test: dynisland restart").
-- The repo is 79 MB, too big to upload. The user uploads a snapshot (`src_tar.xz`, can be OLDER than what runs on the device) and/or the latest `halo-update-N.tar.gz`. Ship changes as **`halo-update-N.tar.gz`** (only changed files, repo-relative paths, plus HANDOFF.md when edited). **Next number: 68.** The user extracts in the repo root: `tar xzf ~/Downloads/halo-update-N.tar.gz && scripts/halo-dev.sh`.
+- The repo is 79 MB, too big to upload. The user uploads a snapshot (`src_tar.xz`, can be OLDER than what runs on the device) and/or the latest `halo-update-N.tar.gz`. Ship changes as **`halo-update-N.tar.gz`** (only changed files, repo-relative paths, plus HANDOFF.md when edited). **Next number: 73.** The user extracts in the repo root: `tar xzf ~/Downloads/halo-update-N.tar.gz && scripts/halo-dev.sh`.
 - When a change "doesn't take", grep the WHOLE repo for the filename (stray same-named file shadows the real one).
 - QML rules learned: `anchors { ... };` is illegal; no anchors on children of Row/Column; `ListModel.get()` in a binding does not register a dependency (bump a `tick`); never read `screen` inside `visible` of a PanelWindow (binding loop, pass a string like `screenName`); **QML method names cannot start with an uppercase letter** (update 35); `left` and other Item properties are FINAL (do not declare `property ... left`); in a delegate `win: win` resolves to the delegate's own property (use a differently named property, e.g. `host`); `Quickshell.env("X")` of an UNSET variable is `undefined` (not `""`): test with `!Quickshell.env("X")`; `Qt.application.keyboardModifiers` for modifiers inside DragHandler (no `centroid.modifiers`).
 - **STANDING RULE (user, update 16): always port from the Android source code** (AOSP, android.googlesource.com), 1:1 behaviour/numbers; cite the file where a value comes from. **At the end of every task update this HANDOFF.md and ship it in the same `halo-update-N.tar.gz`.**
@@ -298,3 +298,27 @@ See `ROADMAP.md` section Order. Current: **P1 rename shipped in 62, awaiting the
 - Marked done: C1, B4, C6 (user), plus C2, B5, B6, A6, C3, C5, F2, F3.
 - Added Settings pages: Android apps, Wallpaper & style, Accessibility; Settings search; per-app notification mute; rollback button + polkit.
 - Battery: sysctl tuning, coredump off, droidloomd limits; Files drives via udev; polling intervals lowered.
+
+## 0t. Plan v2 for Beam (update 69, 2026-10-27)
+- New plan in `beam-plan/v2/` (README, `D-delete.md`, `R-cleanup.md`, `N-nixscout.md`, `STATUS.md`, `drv-check.sh`). Kickoff for Beam: "Read `beam-plan/v2/README.md` fully, then `D-delete.md`. Start at task D-0."
+- Milestones: D = delete appOutlet-nix + Tokri leftovers (Tokri code was already gone; only notes/plans remain); R = clean + modularize + document the flake (behaviour-neutral, proven with identical `drvPath` per host); N = `nixscout`, Rust + GTK4/libadwaita, Bazaar-style read-only browser with tabs Packages / Options / Modules / Flakes / Third-party; offline index (SQLite FTS5) built from pinned channel JSON, third-party fetched at runtime.
+- Owner decisions: Orchard stays; nixscout read-only (copy buttons allowed, no installs, no process spawning); paths in rule 13 never break. Open ASK items are in `beam-plan/v2/STATUS.md`.
+- Untested: all of it (plan only; sources like Bazaar repo, FlakeHub/flakestry APIs and the channel JSON URLs are carried over or UNVERIFIED until N-1).
+- Snapshot note: `HANDOFF-row-68.txt` holds row 68 (suite restyle) not yet merged here; R-1 merges it.
+
+## 0u. M4 ii-p3drovfx (update 70, 2026-10-27)
+- Owner likes github.com/P3DROVFX/ii-p3drovfx (Quickshell shell, Hyprland-based) and finds dynisland too plain and failing; wants ii on **desktop and laptop only**, and on **mangoWM if possible**. Never halos1.
+- Plan: `beam-plan/v2/I-ii.md`. Phase 1 = Hyprland specialisation `ii-hyprland` (full features, mango + dynisland stays default boot). Phase 2 = mango backend as patches in `patches/ii-p3drovfx/` (windows via Quickshell `ToplevelManager`, tags via mango IPC, shortcuts via `IpcHandler`); Hyprland-only features disabled. Gate between phases = owner acceptance.
+- Verified from upstream wiki: no flake/Nix package; installer is bash and writes to `$HOME`; needs Hyprland 0.56.1+, Matugen 4.1.0+, quickshell 0.3.0+; `HyprlandData` + Hyprland IPC + global shortcuts are the coupling. UNVERIFIED: which services are compositor-agnostic, mango IPC details, nixpkgs Matugen version (I-0).
+- R-4 step 8 changed: dynisland QML is not moved.
+
+## 0v. M4 changed: Hyprland replaces mango (update 71, 2026-10-27)
+- Owner: desktop and laptop go to **Hyprland + ii-p3drovfx**; the mango backend (old I-4) is dropped. Hyprland has a built-in scrolling layout, so ii's Scrolling Overview works there. halos1 untouched.
+- `beam-plan/v2/I-ii.md` rewritten (I-0..I-4). Fallback `specialisation.legacy-mango` stays until the owner accepts ii; then ASK to delete mango and dynisland. Supersedes the phase 2 text in 0u.
+- Untested: plan only; Hyprland version vs 0.56.1, nixpkgs Matugen version, ii runtime write paths are checked in I-0.
+
+## 0w. M4: protect the Halo Hyprland config (update 72, 2026-10-27)
+- Owner asked whether moving desktop/laptop to Hyprland breaks Halo. Finding (from the snapshot): all Hyprland hosts share `hyprland.nix` + template `hyprland.lua`, and `hyprland-touch.nix` (hyprgrass, rotation, OSK, tablet mode, Surface touch device) is gated only by `session == "hyprland"`; the template ends with an unconditional `dofile("/etc/hypr/hyprland-touch.lua")`. Halo itself (`shell/halo/`, `halo.nix`, `hyprland-mode.lua`) is not touched by ii.
+- Plan: I-3a layers the config (base / touch gated by new `modules.desktop.hyprlandTouch.enable`, halos1 = true / ii layer in its own file). Proof: halos1 drvPath and the generated `hypr/hyprland.lua` + `hyprland-touch.lua` texts identical before/after. R-4 keeps `hyprland.nix` and `hyprland-touch.nix` separate.
+- Untested: plan only.
+

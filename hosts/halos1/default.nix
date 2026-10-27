@@ -6,9 +6,6 @@
 #   network-aula.nix  school-network proxy dispatcher
 { config, pkgs, lib, inputs, ... }:
 
-# !!!! To revert to niri/chronos: sed -i '55s|"mango"|"niri"|; 56s|"dynisland"|"chronos"|' hosts/halos1/default.nix
-#ip routegit add -A && sudo nixos-rebuild switch --flake .#halos1
-
 let
   # Fully transparent cursor theme: every cursor name Adwaita knows points at
   # one 1x1 transparent image, so a touch-only Surface shows no pointer. Switch
@@ -43,7 +40,7 @@ in
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
-    ../../modules/core.nix
+    ../../modules/core
     ../../modules/hardware.nix
     ../../modules/services.nix
     ../../modules/programs.nix
@@ -65,7 +62,7 @@ in
   modules.programs.profile = "lean";
   hardware.nvidia.enable = false; # Intel HD 620 only
 
-  modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode (see HYPRLAND_PLAN.md)
+  modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode
 
   # Deskflow: this tablet joins the laptop's server.
   modules.programs.deskflow = {
@@ -93,7 +90,7 @@ in
   boot.loader.timeout = 2;
 
   # ---- memory: 4 GB RAM / 128 GB disk ------------------------------------------
-  # zram below half of RAM (overrides modules/core.nix), plus an 8 GB swapfile
+  # zram below half of RAM (overrides modules/core), plus an 8 GB swapfile
   # for suspend/hibernate headroom (created on first activation). Verify a real
   # hibernate/resume cycle before relying on it.
   zramSwap = {

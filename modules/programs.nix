@@ -1,5 +1,5 @@
 # Programs, in two profiles:
-#   "lean"  CLI essentials + zathura + moonlight + deskflow   (surface)
+#   "lean"  CLI essentials + zathura + moonlight + deskflow   (halos1)
 #   "full"  lean + apps, IDEs/languages, file manager, llama  (desktop, laptop)
 { config, lib, pkgs, inputs, ... }:
 
@@ -43,6 +43,7 @@ in
         eza bat ripgrep fd procs zoxide z-lua
         atuin btop delta dust fzf ncdu tmux yq-go
         inputs.forge.packages.${system}.forge # Forge TUI for OpenCode
+        appimage-run # run AppImages on NixOS
 
         # sharing one keyboard/mouse and streaming the screen
         deskflow

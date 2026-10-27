@@ -1,3 +1,4 @@
+# Halo shell (Quickshell): apps, theme, services. Imported by modules/desktop/shell.
 { config, lib, pkgs, inputs, ... }:
 let
   cfg = config.modules.desktop;
