@@ -13,6 +13,8 @@ in
         pkgs.gtk4
         pkgs.libadwaita
         pkgs.glib
+        pkgs.sqlite
+        nixfmt
       ];
     };
   };

@@ -63,6 +63,7 @@ in
   hardware.nvidia.enable = false; # Intel HD 620 only
 
   modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode
+  modules.desktop.hyprlandTouch.enable = true;
 
   # Deskflow: this tablet joins the laptop's server.
   modules.programs.deskflow = {

@@ -115,7 +115,7 @@ let
   };
 in
 {
-  config = lib.mkIf (config.modules.desktop.session == "hyprland") {
+  config = lib.mkIf config.modules.desktop.hyprlandTouch.enable {
     environment.systemPackages = [ surfaceRotate kbdToggle kbdWatch pkgs.squeekboard pkgs.iio-sensor-proxy pkgs.evtest ];
 
     # Auto-rotation daemon. Test manually first: systemctl --user start surface-rotate

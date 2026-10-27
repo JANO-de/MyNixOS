@@ -41,9 +41,15 @@ let
       ]
   );
 
+  sessionExtras =
+    if cfg.hyprlandTouch.enable then
+      ''dofile("/etc/hypr/hyprland-touch.lua")''
+    else
+      "";
+
   content =
     lib.replaceStrings
-      [ "@ACCENT@" "@SURFACE@" "@POLKIT@" "@SCREENSHOT@" "@WPCTL@" "@SHELL_BINDS@" ]
+      [ "@ACCENT@" "@SURFACE@" "@POLKIT@" "@SCREENSHOT@" "@WPCTL@" "@SHELL_BINDS@" "@SESSION_EXTRAS@" ]
       [
         (rgba "accent")
         (rgba "surface")
@@ -51,6 +57,7 @@ let
         "${screenshot}"
         "${pkgs.wireplumber}/bin/wpctl"
         shellBinds
+        sessionExtras
       ]
       (builtins.readFile ./hyprland.lua);
 in

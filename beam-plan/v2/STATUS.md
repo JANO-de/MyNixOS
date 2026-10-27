@@ -19,10 +19,10 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] R-7 Final proof
 
 ## M1 nixscout (N-nixscout.md)
-- [ ] N-0 Recon
+- [x] N-0 Recon
 - [ ] N-1 Source verification + Bazaar study
-- [ ] N-2 Dev shell + baseline
-- [ ] N-3 Schema
+- [x] N-2 Dev shell + baseline
+- [x] N-3 Schema
 - [ ] N-4 Indexer: packages
 - [ ] N-5 Indexer: options
 - [ ] N-6 Indexer: modules
@@ -31,14 +31,14 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [ ] N-9 UI shell
 - [ ] N-10 Detail pages
 - [ ] N-11 Performance pass
-- [ ] N-12 Packaging + integration (after R-3)
+- [~] N-12 Packaging + integration (builds)
 - [ ] N-13 Docs + owner checklist
 
 ## M4 ii-p3drovfx on Hyprland (I-ii.md)
-- [ ] I-0 Recon
+- [x] I-0 Recon
 - [ ] I-1 Package
-- [ ] I-2 Module
-- [ ] I-3a Layer the Hyprland config (halos1 byte-identical)
+- [~] I-2 Module (skeleton)
+- [x] I-3a Layer the Hyprland config (halos1 byte-identical)
 - [ ] I-3b Hyprland session on desktop + laptop (gate: owner accepts, then delete mango/dynisland?)
 - [ ] I-4 Docs + update path
 

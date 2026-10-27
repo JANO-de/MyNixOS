@@ -40,7 +40,7 @@ in
       description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see hyprland.nix).";
     };
     shell = lib.mkOption {
-      type = lib.types.enum [ "dynisland" "chronos" "halo" ];
+      type = lib.types.enum [ "dynisland" "chronos" "halo" "ii" ];
       default = "dynisland";
       description = "Quickshell shell (island, dock, launcher, lock) autostarted in the session.";
     };
@@ -49,6 +49,7 @@ in
       default = "desktop";
       description = "Hyprland mode at first login of a boot (tablet = touch UI, desktop = pointer UI). Written to /etc/hypr/default-mode.";
     };
+    hyprlandTouch.enable = lib.mkEnableOption "Hyprland touch/tablet layer (Surface touch device, rotation, on-screen keyboard). Default false; halos1 sets true.";
     greeterOsk.enable = lib.mkEnableOption ''
       an on-screen keyboard in the SDDM greeter (Qt virtual keyboard), so a
       touch-only device can be logged into
