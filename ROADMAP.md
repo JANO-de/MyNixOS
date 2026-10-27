@@ -45,9 +45,9 @@ Size: S = one update, M = 2-4, L = 5+.
 | C4 | **Shipped in 63 (verify).** Shared folder `~/Shared` via `shared_storage_directories`; clipboard already works | M | A3 |
 | C5 (done) | Android notifications into Halo notification centre | L | C1, C2 |
 | C6 (done) | F-Droid + Aurora Store install path (Settings page); Droidloom version bump script | M | B6 |
-| D1 | Clock (+ widget) | M | none |
-| D2 | Notes, Calculator, Weather | L | D1 |
-| D3 | Calendar, Reminders, Contacts | L | D1 |
+| D1 (done) | Clock (+ widget) | M | none |
+| D2 (done) | Notes, Calculator, Weather | L | D1 |
+| D3 (done) | Calendar, Reminders, Contacts | L | D1 |
 | E1 | Greeter-to-desktop black gap | M | none |
 | E2 | Lock screen widgets, idle lock timeout | M | none |
 | E3 | Stage Manager-style groups, Spotlight pull-down search | L | C3 |

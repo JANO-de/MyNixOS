@@ -154,6 +154,13 @@ in
       haloApp
       (haloAppEntry "files" "Files" "system-file-manager" "Utility")
       (haloAppEntry "gallery" "Gallery" "image-x-generic" "Graphics")
+      (haloAppEntry "calculator" "Calculator" "accessories-calculator" "Utility")
+      (haloAppEntry "clock" "Clock" "clock" "Utility")
+      (haloAppEntry "notes" "Notes" "text-editor" "Utility")
+      (haloAppEntry "reminders" "Reminders" "appointment-soon" "Utility")
+      (haloAppEntry "contacts" "Contacts" "contact-new" "Office")
+      (haloAppEntry "weather" "Weather" "weather-clear" "Utility")
+      (haloAppEntry "calendar" "Calendar" "x-office-calendar" "Office")
       (pkgs.makeDesktopItem {
         name = "halo-settings";
         desktopName = "Settings";

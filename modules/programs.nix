@@ -48,7 +48,7 @@ in
         deskflow
         moonlight-qt # on the Surface this renders a Sunshine server's screen
         # NixOS Package searcher: GUI for searching and installing packages from Nixpkgs, Flakes, and FlatHub
-        inputs.nixos-conf-editor.packages.${system}.default
+        
 
         # zathura: small keyboard-driven PDF viewer, pen-friendly. Plugin set
         # narrowed to the two PDF backends to keep the closure small.
