@@ -26,9 +26,10 @@ import qs.modules.lock
 import qs.modules.launcher
 import qs.modules.spotlight
 import qs.modules.ai
+import qs.modules.tokri
 
 ShellRoot {
-    Component.onCompleted: { Usb.ready; Updates.ready; Clip.items } //  // instantiate so the clipboard watcher starts at login
+    Component.onCompleted: { Usb.ready; Updates.ready; Clip.items; Tokri.items } //  // instantiate so the clipboard watcher starts at login
     // One instance per monitor.
     Variants { model: Quickshell.screens; Wallpaper {} }
     Variants { model: Config.island.enabled ? Quickshell.screens : []; Island {} }
@@ -44,6 +45,8 @@ ShellRoot {
 
     Settings {}   // single centered overlay, toggled via UiState.settingsOpen
 
+    Basket {}   // Tokri basket
+
     // ---- IPC (bind in niri config.kdl, e.g. spawn "qs" "-c" "dynisland" "ipc" "call" "settings" "toggle")
     IpcHandler { target: "settings"; function toggle(): void { UiState.settingsOpen = !UiState.settingsOpen } }
     IpcHandler { target: "quick";    function toggle(): void { const on = UiState.islandPinned && UiState.quickPage; UiState.islandPinned = !on; UiState.quickPage = !on } }
@@ -54,6 +57,7 @@ ShellRoot {
         function note(): void { UiState.openPanel("note") }
     }
     IpcHandler { target: "island";   function toggle(): void { UiState.islandPinned = !UiState.islandPinned } }
+    IpcHandler { target: "tokri"; function toggle(): void { Tokri.toggle() } }
     IpcHandler { target: "spotlight"
         function toggle(): void { UiState.spotlightOpen = !UiState.spotlightOpen }
         function open(): void { UiState.spotlightOpen = true }

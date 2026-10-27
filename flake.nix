@@ -19,9 +19,9 @@
     # Hyprland (flake package: plugins must match its exact version). Do NOT add
     # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
     hyprland.url = "github:hyprwm/Hyprland";
-    hyprgrass = { 
-      url = "github:horriblename/hyprgrass"; 
-      inputs.hyprland.follows = "hyprland"; 
+    hyprgrass = {
+      url = "github:horriblename/hyprgrass";
+      inputs.hyprland.follows = "hyprland";
     };
 
     # Chronos: niri fork + Quickshell shell (also used by the Surface).
@@ -55,13 +55,15 @@
     # --- hardware ---
     # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
     # override its nixpkgs input.
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
     # linux-surface kernel, IPTS touch, Marvell wifi firmware (surface).
     nixos-hardware.url = "github:NixOS/nixos-hardware";
+    # Pin to 7.2.8 build (avoid 7.3.0 compile).
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";
   };
 
   outputs =
     {
+      self,
       nixpkgs,
       home-manager,
       mango,
@@ -93,10 +95,38 @@
           ++ nixpkgs.lib.optional cachyos {
             nixpkgs.overlays = [ nix-cachyos-kernel.overlays.pinned ];
           }
-          ++ [ { nixpkgs.overlays = [ inputs.rust-overlay.overlays.default ]; } ];
+          ++ [
+            {
+              nixpkgs.overlays = [
+                inputs.rust-overlay.overlays.default
+                self.overlays.default
+              ];
+            }
+          ];
         };
     in
     {
+      packages.x86_64-linux.orchard =
+        let
+          pkgs = import nixpkgs {
+            system = "x86_64-linux";
+            overlays = [ inputs.rust-overlay.overlays.default ];
+            config.allowUnfree = true;
+          };
+        in
+        pkgs.callPackage ./pkgs/orchard/default.nix { };
+
+      apps.x86_64-linux.orchard = {
+        type = "app";
+        program = "${self.packages.x86_64-linux.orchard}/bin/orchard";
+      };
+
+      overlays.default = final: prev: {
+        orchard = final.callPackage ./pkgs/orchard/default.nix { };
+      };
+
+      nixosModules.orchard = ./modules/programs/orchard.nix;
+
       nixosConfigurations = {
         desktop = mkHost { host = "desktop"; };
         laptop = mkHost {
