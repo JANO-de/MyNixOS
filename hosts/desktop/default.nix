@@ -8,6 +8,7 @@
     ../../modules/hardware.nix
     ../../modules/services.nix
     ../../modules/programs.nix
+    ../../modules/programs/orchard.nix
     ../../modules/desktop
     ../../modules/extras/matrix.nix
   ];
@@ -17,19 +18,28 @@
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds, and the daemon just rebuilds from
   # source. Also lets the Surface receive unsigned paths pushed from here.
-  nix.settings.trusted-users = [ "root" "jano" ];
+  nix.settings.trusted-users = [
+    "root"
+    "jano"
+  ];
 
   # Internal data drives (ext4). "nofail" keeps boot snappy if one is missing,
   # "noatime" avoids needless write traffic.
   fileSystems."/mnt/data" = {
     device = "/dev/disk/by-uuid/f6a19317-f36e-4a3f-8934-423b2e3d8ed4";
     fsType = "ext4";
-    options = [ "nofail" "noatime" ];
+    options = [
+      "nofail"
+      "noatime"
+    ];
   };
   fileSystems."/mnt/ssd" = {
     device = "/dev/disk/by-uuid/949f3a95-eae7-4068-a57a-ff0d695142e1";
     fsType = "ext4";
-    options = [ "nofail" "noatime" ];
+    options = [
+      "nofail"
+      "noatime"
+    ];
   };
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
@@ -42,6 +52,8 @@
     role = "client";
     serverAddress = "laptop";
   };
+
+  programs.orchard.enable = true;
 
   # Explicitly disable rotation for both active desktop outputs. Avoid the
   # trailing `$` regex anchor here; Mango matches names without requiring it.

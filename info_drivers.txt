@@ -1,0 +1,104 @@
+== SO ==
+PRETTY_NAME="NixOS 26.05 (Yarara)"
+7.2.8-cachyos
+
+== lscpu ==
+Arquitectura:                             x86_64
+modo(s) de operación de las CPUs:         32-bit, 64-bit
+Tamaños de las direcciones:               39 bits physical, 48 bits virtual
+Orden de los bytes:                       Little Endian
+CPU(s):                                   12
+Lista de la(s) CPU(s) en línea:           0-11
+ID de fabricante:                         GenuineIntel
+Nombre del modelo:                        11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz
+Familia de CPU:                           6
+Modelo:                                   141
+Hilo(s) de procesamiento por núcleo:      2
+Núcleo(s) por «socket»:                   6
+«Socket(s)»:                              1
+Revisión:                                 1
+Microcode version:                        0x58
+CPU(s) factor de escala MHz:              36%
+CPU MHz máx.:                             4500,0000
+CPU MHz mín.:                             800,0000
+BogoMIPS:                                 5376,00
+Indicadores:                              fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l2 cdp_l2 ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid movdiri movdir64b fsrm avx512_vp2intersect md_clear ibt flush_l1d arch_capabilities
+
+== lshw -short ==
+Camino H/W      Dispositivo     Clase          Descripción
+===========================================================
+                                system         ASUS TUF Gaming F15 FX506HCB_FX506HCB
+/0                              bus            FX506HCB
+/0/0                            memory         64KiB BIOS
+/0/39                           memory         16GiB Memoria de sistema
+/0/39/0                         memory         Project-Id-Version: @(#) $Id$Report-Msgid-Bugs-To: PO-Revision-Date: 2021-11-09 09:22-0700Last-Translator: Alex Henrie <alexhenrie24@gmail.com>Language-Team: Spanish <es@li.org>Language: esMIME-Version: 1.0Content-Type: text/plain; charset=UTF-8Content-Transfer-Encoding: 8bitX-Generator: Poedit 3.0Project-Id-Version: @(#) $Id$Report-Msgid-Bugs-To: PO-Revision-Date: 2021-11-09 09:22-0700Last-Translator: Alex Henrie <alexhenrie24@gmail.com>Language-Team: Spanish <es@li.org>Language: esMIME-Version: 1.0Content-Type: text/plain; charset=UTF-8Content-Transfer-Encoding: 8bitX-Generator: Poedit 3.0 [vacío]
+/0/39/1                         memory         Project-Id-Version: @(#) $Id$Report-Msgid-Bugs-To: PO-Revision-Date: 2021-11-09 09:22-0700Last-Translator: Alex Henrie <alexhenrie24@gmail.com>Language-Team: Spanish <es@li.org>Language: esMIME-Version: 1.0Content-Type: text/plain; charset=UTF-8Content-Transfer-Encoding: 8bitX-Generator: Poedit 3.0Project-Id-Version: @(#) $Id$Report-Msgid-Bugs-To: PO-Revision-Date: 2021-11-09 09:22-0700Last-Translator: Alex Henrie <alexhenrie24@gmail.com>Language-Team: Spanish <es@li.org>Language: esMIME-Version: 1.0Content-Type: text/plain; charset=UTF-8Content-Transfer-Encoding: 8bitX-Generator: Poedit 3.0 [vacío]
+/0/39/2                         memory         8GiB SODIMM DDR4 Sincrónico 3200 MHz (0,3 ns)
+/0/39/3                         memory         8GiB SODIMM DDR4 Sincrónico 3200 MHz (0,3 ns)
+/0/48                           memory         288KiB L1 caché
+/0/49                           memory         192KiB L1 caché
+/0/4a                           memory         7680KiB L2 caché
+/0/4b                           memory         12MiB L3 caché
+/0/4c                           processor      11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz
+/0/100                          bridge         
+/0/100/1        input21         bridge         Video Bus
+/0/100/1/0      /dev/fb0        display        i915drmfb
+/0/100/1/0.1    card1           multimedia     NVidia
+/0/100/1/0.1/0  input17         input          HDA NVidia HDMI/DP,pcm=3
+/0/100/1/0.1/1  input18         input          HDA NVidia HDMI/DP,pcm=7
+/0/100/1/0.1/2  input19         input          HDA NVidia HDMI/DP,pcm=8
+/0/100/1/0.1/3  input20         input          HDA NVidia HDMI/DP,pcm=9
+/0/100/2        /dev/fb0        display        i915drmfb
+/0/100/4                        generic        
+/0/100/6                        generic        
+/0/100/8                        generic        
+/0/100/a                        generic        
+/0/100/d                        bus            
+/0/100/d/0      usb1            bus            xHCI Host Controller
+/0/100/d/1      usb2            bus            xHCI Host Controller
+/0/100/e                        storage        
+/0/100/14                       bus            
+/0/100/14/0     usb3            bus            xHCI Host Controller
+/0/100/14/0/3   input35         input          ASUSTeK ROG SPATHA X Keyboard
+/0/100/14/0/7                   multimedia     USB2.0 HD UVC WebCam
+/0/100/14/0/e                   communication  Wireless_Device
+/0/100/14/1     usb4            bus            xHCI Host Controller
+/0/100/14.2                     memory         
+/0/100/15                       bus            
+
+== lspci -nnk ==
+0000:00:02.0 VGA compatible controller [0300]: Intel Corporation TigerLake-H GT1 [UHD Graphics] [8086:9a68] (rev 01)
+	DeviceName: Onboard - Video
+	Subsystem: ASUSTeK Computer Inc. Device [1043:13fc]
+	Kernel driver in use: i915
+--
+0000:00:1f.3 Audio device [0403]: Intel Corporation Tiger Lake-H HD Audio Controller [8086:43c8] (rev 11)
+	DeviceName: Onboard - Sound
+	Subsystem: ASUSTeK Computer Inc. Device [1043:16f2]
+	Kernel driver in use: snd_hda_intel
+--
+0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile] [10de:25a2] (rev a1)
+	Subsystem: ASUSTeK Computer Inc. Device [1043:13fc]
+	Kernel driver in use: nvidia
+	Kernel modules: nvidiafb, nouveau, nvidia_drm, nvidia
+0000:01:00.1 Audio device [0403]: NVIDIA Corporation GA107 High Definition Audio Controller [10de:2291] (rev a1)
+	Subsystem: ASUSTeK Computer Inc. Device [1043:13fc]
+	Kernel driver in use: snd_hda_intel
+	Kernel modules: snd_hda_intel
+0000:02:00.0 Network controller [0280]: MEDIATEK Corp. MT7921 802.11ax PCIe Wireless Network Adapter [Filogic 330] [14c3:7961]
+	Subsystem: AzureWave Device [1a3b:4680]
+	Kernel driver in use: mt7921e
+	Kernel modules: mt7921e
+0000:03:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. Device [10ec:8162] (rev 05)
+	Subsystem: ASUSTeK Computer Inc. Device [1043:208f]
+	Kernel driver in use: r8169
+	Kernel modules: r8169
+
+== lsusb ==
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 003: ID 322e:202c Sonix Technology Co., Ltd. USB2.0 HD UVC WebCam
+Bus 003 Device 004: ID 13d3:3563 IMC Networks Wireless_Device
+Bus 003 Device 005: ID 0b05:1977 ASUSTek Computer, Inc. ROG SPATHA X
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
