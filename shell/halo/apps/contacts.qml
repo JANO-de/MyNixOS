@@ -15,13 +15,13 @@ ShellRoot {
         property bool loading: false
         readonly property var shown: {
             const q = search.text.trim().toLowerCase();
-            const l = contacts.data.filter(c => q === "" || (c.name + " " + c.phone + " " + c.email).toLowerCase().indexOf(q) >= 0);
+            const l = contacts.value.filter(c => q === "" || (c.name + " " + c.phone + " " + c.email).toLowerCase().indexOf(q) >= 0);
             return l.sort((a, b) => a.name.localeCompare(b.name));
         }
         function open(id) {
             loading = true;
             cur = id;
-            const c = contacts.data.find(x => x.id === id) || { name: "", phone: "", email: "", note: "" };
+            const c = contacts.value.find(x => x.id === id) || { name: "", phone: "", email: "", note: "" };
             fName.text = c.name;
             fPhone.text = c.phone;
             fMail.text = c.email;
@@ -31,18 +31,18 @@ ShellRoot {
         function commit() {
             if (loading || cur === "")
                 return;
-            contacts.data = contacts.data.map(c => c.id === cur ? { id: c.id, name: fName.text, phone: fPhone.text, email: fMail.text, note: fNote.text } : c);
+            contacts.value = contacts.value.map(c => c.id === cur ? { id: c.id, name: fName.text, phone: fPhone.text, email: fMail.text, note: fNote.text } : c);
             contacts.save();
         }
         function add() {
             const id = String(Date.now());
-            contacts.data = contacts.data.concat([{ id: id, name: "New contact", phone: "", email: "", note: "" }]);
+            contacts.value = contacts.value.concat([{ id: id, name: "New contact", phone: "", email: "", note: "" }]);
             contacts.save();
             open(id);
             fName.forceFocus();
         }
         function del() {
-            contacts.data = contacts.data.filter(c => c.id !== cur);
+            contacts.value = contacts.value.filter(c => c.id !== cur);
             contacts.save();
             cur = "";
         }

@@ -18,3 +18,5 @@ You are needed as a director of software. You have Beam (AI model) working as yo
 https://github.com/SFG5453/Orchard --> Port to nixos
 https://github.com/AppOutlet/AppOutlet --> Port to nixos with an integrated nixpkgs, options, flakes, modules, 3rdpartyflakes searcher.
 https://github.com/ysuraj1999/tokri --> Port to dyinisland as a plugin module.
+
+“Read README.md fully, then 01-orchard.md. Start at task O-0.”

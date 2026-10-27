@@ -46,6 +46,12 @@
       url = "github:Donnnno/Arcticons";
       flake = false;
     };
+    # Rust toolchain (Orchard needs >=1.96)
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # --- hardware ---
     # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
     # override its nixpkgs input.
@@ -86,7 +92,8 @@
           # linux-surface kernel).
           ++ nixpkgs.lib.optional cachyos {
             nixpkgs.overlays = [ nix-cachyos-kernel.overlays.pinned ];
-          };
+          }
+          ++ [ { nixpkgs.overlays = [ inputs.rust-overlay.overlays.default ]; } ];
         };
     in
     {

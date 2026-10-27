@@ -29,7 +29,7 @@ ShellRoot {
                 return;
             const id = String(Date.now());
             const due = dueFor(whenSel);
-            store.data = [{ id: id, text: t, done: false, due: due }].concat(store.data);
+            store.value = [{ id: id, text: t, done: false, due: due }].concat(store.value);
             store.save();
             if (due !== "")
                 Quickshell.execDetached(["sh", alarmSh, "set", id, due, t]);
@@ -37,16 +37,16 @@ ShellRoot {
             whenSel = 0;
         }
         function toggle(i) {
-            const l = store.data.slice();
+            const l = store.value.slice();
             l[i] = Object.assign({}, l[i], { done: !l[i].done });
-            store.data = l;
+            store.value = l;
             store.save();
             if (l[i].done && l[i].due !== "")
                 Quickshell.execDetached(["sh", alarmSh, "clear", l[i].id]);
         }
         function del(i) {
-            Quickshell.execDetached(["sh", alarmSh, "clear", store.data[i].id]);
-            store.data = store.data.filter((r, j) => j !== i);
+            Quickshell.execDetached(["sh", alarmSh, "clear", store.value[i].id]);
+            store.value = store.value.filter((r, j) => j !== i);
             store.save();
         }
 
@@ -75,7 +75,7 @@ ShellRoot {
                 height: parent.height - 120
                 clip: true
                 spacing: 6
-                model: store.data
+                model: store.value
                 delegate: Rectangle {
                     required property var modelData
                     required property int index

@@ -7,7 +7,7 @@ Item {
 
     property string name: "data"
     property var fallback: []
-    property var data: fallback
+    property var value: fallback
     readonly property string dir: Quickshell.env("HOME") + "/.local/share/halo"
     signal loaded
 
@@ -19,7 +19,7 @@ Item {
     Timer {
         id: saveT
         interval: 400
-        onTriggered: f.setText(JSON.stringify(root.data))
+        onTriggered: f.setText(JSON.stringify(root.value))
     }
     FileView {
         id: f
@@ -27,7 +27,7 @@ Item {
         atomicWrites: true
         onLoaded: {
             try {
-                root.data = JSON.parse(text());
+                root.value = JSON.parse(text());
             } catch (e) {}
             root.loaded();
         }

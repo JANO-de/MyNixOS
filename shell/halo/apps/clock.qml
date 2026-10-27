@@ -18,12 +18,12 @@ ShellRoot {
         function run(args) { Quickshell.execDetached(args); }
 
         SystemClock { id: clk; precision: SystemClock.Seconds }
-        JsonStore { id: zones; name: "clock-zones"; fallback: ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"]; onLoaded: win.refreshZones() }
-        JsonStore { id: alarms; name: "clock-alarms"; fallback: [] }
+        JsonStore { id: zoneStore; name: "clock-zones"; fallback: ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"]; onLoaded: win.refreshZones() }
+        JsonStore { id: alarmStore; name: "clock-alarms"; fallback: [] }
 
         property var zoneTimes: []
         function refreshZones() {
-            zp.command = ["sh", "-c", "for z in \"$@\"; do TZ=$z date '+%a %H:%M'; done", "sh"].concat(zones.data);
+            zp.command = ["sh", "-c", "for z in \"$@\"; do TZ=$z date '+%a %H:%M'; done", "sh"].concat(zoneStore.value);
             zp.running = false;
             zp.running = true;
         }
@@ -80,24 +80,24 @@ ShellRoot {
         function addAlarm() {
             const id = String(Date.now());
             const t = pad(ah) + ":" + pad(am);
-            alarms.data = alarms.data.concat([{ id: id, time: t, label: "Alarm", on: true }]);
-            alarms.save();
+            alarmStore.value = alarmStore.value.concat([{ id: id, time: t, label: "Alarm", on: true }]);
+            alarmStore.save();
             run(["sh", alarmSh, "set", id, t, "Alarm"]);
         }
         function toggleAlarm(i) {
-            const l = alarms.data.slice();
+            const l = alarmStore.value.slice();
             l[i] = Object.assign({}, l[i], { on: !l[i].on });
-            alarms.data = l;
-            alarms.save();
+            alarmStore.value = l;
+            alarmStore.save();
             if (l[i].on)
                 run(["sh", alarmSh, "set", l[i].id, l[i].time, l[i].label]);
             else
                 run(["sh", alarmSh, "clear", l[i].id]);
         }
         function delAlarm(i) {
-            run(["sh", alarmSh, "clear", alarms.data[i].id]);
-            alarms.data = alarms.data.filter((a, j) => j !== i);
-            alarms.save();
+            run(["sh", alarmSh, "clear", alarmStore.value[i].id]);
+            alarmStore.value = alarmStore.value.filter((a, j) => j !== i);
+            alarmStore.save();
         }
 
         Row {
@@ -132,7 +132,7 @@ ShellRoot {
                 Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Qt.formatTime(clk.date, "HH:mm:ss"); color: AppTheme.text; font.pixelSize: 72; font.weight: Font.Light }
                 Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Qt.formatDate(clk.date, "dddd, d MMMM yyyy"); color: AppTheme.dim; font.pixelSize: 18; bottomPadding: 12 }
                 Repeater {
-                    model: zones.data
+                    model: zoneStore.value
                     Rectangle {
                         required property string modelData
                         required property int index
@@ -153,8 +153,8 @@ ShellRoot {
                                 anchors.fill: parent
                                 anchors.margins: -12
                                 onClicked: {
-                                    zones.data = zones.data.filter((z, j) => j !== index);
-                                    zones.save();
+                                    zoneStore.value = zoneStore.value.filter((z, j) => j !== index);
+                                    zoneStore.save();
                                     win.refreshZones();
                                 }
                             }
@@ -167,8 +167,8 @@ ShellRoot {
                     placeholder: "Add a zone, e.g. Europe/Madrid (Enter)"
                     onAccepted: {
                         if (text.trim() !== "") {
-                            zones.data = zones.data.concat([text.trim()]);
-                            zones.save();
+                            zoneStore.value = zoneStore.value.concat([text.trim()]);
+                            zoneStore.save();
                             text = "";
                             win.refreshZones();
                         }
@@ -196,7 +196,7 @@ ShellRoot {
                     Pill { label: "Add alarm"; filled: true; onClicked: win.addAlarm() }
                 }
                 Repeater {
-                    model: alarms.data
+                    model: alarmStore.value
                     Rectangle {
                         required property var modelData
                         required property int index

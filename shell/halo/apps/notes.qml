@@ -15,7 +15,7 @@ ShellRoot {
         property bool loading: false
         readonly property var shown: {
             const q = search.text.trim().toLowerCase();
-            const l = notes.data.filter(n => q === "" || n.text.toLowerCase().indexOf(q) >= 0);
+            const l = notes.value.filter(n => q === "" || n.text.toLowerCase().indexOf(q) >= 0);
             return l.sort((a, b) => b.ts - a.ts);
         }
         function titleOf(n) {
@@ -25,13 +25,13 @@ ShellRoot {
         function open(id) {
             cur = id;
             loading = true;
-            const n = notes.data.find(x => x.id === id);
+            const n = notes.value.find(x => x.id === id);
             edit.text = n ? n.text : "";
             loading = false;
         }
         function add() {
             const id = String(Date.now());
-            notes.data = notes.data.concat([{ id: id, text: "", ts: Date.now() }]);
+            notes.value = notes.value.concat([{ id: id, text: "", ts: Date.now() }]);
             notes.save();
             open(id);
             edit.forceActiveFocus();
@@ -39,7 +39,7 @@ ShellRoot {
         function del() {
             if (cur === "")
                 return;
-            notes.data = notes.data.filter(n => n.id !== cur);
+            notes.value = notes.value.filter(n => n.id !== cur);
             notes.save();
             cur = "";
             edit.text = "";
@@ -114,7 +114,7 @@ ShellRoot {
                         onTextChanged: {
                             if (win.loading || win.cur === "")
                                 return;
-                            notes.data = notes.data.map(n => n.id === win.cur ? { id: n.id, text: text, ts: Date.now() } : n);
+                            notes.value = notes.value.map(n => n.id === win.cur ? { id: n.id, text: text, ts: Date.now() } : n);
                             notes.save();
                         }
                     }

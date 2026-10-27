@@ -3,3 +3,4 @@ result
 result-*
 *.qcow2
 src.tar.xz
+*.AppImage
