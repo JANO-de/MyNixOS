@@ -26,6 +26,13 @@ stdenv.mkDerivation {
     rm -rf $out/share/quickshell/ii/modules/common/widgets/shapes
     mkdir -p $out/share/quickshell/ii/modules/common/widgets/shapes
     cp -r ${roundedPolygon}/* $out/share/quickshell/ii/modules/common/widgets/shapes/
+
+    mkdir -p $out/share/hypr/ii
+    cp -r dots/.config/hypr/* $out/share/hypr/ii/
+    sed -i 's/render_power = 10,/render_power = 4,/' $out/share/hypr/ii/hyprland/general.lua
+
+    mkdir -p $out/share/matugen/ii
+    cp -r dots/.config/matugen/* $out/share/matugen/ii/
   '';
   meta = {
     description = "ii Quickshell config (P3DROVFX fork)";

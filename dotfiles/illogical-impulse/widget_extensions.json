@@ -1,0 +1,28 @@
+{
+    "data": {
+        "installedWidgets": {
+            "end4-pC-media1x1": {
+                "author": "midplays09",
+                "description": "Compact album-art media controls ported from end4-pC.",
+                "enabled": true,
+                "installedAt": "2026-10-28T18:11:03.254Z",
+                "installedPath": "/home/jano/.config/quickshell/ii/user_widgets/end4-pC-media1x1",
+                "isLocal": false,
+                "name": "end4-pC Media 1x1",
+                "repoUrl": "https://github.com/midplays09/end4-pC-media1x1.git",
+                "version": "1.0.0",
+                "widgetJson": {
+                    "author": "midplays09",
+                    "category": "Media",
+                    "component": "main.qml",
+                    "description": "Compact album-art media controls ported from end4-pC.",
+                    "icon": "music_note",
+                    "name": "end4-pC Media 1x1",
+                    "version": "1.0.0"
+                }
+            }
+        },
+        "widgetConfigs": {
+        }
+    }
+}

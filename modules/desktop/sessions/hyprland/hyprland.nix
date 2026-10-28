@@ -11,14 +11,19 @@ let
   sys = pkgs.stdenv.hostPlatform.system;
   hypr = inputs.hyprland.packages.${sys};
   hyprNixpkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.${sys};
+  # Override with modules.desktop.drmDevices (the desktop PC has only the NVIDIA card: /dev/dri/dgpu).
+  # Setting it also hides simpledrm (card0, the EFI framebuffer) from Aquamarine.
   drmDevices =
-    if config.hardware.nvidia.enable or false
+    if cfg.drmDevices != null then cfg.drmDevices
+    else if config.hardware.nvidia.enable or false
     then "/dev/dri/igpu:/dev/dri/dgpu"
     else "/dev/dri/igpu";
 
   rgba = key: "rgba(${lib.removePrefix "#" (theme.color key)}ff)";
 
   screenshot = pkgs.writeShellScript "screenshot" ''
+    export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-wayland-1}"
     dir="$HOME/Pictures/Screenshots"
     mkdir -p "$dir"
     f="$dir/Screenshot from $(date +'%Y-%m-%d %H-%M-%S').png"
@@ -68,6 +73,13 @@ dofile("/etc/hypr/hyprland-mode.lua")''
       (builtins.readFile ./hyprland.lua);
 in
 {
+  options.modules.desktop.drmDevices = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    default = null;
+    example = "/dev/dri/dgpu";
+    description = "Colon-separated DRM devices Hyprland (Aquamarine) may use. null = igpu (+ dgpu when NVIDIA is enabled).";
+  };
+
   config = lib.mkMerge [
     # The cache must be active BEFORE the flake package is built, so this is not
     # gated on the session. First build: pass the same values on the CLI (see plan).
@@ -87,6 +99,9 @@ in
         portalPackage = hypr.xdg-desktop-portal-hyprland;
       };
 
+      # Applies to every shell (ii does not set it in its own Hyprland config).
+      environment.sessionVariables.AQ_DRM_DEVICES = drmDevices;
+
       # The flake is built against its own nixpkgs: use that Mesa so the GL/GBM
       # libs match (Hyprland wiki, Nix page).
       #hardware.graphics.package = hyprNixpkgs.mesa;
@@ -95,7 +110,14 @@ in
       services.gnome.gnome-keyring.enable = true;
       environment.systemPackages = with pkgs; [ polkit_gnome wl-clip-persist ];
 
-      home-manager.users.jano.xdg.configFile."hypr/hyprland.lua".text = content;
+      home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (cfg.shell != "ii") (inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        run mkdir -p "$HOME/.config/hypr"
+        if [ -L "$HOME/.config/hypr/hyprland.lua" ] || [ ! -e "$HOME/.config/hypr/hyprland.lua" ]; then
+          run rm -f "$HOME/.config/hypr/hyprland.lua"
+          run cp ${pkgs.writeText "hyprland.lua" content} "$HOME/.config/hypr/hyprland.lua"
+          run chmod u+w "$HOME/.config/hypr/hyprland.lua"
+        fi
+      '');
     })
   ];
 }

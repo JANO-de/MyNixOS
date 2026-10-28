@@ -29,6 +29,7 @@ in
     ./shells/halo.nix
     ./shells/dynisland.nix
     ./shells/ii.nix
+    ./dotfiles.nix
     ./greeter/greeter.nix
     ./splash.nix
     ./droidloom.nix
@@ -82,6 +83,10 @@ in
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
       security.polkit.enable = true;
 
+      programs.kdeconnect.enable = true;
+      services.tumbler.enable = true;
+      hardware.bluetooth.enable = true;
+      services.blueman.enable = true;
       programs.dconf.enable = true;
       programs.dconf.profiles.user.databases = [
         { settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark"; }
@@ -105,6 +110,12 @@ in
         xdg-utils
         adwaita-icon-theme # cursor theme
         pavucontrol
+        localsend-cli
+        gdk-pixbuf
+        librsvg
+        bc
+        glib
+        imagemagick
       ] ++ lib.optional (!cfg.greeterOsk.enable && config.services.displayManager.sddm.enable) astronaut;
     }
 

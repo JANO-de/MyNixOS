@@ -3,3 +3,5 @@ result-*
 .direnv/
 target/
 *.qcow2
+*.tar.xz
+*.tar.gz

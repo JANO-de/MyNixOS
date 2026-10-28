@@ -1,0 +1,11 @@
+# Generated / cache files: not worth tracking.
+hypr/hyprmon_backups/
+hypr/hyprland/colors.conf
+hypr/hyprlock/colors.conf
+illogical-impulse/preset-store/
+illogical-impulse/*.tmp
+illogical-impulse/*.lock
+illogical-impulse/config.json.bak
+quickshell-ii/**/*.qmlc
+*.tmp
+*.lock

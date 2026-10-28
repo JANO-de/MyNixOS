@@ -61,6 +61,8 @@
   modules.desktop.session = "hyprland";
   modules.desktop.shell = "ii";
   modules.desktop.ii.enable = true;
+  modules.desktop.drmDevices = "/dev/dri/dgpu";
+  modules.desktop.dotfiles.enable = true;
 
   modules.desktop.mango.monitorRules = [
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,rr:1"
