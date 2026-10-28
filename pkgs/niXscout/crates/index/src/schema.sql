@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS items (
   version TEXT,
   flags INTEGER NOT NULL DEFAULT 0
 );
-CREATE VIRTUAL TABLE IF NOT EXISTS items_fts USING fts5(key, title, summary, content='items', content_rowid='id', prefix='2 3');
+CREATE VIRTUAL TABLE IF NOT EXISTS items_fts USING fts5(key, title, summary, prefix='2 3');
 CREATE TABLE IF NOT EXISTS details (
   id INTEGER PRIMARY KEY,
   json TEXT NOT NULL,

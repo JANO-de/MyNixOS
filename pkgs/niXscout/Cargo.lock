@@ -646,17 +646,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "nixscout"
+name = "niXscout"
 version = "0.1.0"
 dependencies = [
  "gio 0.21.5",
  "glib 0.21.5",
  "gtk4",
  "libadwaita",
+ "rusqlite",
 ]
 
 [[package]]
-name = "nixscout-index"
+name = "niXscout-index"
 version = "0.1.0"
 dependencies = [
  "brotli",
@@ -666,7 +667,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "nixscout-net"
+name = "niXscout-net"
 version = "0.1.0"
 dependencies = [
  "serde",

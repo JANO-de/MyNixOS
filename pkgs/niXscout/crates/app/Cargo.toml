@@ -8,6 +8,7 @@ gtk4 = "0.11"
 libadwaita = "0.9"
 glib = "0.21"
 gio = "0.21"
+rusqlite = "0.32"
 
 [[bin]]
 name = "niXscout"
