@@ -11,25 +11,32 @@ let
       };
     in
     pkgs.callPackage ../pkgs/orchard/default.nix { };
-  nixscoutPkg = pkgs.callPackage ../pkgs/nixscout/default.nix { };
+  niXscoutPkg = pkgs.callPackage ../pkgs/niXscout/default.nix { };
+  iiPkg = pkgs.callPackage ../pkgs/ii-p3drovfx/default.nix { };
 in
 {
   packages = {
     orchard = orchardPkg;
-    nixscout = nixscoutPkg;
+    niXscout = niXscoutPkg;
+    ii = iiPkg;
   };
   apps = {
     orchard = {
       type = "app";
       program = "${orchardPkg}/bin/orchard";
     };
-    nixscout = {
+    niXscout = {
       type = "app";
-      program = "${nixscoutPkg}/bin/nixscout";
+      program = "${niXscoutPkg}/bin/niXscout";
+    };
+    ii = {
+      type = "app";
+      program = "${iiPkg}/bin/ii";
     };
   };
   overlay = final: prev: {
     orchard = final.callPackage ../pkgs/orchard/default.nix { };
-    nixscout = final.callPackage ../pkgs/nixscout/default.nix { };
+    niXscout = final.callPackage ../pkgs/niXscout/default.nix { };
+    ii = final.callPackage ../pkgs/ii-p3drovfx/default.nix { };
   };
 }

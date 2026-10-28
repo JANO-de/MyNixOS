@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 
 pkgs.rustPlatform.buildRustPackage {
-  pname = "nixscout";
+  pname = "niXscout";
   version = "0.1.0";
   src = ./.;
   cargoLock = { lockFile = ./Cargo.lock; };
@@ -9,7 +9,7 @@ pkgs.rustPlatform.buildRustPackage {
   buildInputs = [ pkgs.gtk4 pkgs.libadwaita pkgs.glib pkgs.sqlite ];
   meta = {
     description = "Read-only browser for the Nix world";
-    mainProgram = "nixscout";
+    mainProgram = "niXscout";
     license = lib.licenses.mit;
   };
 }

@@ -2,12 +2,12 @@ use gtk4::prelude::*;
 
 fn main() {
     let app = libadwaita::Application::builder()
-        .application_id("dev.jano.nixscout")
+        .application_id("dev.jano.niXscout")
         .build();
     app.connect_activate(|app| {
         let window = libadwaita::ApplicationWindow::builder()
             .application(app)
-            .title("nixscout")
+            .title("niXscout")
             .default_width(900)
             .default_height(680)
             .build();

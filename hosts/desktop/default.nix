@@ -57,6 +57,10 @@
 
   # Explicitly disable rotation for both active desktop outputs. Avoid the
   # trailing `$` regex anchor here; Mango matches names without requiring it.
+  modules.desktop.session = "hyprland";
+  modules.desktop.shell = "ii";
+  modules.desktop.ii.enable = true;
+
   modules.desktop.mango.monitorRules = [
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,rr:1"
     "name:^HDMI-A-2,width:1080,height:1920,refresh:60,rr:0"

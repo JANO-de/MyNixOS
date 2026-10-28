@@ -28,6 +28,7 @@ in
     ./shells/chronos.nix
     ./shells/halo.nix
     ./shells/dynisland.nix
+    ./shells/ii.nix
     ./greeter/greeter.nix
     ./splash.nix
     ./droidloom.nix

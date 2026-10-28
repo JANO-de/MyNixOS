@@ -31,6 +31,10 @@
     nvidiaBusId = "PCI:1:0:0";
   };
 
+  modules.desktop.session = "hyprland";
+  modules.desktop.shell = "ii";
+  modules.desktop.ii.enable = true;
+
   modules.desktop.mango.monitorRules = [
     "name:^eDP-1,width:1080,height:1920,refresh:60,x:1920,y:0,rr:0"
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,x:,y:0,rr:0"

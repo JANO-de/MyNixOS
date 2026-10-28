@@ -1,8 +1,15 @@
 # ii (ii-p3drovfx) shell module. Opt-in: modules.desktop.shell = "ii".
 { config, lib, pkgs, ... }:
+let
+  cfg = config.modules.desktop.ii;
+in
 {
   options.modules.desktop.ii.enable = lib.mkEnableOption "ii (ii-p3drovfx) Quickshell shell on Hyprland";
 
-  # Config linking and autostart are wired once the package (pkgs/ii-p3drovfx)
-  # exists (I-1). Matugen 4.1.0+ required (nixpkgs has 4.0.0 -> ASK).
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = [ pkgs.ii pkgs.matugen pkgs.quickshell ];
+
+    home-manager.users.jano.xdg.configFile."quickshell/ii".source =
+      "${pkgs.ii}/share/quickshell/ii";
+  };
 }
