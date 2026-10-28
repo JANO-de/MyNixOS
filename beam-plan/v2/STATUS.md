@@ -36,7 +36,7 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## M4 ii-p3drovfx on Hyprland (I-ii.md)
 - [x] I-0 Recon
-- [ ] I-1 Package
+- [~] I-1 Package (skeleton, fakeHash)
 - [~] I-2 Module (skeleton)
 - [x] I-3a Layer the Hyprland config (halos1 byte-identical)
 - [ ] I-3b Hyprland session on desktop + laptop (gate: owner accepts, then delete mango/dynisland?)
