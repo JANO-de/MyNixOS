@@ -11,13 +11,30 @@ hl.bind(mod .. " + E", hl.dsp.exec_cmd("alacritty -e yazi"))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd("zen"))
 hl.bind(mod .. " + W", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exit())
+hl.bind("CTRL + ALT + Delete", hl.dsp.exit())
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
+hl.bind(mod .. " + SHIFT + F", hl.dsp.exec_cmd("hyprctl dispatch fullscreen 1"))
 hl.bind(mod .. " + CTRL + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mod .. " + C", hl.dsp.exec_cmd("hyprctl dispatch centerwindow"))
+hl.bind(mod .. " + Tab", hl.dsp.exec_cmd("hyprctl dispatch togglegroup"))
+hl.bind(mod .. " + Page_Down", hl.dsp.exec_cmd("hyprctl dispatch workspace +1"))
+hl.bind(mod .. " + Page_Up", hl.dsp.exec_cmd("hyprctl dispatch workspace -1"))
+hl.bind(mod .. " + U", hl.dsp.exec_cmd("hyprctl dispatch workspace +1"))
+hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprctl dispatch workspace -1"))
+hl.bind(mod .. " + CTRL + Page_Down", hl.dsp.exec_cmd("hyprctl dispatch movetoworkspace +1"))
+hl.bind(mod .. " + CTRL + Page_Up", hl.dsp.exec_cmd("hyprctl dispatch movetoworkspace -1"))
+hl.bind(mod .. " + CTRL + U", hl.dsp.exec_cmd("hyprctl dispatch movetoworkspace +1"))
+hl.bind(mod .. " + CTRL + I", hl.dsp.exec_cmd("hyprctl dispatch movetoworkspace -1"))
 hl.bind("Print", hl.dsp.exec_cmd("@SCREENSHOT@"))
+hl.bind("CTRL + Home", hl.dsp.exec_cmd("@SCREENSHOT@"))
 
 for _, d in ipairs({ "left", "right", "up", "down" }) do
-  hl.bind(mod .. " + " .. d, hl.dsp.focus({ direction = d }))
-  hl.bind(mod .. " + CTRL + " .. d, hl.dsp.window.move({ direction = d }))
+  local dir = d
+  hl.bind(mod .. " + " .. d, hl.dsp.focus({ direction = dir }))
+  hl.bind(mod .. " + CTRL + " .. d, hl.dsp.window.move({ direction = dir }))
+  hl.bind(mod .. " + SHIFT + " .. d, hl.dsp.exec_cmd("hyprctl dispatch focusmonitor " .. dir))
+  hl.bind(mod .. " + SHIFT + CTRL + " .. d, hl.dsp.exec_cmd("hyprctl dispatch movewindow mon:" .. dir))
 end
 
 for i = 1, 9 do
@@ -33,9 +50,11 @@ local wpctl = "@WPCTL@"
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(wpctl .. " set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(wpctl .. " set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd(wpctl .. " set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(wpctl .. " set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+hl.bind("XF86AudioStop", hl.dsp.exec_cmd("playerctl stop"), { locked = true })
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -q set 5%+"), { locked = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -q set 5%-"), { locked = true })
 
@@ -45,11 +64,16 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -q set 5%-"), { 
 -- ---- environment ------------------------------------------------------------
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "wayland")
 hl.env("QT_IMAGEIO_MAXALLOC", "0")
+hl.env("AQ_DRM_DEVICES", "@DRM_DEVICES@")
+hl.env("XCURSOR_THEME", "Adwaita")
+hl.env("XCURSOR_SIZE", "24")
+hl.env("WLR_NO_HARDWARE_CURSORS", "1")
 
 -- ---- autostart (dynisland itself is a systemd user service) -----------------
 hl.on("hyprland.start", function()
   hl.exec_cmd("@POLKIT@")
   hl.exec_cmd("wl-clip-persist --clipboard regular --reconnect-tries 0")
+  hl.exec_cmd("hyprctl setcursor Adwaita 24")
 end)
 
 -- ---- input + look (each in its own pcall: a bad key only loses that block) ---
@@ -79,4 +103,3 @@ pcall(hl.config, {
 })
 
 @SESSION_EXTRAS@
-dofile("/etc/hypr/hyprland-mode.lua")

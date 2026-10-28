@@ -11,6 +11,10 @@ let
   sys = pkgs.stdenv.hostPlatform.system;
   hypr = inputs.hyprland.packages.${sys};
   hyprNixpkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.${sys};
+  drmDevices =
+    if config.hardware.nvidia.enable or false
+    then "/dev/dri/igpu:/dev/dri/dgpu"
+    else "/dev/dri/igpu";
 
   rgba = key: "rgba(${lib.removePrefix "#" (theme.color key)}ff)";
 
@@ -43,13 +47,14 @@ let
 
   sessionExtras =
     if cfg.hyprlandTouch.enable then
-      ''dofile("/etc/hypr/hyprland-touch.lua")''
+      ''dofile("/etc/hypr/hyprland-touch.lua")
+dofile("/etc/hypr/hyprland-mode.lua")''
     else
       "";
 
   content =
     lib.replaceStrings
-      [ "@ACCENT@" "@SURFACE@" "@POLKIT@" "@SCREENSHOT@" "@WPCTL@" "@SHELL_BINDS@" "@SESSION_EXTRAS@" ]
+      [ "@ACCENT@" "@SURFACE@" "@POLKIT@" "@SCREENSHOT@" "@WPCTL@" "@SHELL_BINDS@" "@SESSION_EXTRAS@" "@DRM_DEVICES@" ]
       [
         (rgba "accent")
         (rgba "surface")
@@ -58,6 +63,7 @@ let
         "${pkgs.wireplumber}/bin/wpctl"
         shellBinds
         sessionExtras
+        drmDevices
       ]
       (builtins.readFile ./hyprland.lua);
 in

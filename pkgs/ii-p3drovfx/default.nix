@@ -3,6 +3,12 @@
 # ii-p3drovfx: Quickshell config for Hyprland (desktop/laptop only).
 # Upstream has no flake; we install the config tree. Matugen 4.1.0+ required
 # (nixpkgs has 4.0.0; using pkgs.matugen as fallback - ASK resolved: overlay preferred).
+let
+  roundedPolygon = pkgs.fetchzip {
+    url = "https://github.com/end-4/rounded-polygon-qmljs/archive/refs/heads/main.tar.gz";
+    hash = "sha256-p1Ia0oQCWnik2saVMgv7IABkaJV43PoY7uuwXjXlc+Q=";
+  };
+in
 stdenv.mkDerivation {
   pname = "ii";
   version = "unstable";
@@ -17,6 +23,9 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/share/quickshell/ii
     cp -r dots/.config/quickshell/ii/* $out/share/quickshell/ii/
+    rm -rf $out/share/quickshell/ii/modules/common/widgets/shapes
+    mkdir -p $out/share/quickshell/ii/modules/common/widgets/shapes
+    cp -r ${roundedPolygon}/* $out/share/quickshell/ii/modules/common/widgets/shapes/
   '';
   meta = {
     description = "ii Quickshell config (P3DROVFX fork)";
