@@ -14,6 +14,12 @@
 
   networking.hostName = "laptop";
 
+  # CachyOS kernel binary cache (avoid local kernel builds).
+  nix.settings = {
+    extra-substituters = [ "https://attic.xuyh0120.win/lantian" ];
+    extra-trusted-public-keys = [ "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" ];
+  };
+
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   modules.services.sunshine.enable = true;
 
@@ -21,6 +27,7 @@
   modules.programs.deskflow.role = "server";
 
   programs.orchard.enable = true;
+  programs.niXscout.enable = true;
   networking.firewall.allowedTCPPorts = [ 24800 ];
 
   # Hybrid graphics (Intel iGPU + RTX 3050): PRIME offload.

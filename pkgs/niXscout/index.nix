@@ -1,5 +1,11 @@
 { pkgs, ... }:
-pkgs.runCommand "nixscout-index" { } ''
+pkgs.runCommand "nixscout-index" {
+  nativeBuildInputs = [ pkgs.niXscout or (pkgs.callPackage ./default.nix {}) ];
+} ''
   mkdir -p $out/share/nixscout
-  touch $out/share/nixscout/index.sqlite
+  if command -v niXscout-index >/dev/null 2>&1; then
+    niXscout-index ${./data} $out/share/nixscout/index.sqlite ${toString ../flake.lock}
+  else
+    touch $out/share/nixscout/index.sqlite
+  fi
 ''

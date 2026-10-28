@@ -31,7 +31,7 @@ in
     };
     ii = {
       type = "app";
-      program = "${iiPkg}/bin/ii";
+      program = "${pkgs.quickshell}/bin/quickshell";
     };
   };
   overlay = final: prev: {

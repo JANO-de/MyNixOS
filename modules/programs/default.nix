@@ -26,5 +26,6 @@
     ./lean.nix
     ./full.nix
     ./deskflow.nix
+    ./niXscout.nix
   ];
 }

@@ -60,6 +60,7 @@ in
     droidloom.enable = true; # Android apps in native windows
   };
   modules.programs.profile = "lean";
+  programs.niXscout.enable = true;
   hardware.nvidia.enable = false; # Intel HD 620 only
 
   modules.desktop.hyprlandMode = "tablet"; # the Surface starts in tablet mode

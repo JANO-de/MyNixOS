@@ -41,7 +41,7 @@ in
   desktop = mkHost { host = "desktop"; };
   laptop = mkHost {
     host = "laptop";
-    cachyos = true;
+    cachyos = false;
   };
   halos1 = mkHost { host = "halos1"; };
 }

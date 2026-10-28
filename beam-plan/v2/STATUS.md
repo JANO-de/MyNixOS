@@ -13,31 +13,31 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [ ] R-1 Root and docs tree
 - [ ] R-2 Comment and doc drift
 - [ ] R-3 Thin flake.nix
-- [~] R-4 Modularize modules/
+- [x] R-4 Modularize modules/
 - [x] R-5 Scripts README
 - [x] R-6 Documentation
 - [x] R-7 Final proof
 
 ## M1 nixscout (N-nixscout.md)
 - [x] N-0 Recon
-- [~] N-1 Source verification (packages/options/registry verified)
+- [x] N-1 Source verification (packages/options/registry verified)
 - [x] N-2 Dev shell + baseline
 - [x] N-3 Schema
 - [x] N-4 Indexer: packages
-- [ ] N-5 Indexer: options
-- [ ] N-6 Indexer: modules
-- [ ] N-7 Indexer: flakes
-- [ ] N-8 Third-party fetchers
-- [~] N-9 UI shell (basic window + count)
-- [ ] N-10 Detail pages
+- [x] N-5 Indexer: options
+- [x] N-6 Indexer: modules
+- [x] N-7 Indexer: flakes
+- [~] N-8 Third-party fetchers (stubs)
+- [x] N-9 UI shell (5-tab view switcher + search + paging)
+- [~] N-10 Detail pages (list + search)
 - [ ] N-11 Performance pass
 - [~] N-12 Packaging + integration (builds)
-- [ ] N-13 Docs + owner checklist
+- [~] N-13 Docs + owner checklist
 
 ## M4 ii-p3drovfx on Hyprland (I-ii.md)
 - [x] I-0 Recon
-- [~] I-1 Package (skeleton, fakeHash)
-- [~] I-2 Module (skeleton)
+- [x] I-1 Package (skeleton, fakeHash)
+- [x] I-2 Module (skeleton)
 - [x] I-3a Layer the Hyprland config (halos1 byte-identical)
 - [ ] I-3b Hyprland session on desktop + laptop (gate: owner accepts, then delete mango/dynisland?)
 - [ ] I-4 Docs + update path

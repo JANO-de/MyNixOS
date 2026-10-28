@@ -54,6 +54,7 @@
   };
 
   programs.orchard.enable = true;
+  programs.niXscout.enable = true;
 
   # Explicitly disable rotation for both active desktop outputs. Avoid the
   # trailing `$` regex anchor here; Mango matches names without requiring it.
