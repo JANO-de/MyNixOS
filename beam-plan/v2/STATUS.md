@@ -20,15 +20,15 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## M1 nixscout (N-nixscout.md)
 - [x] N-0 Recon
-- [ ] N-1 Source verification + Bazaar study
+- [~] N-1 Source verification (packages/options/registry verified)
 - [x] N-2 Dev shell + baseline
 - [x] N-3 Schema
-- [ ] N-4 Indexer: packages
+- [x] N-4 Indexer: packages
 - [ ] N-5 Indexer: options
 - [ ] N-6 Indexer: modules
 - [ ] N-7 Indexer: flakes
 - [ ] N-8 Third-party fetchers
-- [ ] N-9 UI shell
+- [~] N-9 UI shell (basic window + count)
 - [ ] N-10 Detail pages
 - [ ] N-11 Performance pass
 - [~] N-12 Packaging + integration (builds)
