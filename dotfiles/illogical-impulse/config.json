@@ -386,7 +386,7 @@
         "wallpaperAnimation": "",
         "wallpaperEngineAssetsPath": "",
         "wallpaperEngineId": "",
-        "wallpaperPath": "/home/jano/Pictures/Wallpapers/abstract-13.jpg",
+        "wallpaperPath": "/home/jano/Pictures/Wallpapers/abstract-14.png",
         "widgets": {
             "ai_chat": {
                 "enable": false,
@@ -1425,7 +1425,7 @@
                 {
                     "centered": false,
                     "id": "bluetooth_devices",
-                    "visible": false
+                    "visible": true
                 },
                 {
                     "centered": false,
@@ -3260,7 +3260,7 @@
         }
     },
     "settingsApp": {
-        "unloadAfterSeconds": 300
+        "unloadAfterSeconds": 5
     },
     "sidebar": {
         "ai": {
@@ -3714,7 +3714,7 @@
         "aiSummary": false,
         "aiSummaryMinCommits": 10,
         "autoCheckInterval": "daily",
-        "lastAutoCheck": 1793198776226,
+        "lastAutoCheck": 1793222153386,
         "replaceHyprConfig": true
     },
     "updates": {
