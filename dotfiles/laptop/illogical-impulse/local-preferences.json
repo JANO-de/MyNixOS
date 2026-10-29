@@ -1,0 +1,48 @@
+{
+  "appStats": {
+    "enable": true,
+    "sampleIntervalMs": 10000,
+    "flushIntervalMs": 60000,
+    "retentionDays": 31,
+    "retentionMode": "previousMonth",
+    "energySource": "auto",
+    "gpuFullEvery": 30,
+    "idleTimeoutSec": 300,
+    "trackHeadless": true,
+    "showHeadless": false,
+    "overlayEnabled": true,
+    "defaultGranularity": "day",
+    "defaultMetric": "fg",
+    "rememberLastView": true,
+    "lastGranularity": "day",
+    "lastMetric": "fg",
+    "lastView": "apps",
+    "weekStartsMonday": true,
+    "keepSelection": false,
+    "showComparison": false,
+    "minDurationSec": 0
+  },
+  "modes": {
+    "enable": true,
+    "overlayEnabled": true,
+    "presetsSeeded": true,
+    "flash": "auto",
+    "lockPill": true,
+    "lastTab": "modes",
+    "lastModeId": "",
+    "lastRoutineId": "",
+    "graceSec": 5,
+    "modes": [],
+    "routines": [],
+    "game": {
+      "useLauncherClasses": true,
+      "useDesktopCategory": true,
+      "useGpuHeuristic": true,
+      "useMangoHudLog": false,
+      "gpuThreshold": 45,
+      "holdSec": 20,
+      "extraClasses": [],
+      "ignoreClasses": []
+    }
+  }
+}

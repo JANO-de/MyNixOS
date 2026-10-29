@@ -18,7 +18,7 @@ let
   hyprDir = "${base}/hypr";
   matugenDir = "${base}/matugen";
 
-  iiPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ps.click ps.loguru ps.tqdm ps.pillow ps.materialyoucolor ps.material-color-utilities ps.opencv4 ]);
+  iiPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ps.click ps.loguru ps.tqdm ps.pillow ps.materialyoucolor ps.material-color-utilities ps.opencv4 ps.numpy ps.dbus-python ps.evdev ps.psutil ps.requests ps.scipy ]);
   iiVenv = pkgs.runCommand "ii-venv" {} ''
     mkdir -p $out/bin
     ln -s ${iiPython}/bin/python3 $out/bin/python
@@ -31,9 +31,21 @@ in
 
   config = lib.mkIf cfg.enable {
     hardware.i2c.enable = true;
+    systemd.tmpfiles.rules = [ "L+ /usr/bin/python3 - - - - ${iiPython}/bin/python3" ];
+    services.power-profiles-daemon.enable = lib.mkDefault true;
+    services.geoclue2.enable = lib.mkDefault true;
+    services.upower.enable = lib.mkDefault true;
     users.users.jano.extraGroups = [ "i2c" ];
     environment.systemPackages = [ pkgs.ii pkgs.matugen pkgs.quickshell pkgs.hyprmon pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting pkgs.bc pkgs.coreutils pkgs.curl pkgs.wget pkgs.ripgrep pkgs.jq pkgs.xdg-user-dirs pkgs.rsync pkgs.eza pkgs.fish pkgs.starship pkgs.kitty pkgs.hyprsunset pkgs.hyprshot pkgs.swappy pkgs.tesseract pkgs.wf-recorder pkgs.upower pkgs.wtype pkgs.ydotool pkgs.fuzzel pkgs.hypridle pkgs.hyprlock pkgs.hyprpicker pkgs.translate-shell pkgs.wlogout pkgs.libqalculate pkgs.cava pkgs.pavucontrol pkgs.wireplumber pkgs.pipewire pkgs.ddcutil pkgs.geoclue2 pkgs.networkmanager pkgs.kdePackages.plasma-nm pkgs.kdePackages.dolphin
-pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist ];
+pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist
+      # --- added by deps audit (runtime tools ii calls) ---
+      pkgs.pulseaudio # pactl (pipewire does not ship it)
+      pkgs.bluez pkgs.blueman pkgs.libnotify pkgs.glib pkgs.gtk3 pkgs.gjs
+      pkgs.imagemagick pkgs.ffmpeg pkgs.yt-dlp pkgs.grim pkgs.hyprshade
+      pkgs.git pkgs.file pkgs.fontconfig pkgs.procps pkgs.psmisc pkgs.util-linux pkgs.xdg-utils
+      pkgs.jetbrains-mono
+      # Rust helper build (see iiRustHelpers)
+      pkgs.cargo pkgs.rustc pkgs.gcc ];
 
     # NOTE: nixpkgs' hyprland / xdg-desktop-portal-hyprland were removed from the list above on
     # purpose: the session uses the flake's Hyprland (hyprland.nix), and hyprctl + the portal must
@@ -56,6 +68,21 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
       run ${pkgs.gnused}/bin/sed -i 's#qs kill -c ii && qs -c ii &#systemctl --user restart ii#g' \
         "$qs/modules/settings/configs/ColorsThemesConfig.qml" \
         "$qs/modules/settings/configs/PresetsConfig.qml" 2>/dev/null || true
+    '';
+
+    # ii ships 7 Rust helpers as source only (app_stats, osk_autoshow, touch_gestures,
+    # workspace_arranger, workspace_profile_manager, sni_watcher, health_watch).
+    # Build the missing ones with upstream's own script. Needs network (crates.io).
+    home-manager.users.jano.home.activation.iiRustHelpers = hmDag.entryAfter [ "iiQuickshellConfig" ] ''
+      rh="${qsDir}/scripts/rust-helpers.sh"
+      if [ -x "$rh" ]; then
+        export PATH="${lib.makeBinPath [ pkgs.cargo pkgs.rustc pkgs.gcc pkgs.coreutils pkgs.findutils pkgs.gnugrep pkgs.gnused ]}:$PATH"
+        missing="$("$rh" status 2>/dev/null | ${pkgs.gawk}/bin/awk '$2=="missing"||$2=="stale"{print $1}')"
+        if [ -n "$missing" ]; then
+          # shellcheck disable=SC2086
+          run "$rh" build $missing || echo "ii: rust helper build failed (offline?); rerun: $rh build" >&2
+        fi
+      fi
     '';
 
     home-manager.users.jano.home.activation.iiMatugenConfig = hmDag.entryAfter [ "writeBoundary" ] ''
