@@ -238,6 +238,76 @@
                 "widgetId": "media_expressive",
                 "x": 1420,
                 "y": 838.88
+            },
+            {
+                "id": "widget_resource_nothing_cpu_1793227626210",
+                "lockBehavior": "hide",
+                "placementStrategy": "free",
+                "positions": {
+                    "HDMI-A-2": {
+                        "x": 70,
+                        "y": 300
+                    }
+                },
+                "widgetId": "resource_nothing_cpu",
+                "x": 70,
+                "y": 300
+            },
+            {
+                "id": "widget_resource_nothing_ram_1793227627162",
+                "lockBehavior": "hide",
+                "placementStrategy": "free",
+                "positions": {
+                    "HDMI-A-2": {
+                        "x": 70,
+                        "y": 440
+                    }
+                },
+                "widgetId": "resource_nothing_ram",
+                "x": 70,
+                "y": 440
+            },
+            {
+                "id": "widget_resource_nothing_disk_1793227629525",
+                "lockBehavior": "hide",
+                "placementStrategy": "free",
+                "positions": {
+                    "HDMI-A-2": {
+                        "x": 70,
+                        "y": 580
+                    }
+                },
+                "widgetId": "resource_nothing_disk",
+                "x": 70,
+                "y": 580
+            },
+            {
+                "id": "widget_nothing_weather_circle_1793227629923",
+                "lockBehavior": "hide",
+                "placementStrategy": "free",
+                "positions": {
+                    "HDMI-A-2": {
+                        "x": 2240,
+                        "y": 40
+                    }
+                },
+                "widgetId": "nothing_weather_circle",
+                "x": 2240,
+                "y": 40
+            },
+            {
+                "id": "widget_clock_nothing_1793227631758",
+                "lockBehavior": "hide",
+                "placementStrategy": "free",
+                "positions": {
+                    "HDMI-A-2": {
+                        "x": 70,
+                        "y": 30
+                    }
+                },
+                "widgetId": "clock_nothing",
+                "x": 70,
+                "y": 30
             }
         ],
         "animateWallpaperChanges": true,
@@ -316,7 +386,7 @@
         "wallpaperAnimation": "",
         "wallpaperEngineAssetsPath": "",
         "wallpaperEngineId": "",
-        "wallpaperPath": "/home/jano/Pictures/Wallpapers/abstract-12.jpg",
+        "wallpaperPath": "/home/jano/Pictures/Wallpapers/abstract-13.jpg",
         "widgets": {
             "ai_chat": {
                 "enable": false,
@@ -1355,7 +1425,7 @@
                 {
                     "centered": false,
                     "id": "bluetooth_devices",
-                    "visible": true
+                    "visible": false
                 },
                 {
                     "centered": false,
@@ -3644,7 +3714,7 @@
         "aiSummary": false,
         "aiSummaryMinCommits": 10,
         "autoCheckInterval": "daily",
-        "lastAutoCheck": 1793141414386,
+        "lastAutoCheck": 1793197824240,
         "replaceHyprConfig": true
     },
     "updates": {
