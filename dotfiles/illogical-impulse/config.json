@@ -3714,7 +3714,7 @@
         "aiSummary": false,
         "aiSummaryMinCommits": 10,
         "autoCheckInterval": "daily",
-        "lastAutoCheck": 1793197824240,
+        "lastAutoCheck": 1793198776226,
         "replaceHyprConfig": true
     },
     "updates": {
