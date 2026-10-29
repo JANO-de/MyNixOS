@@ -1,0 +1,4 @@
+- [ ] scripts/migrate-dotfiles-per-host.sh desktop
+- [ ]  # delete the "dotfiles.dir = ..." override line in hosts/desktop/default.nix
+- [ ] sudo nixos-rebuild switch --flake .#desktop
+- [ ] scripts/migrate-dotfiles-per-host.sh --cleanup 

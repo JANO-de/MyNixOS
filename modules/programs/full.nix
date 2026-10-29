@@ -13,7 +13,7 @@ lib.mkIf full {
     bazaar
     inputs.claude-desktop.packages.${system}.claude-desktop-with-fhs
     inputs.opencode-flake.packages.${system}.opencode-avx
-    protonvpn-gui
+    proton-vpn
 
     vscodium
     eclipses.eclipse-java
@@ -27,6 +27,8 @@ lib.mkIf full {
     nixd nixfmt direnv
 
     llama
+
+    libreoffice-qt
 
     nautilus
     yazi chafa ffmpegthumbnailer poppler-utils p7zip

@@ -15,8 +15,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "P3DROVFX";
     repo = "ii-p3drovfx";
-    rev = "main";
-    hash = "sha256-2Kp651Eof9uWhhzRNjGl7Gmd8aoJjVO1ahCqLI5gHzg=";
+    rev = "3e9f4c0aca3b1efb546fa96f7348fba24bd3de47";
+    hash = "sha256-/H4cxah2U6wOgKtkaCweaVOQl/jl2wplQyeJxN6QUa4=";
   };
   dontBuild = true;
   dontPatchShebangs = true;

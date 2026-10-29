@@ -14,11 +14,6 @@
 
   networking.hostName = "laptop";
 
-  # CachyOS kernel binary cache (avoid local kernel builds).
-  nix.settings = {
-    extra-substituters = [ "https://attic.xuyh0120.win/lantian" ];
-    extra-trusted-public-keys = [ "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" ];
-  };
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   modules.services.sunshine.enable = true;
@@ -41,6 +36,8 @@
   modules.desktop.session = "hyprland";
   modules.desktop.shell = "ii";
   modules.desktop.ii.enable = true;
+  modules.desktop.drmDevices = "/dev/dri/igpu:/dev/dri/dgpu";
+  modules.desktop.dotfiles.enable = true;
 
   modules.desktop.mango.monitorRules = [
     "name:^eDP-1,width:1080,height:1920,refresh:60,x:1920,y:0,rr:0"

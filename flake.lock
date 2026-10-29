@@ -220,11 +220,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792182784,
-        "narHash": "sha256-ItVDuiifGY4iruJWar4X6ZTlUQ9TWOADAK33HCP5xX4=",
+        "lastModified": 1793260883,
+        "narHash": "sha256-8UAPqSmbimXuoVMUyKe43yW3q9e/ZGWWECwrsbH5Q40=",
         "owner": "JANO-de",
         "repo": "Forge-TUI",
-        "rev": "8c06d959ad90df0eb15db20759315f2a0c581f10",
+        "rev": "40e6f0756a0cf0b5354725dcd308efe8d37b25c3",
         "type": "github"
       },
       "original": {

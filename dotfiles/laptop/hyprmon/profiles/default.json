@@ -1,0 +1,47 @@
+{
+  "name": "default",
+  "monitors": [
+    {
+      "name": "eDP-1",
+      "make": "",
+      "model": "Chimei Innolux Corporation 0x1521",
+      "PxW": 1920,
+      "PxH": 1080,
+      "Hz": 144.00301,
+      "Scale": 1,
+      "X": 3840,
+      "Y": 0,
+      "Active": true,
+      "BitDepth": 8,
+      "ColorMode": "srgb",
+      "SDRBrightness": 1,
+      "SDRSaturation": 1,
+      "VRR": 0,
+      "Transform": 0,
+      "IsMirrored": false,
+      "MirrorSource": ""
+    },
+    {
+      "name": "HDMI-A-1",
+      "make": "",
+      "model": "DHI C200P 0x01010101",
+      "PxW": 1920,
+      "PxH": 1080,
+      "Hz": 60,
+      "Scale": 1,
+      "X": 1920,
+      "Y": 0,
+      "Active": true,
+      "BitDepth": 8,
+      "ColorMode": "srgb",
+      "SDRBrightness": 1,
+      "SDRSaturation": 1,
+      "VRR": 0,
+      "Transform": 0,
+      "IsMirrored": false,
+      "MirrorSource": ""
+    }
+  ],
+  "created_at": "2026-10-29T07:49:41.802Z",
+  "updated_at": "2026-10-29T07:49:41.802Z"
+}

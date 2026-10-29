@@ -63,6 +63,8 @@
   modules.desktop.ii.enable = true;
   modules.desktop.drmDevices = "/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
+  # Legacy flat layout; delete after running scripts/migrate-dotfiles-per-host.sh desktop.
+  modules.desktop.dotfiles.dir = "/home/jano/Proyectos/MyNixOS/dotfiles";
 
   modules.desktop.mango.monitorRules = [
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,rr:1"
