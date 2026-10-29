@@ -109,9 +109,9 @@ stdenv.mkDerivation rec {
     libxkbcommon
     libsecret
     glib
-    pkgs.xorg.libX11
-    pkgs.xorg.libXext
-    pkgs.xorg.libxcb
+    pkgs.libx11
+    pkgs.libxext
+    pkgs.libxcb
   ];
 
   mesonBuildType = "release";
@@ -171,9 +171,9 @@ stdenv.mkDerivation rec {
           libxkbcommon
           libsecret
           glib
-          pkgs.xorg.libX11
-          pkgs.xorg.libXext
-          pkgs.xorg.libxcb
+          pkgs.libx11
+          pkgs.libxext
+          pkgs.libxcb
           pkgs.stdenv.cc.cc
         ]
       }:$out/lib" "$out/bin/$bin"
@@ -182,7 +182,7 @@ stdenv.mkDerivation rec {
       lib.makeLibraryPath [
         alsa-lib
         libpulseaudio
-        pkgs.xorg.libX11
+        pkgs.libx11
         pkgs.stdenv.cc.cc
       ]
     }:$out/lib" "$out/lib/libdiscord_partner_sdk.so"

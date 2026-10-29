@@ -2,7 +2,7 @@
 #
 # Config location:
 #  - modules.desktop.dotfiles.enable = false: seeded once into ~/.config (old behaviour).
-#  - modules.desktop.dotfiles.enable = true : seeded once into <repo>/dotfiles/ (see dotfiles.nix),
+#  - modules.desktop.dotfiles.enable = true : seeded once into <repo>/dotfiles/<host>/ (see dotfiles.nix),
 #    which ~/.config/* then symlinks to, so ii/Hyprland/hyprmon write into your flake repo.
 # Seeding never overwrites existing files.
 { config, lib, pkgs, inputs, ... }:
@@ -12,9 +12,9 @@ let
 
   dotsEnable = config.modules.desktop.dotfiles.enable or false;
   dotsQs = config.modules.desktop.dotfiles.quickshell or false;
-  dotsBase = "${config.modules.desktop.dotfiles.repoPath or ""}/dotfiles";
-  base = if dotsEnable then dotsBase else "$HOME/.config";
-  qsDir = if dotsEnable && dotsQs then "${dotsBase}/quickshell-ii" else "$HOME/.config/quickshell/ii";
+  dotsDir = config.modules.desktop.dotfiles.dir or ""; # <repo>/dotfiles/<host>
+  base = if dotsEnable then dotsDir else "$HOME/.config";
+  qsDir = if dotsEnable && dotsQs then "${dotsDir}/quickshell-ii" else "$HOME/.config/quickshell/ii";
   hyprDir = "${base}/hypr";
   matugenDir = "${base}/matugen";
 
@@ -30,6 +30,8 @@ in
   options.modules.desktop.ii.enable = lib.mkEnableOption "ii (ii-p3drovfx) Quickshell shell on Hyprland";
 
   config = lib.mkIf cfg.enable {
+    hardware.i2c.enable = true;
+    users.users.jano.extraGroups = [ "i2c" ];
     environment.systemPackages = [ pkgs.ii pkgs.matugen pkgs.quickshell pkgs.hyprmon pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting pkgs.bc pkgs.coreutils pkgs.curl pkgs.wget pkgs.ripgrep pkgs.jq pkgs.xdg-user-dirs pkgs.rsync pkgs.eza pkgs.fish pkgs.starship pkgs.kitty pkgs.hyprsunset pkgs.hyprshot pkgs.swappy pkgs.tesseract pkgs.wf-recorder pkgs.upower pkgs.wtype pkgs.ydotool pkgs.fuzzel pkgs.hypridle pkgs.hyprlock pkgs.hyprpicker pkgs.translate-shell pkgs.wlogout pkgs.libqalculate pkgs.cava pkgs.pavucontrol pkgs.wireplumber pkgs.pipewire pkgs.ddcutil pkgs.geoclue2 pkgs.networkmanager pkgs.kdePackages.plasma-nm pkgs.kdePackages.dolphin
 pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist ];
 
@@ -102,7 +104,7 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
         # Keep ii from taking the whole session down: OOM kills stay inside this unit.
         MemoryHigh = "3G";
         MemoryMax = "4G";
-        TasksMax = 200;
+        TasksMax = 1500;
         Environment = [
           "TERMINAL=alacritty"
           "HYPRLAND_CONFIG=/home/jano/.config/hypr/hyprland.lua"
