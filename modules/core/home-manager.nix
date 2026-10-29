@@ -5,7 +5,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    backupFileExtension = "backup";
+    backupFileExtension = null;
     extraSpecialArgs = { inherit inputs theme; };
     users.jano = import ../theme/home.nix;
   };

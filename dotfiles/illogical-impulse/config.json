@@ -94,7 +94,7 @@
         "weekStartsMonday": true
     },
     "appearance": {
-        "animationMultiplier": 1,
+        "animationMultiplier": 0.5,
         "appLaunchAnimation": {
             "curve": "iiAppOpen",
             "enable": true,
@@ -110,7 +110,7 @@
             "inputMethodsIgnoreAlpha": 0.8,
             "newOptimizations": true,
             "noise": 0.05,
-            "passes": 3,
+            "passes": 1,
             "popups": false,
             "popupsIgnoreAlpha": 0.6,
             "special": false,
@@ -118,7 +118,7 @@
             "vibrancyDarkness": 0.2,
             "xray": false
         },
-        "blurSize": 10,
+        "blurSize": 4,
         "borderColorType": "primary",
         "borderWidth": 2,
         "borderless": false,
@@ -126,7 +126,7 @@
         "customColorSchemes": [
         ],
         "defaultBorderRadius": 18,
-        "extraBackgroundTint": true,
+        "extraBackgroundTint": false,
         "fakeScreenRounding": 0,
         "fonts": {
             "enableCustom": false,
@@ -165,7 +165,7 @@
         "roundingValue": 28,
         "scrollAnimations": true,
         "scrollFadeMask": true,
-        "settingsPerformanceMode": false,
+        "settingsPerformanceMode": true,
         "sharpMode": false,
         "toggleWindowRounding": true,
         "transparency": {
@@ -3714,7 +3714,7 @@
         "aiSummary": false,
         "aiSummaryMinCommits": 10,
         "autoCheckInterval": "daily",
-        "lastAutoCheck": 1793222153386,
+        "lastAutoCheck": 1793227836532,
         "replaceHyprConfig": true
     },
     "updates": {

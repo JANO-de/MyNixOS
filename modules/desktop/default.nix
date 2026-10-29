@@ -92,6 +92,7 @@ in
         { settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark"; }
         { settings."org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true; }
       ];
+      environment.sessionVariables.QML2_IMPORT_PATH = lib.makeSearchPath "lib/qt-6/qml" [ pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting ];
       environment.sessionVariables.XDG_DATA_DIRS = [
         "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
         "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"

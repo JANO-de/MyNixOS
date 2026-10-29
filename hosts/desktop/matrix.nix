@@ -6,7 +6,7 @@ let
 in {
   nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
 
-  systemd.services.tailscale-cert-renew = {
+  systemd.services.tailscale-cert-renew = lib.mkIf (config.modules.desktop.shell == "dynisland") {
     description = "Renew Tailscale TLS cert";
     after    = [ "tailscaled.service" "network-online.target" ];
     wants    = [ "network-online.target" ];
@@ -25,7 +25,7 @@ in {
       '';
     };
   };
-  systemd.timers.tailscale-cert-renew = {
+  systemd.timers.tailscale-cert-renew = lib.mkIf (config.modules.desktop.shell == "dynisland") {
     wantedBy    = [ "timers.target" ];
     timerConfig = { OnCalendar = "daily"; Persistent = true; };
   };
