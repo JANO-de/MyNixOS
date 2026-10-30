@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     owner = "JANO-de";
     repo = "ii-halos";
     rev = "a0c1f9df36d000ebca544aacb8d25a282ca90997";
-    hash = lib.fakeHash;
+    hash = "sha256-GkQt9WaAnnVUDfQjN53m/0VmP9tnHwqGz+8mcTrmpSQ=";
   };
   dontBuild = true;
   dontPatchShebangs = true;
