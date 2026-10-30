@@ -10,7 +10,7 @@ Legend: [ ] open · [~] in progress · [x] done · [?] waiting for owner
 - [x] 3c Input (touchpad, layout)
 - [x] 3d Misc
 - [x] 4 Profiles
-- [ ] 5 Displays (hyprmon)
+- [x] 5 Displays (hyprmon)
 - [ ] 6 Wallpaper picker styles
 - [ ] 7 Right-click background menu
 - [x] 8 Nix pin (pkgs/ii-vynx -> ii-halos)
