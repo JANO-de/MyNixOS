@@ -9,7 +9,7 @@ Legend: [ ] open · [~] in progress · [x] done · [?] waiting for owner
 - [x] 3b Blur, animations
 - [x] 3c Input (touchpad, layout)
 - [x] 3d Misc
-- [ ] 4 Profiles
+- [x] 4 Profiles
 - [ ] 5 Displays (hyprmon)
 - [ ] 6 Wallpaper picker styles
 - [ ] 7 Right-click background menu
