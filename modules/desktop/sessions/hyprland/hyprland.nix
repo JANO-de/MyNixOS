@@ -32,6 +32,12 @@ let
       && ${pkgs.wl-clipboard}/bin/wl-copy < "$f"
   '';
 
+  safeSharePicker = pkgs.writeShellScriptBin "hyprland-share-picker-safe" ''
+    out="$(${hypr.xdg-desktop-portal-hyprland}/bin/hyprland-share-picker "$@" 2>/dev/null)"
+    printf '%s\\n' "$out"
+    exit 0
+  '';
+
   # same shell binds as mango.nix / niri.nix
   shellBinds = lib.optionalString (cfg.shell == "dynisland") (
     lib.concatMapStringsSep "\n"
@@ -108,7 +114,16 @@ in
 
       xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # file picker
       services.gnome.gnome-keyring.enable = true;
-      environment.systemPackages = with pkgs; [ polkit_gnome wl-clip-persist ];
+      environment.systemPackages = with pkgs; [ polkit_gnome wl-clip-persist safeSharePicker ];
+
+      home-manager.users.jano.home.activation.xdphConf = inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        run mkdir -p "$HOME/.config/hypr"
+        cat > "$HOME/.config/hypr/xdph.conf" <<'EOF'
+screencopy {
+    custom_picker_binary = ${safeSharePicker}/bin/hyprland-share-picker-safe
+}
+EOF
+      '';
 
       home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (cfg.shell != "ii") (inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run mkdir -p "$HOME/.config/hypr"

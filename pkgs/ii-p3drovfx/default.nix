@@ -1,13 +1,11 @@
 { lib, pkgs, stdenv, fetchFromGitHub, ... }:
 
 # ii-p3drovfx: Quickshell config for Hyprland (desktop/laptop only).
-# Upstream has no flake; we install the config tree. Matugen 4.1.0+ required
-# (nixpkgs has 4.0.0; using pkgs.matugen as fallback - ASK resolved: overlay preferred).
+# Upstream has no flake; we install the config trees only (ii.nix seeds them into $HOME).
+# Needs Matugen 4.1.0+: provided by pkgs/matugen via the overlay.
+# Update: bump `rev`, set `hash = lib.fakeHash`, build, paste the real hash.
 let
-  roundedPolygon = pkgs.fetchzip {
-    url = "https://github.com/end-4/rounded-polygon-qmljs/archive/refs/heads/main.tar.gz";
-    hash = "sha256-p1Ia0oQCWnik2saVMgv7IABkaJV43PoY7uuwXjXlc+Q=";
-  };
+  roundedPolygon = pkgs.callPackage ../ii-shapes.nix { };
 in
 stdenv.mkDerivation {
   pname = "ii";

@@ -44,5 +44,16 @@
       "extraClasses": [],
       "ignoreClasses": []
     }
-  }
+  },
+  "background.monitorWallpapers": [
+    {
+      "framings": [],
+      "key": "C200P/0x01010101",
+      "monitor": "HDMI-A-1",
+      "path": "/home/jano/.config/illogical-impulse/presets/Power2_screen0.jpg"
+    }
+  ],
+  "dock.pinnedApps": [
+    "zen"
+  ]
 }

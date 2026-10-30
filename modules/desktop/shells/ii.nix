@@ -1,4 +1,7 @@
-# ii (ii-p3drovfx) shell module. Opt-in: modules.desktop.shell = "ii".
+# ii shell module (Quickshell on Hyprland). Opt-in: modules.desktop.shell = "ii" + modules.desktop.ii.enable.
+# Two forks, one module: modules.desktop.ii.variant = "p3drovfx" (default) | "vynx".
+# Both ship the same layout (dots/.config/{quickshell/ii,hypr,matugen}) and both start as `qs -c ii`.
+# Keep each variant's mutable state apart with modules.desktop.dotfiles.host (see docs/ii.md).
 #
 # Config location:
 #  - modules.desktop.dotfiles.enable = false: seeded once into ~/.config (old behaviour).
@@ -8,6 +11,7 @@
 { config, lib, pkgs, inputs, ... }:
 let
   cfg = config.modules.desktop.ii;
+  iiPkg = if cfg.variant == "vynx" then pkgs.ii-vynx else pkgs.ii;
   hmDag = inputs.home-manager.lib.hm.dag;
 
   dotsEnable = config.modules.desktop.dotfiles.enable or false;
@@ -27,7 +31,14 @@ let
   '';
 in
 {
-  options.modules.desktop.ii.enable = lib.mkEnableOption "ii (ii-p3drovfx) Quickshell shell on Hyprland";
+  options.modules.desktop.ii = {
+    enable = lib.mkEnableOption "ii Quickshell shell on Hyprland";
+    variant = lib.mkOption {
+      type = lib.types.enum [ "p3drovfx" "vynx" ];
+      default = "p3drovfx";
+      description = "Which ii fork to install: P3DROVFX/ii-p3drovfx or vaguesyntax/ii-vynx.";
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     hardware.i2c.enable = true;
@@ -36,7 +47,7 @@ in
     services.geoclue2.enable = lib.mkDefault true;
     services.upower.enable = lib.mkDefault true;
     users.users.jano.extraGroups = [ "i2c" ];
-    environment.systemPackages = [ pkgs.ii pkgs.matugen pkgs.quickshell pkgs.hyprmon pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting pkgs.bc pkgs.coreutils pkgs.curl pkgs.wget pkgs.ripgrep pkgs.jq pkgs.xdg-user-dirs pkgs.rsync pkgs.eza pkgs.fish pkgs.starship pkgs.kitty pkgs.hyprsunset pkgs.hyprshot pkgs.swappy pkgs.tesseract pkgs.wf-recorder pkgs.upower pkgs.wtype pkgs.ydotool pkgs.fuzzel pkgs.hypridle pkgs.hyprlock pkgs.hyprpicker pkgs.translate-shell pkgs.wlogout pkgs.libqalculate pkgs.cava pkgs.pavucontrol pkgs.wireplumber pkgs.pipewire pkgs.ddcutil pkgs.geoclue2 pkgs.networkmanager pkgs.kdePackages.plasma-nm pkgs.kdePackages.dolphin
+    environment.systemPackages = [ iiPkg pkgs.matugen pkgs.quickshell pkgs.hyprmon pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting pkgs.bc pkgs.coreutils pkgs.curl pkgs.wget pkgs.ripgrep pkgs.jq pkgs.xdg-user-dirs pkgs.rsync pkgs.eza pkgs.fish pkgs.starship pkgs.kitty pkgs.hyprsunset pkgs.hyprshot pkgs.swappy pkgs.tesseract pkgs.wf-recorder pkgs.upower pkgs.wtype pkgs.ydotool pkgs.fuzzel pkgs.hypridle pkgs.hyprlock pkgs.hyprpicker pkgs.translate-shell pkgs.wlogout pkgs.libqalculate pkgs.cava pkgs.pavucontrol pkgs.wireplumber pkgs.pipewire pkgs.ddcutil pkgs.geoclue2 pkgs.networkmanager pkgs.kdePackages.plasma-nm pkgs.kdePackages.dolphin
 pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist
       # --- added by deps audit (runtime tools ii calls) ---
       pkgs.pulseaudio # pactl (pipewire does not ship it)
@@ -54,10 +65,13 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
     home-manager.users.jano.home.activation.iiQuickshellConfig = hmDag.entryAfter [ "writeBoundary" ] ''
       qs="${qsDir}"
       run mkdir -p "$(dirname "$qs")"
-      if [ -L "$qs" ] || [ ! -d "$qs" ]; then
+      # A tree without .variant predates the marker and is p3drovfx. Switching variant re-seeds it.
+      have="$(cat "$qs/.variant" 2>/dev/null || echo p3drovfx)"
+      if [ -L "$qs" ] || [ ! -d "$qs" ] || [ "$have" != "${cfg.variant}" ]; then
         run rm -rf "$qs"
-        run cp -r ${pkgs.ii}/share/quickshell/ii "$qs"
+        run cp -r ${iiPkg}/share/quickshell/ii "$qs"
         run chmod -R u+w "$qs"
+        echo "${cfg.variant}" > "$qs/.variant"
       fi
       # Cap parallel thumbnail jobs (upstream starts one background job per file: OOM with big folders)
       thumb="$qs/scripts/thumbnails/generate-thumbnails-magick.sh"
@@ -89,7 +103,7 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
       mg="${matugenDir}"
       run mkdir -p "$mg"
       if [ ! -f "$mg/config.toml" ]; then
-        run cp -r ${pkgs.ii}/share/matugen/ii/. "$mg/"
+        run cp -r ${iiPkg}/share/matugen/ii/. "$mg/"
         run chmod -R u+w "$mg"
       fi
       # Make gtk css outputs mutable (home-manager symlinks them read-only)
@@ -106,17 +120,28 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
         run rm -f "$hd/hyprland.lua"
       fi
       if [ ! -e "$hd/hyprland.lua" ]; then
-        run cp ${pkgs.ii}/share/hypr/ii/hyprland.lua "$hd/hyprland.lua"
+        run cp ${iiPkg}/share/hypr/ii/hyprland.lua "$hd/hyprland.lua"
       fi
       if [ ! -d "$hd/hyprland" ]; then
-        run cp -r ${pkgs.ii}/share/hypr/ii/hyprland "$hd/hyprland"
+        run cp -r ${iiPkg}/share/hypr/ii/hyprland "$hd/hyprland"
       fi
       run chmod -R u+w "$hd"
-    '';
+    ${lib.optionalString (cfg.variant == "vynx") ''
+      # vynx's execs.lua starts qs itself; the systemd user unit below already does.
+      run ${pkgs.gnused}/bin/sed -i '/hl.exec_cmd("qs -c \$qsConfig")/d' "$hd/hyprland/execs.lua"
+    ''}'';
 
     # config-autobackup was removed: it copied ~/.config/{hypr,quickshell/ii,illogical-impulse,hyprmon}
     # on every change with no pruning (105 GB in ~/.config-backups). With the dotfiles module the
     # configs live in the git repo instead.
+
+    home-manager.users.jano.home.activation.iiHalosConfig = lib.mkIf (config.networking.hostName == "halos1") (hmDag.entryAfter [ "writeBoundary" ] ''
+      if [ ! -f "$HOME/.config/illogical-impulse/config.json" ]; then
+        run mkdir -p "$HOME/.config/illogical-impulse"
+        run cp ${../../../dotfiles/halos1/illogical-impulse/config.json} "$HOME/.config/illogical-impulse/config.json"
+        run chmod u+w "$HOME/.config/illogical-impulse/config.json"
+      fi
+    '');
 
     home-manager.users.jano.systemd.user.services.ii = {
       Unit = {

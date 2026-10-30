@@ -1,5 +1,6 @@
-# Laptop: Intel + NVIDIA, CachyOS kernel (see flake.nix). mango + dynisland.
-{ ... }:
+# Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: `cachyos` flag in nix/hosts.nix, off).
+# Hyprland + ii (variant p3drovfx). Boot entry "vynx" = same host with ii-vynx.
+{ lib, ... }:
 
 {
   imports = [
@@ -14,11 +15,10 @@
 
   networking.hostName = "laptop";
 
-
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   modules.services.sunshine.enable = true;
 
-  # Deskflow: this machine serves the keyboard/mouse; desktop and surface join.
+  # Deskflow: this machine serves the keyboard/mouse; desktop and halos1 join.
   modules.programs.deskflow.role = "server";
 
   programs.orchard.enable = true;
@@ -39,10 +39,18 @@
   modules.desktop.drmDevices = "/dev/dri/igpu:/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
 
+  # Legacy: only read by the mango session (remove together with mango).
   modules.desktop.mango.monitorRules = [
     "name:^eDP-1,width:1080,height:1920,refresh:60,x:1920,y:0,rr:0"
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,x:,y:0,rr:0"
   ];
+
+  # Boot entry "vynx": ii-vynx instead of ii-p3drovfx. Own dotfiles folder (dotfiles/laptop-vynx/)
+  # so the two forks never share config.json or the Hyprland Lua. See docs/ii.md.
+  specialisation.vynx.configuration = {
+    modules.desktop.ii.variant = "vynx";
+    modules.desktop.dotfiles.host = "laptop-vynx";
+  };
 
   system.stateVersion = "26.05";
 }

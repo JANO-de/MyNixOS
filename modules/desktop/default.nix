@@ -1,9 +1,10 @@
 # Desktop session: which compositor runs (mango | niri | hyprland), which shell sits on top
-# (dynisland | chronos), the SDDM login screen (optional on-screen keyboard for
+# (dynisland | chronos | halo | ii), the SDDM login screen (optional on-screen keyboard for
 # touch-only devices) and the Wayland session basics every host shares.
 #
-#   desktop, laptop:  session = "mango"  shell = "dynisland"   (defaults)
-#   halos1:           session = "niri"   shell = "chronos"
+#   defaults:         session = "mango"  shell = "dynisland"   (legacy)
+#   desktop, laptop:  session = "hyprland"  shell = "ii"       (variant: p3drovfx | vynx)
+#   halos1:           session = "hyprland"  shell = "ii" (temporary test) | "halo" (own shell, shell/halo/)
 { config, lib, pkgs, ... }:
 
 let

@@ -1,5 +1,6 @@
-# Desktop PC: AMD + NVIDIA (GTX 1060). mango + dynisland.
-{ ... }:
+# Desktop PC: AMD + NVIDIA (GTX 1060). Hyprland + ii (variant p3drovfx).
+# Boot entry "vynx" = same host with ii-vynx.
+{ lib, ... }:
 
 {
   imports = [
@@ -56,8 +57,6 @@
   programs.orchard.enable = true;
   programs.niXscout.enable = true;
 
-  # Explicitly disable rotation for both active desktop outputs. Avoid the
-  # trailing `$` regex anchor here; Mango matches names without requiring it.
   modules.desktop.session = "hyprland";
   modules.desktop.shell = "ii";
   modules.desktop.ii.enable = true;
@@ -66,10 +65,18 @@
   # Legacy flat layout; delete after running scripts/migrate-dotfiles-per-host.sh desktop.
   modules.desktop.dotfiles.dir = "/home/jano/Proyectos/MyNixOS/dotfiles";
 
+  # Legacy: only read by the mango session (remove together with mango).
   modules.desktop.mango.monitorRules = [
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,rr:1"
     "name:^HDMI-A-2,width:1080,height:1920,refresh:60,rr:0"
   ];
+
+  # Boot entry "vynx": ii-vynx instead of ii-p3drovfx, with its own dotfiles folder.
+  # mkForce: the base sets the legacy flat dir above. See docs/ii.md.
+  specialisation.vynx.configuration = {
+    modules.desktop.ii.variant = "vynx";
+    modules.desktop.dotfiles.dir = lib.mkForce "/home/jano/Proyectos/MyNixOS/dotfiles/desktop-vynx";
+  };
 
   system.stateVersion = "26.05";
 }

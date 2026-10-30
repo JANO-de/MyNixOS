@@ -163,8 +163,8 @@ hl.config({
         rounding_power = 4,
         rounding = 18,
 
-        blur = {
-            enabled = true,
+         blur = {
+            enabled = false,
             xray = false,
             -- Let Hyprland blur the desktop behind special workspaces (the scratchpad).
             -- This is compositor-side blur, so the background stays smooth without
@@ -197,7 +197,7 @@ hl.config({
         dim_special = 0.2
     },
     animations = {
-        enabled = true
+        enabled = false
     },
     dwindle = {
         preserve_split = true,
