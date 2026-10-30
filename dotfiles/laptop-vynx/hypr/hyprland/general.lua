@@ -254,7 +254,8 @@ hl.animation({
 
 hl.config({
     input = {
-        kb_layout = "us",
+        kb_layout = "es",
+        kb_variant = "nodeadkeys",
         numlock_by_default = true,
         repeat_delay = 250,
         repeat_rate = 35,

@@ -1,6 +1,5 @@
-# ii-vynx: Quickshell config for Hyprland (github.com/vaguesyntax/ii-vynx, GPL-3.0).
-# Upstream has no flake and no usable Nix packaging (sdata/dist-nix is not for NixOS).
-# We install the config trees only; modules/desktop/shells/ii.nix seeds them into $HOME.
+# ii-vynx: Quickshell config for Hyprland (github.com/JANO-de/ii-halos, GPL-3.0).
+# Fork of illogical-impulse. We install the config trees only; modules/desktop/shells/ii.nix seeds them into $HOME.
 # Update: bump `rev`, set `hash = lib.fakeHash`, build, paste the real hash.
 { lib, pkgs, stdenv, fetchFromGitHub, ... }:
 let
@@ -8,12 +7,12 @@ let
 in
 stdenv.mkDerivation {
   pname = "ii-vynx";
-  version = "unstable-2026-09-19";
+  version = "unstable-2026-10-30";
   src = fetchFromGitHub {
-    owner = "vaguesyntax";
-    repo = "ii-vynx";
-    rev = "9cdec0d195dbbbe94624630442d6dceffd88e672";
-    hash = "sha256-1/aizHQo/eUBbGsTG+Lbpx/ix4XfRbz31r5gQeQQfPA=";
+    owner = "JANO-de";
+    repo = "ii-halos";
+    rev = "a0c1f9df36d000ebca544aacb8d25a282ca90997";
+    hash = lib.fakeHash;
   };
   dontBuild = true;
   dontPatchShebangs = true;
