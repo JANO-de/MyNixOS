@@ -13,7 +13,7 @@ Legend: [ ] open · [~] in progress · [x] done · [?] waiting for owner
 - [ ] 5 Displays (hyprmon)
 - [ ] 6 Wallpaper picker styles
 - [ ] 7 Right-click background menu
-- [ ] 8 Nix pin (pkgs/ii-vynx -> ii-halos)
+- [x] 8 Nix pin (pkgs/ii-vynx -> ii-halos)
 
 ## Open questions for the owner
 (none)
