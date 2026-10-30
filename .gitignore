@@ -3,5 +3,6 @@ result-*
 .direnv/
 target/
 *.qcow2
-*.tar.xz
-*.tar.gz
+*.bak
+*.bak.*
+# preset-store/ and hyprmon_backups/ are ignored in dotfiles/.gitignore

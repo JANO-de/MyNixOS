@@ -33,6 +33,7 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    classwork.url = "git+file:///home/jano/Proyectos/Classwork";
     opencode-flake.url = "github:noblepayne/opencode-flake";
     forge = {
       url = "github:JANO-de/Forge-TUI"; # terminal UI for OpenCode

@@ -67,10 +67,25 @@
         "url": "file:///home/jano/Proyectos/chronos"
       }
     },
+    "classwork": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 0,
+        "narHash": "sha256-cC2DxblyjMpQwIzlYnOYwdyQKn/F26YjR/INtbOWtvo=",
+        "type": "git",
+        "url": "file:///home/jano/Proyectos/Classwork"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/jano/Proyectos/Classwork"
+      }
+    },
     "claude-desktop": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1764098187,
@@ -349,7 +364,7 @@
         "hyprutils": "hyprutils",
         "hyprwayland-scanner": "hyprwayland-scanner",
         "hyprwire": "hyprwire",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "pre-commit-hooks": "pre-commit-hooks",
         "systems": "systems_3",
         "xdph": "xdph"
@@ -598,7 +613,7 @@
     "mango": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "scenefx": "scenefx"
       },
       "locked": {
@@ -619,7 +634,7 @@
       "inputs": {
         "flake-compat": "flake-compat_2",
         "flake-parts": "flake-parts_2",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_6"
       },
       "locked": {
         "lastModified": 1790976549,
@@ -638,7 +653,7 @@
     },
     "nixos-hardware": {
       "inputs": {
-        "nixpkgs": "nixpkgs_6"
+        "nixpkgs": "nixpkgs_7"
       },
       "locked": {
         "lastModified": 1792697326,
@@ -702,6 +717,20 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1793183032,
+        "narHash": "sha256-/nYLRqlw7vEj2bua2U3aAjF4Jqkd6RxpO+xACfKkldE=",
+        "rev": "08d3a97586f6b6343b3b5e799980773629432610",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.13050.08d3a97586f6/nixexprs.tar.zst"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-26.05",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1749174413,
         "narHash": "sha256-urN9UMK5cd1dzhR+Lx0xHeTgBp2MatA5+6g9JaxjuQs=",
         "owner": "nixos",
@@ -716,7 +745,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1793110635,
         "narHash": "sha256-dhoW6VgFWlaodSY5jrBn+CF2FLmaUvDVgM7+C7T2+NM=",
@@ -732,7 +761,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1783279667,
         "narHash": "sha256-/NAkDSsve+GNM0Bt6tleJdCGfsTlK89nPjkVOzZMo0s=",
@@ -748,7 +777,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1790938291,
         "narHash": "sha256-bd3cUU64F694TYYqhs+1aeioKfLT2elb/9olXAj4QNI=",
@@ -764,7 +793,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_7": {
       "locked": {
         "lastModified": 1789546076,
         "narHash": "sha256-vWkSk5bbfTqdtMoSgD9FshACO8JCvXTFi+3cqEp0mH0=",
@@ -777,7 +806,7 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
       }
     },
-    "nixpkgs_7": {
+    "nixpkgs_8": {
       "locked": {
         "lastModified": 1792898606,
         "narHash": "sha256-v+CWvNPgAsxoqWDWmkjhh3qwZiE/oGkhXT+QH79yg2o=",
@@ -791,7 +820,7 @@
         "type": "indirect"
       }
     },
-    "nixpkgs_8": {
+    "nixpkgs_9": {
       "locked": {
         "lastModified": 1774709303,
         "narHash": "sha256-D3Q07BbIA2KnTcSXIqqu9P586uWxN74zNoCH3h2ESHg=",
@@ -809,7 +838,7 @@
     },
     "opencode-flake": {
       "inputs": {
-        "nixpkgs": "nixpkgs_8"
+        "nixpkgs": "nixpkgs_9"
       },
       "locked": {
         "lastModified": 1792771880,
@@ -851,6 +880,7 @@
       "inputs": {
         "arcticons": "arcticons",
         "chronos": "chronos",
+        "classwork": "classwork",
         "claude-desktop": "claude-desktop",
         "forge": "forge",
         "home-manager": "home-manager",
@@ -859,7 +889,7 @@
         "mango": "mango",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_7",
+        "nixpkgs": "nixpkgs_8",
         "opencode-flake": "opencode-flake",
         "rust-overlay": "rust-overlay",
         "zen-browser": "zen-browser"

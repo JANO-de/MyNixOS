@@ -18,17 +18,11 @@ Forks: `P3DROVFX/ii-p3drovfx` (default) and `vaguesyntax/ii-vynx` (p3drovfx is a
 - `modules/desktop/dotfiles.nix`: `~/.config/{hypr,hyprmon,illogical-impulse,matugen}` -> `dotfiles/<host>/`.
 - `~/.config/quickshell/ii/.variant` records which fork the tree came from. Changing `ii.variant` re-seeds the tree on the next activation (a tree without the marker counts as p3drovfx).
 
-## Try vynx (boot entry)
+## Variant (vynx)
 
-`desktop` and `laptop` have `specialisation.vynx`: vynx variant + separate dotfiles folder (`dotfiles/laptop-vynx/`, `dotfiles/desktop-vynx/`), so `config.json` and the Hyprland Lua of the two forks never mix.
+`desktop` and `laptop` run `variant = "vynx"` with their own dotfiles folders (`dotfiles/desktop-vynx/`, `dotfiles/laptop-vynx/`). To go back, set `variant = "p3drovfx"` and the old dotfiles host/dir.
 
-```
-nixos-rebuild build --flake .#laptop
-sudo nixos-rebuild test --flake .#laptop --specialisation vynx   # owner only
-```
-
-Rollback: pick the default boot entry, or `nixos-rebuild test` without `--specialisation`.
-Make vynx the default: set `modules.desktop.ii.variant = "vynx"` and `dotfiles.host` in the host file, delete the specialisation.
+After `switch`: `systemctl --user restart ii`, then log out and in.
 
 ## vynx specifics
 

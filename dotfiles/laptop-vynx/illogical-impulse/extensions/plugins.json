@@ -1,0 +1,1269 @@
+{
+    "extensionConfigs": {
+        "phone-link": {
+            "scrcpy_use_wireless": false,
+            "scrcpy_wireless_ip": "",
+            "scrcpy_wireless_port": 5555,
+            "webcam_camera_facing": "back",
+            "webcam_connection": "auto",
+            "webcam_fps": 30,
+            "webcam_mirror": false,
+            "webcam_port": 4747,
+            "webcam_resolution": "1280x720",
+            "webcam_rotate_degrees": 0,
+            "webcam_wifi_ip": ""
+        },
+        "vynx-visualizer": {
+            "barRounding": 0.2,
+            "barSpacing": 4,
+            "borderWidth": 3,
+            "dataAveraging": 0.2,
+            "fillOpacity": 0.4,
+            "height": 500,
+            "hideWhenCovered": true,
+            "hideWhenFullscreen": true,
+            "mono": false,
+            "opacity": 0.8,
+            "showWhenLocked": true,
+            "smoothing": 0.06,
+            "targetBarWidth": 20
+        },
+        "vynx-wallpaper-browser": {
+            "service": "wallhaven",
+            "showAnimeResults": false,
+            "sort": "favourites"
+        }
+    },
+    "extensionOverlayConfigs": {
+    },
+    "extensionWidgetConfigs": {
+        "ii-vynx-test-extension": {
+            "my-widget": {
+                "enable": true,
+                "x": 99.11984174679486,
+                "y": 356.4223069411057
+            }
+        }
+    },
+    "extensions": {
+        "ii-eve-anime-booru": {
+            "author": "djOB2EOTWQW1",
+            "configDefaults": {
+            },
+            "configSchema": {
+            },
+            "contributes": {
+                "sidebarLeftPages": [
+                    {
+                        "component": "src/Anime.qml",
+                        "icon": "bookmark_heart",
+                        "identifier": "anime-booru",
+                        "title": "Anime"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Anime/booru image browser: multi-provider tag search, previews, favorites and downloads.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-anime-booru",
+            "icon": "bookmark_heart",
+            "id": "ii-eve-anime-booru",
+            "installedAt": "2026-10-30T11:32:21.616Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/ii-eve-anime-booru",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Anime Booru",
+            "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-anime-booru.git",
+            "shapeString": "",
+            "version": "1.6.0"
+        },
+        "ii-eve-app-launcher": {
+            "author": "djOB2EOTWQW1",
+            "configDefaults": {
+            },
+            "configSchema": {
+            },
+            "contributes": {
+                "services": [
+                    {
+                        "id": "appLauncherHost",
+                        "qml": "src/services/AppLauncherHost.qml"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "App launcher with folders, recents, fuzzy search, Vimium-style keyboard nav, installed-app (.desktop) and binary pickers, running indicators, launch stats, colored movable folders, and a draggable launcher window.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-app-launcher",
+            "icon": "apps",
+            "id": "ii-eve-app-launcher",
+            "installedAt": "2026-10-30T11:32:19.766Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/ii-eve-app-launcher",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "App Launcher",
+            "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-app-launcher.git",
+            "shapeString": "",
+            "version": "1.4.0"
+        },
+        "ii-eve-cheatsheet-commands": {
+            "author": "djOB2EOTWQW1",
+            "configDefaults": {
+            },
+            "configSchema": {
+            },
+            "contributes": {
+                "cheatsheet": [
+                    {
+                        "component": "src/CheatsheetCommands.qml",
+                        "icon": "terminal",
+                        "identifier": "commands",
+                        "title": "Commands"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Command-snippets cheatsheet tab: searchable, tagged, with add/edit/import.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-commands",
+            "icon": "terminal",
+            "id": "ii-eve-cheatsheet-commands",
+            "installedAt": "2026-10-30T11:32:17.160Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/ii-eve-cheatsheet-commands",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Cheatsheet Commands",
+            "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-commands.git",
+            "shapeString": "",
+            "version": "1.2.5"
+        },
+        "ii-eve-cheatsheet-keybinds": {
+            "author": "djOB2EOTWQW1",
+            "configDefaults": {
+            },
+            "configSchema": {
+            },
+            "contributes": {
+                "cheatsheet": [
+                    {
+                        "component": "src/CheatsheetKeybinds.qml",
+                        "icon": "keyboard",
+                        "identifier": "keybinds",
+                        "title": "Keybinds"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Editable keybinds cheatsheet tab: searchable categories, add/edit/delete, conflict detection.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-keybinds",
+            "icon": "keyboard",
+            "id": "ii-eve-cheatsheet-keybinds",
+            "installedAt": "2026-10-30T11:32:23.923Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/ii-eve-cheatsheet-keybinds",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Cheatsheet Keybinds",
+            "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-keybinds.git",
+            "shapeString": "",
+            "version": "1.2.5"
+        },
+        "ii-eve-system-monitor": {
+            "author": "djOB2EOTWQW1",
+            "configDefaults": {
+            },
+            "configSchema": {
+            },
+            "contributes": {
+                "barComponents": [
+                    {
+                        "component": "src/bar/SystemMonitorBar.qml",
+                        "icon": "monitor_heart",
+                        "identifier": "system_monitor_bar",
+                        "title": "Sys Monitor"
+                    }
+                ],
+                "services": [
+                    {
+                        "id": "systemMonitorService",
+                        "qml": "src/services/SystemMonitorService.qml"
+                    }
+                ],
+                "sidebarLeftPages": [
+                    {
+                        "component": "src/sidebar/SystemMonitorSidebar.qml",
+                        "icon": "monitor_heart",
+                        "identifier": "system_monitor_sidebar",
+                        "title": "Sys Monitor"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Real-time system resource monitoring (CPU, GPU, RAM, Disk, Net, Temps) and mini task manager for ii-eve shell.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-system-monitor",
+            "icon": "monitor_heart",
+            "id": "ii-eve-system-monitor",
+            "installedAt": "2026-10-30T11:32:15.422Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/ii-eve-system-monitor",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Sys Monitor",
+            "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-system-monitor.git",
+            "shapeString": "",
+            "version": "1.0.1"
+        },
+        "ii-vynx-test-extension": {
+            "author": "you",
+            "configDefaults": {
+            },
+            "configSchema": {
+            },
+            "contributes": {
+                "backgroundWidgets": [
+                    {
+                        "component": "TestWidgetBackground.qml",
+                        "identifier": "my-widget",
+                        "placementStrategy": "free",
+                        "x": 200,
+                        "y": 300
+                    }
+                ],
+                "barComponents": [
+                    {
+                        "icon": "backspace",
+                        "identifier": "test-bar-component",
+                        "qml": "TestBarComponent.qml",
+                        "title": "Test Bar Component",
+                        "verticalQml": "TestBarComponentVertical.qml"
+                    }
+                ],
+                "overlayWidgets": [
+                    {
+                        "component": "MyOverlay.qml",
+                        "icon": "stadia_controller",
+                        "identifier": "my-overlay-widget",
+                        "title": "My Overlay Widget"
+                    }
+                ],
+                "services": [
+                    {
+                        "id": "testService",
+                        "qml": "TestService.qml"
+                    }
+                ],
+                "sidebarLeftPages": [
+                    {
+                        "component": "MyPage.qml",
+                        "icon": "star",
+                        "identifier": "test-page",
+                        "title": "Test Page"
+                    }
+                ],
+                "sidebarRightBottom": [
+                    {
+                        "component": "MyWidget.qml",
+                        "icon": "data_array",
+                        "identifier": "test-widget",
+                        "title": "Test Widget"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Does cool stuff",
+            "enabled": true,
+            "htmlUrl": "https://github.com/vaguesyntax/ii-vynx-test-extension",
+            "icon": "widgets",
+            "id": "ii-vynx-test-extension",
+            "installedAt": "2026-10-30T11:32:28.476Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/ii-vynx-test-extension",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Test Extension",
+            "repoUrl": "https://github.com/vaguesyntax/ii-vynx-test-extension.git",
+            "shapeString": "Cookie12Sided",
+            "version": "1.0.0"
+        },
+        "phone-link": {
+            "author": "Zatch07",
+            "configDefaults": {
+                "scrcpy_use_wireless": false,
+                "scrcpy_wireless_ip": "",
+                "scrcpy_wireless_port": 5555,
+                "webcam_connection": "auto",
+                "webcam_fps": 30,
+                "webcam_mirror": false,
+                "webcam_port": 4747,
+                "webcam_resolution": "1280x720",
+                "webcam_rotate_degrees": 0,
+                "webcam_wifi_ip": ""
+            },
+            "configSchema": {
+                "scrcpy_use_wireless": {
+                    "default": false,
+                    "icon": "wifi",
+                    "label": "Scrcpy: Use Wireless Debugging",
+                    "type": "boolean"
+                },
+                "scrcpy_wireless_ip": {
+                    "default": "",
+                    "icon": "router",
+                    "label": "Scrcpy: Wireless IP & Port (e.g. 192.168.1.42:5555)",
+                    "type": "string"
+                },
+                "scrcpy_wireless_port": {
+                    "default": 5555,
+                    "icon": "tag",
+                    "label": "Scrcpy: Wireless Port",
+                    "type": "number"
+                },
+                "webcam_connection": {
+                    "default": "auto",
+                    "icon": "wifi",
+                    "label": "Webcam Connection",
+                    "options": [
+                        {
+                            "displayName": "Auto (Wi-Fi or USB)",
+                            "value": "auto"
+                        },
+                        {
+                            "displayName": "USB Cable Only",
+                            "value": "usb"
+                        }
+                    ],
+                    "type": "enum"
+                },
+                "webcam_fps": {
+                    "default": 30,
+                    "icon": "speed",
+                    "label": "Webcam Framerate (FPS)",
+                    "type": "number"
+                },
+                "webcam_mirror": {
+                    "default": false,
+                    "icon": "flip",
+                    "label": "Webcam: Mirror Horizontally",
+                    "type": "boolean"
+                },
+                "webcam_port": {
+                    "default": 4747,
+                    "icon": "tag",
+                    "label": "DroidCam Port",
+                    "type": "number"
+                },
+                "webcam_resolution": {
+                    "default": "1280x720",
+                    "icon": "aspect_ratio",
+                    "label": "Webcam Resolution",
+                    "options": [
+                        {
+                            "displayName": "480p",
+                            "value": "640x480"
+                        },
+                        {
+                            "displayName": "720p",
+                            "value": "1280x720"
+                        },
+                        {
+                            "displayName": "1080p",
+                            "value": "1920x1080"
+                        }
+                    ],
+                    "type": "enum"
+                },
+                "webcam_rotate_degrees": {
+                    "default": 0,
+                    "icon": "rotate_right",
+                    "label": "Webcam Rotation",
+                    "options": [
+                        {
+                            "displayName": "0°",
+                            "value": 0
+                        },
+                        {
+                            "displayName": "180°",
+                            "value": 180
+                        }
+                    ],
+                    "type": "enum"
+                },
+                "webcam_wifi_ip": {
+                    "default": "",
+                    "icon": "router",
+                    "label": "DroidCam Wi-Fi IP (Optional) (e.g. 192.168.1.42)",
+                    "type": "string"
+                }
+            },
+            "contributes": {
+                "services": [
+                    {
+                        "id": "KdeConnectService",
+                        "qml": "services/KdeConnectService.qml"
+                    },
+                    {
+                        "id": "PhoneCameraService",
+                        "qml": "services/PhoneCameraService.qml"
+                    },
+                    {
+                        "id": "PhoneMicService",
+                        "qml": "services/PhoneMicService.qml"
+                    }
+                ],
+                "sidebarLeftPages": [
+                    {
+                        "component": "phone/Phone.qml",
+                        "icon": "smartphone",
+                        "identifier": "phone",
+                        "title": "Phone"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Seamless phone integration. Click 'Run Dependencies Script' below or visit the GitHub README to setup.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/Zatch07/phone-link",
+            "icon": "smartphone",
+            "id": "phone-link",
+            "installedAt": "2026-10-30T11:31:55.531Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/phone-link",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Phone Link",
+            "repoUrl": "https://github.com/Zatch07/phone-link.git",
+            "shapeString": "Cookie9Sided",
+            "version": "3.0.0"
+        },
+        "vynx-visualizer": {
+            "author": "Ahorts",
+            "configDefaults": {
+                "barRounding": 0.2,
+                "barSpacing": 4,
+                "borderWidth": 3,
+                "dataAveraging": 0.2,
+                "fillOpacity": 0.4,
+                "height": 500,
+                "hideWhenCovered": true,
+                "hideWhenFullscreen": true,
+                "mono": false,
+                "opacity": 0.8,
+                "showWhenLocked": true,
+                "smoothing": 0.06,
+                "targetBarWidth": 20
+            },
+            "configSchema": {
+                "barRounding": {
+                    "default": 0.2,
+                    "icon": "rounded_corner",
+                    "label": "Bar Roundness",
+                    "max": 0.5,
+                    "min": 0,
+                    "type": "slider"
+                },
+                "barSpacing": {
+                    "default": 4,
+                    "icon": "space_bar",
+                    "label": "Bar Gap",
+                    "max": 100,
+                    "min": 0,
+                    "type": "int"
+                },
+                "borderWidth": {
+                    "default": 3,
+                    "icon": "line_weight",
+                    "label": "Border Width",
+                    "max": 20,
+                    "min": 0,
+                    "type": "int"
+                },
+                "dataAveraging": {
+                    "default": 0.2,
+                    "icon": "waves",
+                    "label": "Data Averaging",
+                    "max": 1,
+                    "min": 0,
+                    "type": "slider"
+                },
+                "fillOpacity": {
+                    "default": 0.4,
+                    "icon": "blur_on",
+                    "label": "Border Opacity",
+                    "max": 1,
+                    "min": 0,
+                    "type": "slider"
+                },
+                "height": {
+                    "default": 500,
+                    "icon": "height",
+                    "label": "Max Height",
+                    "max": 1080,
+                    "min": 60,
+                    "type": "int"
+                },
+                "hideWhenCovered": {
+                    "default": true,
+                    "icon": "layers_clear",
+                    "label": "Hide when Covered",
+                    "type": "bool"
+                },
+                "hideWhenFullscreen": {
+                    "default": true,
+                    "icon": "fullscreen",
+                    "label": "Hide when Fullscreen",
+                    "type": "bool"
+                },
+                "mono": {
+                    "default": false,
+                    "icon": "flip",
+                    "label": "Mirrored Layout",
+                    "type": "bool"
+                },
+                "opacity": {
+                    "default": 0.8,
+                    "icon": "opacity",
+                    "label": "Master Opacity",
+                    "max": 1,
+                    "min": 0,
+                    "type": "slider"
+                },
+                "showWhenLocked": {
+                    "default": true,
+                    "icon": "lock",
+                    "label": "Show when Locked",
+                    "type": "bool"
+                },
+                "smoothing": {
+                    "default": 0.06,
+                    "icon": "show_chart",
+                    "label": "Smoothing",
+                    "max": 0.2,
+                    "min": 0,
+                    "type": "slider"
+                },
+                "targetBarWidth": {
+                    "default": 20,
+                    "icon": "view_week",
+                    "label": "Bar Width",
+                    "max": 200,
+                    "min": 1,
+                    "type": "int"
+                }
+            },
+            "contributes": {
+                "backgroundWidgets": [
+                    {
+                        "component": "src/VisualizerWidget.qml",
+                        "icon": "equalizer",
+                        "identifier": "vynxVisualizer",
+                        "title": "Visualizer"
+                    }
+                ],
+                "services": [
+                    {
+                        "id": "visualizerService",
+                        "qml": "src/CavaService.qml"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Audio visualizer widget that runs cava in the background and renders spectrum bars on the desktop background.",
+            "enabled": true,
+            "htmlUrl": "https://github.com/Ahorts/vynx-visualizer",
+            "icon": "equalizer",
+            "id": "vynx-visualizer",
+            "installedAt": "2026-10-30T11:32:26.509Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/vynx-visualizer",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Visualizer",
+            "repoUrl": "https://github.com/Ahorts/vynx-visualizer.git",
+            "shapeString": "",
+            "version": "0.1.0"
+        },
+        "vynx-wallpaper-browser": {
+            "author": "vaguesyntax",
+            "configDefaults": {
+                "service": "wallhaven",
+                "showAnimeResults": false,
+                "sort": "favourites"
+            },
+            "configSchema": {
+                "showAnimeResults": {
+                    "default": false,
+                    "icon": "manga",
+                    "label": "Show Anime Results",
+                    "type": "bool"
+                }
+            },
+            "contributes": {
+                "services": [
+                    {
+                        "id": "wallpaperBrowserService",
+                        "qml": "src/WallpaperBrowser.qml"
+                    }
+                ],
+                "sidebarLeftPages": [
+                    {
+                        "component": "src/WallpaperBrowserUI.qml",
+                        "icon": "wallpaper",
+                        "identifier": "wallpaperBrowser",
+                        "title": "Browser"
+                    }
+                ]
+            },
+            "defaultBranch": "main",
+            "description": "Wallpaper browsing ability with wallhaven and unsplash support",
+            "enabled": true,
+            "htmlUrl": "https://github.com/vaguesyntax/vynx-wallpaper-browser",
+            "icon": "wallpaper",
+            "id": "vynx-wallpaper-browser",
+            "installedAt": "2026-10-30T11:31:59.046Z",
+            "installedPath": "/home/jano/.config/illogical-impulse/extensions/installed/vynx-wallpaper-browser",
+            "isCustomUrl": false,
+            "isLocal": false,
+            "name": "Wallpaper Browser",
+            "repoUrl": "https://github.com/vaguesyntax/vynx-wallpaper-browser.git",
+            "shapeString": "Ghostish",
+            "version": "1.0.0"
+        }
+    },
+    "searchCache": {
+        "cachedAt": "2026-10-30T13:17:19.663Z",
+        "results": [
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/56155256?v=4",
+                "defaultBranch": "main",
+                "description": "Seamless phone integration. Click 'Run Dependencies Script' below or visit the GitHub README to setup.",
+                "displayName": "Phone Link",
+                "extensionJson": {
+                    "author": "Zatch07",
+                    "configDefaults": {
+                        "scrcpy_use_wireless": false,
+                        "scrcpy_wireless_ip": "",
+                        "scrcpy_wireless_port": 5555,
+                        "webcam_connection": "auto",
+                        "webcam_fps": 30,
+                        "webcam_mirror": false,
+                        "webcam_port": 4747,
+                        "webcam_resolution": "1280x720",
+                        "webcam_rotate_degrees": 0,
+                        "webcam_wifi_ip": ""
+                    },
+                    "configSchema": {
+                        "scrcpy_use_wireless": {
+                            "default": false,
+                            "icon": "wifi",
+                            "label": "Scrcpy: Use Wireless Debugging",
+                            "type": "boolean"
+                        },
+                        "scrcpy_wireless_ip": {
+                            "default": "",
+                            "icon": "router",
+                            "label": "Scrcpy: Wireless IP & Port (e.g. 192.168.1.42:5555)",
+                            "type": "string"
+                        },
+                        "scrcpy_wireless_port": {
+                            "default": 5555,
+                            "icon": "tag",
+                            "label": "Scrcpy: Wireless Port",
+                            "type": "number"
+                        },
+                        "webcam_connection": {
+                            "default": "auto",
+                            "icon": "wifi",
+                            "label": "Webcam Connection",
+                            "options": [
+                                {
+                                    "displayName": "Auto (Wi-Fi or USB)",
+                                    "value": "auto"
+                                },
+                                {
+                                    "displayName": "USB Cable Only",
+                                    "value": "usb"
+                                }
+                            ],
+                            "type": "enum"
+                        },
+                        "webcam_fps": {
+                            "default": 30,
+                            "icon": "speed",
+                            "label": "Webcam Framerate (FPS)",
+                            "type": "number"
+                        },
+                        "webcam_mirror": {
+                            "default": false,
+                            "icon": "flip",
+                            "label": "Webcam: Mirror Horizontally",
+                            "type": "boolean"
+                        },
+                        "webcam_port": {
+                            "default": 4747,
+                            "icon": "tag",
+                            "label": "DroidCam Port",
+                            "type": "number"
+                        },
+                        "webcam_resolution": {
+                            "default": "1280x720",
+                            "icon": "aspect_ratio",
+                            "label": "Webcam Resolution",
+                            "options": [
+                                {
+                                    "displayName": "480p",
+                                    "value": "640x480"
+                                },
+                                {
+                                    "displayName": "720p",
+                                    "value": "1280x720"
+                                },
+                                {
+                                    "displayName": "1080p",
+                                    "value": "1920x1080"
+                                }
+                            ],
+                            "type": "enum"
+                        },
+                        "webcam_rotate_degrees": {
+                            "default": 0,
+                            "icon": "rotate_right",
+                            "label": "Webcam Rotation",
+                            "options": [
+                                {
+                                    "displayName": "0°",
+                                    "value": 0
+                                },
+                                {
+                                    "displayName": "180°",
+                                    "value": 180
+                                }
+                            ],
+                            "type": "enum"
+                        },
+                        "webcam_wifi_ip": {
+                            "default": "",
+                            "icon": "router",
+                            "label": "DroidCam Wi-Fi IP (Optional) (e.g. 192.168.1.42)",
+                            "type": "string"
+                        }
+                    },
+                    "contributes": {
+                        "services": [
+                            {
+                                "id": "KdeConnectService",
+                                "qml": "services/KdeConnectService.qml"
+                            },
+                            {
+                                "id": "PhoneCameraService",
+                                "qml": "services/PhoneCameraService.qml"
+                            },
+                            {
+                                "id": "PhoneMicService",
+                                "qml": "services/PhoneMicService.qml"
+                            }
+                        ],
+                        "sidebarLeftPages": [
+                            {
+                                "component": "phone/Phone.qml",
+                                "icon": "smartphone",
+                                "identifier": "phone",
+                                "title": "Phone"
+                            }
+                        ]
+                    },
+                    "description": "Seamless phone integration. Click 'Run Dependencies Script' below or visit the GitHub README to setup.",
+                    "extensionId": "phone-link",
+                    "icon": "smartphone",
+                    "name": "Phone Link",
+                    "shapeString": "Cookie9Sided",
+                    "version": "3.0.0"
+                },
+                "extensionJsonError": null,
+                "fullName": "Zatch07/phone-link",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/Zatch07/phone-link",
+                "icon": "smartphone",
+                "name": "phone-link",
+                "owner": "Zatch07",
+                "repoId": 1285975113,
+                "repoUrl": "https://github.com/Zatch07/phone-link.git",
+                "shapeString": "Cookie9Sided",
+                "stars": 3,
+                "version": "3.0.0"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/173799252?v=4",
+                "defaultBranch": "main",
+                "description": "Wallpaper browsing ability with wallhaven and unsplash support",
+                "displayName": "Wallpaper Browser",
+                "extensionJson": {
+                    "author": "vaguesyntax",
+                    "configDefaults": {
+                        "service": "wallhaven",
+                        "showAnimeResults": false,
+                        "sort": "favourites"
+                    },
+                    "configSchema": {
+                        "showAnimeResults": {
+                            "default": false,
+                            "icon": "manga",
+                            "label": "Show Anime Results",
+                            "type": "bool"
+                        }
+                    },
+                    "contributes": {
+                        "services": [
+                            {
+                                "id": "wallpaperBrowserService",
+                                "qml": "src/WallpaperBrowser.qml"
+                            }
+                        ],
+                        "sidebarLeftPages": [
+                            {
+                                "component": "src/WallpaperBrowserUI.qml",
+                                "icon": "wallpaper",
+                                "identifier": "wallpaperBrowser",
+                                "title": "Browser"
+                            }
+                        ]
+                    },
+                    "description": "Wallpaper browsing ability with wallhaven and unsplash support",
+                    "extensionId": "vynx-wallpaper-browser",
+                    "icon": "wallpaper",
+                    "name": "Wallpaper Browser",
+                    "shapeString": "Ghostish",
+                    "version": "1.0.0"
+                },
+                "extensionJsonError": null,
+                "fullName": "vaguesyntax/vynx-wallpaper-browser",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/vaguesyntax/vynx-wallpaper-browser",
+                "icon": "wallpaper",
+                "name": "vynx-wallpaper-browser",
+                "owner": "vaguesyntax",
+                "repoId": 1240119310,
+                "repoUrl": "https://github.com/vaguesyntax/vynx-wallpaper-browser.git",
+                "shapeString": "Ghostish",
+                "stars": 0,
+                "version": "1.0.0"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/173799252?v=4",
+                "defaultBranch": "main",
+                "description": "Does cool stuff",
+                "displayName": "Test Extension",
+                "extensionJson": {
+                    "author": "you",
+                    "configDefaults": {
+                    },
+                    "contributes": {
+                        "backgroundWidgets": [
+                            {
+                                "component": "TestWidgetBackground.qml",
+                                "identifier": "my-widget",
+                                "placementStrategy": "free",
+                                "x": 200,
+                                "y": 300
+                            }
+                        ],
+                        "barComponents": [
+                            {
+                                "icon": "backspace",
+                                "identifier": "test-bar-component",
+                                "qml": "TestBarComponent.qml",
+                                "title": "Test Bar Component",
+                                "verticalQml": "TestBarComponentVertical.qml"
+                            }
+                        ],
+                        "overlayWidgets": [
+                            {
+                                "component": "MyOverlay.qml",
+                                "icon": "stadia_controller",
+                                "identifier": "my-overlay-widget",
+                                "title": "My Overlay Widget"
+                            }
+                        ],
+                        "services": [
+                            {
+                                "id": "testService",
+                                "qml": "TestService.qml"
+                            }
+                        ],
+                        "sidebarLeftPages": [
+                            {
+                                "component": "MyPage.qml",
+                                "icon": "star",
+                                "identifier": "test-page",
+                                "title": "Test Page"
+                            }
+                        ],
+                        "sidebarRightBottom": [
+                            {
+                                "component": "MyWidget.qml",
+                                "icon": "data_array",
+                                "identifier": "test-widget",
+                                "title": "Test Widget"
+                            }
+                        ]
+                    },
+                    "description": "Does cool stuff",
+                    "extensionId": "ii-vynx-test-extension",
+                    "icon": "widgets",
+                    "name": "Test Extension",
+                    "shapeString": "Cookie12Sided",
+                    "version": "1.0.0"
+                },
+                "extensionJsonError": null,
+                "fullName": "vaguesyntax/ii-vynx-test-extension",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/vaguesyntax/ii-vynx-test-extension",
+                "icon": "widgets",
+                "name": "ii-vynx-test-extension",
+                "owner": "vaguesyntax",
+                "repoId": 1239751891,
+                "repoUrl": "https://github.com/vaguesyntax/ii-vynx-test-extension.git",
+                "shapeString": "Cookie12Sided",
+                "stars": 0,
+                "version": "1.0.0"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/177357352?v=4",
+                "defaultBranch": "main",
+                "description": "Real-time system resource monitoring (CPU, GPU, RAM, Disk, Net, Temps) and mini task manager for ii-eve shell.",
+                "displayName": "Sys Monitor",
+                "extensionJson": {
+                    "author": "djOB2EOTWQW1",
+                    "contributes": {
+                        "barComponents": [
+                            {
+                                "component": "src/bar/SystemMonitorBar.qml",
+                                "icon": "monitor_heart",
+                                "identifier": "system_monitor_bar",
+                                "title": "Sys Monitor"
+                            }
+                        ],
+                        "services": [
+                            {
+                                "id": "systemMonitorService",
+                                "qml": "src/services/SystemMonitorService.qml"
+                            }
+                        ],
+                        "sidebarLeftPages": [
+                            {
+                                "component": "src/sidebar/SystemMonitorSidebar.qml",
+                                "icon": "monitor_heart",
+                                "identifier": "system_monitor_sidebar",
+                                "title": "Sys Monitor"
+                            }
+                        ]
+                    },
+                    "description": "Real-time system resource monitoring (CPU, GPU, RAM, Disk, Net, Temps) and mini task manager for ii-eve shell.",
+                    "icon": "monitor_heart",
+                    "name": "Sys Monitor",
+                    "version": "1.0.1"
+                },
+                "extensionJsonError": null,
+                "fullName": "djOB2EOTWQW1/ii-eve-system-monitor",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-system-monitor",
+                "icon": "monitor_heart",
+                "name": "ii-eve-system-monitor",
+                "owner": "djOB2EOTWQW1",
+                "repoId": 1321970856,
+                "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-system-monitor.git",
+                "shapeString": "",
+                "stars": 0,
+                "version": "1.0.1"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/177357352?v=4",
+                "defaultBranch": "main",
+                "description": "Command-snippets cheatsheet tab: searchable, tagged, with add/edit/import.",
+                "displayName": "Cheatsheet Commands",
+                "extensionJson": {
+                    "author": "djOB2EOTWQW1",
+                    "contributes": {
+                        "cheatsheet": [
+                            {
+                                "component": "src/CheatsheetCommands.qml",
+                                "icon": "terminal",
+                                "identifier": "commands",
+                                "title": "Commands"
+                            }
+                        ]
+                    },
+                    "description": "Command-snippets cheatsheet tab: searchable, tagged, with add/edit/import.",
+                    "icon": "terminal",
+                    "name": "Cheatsheet Commands",
+                    "version": "1.2.5"
+                },
+                "extensionJsonError": null,
+                "fullName": "djOB2EOTWQW1/ii-eve-cheatsheet-commands",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-commands",
+                "icon": "terminal",
+                "name": "ii-eve-cheatsheet-commands",
+                "owner": "djOB2EOTWQW1",
+                "repoId": 1274958284,
+                "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-commands.git",
+                "shapeString": "",
+                "stars": 0,
+                "version": "1.2.5"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/177357352?v=4",
+                "defaultBranch": "main",
+                "description": "App launcher with folders, recents, fuzzy search, Vimium-style keyboard nav, installed-app (.desktop) and binary pickers, running indicators, launch stats, colored movable folders, and a draggable launcher window.",
+                "displayName": "App Launcher",
+                "extensionJson": {
+                    "author": "djOB2EOTWQW1",
+                    "contributes": {
+                        "services": [
+                            {
+                                "id": "appLauncherHost",
+                                "qml": "src/services/AppLauncherHost.qml"
+                            }
+                        ]
+                    },
+                    "description": "App launcher with folders, recents, fuzzy search, Vimium-style keyboard nav, installed-app (.desktop) and binary pickers, running indicators, launch stats, colored movable folders, and a draggable launcher window.",
+                    "icon": "apps",
+                    "name": "App Launcher",
+                    "version": "1.4.0"
+                },
+                "extensionJsonError": null,
+                "fullName": "djOB2EOTWQW1/ii-eve-app-launcher",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-app-launcher",
+                "icon": "apps",
+                "name": "ii-eve-app-launcher",
+                "owner": "djOB2EOTWQW1",
+                "repoId": 1275512975,
+                "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-app-launcher.git",
+                "shapeString": "",
+                "stars": 0,
+                "version": "1.4.0"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/177357352?v=4",
+                "defaultBranch": "main",
+                "description": "Anime/booru image browser: multi-provider tag search, previews, favorites and downloads.",
+                "displayName": "Anime Booru",
+                "extensionJson": {
+                    "author": "djOB2EOTWQW1",
+                    "contributes": {
+                        "sidebarLeftPages": [
+                            {
+                                "component": "src/Anime.qml",
+                                "icon": "bookmark_heart",
+                                "identifier": "anime-booru",
+                                "title": "Anime"
+                            }
+                        ]
+                    },
+                    "description": "Anime/booru image browser: multi-provider tag search, previews, favorites and downloads.",
+                    "icon": "bookmark_heart",
+                    "name": "Anime Booru",
+                    "version": "1.6.0"
+                },
+                "extensionJsonError": null,
+                "fullName": "djOB2EOTWQW1/ii-eve-anime-booru",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-anime-booru",
+                "icon": "bookmark_heart",
+                "name": "ii-eve-anime-booru",
+                "owner": "djOB2EOTWQW1",
+                "repoId": 1274576077,
+                "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-anime-booru.git",
+                "shapeString": "",
+                "stars": 0,
+                "version": "1.6.0"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/177357352?v=4",
+                "defaultBranch": "main",
+                "description": "Editable keybinds cheatsheet tab: searchable categories, add/edit/delete, conflict detection.",
+                "displayName": "Cheatsheet Keybinds",
+                "extensionJson": {
+                    "author": "djOB2EOTWQW1",
+                    "contributes": {
+                        "cheatsheet": [
+                            {
+                                "component": "src/CheatsheetKeybinds.qml",
+                                "icon": "keyboard",
+                                "identifier": "keybinds",
+                                "title": "Keybinds"
+                            }
+                        ]
+                    },
+                    "description": "Editable keybinds cheatsheet tab: searchable categories, add/edit/delete, conflict detection.",
+                    "icon": "keyboard",
+                    "name": "Cheatsheet Keybinds",
+                    "version": "1.2.5"
+                },
+                "extensionJsonError": null,
+                "fullName": "djOB2EOTWQW1/ii-eve-cheatsheet-keybinds",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-keybinds",
+                "icon": "keyboard",
+                "name": "ii-eve-cheatsheet-keybinds",
+                "owner": "djOB2EOTWQW1",
+                "repoId": 1274958256,
+                "repoUrl": "https://github.com/djOB2EOTWQW1/ii-eve-cheatsheet-keybinds.git",
+                "shapeString": "",
+                "stars": 0,
+                "version": "1.2.5"
+            },
+            {
+                "avatarUrl": "https://avatars.githubusercontent.com/u/74285755?v=4",
+                "defaultBranch": "main",
+                "description": "Audio visualizer widget that runs cava in the background and renders spectrum bars on the desktop background.",
+                "displayName": "Visualizer",
+                "extensionJson": {
+                    "author": "Ahorts",
+                    "configDefaults": {
+                        "barRounding": 0.2,
+                        "barSpacing": 4,
+                        "borderWidth": 3,
+                        "dataAveraging": 0.2,
+                        "fillOpacity": 0.4,
+                        "height": 500,
+                        "hideWhenCovered": true,
+                        "hideWhenFullscreen": true,
+                        "mono": false,
+                        "opacity": 0.8,
+                        "showWhenLocked": true,
+                        "smoothing": 0.06,
+                        "targetBarWidth": 20
+                    },
+                    "configSchema": {
+                        "barRounding": {
+                            "default": 0.2,
+                            "icon": "rounded_corner",
+                            "label": "Bar Roundness",
+                            "max": 0.5,
+                            "min": 0,
+                            "type": "slider"
+                        },
+                        "barSpacing": {
+                            "default": 4,
+                            "icon": "space_bar",
+                            "label": "Bar Gap",
+                            "max": 100,
+                            "min": 0,
+                            "type": "int"
+                        },
+                        "borderWidth": {
+                            "default": 3,
+                            "icon": "line_weight",
+                            "label": "Border Width",
+                            "max": 20,
+                            "min": 0,
+                            "type": "int"
+                        },
+                        "dataAveraging": {
+                            "default": 0.2,
+                            "icon": "waves",
+                            "label": "Data Averaging",
+                            "max": 1,
+                            "min": 0,
+                            "type": "slider"
+                        },
+                        "fillOpacity": {
+                            "default": 0.4,
+                            "icon": "blur_on",
+                            "label": "Border Opacity",
+                            "max": 1,
+                            "min": 0,
+                            "type": "slider"
+                        },
+                        "height": {
+                            "default": 500,
+                            "icon": "height",
+                            "label": "Max Height",
+                            "max": 1080,
+                            "min": 60,
+                            "type": "int"
+                        },
+                        "hideWhenCovered": {
+                            "default": true,
+                            "icon": "layers_clear",
+                            "label": "Hide when Covered",
+                            "type": "bool"
+                        },
+                        "hideWhenFullscreen": {
+                            "default": true,
+                            "icon": "fullscreen",
+                            "label": "Hide when Fullscreen",
+                            "type": "bool"
+                        },
+                        "mono": {
+                            "default": false,
+                            "icon": "flip",
+                            "label": "Mirrored Layout",
+                            "type": "bool"
+                        },
+                        "opacity": {
+                            "default": 0.8,
+                            "icon": "opacity",
+                            "label": "Master Opacity",
+                            "max": 1,
+                            "min": 0,
+                            "type": "slider"
+                        },
+                        "showWhenLocked": {
+                            "default": true,
+                            "icon": "lock",
+                            "label": "Show when Locked",
+                            "type": "bool"
+                        },
+                        "smoothing": {
+                            "default": 0.06,
+                            "icon": "show_chart",
+                            "label": "Smoothing",
+                            "max": 0.2,
+                            "min": 0,
+                            "type": "slider"
+                        },
+                        "targetBarWidth": {
+                            "default": 20,
+                            "icon": "view_week",
+                            "label": "Bar Width",
+                            "max": 200,
+                            "min": 1,
+                            "type": "int"
+                        }
+                    },
+                    "contributes": {
+                        "backgroundWidgets": [
+                            {
+                                "component": "src/VisualizerWidget.qml",
+                                "icon": "equalizer",
+                                "identifier": "vynxVisualizer",
+                                "title": "Visualizer"
+                            }
+                        ],
+                        "services": [
+                            {
+                                "id": "visualizerService",
+                                "qml": "src/CavaService.qml"
+                            }
+                        ]
+                    },
+                    "description": "Audio visualizer widget that runs cava in the background and renders spectrum bars on the desktop background.",
+                    "icon": "equalizer",
+                    "name": "Visualizer",
+                    "version": "0.1.0"
+                },
+                "extensionJsonError": null,
+                "fullName": "Ahorts/vynx-visualizer",
+                "hasExtensionJson": true,
+                "htmlUrl": "https://github.com/Ahorts/vynx-visualizer",
+                "icon": "equalizer",
+                "name": "vynx-visualizer",
+                "owner": "Ahorts",
+                "repoId": 1269449938,
+                "repoUrl": "https://github.com/Ahorts/vynx-visualizer.git",
+                "shapeString": "",
+                "stars": 0,
+                "version": "0.1.0"
+            }
+        ]
+    }
+}

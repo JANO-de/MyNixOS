@@ -1,5 +1,5 @@
 # Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: `cachyos` flag in nix/hosts.nix, off).
-# Hyprland + ii (variant p3drovfx). Boot entry "vynx" = same host with ii-vynx.
+# Hyprland + ii (variant vynx).
 { lib, ... }:
 
 {
@@ -45,12 +45,9 @@
     "name:^HDMI-A-1,width:1080,height:1920,refresh:60,x:,y:0,rr:0"
   ];
 
-  # Boot entry "vynx": ii-vynx instead of ii-p3drovfx. Own dotfiles folder (dotfiles/laptop-vynx/)
-  # so the two forks never share config.json or the Hyprland Lua. See docs/ii.md.
-  specialisation.vynx.configuration = {
-    modules.desktop.ii.variant = "vynx";
-    modules.desktop.dotfiles.host = "laptop-vynx";
-  };
+  # ii fork: vynx, with its own dotfiles folder (keeps p3drovfx config apart).
+  modules.desktop.ii.variant = "vynx";
+  modules.desktop.dotfiles.host = "laptop-vynx";
 
   system.stateVersion = "26.05";
 }

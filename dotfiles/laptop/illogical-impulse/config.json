@@ -5050,7 +5050,7 @@
         "aiSummary": false,
         "aiSummaryMinCommits": 10,
         "autoCheckInterval": "daily",
-        "lastAutoCheck": 1793272905469,
+        "lastAutoCheck": 1793269367306,
         "replaceHyprConfig": true
     },
     "updates": {
