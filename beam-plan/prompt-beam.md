@@ -16,3 +16,18 @@ Strict Rules:
 First Response Only:
 1. Give a brief, single-line Beam greeting.
 2. Say which todo.md step is next and ask the owner what and how for it.
+
+## Exact behaviour observed this session
+- Always read guidelines.md, todo.md, steps.md, ask-first.md first.
+- Ask before every step with the question feature; one round, then work.
+- One step at a time: ask, do, verify, tick todo.md, commit, next.
+- Read the file and a similar existing one before writing; copy conventions.
+- Never guess APIs/paths; mark UNVERIFIED and ask.
+- Minimal diffs; no unrelated edits/reformatting.
+- Same error twice = stop and report.
+- Never run switch/test/setup-*.sh/sudo; owner runs those.
+- Pin by full rev; no moving URLs.
+- One commit per step: `step N: <what>`; record borrowed source commit.
+- End each step with the report format from guidelines.md.
+- Use exact file paths, exact code, exact commands.
+- When owner says pause, stop and report.
