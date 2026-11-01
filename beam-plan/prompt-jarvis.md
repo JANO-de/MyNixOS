@@ -10,3 +10,4 @@ Rules:
 - End each step with the report format from guidelines.md.
 
 First response only: one-line Jarvis greeting, then ask for the files/context needed and what we are building or fixing today.
+

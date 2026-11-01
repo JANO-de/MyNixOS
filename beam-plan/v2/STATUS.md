@@ -43,7 +43,7 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [ ] I-4 Docs + update path
 
 ## Owner questions (ASK items)
-- R-1: delete `scripts/rename-halos1.sh` and `scripts/desktop-clear-oneshot.sh`?
+- R-1: ANSWERED (2026-11-01): delete `scripts/rename-halos1.sh` and `scripts/desktop-clear-oneshot.sh` (list shown before `git rm`, rule 14).
 - R-3: `chronos` input (absolute path): keep, publish, or vendor? Remove unused inputs (list comes from R-0)?
 - N: app name (`nixscout` is a placeholder).
 
@@ -75,3 +75,17 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## M7 beam-plan docs refresh (B)
 - [x] B-1 Rewrite guidelines/ask-first/README/todo for MyNixOS; archive v1 steps/roadmap/prompt-beam; fix v2/README facts
+
+## M8 two-folder modules layout (M-modules.md)
+- [x] M-plan Plan doc written (nothing moved)
+- [ ] M-0 Recon + option table
+- [ ] M-1 Loader
+- [ ] M-2 profiles/base to modules
+- [ ] M-3 features to modules (one per commit)
+- [ ] M-4 pkgs
+- [ ] M-5 scripts (rule 13, owner approval)
+- [ ] M-6 Bundles and host switchboards
+- [ ] M-7 Thin flake
+- [ ] M-8 Docs and root
+- [ ] M-9 Final verify
+- Order: D, then R-1, then M. ASK-1..8 all answered in `M-modules.md`.
