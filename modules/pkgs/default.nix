@@ -10,19 +10,19 @@ let
         config.allowUnfree = true;
       };
     in
-    pkgs.callPackage ../modules/programs/orchard/pkg/default.nix { };
-  niXscoutPkg = pkgs.callPackage ../modules/programs/nixscout/pkg/default.nix { };
+    pkgs.callPackage ../programs/orchard/pkg/default.nix { };
+  niXscoutPkg = pkgs.callPackage ../programs/nixscout/pkg/default.nix { };
   scriptPkg =
     name:
-    import ../modules/scripts/${name}/package.nix {
+    import ../scripts/${name}/package.nix {
       inherit pkgs;
       repoPath = "$HOME/Proyectos/MyNixOS";
     };
   adoptDotfilesPkg = scriptPkg "adopt-dotfiles";
   migrateDotfilesPkg = scriptPkg "migrate-dotfiles-per-host";
-  hyprmonPkg = pkgs.callPackage ../modules/pkgs/hyprmon/default.nix { };
-  localsendCliPkg = pkgs.callPackage ../modules/pkgs/localsend-cli/default.nix { };
-  matugenPkg = pkgs.callPackage ../modules/pkgs/matugen/default.nix { };
+  hyprmonPkg = pkgs.callPackage ./hyprmon/default.nix { };
+  localsendCliPkg = pkgs.callPackage ./localsend-cli/default.nix { };
+  matugenPkg = pkgs.callPackage ./matugen/default.nix { };
 in
 {
   packages = {
@@ -51,10 +51,10 @@ in
     };
   };
   overlay = final: prev: {
-    orchard = final.callPackage ../modules/programs/orchard/pkg/default.nix { };
-    niXscout = final.callPackage ../modules/programs/nixscout/pkg/default.nix { };
-    hyprmon = final.callPackage ../modules/pkgs/hyprmon/default.nix { };
-    localsend-cli = final.callPackage ../modules/pkgs/localsend-cli/default.nix { };
-    matugen = final.callPackage ../modules/pkgs/matugen/default.nix { };
+    orchard = final.callPackage ../programs/orchard/pkg/default.nix { };
+    niXscout = final.callPackage ../programs/nixscout/pkg/default.nix { };
+    hyprmon = final.callPackage ./hyprmon/default.nix { };
+    localsend-cli = final.callPackage ./localsend-cli/default.nix { };
+    matugen = final.callPackage ./matugen/default.nix { };
   };
 }

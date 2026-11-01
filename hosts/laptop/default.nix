@@ -1,4 +1,4 @@
-# Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: `cachyos` flag in nix/hosts.nix, off).
+# Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: modules.hardware.cachyos.enable, off).
 # Hyprland + immaterial-impulse.
 { lib, ... }:
 

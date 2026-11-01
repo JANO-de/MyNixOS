@@ -21,7 +21,7 @@ in
   formatter = nixfmt;
   checks = {
     nixfmt = pkgs.runCommand "nixfmt-check" { } ''
-      ${nixfmt}/bin/nixfmt --check ${../flake.nix} ${../nix/default.nix} ${../nix/hosts.nix} ${../nix/packages.nix} ${../nix/dev.nix}
+      ${nixfmt}/bin/nixfmt --check ${../../flake.nix} ${./default.nix} ${./dev.nix}
       touch $out
     '';
   };

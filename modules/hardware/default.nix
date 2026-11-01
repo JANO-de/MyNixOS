@@ -8,5 +8,6 @@
     ./firmware.nix
     ./drives.nix
     ./nvidia.nix
+    ./cachyos.nix
   ];
 }

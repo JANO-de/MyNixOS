@@ -1,4 +1,5 @@
-# Flake entry point: inputs + outputs. Assembled in nix/ (R-3).
+# Flake entry point: inputs + thin outputs. Hosts are the folders in ./hosts; packages, apps and
+# the dev shell live in modules/pkgs.
 {
   description = "MyNixOS: desktop, laptop and halos1";
 
@@ -30,7 +31,6 @@
     };
 
     # --- apps ---
-    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -64,5 +64,43 @@
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";
   };
 
-  outputs = inputs: import ./nix inputs;
+  outputs =
+    inputs@{ nixpkgs, self, ... }:
+    let
+      system = "x86_64-linux";
+      theme = import ./modules/theme/palette.nix;
+      pkgsOut = import ./modules/pkgs { inherit inputs system; };
+      dev = import ./modules/pkgs/dev.nix { inherit inputs system; };
+      mkHost =
+        host:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs theme; };
+          modules = [
+            inputs.home-manager.nixosModules.home-manager
+            inputs.forge.nixosModules.default
+            ./hosts/${host}/default.nix
+            {
+              nixpkgs.overlays = [
+                inputs.rust-overlay.overlays.default
+                self.overlays.default
+              ];
+            }
+          ];
+        };
+      hosts = builtins.attrNames (
+        nixpkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts)
+      );
+    in
+    {
+      packages.${system} = pkgsOut.packages;
+      apps.${system} = pkgsOut.apps;
+      overlays.default = pkgsOut.overlay;
+      nixosModules.orchard = ./modules/programs/orchard/default.nix;
+      nixosModules.niXscout = ./modules/programs/nixscout/default.nix;
+      nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
+      devShells.${system} = dev.shells;
+      formatter.${system} = dev.formatter;
+      checks.${system} = dev.checks;
+    };
 }
