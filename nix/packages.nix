@@ -12,9 +12,9 @@ let
     in
     pkgs.callPackage ../modules/programs/orchard/pkg/default.nix { };
   niXscoutPkg = pkgs.callPackage ../modules/programs/nixscout/pkg/default.nix { };
-  hyprmonPkg = pkgs.callPackage ../pkgs/hyprmon/default.nix { };
-  localsendCliPkg = pkgs.callPackage ../pkgs/localsend-cli/default.nix { };
-  matugenPkg = pkgs.callPackage ../pkgs/matugen/default.nix { };
+  hyprmonPkg = pkgs.callPackage ../modules/pkgs/hyprmon/default.nix { };
+  localsendCliPkg = pkgs.callPackage ../modules/pkgs/localsend-cli/default.nix { };
+  matugenPkg = pkgs.callPackage ../modules/pkgs/matugen/default.nix { };
 in
 {
   packages = {
@@ -37,8 +37,8 @@ in
   overlay = final: prev: {
     orchard = final.callPackage ../modules/programs/orchard/pkg/default.nix { };
     niXscout = final.callPackage ../modules/programs/nixscout/pkg/default.nix { };
-    hyprmon = final.callPackage ../pkgs/hyprmon/default.nix { };
-    localsend-cli = final.callPackage ../pkgs/localsend-cli/default.nix { };
-    matugen = final.callPackage ../pkgs/matugen/default.nix { };
+    hyprmon = final.callPackage ../modules/pkgs/hyprmon/default.nix { };
+    localsend-cli = final.callPackage ../modules/pkgs/localsend-cli/default.nix { };
+    matugen = final.callPackage ../modules/pkgs/matugen/default.nix { };
   };
 }
