@@ -11,12 +11,6 @@
     };
 
     # --- desktop / session ---
-    # MangoWM: NixOS module (session + portals) and Home Manager module
-    # (declarative config). Deliberately NOT following our nixpkgs: it builds
-    # against its own pinned wlroots/scenefx, which the stable channel may not
-    # carry yet. If you want to share nixpkgs, add `inputs.nixpkgs.follows`.
-    mango.url = "github:mangowm/mango";
-
     # Hyprland (flake package: plugins must match its exact version). Do NOT add
     # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
     hyprland.url = "github:hyprwm/Hyprland";

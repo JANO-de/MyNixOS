@@ -16,14 +16,8 @@
 }:
 let
   cfg = config.modules.desktop;
-  # window/monitor IPC the shell talks to: mmsg on mango, niri msg on niri (see services/Wm.qml)
-  wmPackage =
-    if cfg.session == "mango" then
-      config.programs.mango.package
-    else if cfg.session == "hyprland" then
-      config.programs.hyprland.package
-    else
-      inputs.chronos.packages.${pkgs.stdenv.hostPlatform.system}.niri;
+  # window/monitor IPC the shell talks to: hyprctl on Hyprland (see services/Wm.qml)
+  wmPackage = config.programs.hyprland.package;
   # Tools the shell calls at runtime (service PATH is minimal, so list them)
   runtimeDeps = with pkgs; [
     cava

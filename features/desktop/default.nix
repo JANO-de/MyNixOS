@@ -1,8 +1,8 @@
-# Desktop session: which compositor runs (mango | niri | hyprland), which shell sits on top
+# Desktop session: which compositor runs (hyprland), which shell sits on top
 # (dynisland | chronos | halo | ii), the SDDM login screen (optional on-screen keyboard for
 # touch-only devices) and the Wayland session basics every host shares.
 #
-#   defaults:         session = "mango"  shell = "dynisland"   (legacy)
+#   defaults:         session = "hyprland"  shell = "dynisland"   (legacy)
 #   desktop, laptop:  session = "hyprland"  shell = "ii"       (variant: p3drovfx | vynx)
 #   halos1:           session = "hyprland"  shell = "ii" (temporary test) | "halo" (own shell, shell/halo/)
 {
@@ -29,8 +29,6 @@ let
 in
 {
   imports = [
-    ../../modules/desktop/sessions/mango/mango.nix
-    ../../modules/desktop/sessions/niri/niri.nix
     ../hyprland-session
     ../hyprland-session/hyprland-touch.nix
     ../../modules/desktop/shells/ii.nix
@@ -39,13 +37,9 @@ in
 
   options.modules.desktop = {
     session = lib.mkOption {
-      type = lib.types.enum [
-        "mango"
-        "niri"
-        "hyprland"
-      ];
-      default = "mango";
-      description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see hyprland.nix).";
+      type = lib.types.enum [ "hyprland" ];
+      default = "hyprland";
+      description = "Compositor started by the login screen. 'hyprland' runs through UWSM (see hyprland.nix).";
     };
     shell = lib.mkOption {
       type = lib.types.enum [

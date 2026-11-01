@@ -11,7 +11,6 @@ let
   inherit (inputs)
     nixpkgs
     home-manager
-    mango
     forge
     nix-cachyos-kernel
     self
@@ -23,7 +22,6 @@ nixpkgs.lib.nixosSystem {
   modules = [
     home-manager.nixosModules.home-manager
     forge.nixosModules.default
-    mango.nixosModules.mango
     ../hosts/${host}/default.nix
   ]
   ++ nixpkgs.lib.optional cachyos {

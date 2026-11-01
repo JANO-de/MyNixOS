@@ -3,7 +3,6 @@ let
   inherit (inputs)
     nixpkgs
     home-manager
-    mango
     forge
     nix-cachyos-kernel
     self
