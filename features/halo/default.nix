@@ -1,4 +1,4 @@
-# Halo shell (Quickshell): apps, theme, services. Imported by features/desktop (shell = "halo").
+# Halo shell (Quickshell): apps, theme, services. Active when modules.halo.enable = true.
 {
   config,
   lib,
@@ -141,8 +141,9 @@ let
   };
 in
 {
+  options.modules.halo.enable = lib.mkEnableOption "the Halo shell (Quickshell)";
   options.modules.desktop.autoMode = lib.mkEnableOption "automatic tablet/desktop mode from attached keyboards (halo-autokbd)";
-  config = lib.mkIf (cfg.shell == "halo") {
+  config = lib.mkIf config.modules.halo.enable {
     # Battery (F3): fewer disk wakeups, no NMI watchdog, no core dump files.
     boot.kernel.sysctl = {
       "vm.dirty_writeback_centisecs" = 1500;

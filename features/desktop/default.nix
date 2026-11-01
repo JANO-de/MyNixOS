@@ -2,9 +2,9 @@
 # (dynisland | chronos | halo | immaterial), the SDDM login screen (optional on-screen keyboard for
 # touch-only devices) and the Wayland session basics every host shares.
 #
-#   defaults:         session = "hyprland"  shell = "dynisland"   (legacy)
-#   desktop, laptop:  session = "hyprland"  shell = "immaterial"
-#   halos1:           session = "hyprland"  shell = "halo" (own shell, features/halo/)
+#   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
+#   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
+#   halos1:           session = "hyprland"  modules.halo.enable = true (own shell, features/halo/)
 {
   config,
   lib,
@@ -41,14 +41,14 @@ in
       description = "Compositor started by the login screen. 'hyprland' runs through UWSM (see hyprland.nix).";
     };
     shell = lib.mkOption {
-      type = lib.types.enum [
-        "dynisland"
-        "chronos"
-        "halo"
-        "immaterial"
-      ];
-      default = "dynisland";
-      description = "Quickshell shell (island, dock, launcher, lock) autostarted in the session.";
+      type = lib.types.nullOr (
+        lib.types.enum [
+          "dynisland"
+          "chronos"
+        ]
+      );
+      default = null;
+      description = "Legacy Quickshell shell (dynisland, chronos). The current shells have their own switch: modules.imi.enable, modules.halo.enable.";
     };
     hyprlandMode = lib.mkOption {
       type = lib.types.enum [

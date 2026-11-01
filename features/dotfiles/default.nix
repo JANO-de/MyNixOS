@@ -17,12 +17,12 @@
 let
   cfg = config.modules.desktop.dotfiles;
   hmDag = inputs.home-manager.lib.hm.dag;
-  shell = config.modules.desktop.shell or "";
+  imi = config.modules.imi.enable;
   names = [
     "hypr"
     "hyprmon"
   ]
-  ++ lib.optional (shell != "immaterial") "matugen";
+  ++ lib.optional (!imi) "matugen";
 in
 {
   options.modules.desktop.dotfiles = {
@@ -59,7 +59,7 @@ in
         "hypr".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hypr";
         "hyprmon".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hyprmon";
       }
-      // lib.optionalAttrs (shell != "immaterial") {
+      // lib.optionalAttrs (!imi) {
         "matugen".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/matugen";
       };
     };

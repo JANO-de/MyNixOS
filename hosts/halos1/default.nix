@@ -67,12 +67,12 @@ in
   # ---- session -------------------------------------------------------------
   modules.desktop = {
     session = "hyprland"; # Hyprland (UWSM) + Halo; the newest generation is always the default boot entry
-    shell = "halo"; # own shell (features/halo)
     autoMode = true; # tablet/desktop from attached keyboards (halo-autokbd)
     haloGreeter.enable = true; # Halo greetd login screen instead of SDDM (see greeter.nix)
     haloSplash.enable = true; # quiet boot + Halo ring splash
     droidloom.enable = true; # Android apps in native windows
   };
+  modules.halo.enable = true; # own shell (features/halo)
   modules.programs.profile = "lean";
   programs.niXscout.enable = true;
 

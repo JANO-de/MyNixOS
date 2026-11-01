@@ -61,8 +61,7 @@
   programs.niXscout.enable = true;
 
   modules.desktop.session = "hyprland";
-  modules.desktop.shell = "immaterial";
-  modules.desktop.immaterial.enable = true;
+  modules.imi.enable = true;
   modules.desktop.drmDevices = "/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
 

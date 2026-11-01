@@ -179,7 +179,7 @@ in
             EOF
           '';
 
-      home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (cfg.shell != "immaterial") (
+      home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (!config.modules.imi.enable) (
         inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           run mkdir -p "$HOME/.config/hypr"
           if [ -L "$HOME/.config/hypr/hyprland.lua" ] || [ ! -e "$HOME/.config/hypr/hyprland.lua" ]; then

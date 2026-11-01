@@ -1,5 +1,5 @@
 # immaterial-impulse shell module (Quickshell on Hyprland).
-# Active when modules.desktop.shell = "immaterial".
+# Active when modules.imi.enable = true.
 # Upstream (https://github.com/XephyLon/immaterial-impulse) manages the QML tree,
 # matugen config and seeded user config via its home-manager module. Hyprland
 # config is seeded from the flake input (upstream does not manage ~/.config/hypr).
@@ -12,7 +12,7 @@
 }:
 
 let
-  cfg = config.modules.desktop;
+  cfg = config.modules.imi;
   dotsEnable = config.modules.desktop.dotfiles.enable or false;
   dotsDir = config.modules.desktop.dotfiles.dir or "";
   hyprDir = if dotsEnable then "${dotsDir}/hypr" else "$HOME/.config/hypr";
@@ -49,10 +49,9 @@ let
   '';
 in
 {
-  options.modules.desktop.immaterial.enable =
-    lib.mkEnableOption "immaterial-impulse shell on Hyprland";
+  options.modules.imi.enable = lib.mkEnableOption "immaterial-impulse shell on Hyprland";
 
-  config = lib.mkIf (cfg.shell == "immaterial") {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       imm.packages.${sys}.immaterial-impulse
       imm.packages.${sys}.quickshell-wrapped
