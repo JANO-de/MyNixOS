@@ -594,6 +594,27 @@
         "type": "github"
       }
     },
+    "immaterial-impulse": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "quickshell": "quickshell"
+      },
+      "locked": {
+        "lastModified": 1790174785,
+        "narHash": "sha256-ogPPtj2TC1T8QhF8rSY5CyinWOCTHGYGE8v60+mx2Ww=",
+        "owner": "XephyLon",
+        "repo": "immaterial-impulse",
+        "rev": "a79750979c7d5343744eee30f80439688bae49c9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "XephyLon",
+        "repo": "immaterial-impulse",
+        "type": "github"
+      }
+    },
     "mango": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -830,6 +851,27 @@
         "type": "github"
       }
     },
+    "quickshell": {
+      "inputs": {
+        "nixpkgs": [
+          "immaterial-impulse",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784600537,
+        "narHash": "sha256-4i2GzlclQ+SEYlcEZs0kFNI8iBk+sbQlVUtMiiogvck=",
+        "owner": "quickshell-mirror",
+        "repo": "quickshell",
+        "rev": "e649d247498512464457aefcd05b73038c4e65a1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "quickshell-mirror",
+        "repo": "quickshell",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "arcticons": "arcticons",
@@ -839,6 +881,7 @@
         "hyprgrass": "hyprgrass",
         "hyprland": "hyprland",
         "ii-halos": "ii-halos",
+        "immaterial-impulse": "immaterial-impulse",
         "mango": "mango",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nixos-hardware": "nixos-hardware",

@@ -11,7 +11,8 @@
                 ]
             },
             {
-                "google": []
+                "google": [
+                ]
             }
         ],
         "otherModels": [
@@ -29,7 +30,8 @@
         "tool": "functions"
     },
     "appearance": {
-        "customColorSchemes": [],
+        "customColorSchemes": [
+        ],
         "defaultBorderRadius": 18,
         "extraBackgroundTint": false,
         "fakeScreenRounding": 0,
@@ -90,8 +92,6 @@
         "animateWallpaperChanges": true,
         "enable": true,
         "hideWhenFullscreen": true,
-        "lightModeWallpaperPath": "",
-        "lockscreenWallpaperPath": "",
         "mediaMode": {
             "backgroundAnimation": {
                 "enable": true,
@@ -117,8 +117,6 @@
         },
         "thumbnailPath": "",
         "transitionType": "radial",
-        "useWallpaperEngine": false,
-        "wallpaperEngineId": "",
         "wallpaperPath": "/home/jano/Pictures/Wallpapers/992dkfz.jpg",
         "widgets": {
             "clock": {
@@ -163,8 +161,8 @@
                 "showOnlyWhenLocked": false,
                 "style": "cookie",
                 "styleLocked": "cookie",
-                "x": 100,
-                "y": 100
+                "x": 777.5,
+                "y": 536.5
             },
             "media": {
                 "backgroundShape": "Cookie12Sided",
@@ -316,7 +314,8 @@
             "memoryWarningThreshold": 95,
             "swapWarningThreshold": 85
         },
-        "screenList": [],
+        "screenList": [
+        ],
         "sizes": {
             "height": 40,
             "width": 50
@@ -382,7 +381,8 @@
         "fastPair": {
             "audioOnly": true,
             "enable": false,
-            "ignoredDevices": [],
+            "ignoredDevices": [
+            ],
             "popupTimeout": 20,
             "rssiThreshold": -65,
             "snoozeSeconds": 300
@@ -416,14 +416,16 @@
         "enablePreview": true,
         "height": 45,
         "hoverRegionHeight": 2,
-        "ignoredAppRegexes": [],
+        "ignoredAppRegexes": [
+        ],
         "isolateMonitors": false,
         "monochromeIcons": true,
         "pinnedApps": [
             "org.gnome.Nautilus",
             "alacritty"
         ],
-        "pinnedFiles": [],
+        "pinnedFiles": [
+        ],
         "pinnedOnStartup": false,
         "position": "auto",
         "revealOnEmptyWorkspace": true
@@ -785,11 +787,8 @@
         }
     },
     "wallpaperSelector": {
-        "customDefaultPath": "/home/jano/Pictures/Wallpapers",
-        "directories": [],
-        "sortField": "modified",
-        "sortReversed": false,
-        "useCustomDefaultPath": false,
+        "directories": [
+        ],
         "useSystemFileDialog": false
     },
     "windows": {

@@ -49,3 +49,9 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## Blockers
 (none)
+
+## M5 immaterial-impulse on desktop + laptop (W)
+- [x] W-0 Recon
+- [x] W-1 List before deleting
+- [x] W-2 Add flake input immaterial-impulse
+- [x] W-3 Delete local folders

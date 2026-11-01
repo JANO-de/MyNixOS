@@ -13,7 +13,9 @@
 let
   cfg = config.modules.desktop.dotfiles;
   hmDag = inputs.home-manager.lib.hm.dag;
-  names = [ "hypr" "hyprmon" "illogical-impulse" "matugen" ]
+  shell = config.modules.desktop.shell or "";
+  names = [ "hypr" "hyprmon" "illogical-impulse" ]
+    ++ lib.optional (shell != "immaterial") "matugen"
     ++ lib.optional cfg.quickshell "quickshell-ii";
 in
 {
@@ -52,6 +54,7 @@ in
         "hypr".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hypr";
         "hyprmon".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hyprmon";
         "illogical-impulse".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/illogical-impulse";
+      } // lib.optionalAttrs (shell != "immaterial") {
         "matugen".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/matugen";
       } // lib.optionalAttrs cfg.quickshell {
         "quickshell/ii".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/quickshell-ii";

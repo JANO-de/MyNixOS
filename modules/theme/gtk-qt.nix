@@ -72,7 +72,6 @@ in
   };
 
   xdg.configFile."gtk-3.0/colors.css".text = colorsCss;
-  xdg.configFile."gtk-3.0/gtk.css".text = "@import 'colors.css';\n";
 
   xdg.configFile."gtk-3.0/settings.ini".force = true;
   xdg.configFile."gtk-4.0/settings.ini".force = true;

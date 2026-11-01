@@ -30,6 +30,7 @@ in
     ./shells/halo.nix
     ./shells/dynisland.nix
     ./shells/ii.nix
+    ./shells/immaterial.nix
     ./dotfiles.nix
     ./greeter/greeter.nix
     ./splash.nix
@@ -43,7 +44,7 @@ in
       description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see hyprland.nix).";
     };
     shell = lib.mkOption {
-      type = lib.types.enum [ "dynisland" "chronos" "halo" "ii" ];
+      type = lib.types.enum [ "dynisland" "chronos" "halo" "ii" "immaterial" ];
       default = "dynisland";
       description = "Quickshell shell (island, dock, launcher, lock) autostarted in the session.";
     };

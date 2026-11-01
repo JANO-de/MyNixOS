@@ -28,11 +28,18 @@
     # Chronos: niri fork + Quickshell shell (also used by the Surface).
     #chronos.url = "git+file:///home/jano/Proyectos/chronos";
 
-    # ii-halos: Hyprland dotfiles / Quickshell config (ii-vynx variant).
-    ii-halos = {
-      url = "github:JANO-de/ii-halos/feat/hyprland-page";
-      flake = false;
-    };
+  # ii-halos: Hyprland dotfiles / Quickshell config (ii-vynx variant).
+  ii-halos = {
+    url = "github:JANO-de/ii-halos/feat/hyprland-page";
+    flake = false;
+  };
+
+  # immaterial-impulse: Hyprland shell (replaces ii on desktop + laptop).
+  immaterial-impulse = {
+    url = "github:XephyLon/immaterial-impulse";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
 
     # --- apps ---
     zen-browser = {
