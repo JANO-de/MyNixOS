@@ -34,7 +34,7 @@ let
     exec ${lib.getExe pkgs.quickshell} -p ${shellDir} ipc "$@"
   '';
   # halo-app NAME: run a Halo app (apps/NAME.qml) as its own Wayland window. argv[0] = halo-NAME so the
-  # app_id matches the .desktop entry. Prefers the dev copy in ~/halo (scripts/halo-dev.sh).
+  # app_id matches the .desktop entry. Prefers the dev copy in ~/halo (halo-dev).
   haloApp = pkgs.writeShellScriptBin "halo-app" ''
     d="$HOME/halo"; [ -f "$d/apps/$1.qml" ] || d=${shellDir}
     exec -a "halo-$1" ${lib.getExe pkgs.quickshell} -n -p "$d/apps/$1.qml"

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Backup/restore the mutable config files used by ii, hyprland, hyprmon.
 # Usage:
-#   scripts/config-backup.sh backup [dest]   # copy configs to dest (default: ./config-backup-<date>)
-#   scripts/config-backup.sh restore [src]   # copy configs from src back into place
+#   config-backup backup [dest]   # copy configs to dest (default: ./config-backup-<date>)
+#   config-backup restore [src]   # copy configs from src back into place
 
 set -euo pipefail
 

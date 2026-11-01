@@ -3,9 +3,9 @@
 # Leaves temporary compat symlinks at the old paths so the running session (whose ~/.config links
 # still point there) keeps working until the rebuild repoints them.
 #
-#   scripts/migrate-dotfiles-per-host.sh desktop      # 1) move + compat links
+#   migrate-dotfiles-per-host desktop      # 1) move + compat links
 #   sudo nixos-rebuild switch --flake .#desktop       # 2) normal rebuild
-#   scripts/migrate-dotfiles-per-host.sh --cleanup    # 3) remove the compat links
+#   migrate-dotfiles-per-host --cleanup    # 3) remove the compat links
 set -euo pipefail
 
 REPO="${REPO:-$HOME/Proyectos/MyNixOS}"
@@ -34,4 +34,4 @@ for n in "${NAMES[@]}"; do
     echo "moved  dotfiles/$n -> hosts/$HOST/dotfiles/$n (compat link left behind)"
   fi
 done
-echo "Now: sudo nixos-rebuild switch --flake .#$HOST, then: scripts/migrate-dotfiles-per-host.sh --cleanup"
+echo "Now: sudo nixos-rebuild switch --flake .#$HOST, then: migrate-dotfiles-per-host --cleanup"

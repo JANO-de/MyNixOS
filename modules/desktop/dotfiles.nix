@@ -6,7 +6,7 @@
 # Hyprland and hyprmon (hyprmon.lua, profiles) then write straight into the repo, so `git diff` shows every change. The links point at
 # the live checkout (not the Nix store), so edits apply without a rebuild.
 #
-# First time on a host: run scripts/adopt-dotfiles.sh --host <host> BEFORE the rebuild.
+# First time on a host: run adopt-dotfiles --host <host> BEFORE the rebuild.
 {
   config,
   lib,
@@ -43,7 +43,7 @@ in
       default = "${cfg.repoPath}/hosts/${cfg.host}/dotfiles";
       description = ''
         Directory the configs live in. Override only to keep a host on the
-        old flat layout (<repo>/dotfiles) until it is migrated with scripts/migrate-dotfiles-per-host.sh.
+        old flat layout (<repo>/dotfiles) until it is migrated with migrate-dotfiles-per-host.
       '';
     };
   };

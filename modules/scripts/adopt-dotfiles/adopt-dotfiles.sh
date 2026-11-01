@@ -2,7 +2,7 @@
 # Move this machine's current ~/.config app configs into <repo>/dotfiles/<host>/ BEFORE enabling
 # modules.desktop.dotfiles (otherwise home-manager would rename them to *.backup and ii/Hyprland
 # would start from the package defaults).
-# Usage: scripts/adopt-dotfiles.sh [--host NAME] [--repo PATH] [--quickshell]
+# Usage: adopt-dotfiles [--host NAME] [--repo PATH] [--quickshell]
 #   --host defaults to `hostname`, --repo to ~/Proyectos/MyNixOS
 set -euo pipefail
 

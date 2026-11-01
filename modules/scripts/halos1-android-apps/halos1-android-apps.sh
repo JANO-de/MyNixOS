@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install F-Droid, Aurora Store and microG (GmsCore + GsfProxy) into Droidloom (C6). Runs ON halos1, from the PC:
-#   ssh halos1 'bash -s' < scripts/halos1-android-apps.sh
+#   ssh halos1 'bash -s' < halos1-android-apps
 # Needs Droidloom running (droidloomctl start) and internet on halos1.
 set -euo pipefail
 D=$(mktemp -d); trap 'rm -rf "$D"' EXIT

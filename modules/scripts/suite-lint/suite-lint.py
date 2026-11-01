@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """suite-lint: static checks for the Halo app suite QML (no QML runtime needed).
 
-Usage:  python3 scripts/suite-lint.py [apps_dir]      (default: modules/desktop/halo/src/apps)
+Usage:  suite-lint [apps_dir]      (default: modules/desktop/halo/src/apps)
 Checks: bracket balance, icon names exist in common/Ic.qml, every element type is known,
         qs.common / qs.suite imports present, duplicate ids, anchors on Row/Column/Grid/Flow children,
         `anchors { ... };`, method names starting with an uppercase letter.

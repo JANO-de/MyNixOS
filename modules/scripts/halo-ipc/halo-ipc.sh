@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: scripts/halo-ipc.sh call shade toggle   (talks to the halo-test shell on the Surface)
+# Usage: halo-ipc call shade toggle   (talks to the halo-test shell on the Surface)
 set -euo pipefail
 IP="${HALO_IP:-192.168.0.115}"
 SSHO=(-o ControlMaster=auto -o "ControlPath=$HOME/.ssh/cm-%r@%h" -o ControlPersist=10m)

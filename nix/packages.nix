@@ -12,6 +12,14 @@ let
     in
     pkgs.callPackage ../modules/programs/orchard/pkg/default.nix { };
   niXscoutPkg = pkgs.callPackage ../modules/programs/nixscout/pkg/default.nix { };
+  scriptPkg =
+    name:
+    import ../modules/scripts/${name}/package.nix {
+      inherit pkgs;
+      repoPath = "$HOME/Proyectos/MyNixOS";
+    };
+  adoptDotfilesPkg = scriptPkg "adopt-dotfiles";
+  migrateDotfilesPkg = scriptPkg "migrate-dotfiles-per-host";
   hyprmonPkg = pkgs.callPackage ../modules/pkgs/hyprmon/default.nix { };
   localsendCliPkg = pkgs.callPackage ../modules/pkgs/localsend-cli/default.nix { };
   matugenPkg = pkgs.callPackage ../modules/pkgs/matugen/default.nix { };
@@ -32,6 +40,14 @@ in
     niXscout = {
       type = "app";
       program = "${niXscoutPkg}/bin/niXscout";
+    };
+    adopt-dotfiles = {
+      type = "app";
+      program = "${adoptDotfilesPkg}/bin/adopt-dotfiles";
+    };
+    migrate-dotfiles-per-host = {
+      type = "app";
+      program = "${migrateDotfilesPkg}/bin/migrate-dotfiles-per-host";
     };
   };
   overlay = final: prev: {

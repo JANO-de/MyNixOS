@@ -16,6 +16,7 @@
   modules.services.qmk.enable = true;
   modules.theme.enable = true;
   modules.programs.enable = true;
+  modules.scripts.all = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds, and the daemon just rebuilds from

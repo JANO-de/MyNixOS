@@ -102,7 +102,7 @@ Column {
         SetRow {
             visible: page.apps.length === 0
             title: "No Android apps"
-            subtitle: "Install F-Droid and Aurora Store with scripts/halos1-android-apps.sh"
+            subtitle: "Install F-Droid and Aurora Store with halos1-android-apps"
             tappable: false
         }
     }
