@@ -11,8 +11,14 @@ let
   system = pkgs.stdenv.hostPlatform.system;
   full = cfg.enable && cfg.profile == "full";
   llama = pkgs.llama-cpp.override { vulkanSupport = true; };
+  spicePkgs = inputs.spicetify-nix.legacyPackages.${system};
 in
-lib.mkIf full {
+{
+  imports = [
+    inputs.spicetify-nix.nixosModules.default
+  ];
+}
+// (lib.mkIf full {
   environment.systemPackages = with pkgs; [
     inputs.zen-browser.packages.${system}.default
     vesktop
@@ -46,7 +52,7 @@ lib.mkIf full {
     llama
 
     libreoffice-qt
-    #inputs.classwork.packages.${system}.default
+    # inputs.classwork.packages.${system}.default
 
     nautilus
     yazi
@@ -54,9 +60,21 @@ lib.mkIf full {
     ffmpegthumbnailer
     poppler-utils
     p7zip
+    unzip
   ];
 
+  programs.spicetify = {
+    enable = true;
+    theme = spicePkgs.themes.catppuccin;
+    colorScheme = "mocha";
+
+    enabledCustomApps = with spicePkgs.apps; [
+      marketplace
+    ];
+  };
+
   services.gvfs.enable = true;
+
   xdg.mime.defaultApplications = {
     "inode/directory" = "org.gnome.Nautilus.desktop";
     "application/x-gnome-saved-search" = "org.gnome.Nautilus.desktop";
@@ -103,4 +121,4 @@ lib.mkIf full {
       };
     };
   };
-}
+})
