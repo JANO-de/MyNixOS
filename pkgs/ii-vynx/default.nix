@@ -1,19 +1,20 @@
 # ii-vynx: Quickshell config for Hyprland (github.com/JANO-de/ii-halos, GPL-3.0).
 # Fork of illogical-impulse. We install the config trees only; modules/desktop/shells/ii.nix seeds them into $HOME.
 # Update: bump `rev`, set `hash = lib.fakeHash`, build, paste the real hash.
-{ lib, pkgs, stdenv, fetchFromGitHub, ... }:
+{ lib, pkgs, stdenv, fetchFromGitHub, src ? null, ... }:
 let
   shapes = pkgs.callPackage ../ii-shapes.nix { };
-in
-stdenv.mkDerivation {
-  pname = "ii-vynx";
-  version = "unstable-2026-10-30";
-  src = fetchFromGitHub {
+  src' = if src != null then src else fetchFromGitHub {
     owner = "JANO-de";
     repo = "ii-halos";
     rev = "16de31cdeca62ffd45aeac87a1ac9a472d0211d2";
     hash = "sha256-64voz9LAfwFR+lCLO0oZx7mN6t5K1qvSd5eTZuph3Do=";
   };
+in
+stdenv.mkDerivation {
+  pname = "ii-vynx";
+  version = "unstable-2026-10-30";
+  src = src';
   dontBuild = true;
   dontPatchShebangs = true;
   installPhase = ''

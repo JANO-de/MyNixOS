@@ -577,6 +577,23 @@
         "type": "github"
       }
     },
+    "ii-halos": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793533033,
+        "narHash": "sha256-AfdRoCDquyOndiAZ78mLVjRQK4zCkDDWsMMQK7Cu2xU=",
+        "owner": "JANO-de",
+        "repo": "ii-halos",
+        "rev": "43f31e3458146362d5cea0252fded63b259e2068",
+        "type": "github"
+      },
+      "original": {
+        "owner": "JANO-de",
+        "ref": "feat/hyprland-page",
+        "repo": "ii-halos",
+        "type": "github"
+      }
+    },
     "mango": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -821,6 +838,7 @@
         "home-manager": "home-manager",
         "hyprgrass": "hyprgrass",
         "hyprland": "hyprland",
+        "ii-halos": "ii-halos",
         "mango": "mango",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nixos-hardware": "nixos-hardware",

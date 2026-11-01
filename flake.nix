@@ -28,6 +28,12 @@
     # Chronos: niri fork + Quickshell shell (also used by the Surface).
     #chronos.url = "git+file:///home/jano/Proyectos/chronos";
 
+    # ii-halos: Hyprland dotfiles / Quickshell config (ii-vynx variant).
+    ii-halos = {
+      url = "github:JANO-de/ii-halos/feat/hyprland-page";
+      flake = false;
+    };
+
     # --- apps ---
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
