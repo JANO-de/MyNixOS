@@ -7,7 +7,7 @@ flake.nix            inputs + outputs = import ./nix inputs
 lib/mkHost.nix       host factory (home-manager, forge, overlays)
 nix/                 default.nix (assembler), hosts.nix (host table), packages.nix, dev.nix
 hosts/<host>/        default.nix + host-only files; dotfiles/ = app-written configs kept in git
-profiles/base/       always-on: core, hardware, services, theme
+modules/             core (always on), hardware, services, theme (modules.<area>.enable)
 features/<name>/     one folder per capability (options + config), optional pkg/ and src/
 pkgs/                packages shared by several features (hyprmon, matugen, localsend-cli)
 scripts/             operational scripts (scripts/README.md)
@@ -16,8 +16,8 @@ docs/                this directory; beam-plan/ = agent guide + status
 
 ## Features
 
-`features/default.nix` is the explicit import list. Hosts import the base profile
-(`profiles/base/{core,hardware,services}`), `features/programs`, `features/desktop` and `features`.
+`features/default.nix` is the explicit import list. Hosts import `features/programs`,
+`features/desktop`, `features` and `modules` (auto-loaded; hosts set `modules.<area>.enable`).
 
 | Folder | What |
 |--------|------|

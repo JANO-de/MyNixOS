@@ -4,9 +4,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../profiles/base/core
-    ../../profiles/base/hardware
-    ../../profiles/base/services
     ../../features/programs
     ../../features/desktop
     ../../features
@@ -15,6 +12,10 @@
   ];
 
   networking.hostName = "desktop";
+
+  modules.hardware.enable = true;
+  modules.services.enable = true;
+  modules.theme.enable = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds, and the daemon just rebuilds from

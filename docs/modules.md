@@ -1,6 +1,6 @@
 # Modules
 
-Naming: local modules use `modules.<area>.*`; single-app wrappers (orchard, niXscout) keep `programs.<name>.enable` like nixpkgs. Areas: `core`, `hardware`, `services`, `theme` live under `profiles/base/`; capabilities live under `features/`. Each has a `default.nix` that only imports.
+Naming: local modules use `modules.<area>.*`; single-app wrappers (orchard, niXscout) keep `programs.<name>.enable` like nixpkgs. Areas: `core`, `hardware`, `services`, `theme` live under `modules/` (`core` always on, the others behind `modules.<area>.enable`); capabilities live under `features/`. Each has a `default.nix` (imports, plus the `enable` option except in `core`).
 
 ## `modules.desktop.*` (`features/desktop/` and the features below)
 

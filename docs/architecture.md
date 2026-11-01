@@ -6,7 +6,7 @@
 - `lib/`: `mkHost.nix` (host factory) + small helpers.
 - `nix/`: `default.nix` (assembler), `hosts.nix` (host table), `packages.nix` (packages, apps, overlay), `dev.nix` (devShell, formatter, checks).
 - `hosts/{desktop,laptop,halos1}/`: per-host configuration (+ host-only modules). `hosts/<host>/dotfiles/`: app-written configs kept in git.
-- `profiles/base/`: always-on config (`core`, generic `hardware`, `services`, `theme`).
+- `modules/`: `core` (always on), generic `hardware`, `services`, `theme` (each behind `modules.<area>.enable`), auto-imported by `modules/default.nix`.
 - `features/<name>/`: one folder per capability: `default.nix` (options+config), `pkg/`, `src/`. `features/default.nix` is the explicit import list.
 - `pkgs/`: packages shared by several features (`hyprmon`, `matugen`, `localsend-cli`).
 - `features/halo/src/`: Halo QML shell (rsync source of `scripts/halo-dev.sh`). `features/dynisland/src/`: dynisland QML.
@@ -15,7 +15,7 @@
 
 ## How a host is assembled
 
-`flake.nix` → `nix/default.nix` → `nix/hosts.nix` (`mkHost`) → `hosts/<name>/default.nix` → `profiles/base/*` + `features/*`.
+`flake.nix` → `nix/default.nix` → `nix/hosts.nix` (`mkHost`) → `hosts/<name>/default.nix` → `modules/*` + `features/*`.
 `mkHost` adds home-manager, forge modules and the overlays (`rust-overlay`, `self.overlays.default`).
 
 ## Known impurities

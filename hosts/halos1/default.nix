@@ -50,9 +50,6 @@ in
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
-    ../../profiles/base/core
-    ../../profiles/base/hardware
-    ../../profiles/base/services
     ../../features/programs
     ../../features/desktop
     ../../features
@@ -61,6 +58,10 @@ in
   ];
 
   networking.hostName = "halos1";
+
+  modules.hardware.enable = true;
+  modules.services.enable = true;
+  modules.theme.enable = true;
 
   # ---- session -------------------------------------------------------------
   modules.desktop = {
@@ -107,7 +108,7 @@ in
   boot.loader.timeout = 2;
 
   # ---- memory: 4 GB RAM / 128 GB disk ------------------------------------------
-  # zram below half of RAM (overrides profiles/base/core), plus an 8 GB swapfile
+  # zram below half of RAM (overrides modules/core), plus an 8 GB swapfile
   # for suspend/hibernate headroom (created on first activation). Verify a real
   # hibernate/resume cycle before relying on it.
   zramSwap = {

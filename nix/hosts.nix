@@ -7,7 +7,7 @@ let
     nix-cachyos-kernel
     self
     ;
-  theme = import ../profiles/base/theme/palette.nix;
+  theme = import ../modules/theme/palette.nix;
   mkHost = import ../lib/mkHost.nix { inherit inputs system theme; };
 in
 {

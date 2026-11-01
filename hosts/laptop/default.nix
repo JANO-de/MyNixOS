@@ -5,9 +5,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../profiles/base/core
-    ../../profiles/base/hardware
-    ../../profiles/base/services
     ../../features/programs
     ../../features/desktop
     ../../features
@@ -15,6 +12,10 @@
   ];
 
   networking.hostName = "laptop";
+
+  modules.hardware.enable = true;
+  modules.services.enable = true;
+  modules.theme.enable = true;
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   modules.services.sunshine.enable = true;

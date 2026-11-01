@@ -3,7 +3,7 @@
 | Input | What | Used by | Policy |
 |-------|------|---------|--------|
 | nixpkgs | `nixos-26.05` | everything | base |
-| home-manager | `release-26.05` | `profiles/base`, features | follows nixpkgs |
+| home-manager | `release-26.05` | `modules`, features | follows nixpkgs |
 | hyprland | compositor flake package | `features/hyprland-session` | **no follows** (keeps Cachix valid) |
 | hyprgrass | touch gestures plugin | `features/hyprland-session/hyprland-touch.nix` | follows hyprland |
 | chronos | niri fork + shell | `features/chronos` | **impure local path** (input commented out in `flake.nix`) |
