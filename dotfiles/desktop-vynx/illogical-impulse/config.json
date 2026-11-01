@@ -11,8 +11,7 @@
                 ]
             },
             {
-                "google": [
-                ]
+                "google": []
             }
         ],
         "otherModels": [
@@ -30,8 +29,7 @@
         "tool": "functions"
     },
     "appearance": {
-        "customColorSchemes": [
-        ],
+        "customColorSchemes": [],
         "defaultBorderRadius": 18,
         "extraBackgroundTint": false,
         "fakeScreenRounding": 0,
@@ -47,7 +45,7 @@
         },
         "palette": {
             "accentColor": "",
-            "type": "scheme-auto"
+            "type": "scheme-tonal-spot"
         },
         "sharpMode": false,
         "toggleWindowRounding": true,
@@ -121,7 +119,7 @@
         "transitionType": "radial",
         "useWallpaperEngine": false,
         "wallpaperEngineId": "",
-        "wallpaperPath": "/home/jano/Pictures/Wallpapers/abstract-30.png",
+        "wallpaperPath": "/home/jano/Pictures/Wallpapers/992dkfz.jpg",
         "widgets": {
             "clock": {
                 "cookie": {
@@ -318,8 +316,7 @@
             "memoryWarningThreshold": 95,
             "swapWarningThreshold": 85
         },
-        "screenList": [
-        ],
+        "screenList": [],
         "sizes": {
             "height": 40,
             "width": 50
@@ -385,8 +382,7 @@
         "fastPair": {
             "audioOnly": true,
             "enable": false,
-            "ignoredDevices": [
-            ],
+            "ignoredDevices": [],
             "popupTimeout": 20,
             "rssiThreshold": -65,
             "snoozeSeconds": 300
@@ -420,16 +416,14 @@
         "enablePreview": true,
         "height": 45,
         "hoverRegionHeight": 2,
-        "ignoredAppRegexes": [
-        ],
+        "ignoredAppRegexes": [],
         "isolateMonitors": false,
         "monochromeIcons": true,
         "pinnedApps": [
             "org.gnome.Nautilus",
             "alacritty"
         ],
-        "pinnedFiles": [
-        ],
+        "pinnedFiles": [],
         "pinnedOnStartup": false,
         "position": "auto",
         "revealOnEmptyWorkspace": true
@@ -458,7 +452,7 @@
         "translator": {
             "engine": "auto",
             "sourceLanguage": "es",
-            "targetLanguage": "en"
+            "targetLanguage": "auto"
         },
         "ui": "es_ES"
     },
@@ -681,12 +675,8 @@
                         "type": "network"
                     },
                     {
-                        "size": 1,
-                        "type": "idleInhibitor"
-                    },
-                    {
                         "size": 2,
-                        "type": "darkMode"
+                        "type": "bluetooth"
                     },
                     {
                         "size": 1,
@@ -694,10 +684,22 @@
                     },
                     {
                         "size": 2,
-                        "type": "audio"
+                        "type": "notifications"
+                    },
+                    {
+                        "size": 1,
+                        "type": "gameMode"
                     },
                     {
                         "size": 2,
+                        "type": "audio"
+                    },
+                    {
+                        "size": 1,
+                        "type": "idleInhibitor"
+                    },
+                    {
+                        "size": 1,
                         "type": "nightLight"
                     }
                 ]
@@ -784,8 +786,7 @@
     },
     "wallpaperSelector": {
         "customDefaultPath": "/home/jano/Pictures/Wallpapers",
-        "directories": [
-        ],
+        "directories": [],
         "sortField": "modified",
         "sortReversed": false,
         "useCustomDefaultPath": false,

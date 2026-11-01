@@ -11,8 +11,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "JANO-de";
     repo = "ii-halos";
-    rev = "a0c1f9df36d000ebca544aacb8d25a282ca90997";
-    hash = "sha256-GkQt9WaAnnVUDfQjN53m/0VmP9tnHwqGz+8mcTrmpSQ=";
+    rev = "16de31cdeca62ffd45aeac87a1ac9a472d0211d2";
+    hash = "sha256-64voz9LAfwFR+lCLO0oZx7mN6t5K1qvSd5eTZuph3Do=";
   };
   dontBuild = true;
   dontPatchShebangs = true;
