@@ -11,7 +11,7 @@ One line per script (what, who runs it, where).
 - `halos1-deploy.sh` — rebuild the Surface from this machine. Run on dev machine.
 - `halos1-reboot.sh` — reboot the Surface. Run on dev machine.
 - `suite-lint.py` — lint the Halo suite QML apps.
-- `adopt-dotfiles.sh` — first-time import of `~/.config/{hypr,hyprmon,illogical-impulse,matugen}` into `dotfiles/<host>/` BEFORE the first rebuild with `dotfiles.enable`. Run on the target host.
-- `migrate-dotfiles-per-host.sh` — move the legacy flat `dotfiles/` layout to `dotfiles/<host>/` (`--cleanup` removes the old copies). Run on the target host.
+- `adopt-dotfiles.sh` — first-time import of `~/.config/{hypr,hyprmon,illogical-impulse,matugen}` into `hosts/<host>/dotfiles/` BEFORE the first rebuild with `dotfiles.enable`. Run on the target host.
+- `migrate-dotfiles-per-host.sh` — move the legacy flat `dotfiles/` layout to `hosts/<host>/dotfiles/` (`--cleanup` removes the old copies). Run on the target host.
 - `config-backup.sh` — back up / restore the mutable ii, Hyprland, hyprmon configs. Run on the target host.
 - `ii-deps-check.sh` — audit ii runtime deps (binaries, python modules, fonts); prints only problems. Run on the target host.

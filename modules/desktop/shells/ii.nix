@@ -8,7 +8,13 @@
 #  - modules.desktop.dotfiles.enable = true : seeded once into <repo>/dotfiles/<host>/ (see dotfiles.nix),
 #    which ~/.config/* then symlinks to, so ii/Hyprland/hyprmon write into your flake repo.
 # Seeding never overwrites existing files.
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   cfg = config.modules.desktop.ii;
   iiPkg = if cfg.variant == "vynx" then pkgs.ii-vynx else pkgs.ii;
@@ -22,8 +28,23 @@ let
   hyprDir = "${base}/hypr";
   matugenDir = "${base}/matugen";
 
-  iiPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ps.click ps.loguru ps.tqdm ps.pillow ps.materialyoucolor ps.material-color-utilities ps.opencv4 ps.numpy ps.dbus-python ps.evdev ps.psutil ps.requests ps.scipy ]);
-  iiVenv = pkgs.runCommand "ii-venv" {} ''
+  iiPython = pkgs.python3.withPackages (ps: [
+    ps.pygobject3
+    ps.click
+    ps.loguru
+    ps.tqdm
+    ps.pillow
+    ps.materialyoucolor
+    ps.material-color-utilities
+    ps.opencv4
+    ps.numpy
+    ps.dbus-python
+    ps.evdev
+    ps.psutil
+    ps.requests
+    ps.scipy
+  ]);
+  iiVenv = pkgs.runCommand "ii-venv" { } ''
     mkdir -p $out/bin
     ln -s ${iiPython}/bin/python3 $out/bin/python
     ln -s ${iiPython}/bin/python3 $out/bin/python3
@@ -34,7 +55,10 @@ in
   options.modules.desktop.ii = {
     enable = lib.mkEnableOption "ii Quickshell shell on Hyprland";
     variant = lib.mkOption {
-      type = lib.types.enum [ "p3drovfx" "vynx" ];
+      type = lib.types.enum [
+        "p3drovfx"
+        "vynx"
+      ];
       default = "p3drovfx";
       description = "Which ii fork to install: P3DROVFX/ii-p3drovfx or vaguesyntax/ii-vynx.";
     };
@@ -47,16 +71,88 @@ in
     services.geoclue2.enable = lib.mkDefault true;
     services.upower.enable = lib.mkDefault true;
     users.users.jano.extraGroups = [ "i2c" ];
-    environment.systemPackages = [ iiPkg pkgs.matugen pkgs.quickshell pkgs.hyprmon pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting pkgs.bc pkgs.coreutils pkgs.curl pkgs.wget pkgs.ripgrep pkgs.jq pkgs.xdg-user-dirs pkgs.rsync pkgs.eza pkgs.fish pkgs.starship pkgs.kitty pkgs.hyprsunset pkgs.hyprshot pkgs.swappy pkgs.tesseract pkgs.wf-recorder pkgs.upower pkgs.wtype pkgs.ydotool pkgs.fuzzel pkgs.hypridle pkgs.hyprlock pkgs.hyprpicker pkgs.translate-shell pkgs.wlogout pkgs.libqalculate pkgs.cava pkgs.pavucontrol pkgs.wireplumber pkgs.pipewire pkgs.ddcutil pkgs.geoclue2 pkgs.networkmanager pkgs.kdePackages.plasma-nm pkgs.kdePackages.dolphin
-pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist pkgs.upscayl
+    environment.systemPackages = [
+      iiPkg
+      pkgs.matugen
+      pkgs.quickshell
+      pkgs.hyprmon
+      pkgs.qt6.qt5compat
+      pkgs.qt6.qtmultimedia
+      pkgs.qt6.qtpositioning
+      pkgs.qt6.qtsvg
+      pkgs.kdePackages.kirigami.unwrapped
+      pkgs.kdePackages.syntax-highlighting
+      pkgs.bc
+      pkgs.coreutils
+      pkgs.curl
+      pkgs.wget
+      pkgs.ripgrep
+      pkgs.jq
+      pkgs.xdg-user-dirs
+      pkgs.rsync
+      pkgs.eza
+      pkgs.fish
+      pkgs.starship
+      pkgs.kitty
+      pkgs.hyprsunset
+      pkgs.hyprshot
+      pkgs.swappy
+      pkgs.tesseract
+      pkgs.wf-recorder
+      pkgs.upower
+      pkgs.wtype
+      pkgs.ydotool
+      pkgs.fuzzel
+      pkgs.hypridle
+      pkgs.hyprlock
+      pkgs.hyprpicker
+      pkgs.translate-shell
+      pkgs.wlogout
+      pkgs.libqalculate
+      pkgs.cava
+      pkgs.pavucontrol
+      pkgs.wireplumber
+      pkgs.pipewire
+      pkgs.ddcutil
+      pkgs.geoclue2
+      pkgs.networkmanager
+      pkgs.kdePackages.plasma-nm
+      pkgs.kdePackages.dolphin
+      pkgs.kdePackages.systemsettings
+      pkgs.kdePackages.xdg-desktop-portal-kde
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.wl-clipboard
+      pkgs.slurp
+      pkgs.brightnessctl
+      pkgs.playerctl
+      pkgs.cliphist
+      pkgs.upscayl
       # --- added by deps audit (runtime tools ii calls) ---
       pkgs.pulseaudio # pactl (pipewire does not ship it)
-      pkgs.bluez pkgs.blueman pkgs.libnotify pkgs.glib pkgs.gtk3 pkgs.gjs
-      pkgs.imagemagick pkgs.ffmpeg pkgs.yt-dlp pkgs.grim pkgs.hyprshade
-      pkgs.git pkgs.file pkgs.fontconfig pkgs.procps pkgs.psmisc pkgs.util-linux pkgs.xdg-utils
+      pkgs.bluez
+      pkgs.blueman
+      pkgs.libnotify
+      pkgs.glib
+      pkgs.gtk3
+      pkgs.gjs
+      pkgs.imagemagick
+      pkgs.ffmpeg
+      pkgs.yt-dlp
+      pkgs.grim
+      pkgs.hyprshade
+      pkgs.git
+      pkgs.file
+      pkgs.fontconfig
+      pkgs.procps
+      pkgs.psmisc
+      pkgs.util-linux
+      pkgs.xdg-utils
       pkgs.jetbrains-mono
       # Rust helper build (see iiRustHelpers)
-      pkgs.cargo pkgs.rustc pkgs.gcc ];
+      pkgs.cargo
+      pkgs.rustc
+      pkgs.gcc
+    ];
 
     # NOTE: nixpkgs' hyprland / xdg-desktop-portal-hyprland were removed from the list above on
     # purpose: the session uses the flake's Hyprland (hyprland.nix), and hyprctl + the portal must
@@ -90,7 +186,17 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
     home-manager.users.jano.home.activation.iiRustHelpers = hmDag.entryAfter [ "iiQuickshellConfig" ] ''
       rh="${qsDir}/scripts/rust-helpers.sh"
       if [ -x "$rh" ]; then
-        export PATH="${lib.makeBinPath [ pkgs.cargo pkgs.rustc pkgs.gcc pkgs.coreutils pkgs.findutils pkgs.gnugrep pkgs.gnused ]}:$PATH"
+        export PATH="${
+          lib.makeBinPath [
+            pkgs.cargo
+            pkgs.rustc
+            pkgs.gcc
+            pkgs.coreutils
+            pkgs.findutils
+            pkgs.gnugrep
+            pkgs.gnused
+          ]
+        }:$PATH"
         missing="$("$rh" status 2>/dev/null | ${pkgs.gawk}/bin/awk '$2=="missing"||$2=="stale"{print $1}')"
         if [ -n "$missing" ]; then
           # shellcheck disable=SC2086
@@ -114,34 +220,38 @@ pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg
     '';
 
     home-manager.users.jano.home.activation.iiHyprConfig = hmDag.entryAfter [ "writeBoundary" ] ''
-      hd="${hyprDir}"
-      run mkdir -p "$hd"
-      if [ -L "$hd/hyprland.lua" ]; then
-        run rm -f "$hd/hyprland.lua"
-      fi
-      if [ ! -e "$hd/hyprland.lua" ]; then
-        run cp ${iiPkg}/share/hypr/ii/hyprland.lua "$hd/hyprland.lua"
-      fi
-      if [ ! -d "$hd/hyprland" ]; then
-        run cp -r ${iiPkg}/share/hypr/ii/hyprland "$hd/hyprland"
-      fi
-      run chmod -R u+w "$hd"
-    ${lib.optionalString (cfg.variant == "vynx") ''
-      # vynx's execs.lua starts qs itself; the systemd user unit below already does.
-      run ${pkgs.gnused}/bin/sed -i '/hl.exec_cmd("qs -c \$qsConfig")/d' "$hd/hyprland/execs.lua"
-    ''}'';
+        hd="${hyprDir}"
+        run mkdir -p "$hd"
+        if [ -L "$hd/hyprland.lua" ]; then
+          run rm -f "$hd/hyprland.lua"
+        fi
+        if [ ! -e "$hd/hyprland.lua" ]; then
+          run cp ${iiPkg}/share/hypr/ii/hyprland.lua "$hd/hyprland.lua"
+        fi
+        if [ ! -d "$hd/hyprland" ]; then
+          run cp -r ${iiPkg}/share/hypr/ii/hyprland "$hd/hyprland"
+        fi
+        run chmod -R u+w "$hd"
+      ${lib.optionalString (cfg.variant == "vynx") ''
+        # vynx's execs.lua starts qs itself; the systemd user unit below already does.
+        run ${pkgs.gnused}/bin/sed -i '/hl.exec_cmd("qs -c \$qsConfig")/d' "$hd/hyprland/execs.lua"
+      ''}'';
 
     # config-autobackup was removed: it copied ~/.config/{hypr,quickshell/ii,illogical-impulse,hyprmon}
     # on every change with no pruning (105 GB in ~/.config-backups). With the dotfiles module the
     # configs live in the git repo instead.
 
-    home-manager.users.jano.home.activation.iiHalosConfig = lib.mkIf (config.networking.hostName == "halos1") (hmDag.entryAfter [ "writeBoundary" ] ''
-      if [ ! -f "$HOME/.config/illogical-impulse/config.json" ]; then
-        run mkdir -p "$HOME/.config/illogical-impulse"
-        run cp ${../../../dotfiles/halos1/illogical-impulse/config.json} "$HOME/.config/illogical-impulse/config.json"
-        run chmod u+w "$HOME/.config/illogical-impulse/config.json"
-      fi
-    '');
+    home-manager.users.jano.home.activation.iiHalosConfig =
+      lib.mkIf (config.networking.hostName == "halos1")
+        (
+          hmDag.entryAfter [ "writeBoundary" ] ''
+            if [ ! -f "$HOME/.config/illogical-impulse/config.json" ]; then
+              run mkdir -p "$HOME/.config/illogical-impulse"
+              run cp ${../../../hosts/halos1/dotfiles/illogical-impulse/config.json} "$HOME/.config/illogical-impulse/config.json"
+              run chmod u+w "$HOME/.config/illogical-impulse/config.json"
+            fi
+          ''
+        );
 
     home-manager.users.jano.systemd.user.services.ii = {
       Unit = {

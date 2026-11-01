@@ -55,3 +55,20 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] W-1 List before deleting
 - [x] W-2 Add flake input immaterial-impulse
 - [x] W-3 Delete local folders
+- [x] W-4 Wire immaterial-impulse to system (desktop+laptop)
+- [x] W-5 Verify builds (desktop+laptop+halos1, flake check, nixfmt, bash -n)
+- [x] W-6 Close (docs + W-immaterial.md)
+
+## M6 feature-folder layout (L)
+- [x] L-0 Recon + map
+- [x] L-1 lib/ and nix/
+- [x] L-2 profiles/base
+- [~] L-3 features (one per commit)
+- [x] L-4 dotfiles -> hosts/<h>/dotfiles
+- [x] L-5 halo + dynisland sources
+- [ ] L-6 docs and guide
+- [ ] L-7 final verify
+- Root cause: `qs` in PATH resolved to nixpkgs qs 0.3.2 (ABI mismatch with Qt 6.11); immaterial needs the upstream quickshell-wrapped.
+- Fix: execs.lua now calls `/run/current-system/sw/bin/qs` (wrapped, added to systemPackages); laptop hypr migrated to upstream immaterial config (custom/ preserved); render_power clamped to 4.
+- Verified: wrapped qs launches shell; desktop+laptop+halos1 build; flake check; nixfmt; bash -n.
+- Owner verified: imi autostarts on launch (2026-11-01).

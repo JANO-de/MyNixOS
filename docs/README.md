@@ -10,4 +10,4 @@
 - [suite-style.md](suite-style.md): Halo suite QML style guide.
 - `B1-aosp-settings.md` (path referenced by `shell/halo`), `halos1/`, `hardware/`, `roadmap/`: Surface notes, hardware dumps, roadmap.
 
-Agent/junior guide (rules, recipes, status): [`../beam-plans/README.md`](../beam-plans/README.md).
+Agent/junior guide (rules, recipes, status): [`../beam-plan/v2/README.md`](../beam-plan/v2/README.md).

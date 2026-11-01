@@ -15,12 +15,12 @@ Forks: `P3DROVFX/ii-p3drovfx` (default) and `vaguesyntax/ii-vynx` (p3drovfx is a
 
 - `pkgs/ii-p3drovfx`, `pkgs/ii-vynx`: install the three trees under `$out/share/{quickshell/ii,hypr/ii,matugen/ii}`. `pkgs/ii-shapes.nix`: shared pin of the `rounded-polygon-qmljs` submodule.
 - `modules/desktop/shells/ii.nix`: copies the trees into `$HOME` once (never overwrites), runs `qs -c ii` as the user unit `ii`, sets QML/Python/GI env.
-- `modules/desktop/dotfiles.nix`: `~/.config/{hypr,hyprmon,illogical-impulse,matugen}` -> `dotfiles/<host>/`.
+- `modules/desktop/dotfiles.nix`: `~/.config/{hypr,hyprmon,illogical-impulse,matugen}` -> `hosts/<host>/dotfiles/`.
 - `~/.config/quickshell/ii/.variant` records which fork the tree came from. Changing `ii.variant` re-seeds the tree on the next activation (a tree without the marker counts as p3drovfx).
 
 ## Variant (vynx)
 
-`desktop` and `laptop` run `variant = "vynx"` with their own dotfiles folders (`dotfiles/desktop-vynx/`, `dotfiles/laptop-vynx/`). To go back, set `variant = "p3drovfx"` and the old dotfiles host/dir.
+`desktop` and `laptop` run `variant = "vynx"` with their own dotfiles folders (`hosts/desktop-vynx/dotfiles/`, `hosts/laptop-vynx/dotfiles/`). To go back, set `variant = "p3drovfx"` and the old dotfiles host/dir.
 
 After `switch`: `systemctl --user restart ii`, then log out and in.
 

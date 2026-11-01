@@ -4,47 +4,58 @@
 #
 #   default.nix       this file: identity, disk, SP5 quirks, session, memory
 #   network-aula.nix  school-network proxy dispatcher
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 let
   # Fully transparent cursor theme: every cursor name Adwaita knows points at
   # one 1x1 transparent image, so a touch-only Surface shows no pointer. Switch
   # to Adwaita in the session when using the Type Cover touchpad.
-  blankCursor = pkgs.runCommand "blank-cursor"
-    {
-      nativeBuildInputs = [ (pkgs.xcursorgen or pkgs.xorg.xcursorgen) pkgs.python3 ];
-    }
-    ''
-      d=$out/share/icons/blank
-      mkdir -p $d/cursors && cd $d
-      python3 - <<'PY'
-      import struct, zlib
-      def chunk(t, b):
-          c = struct.pack(">I", len(b)) + t + b
-          return c + struct.pack(">I", zlib.crc32(t + b) & 0xffffffff)
-      png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 6, 0, 0, 0)) \
-          + chunk(b"IDAT", zlib.compress(b"\x00\x00\x00\x00\x00")) + chunk(b"IEND", b"")
-      open("blank.png", "wb").write(png)
-      PY
-      echo "1 0 0 blank.png" > cfg
-      xcursorgen cfg cursors/blank
-      rm blank.png cfg
-      for f in $(ls ${pkgs.adwaita-icon-theme}/share/icons/Adwaita/cursors); do
-        [ "$f" = blank ] || ln -s blank cursors/$f
-      done
-      printf '[Icon Theme]\nName=blank\n' > index.theme
-    '';
+  blankCursor =
+    pkgs.runCommand "blank-cursor"
+      {
+        nativeBuildInputs = [
+          (pkgs.xcursorgen or pkgs.xorg.xcursorgen)
+          pkgs.python3
+        ];
+      }
+      ''
+        d=$out/share/icons/blank
+        mkdir -p $d/cursors && cd $d
+        python3 - <<'PY'
+        import struct, zlib
+        def chunk(t, b):
+            c = struct.pack(">I", len(b)) + t + b
+            return c + struct.pack(">I", zlib.crc32(t + b) & 0xffffffff)
+        png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 6, 0, 0, 0)) \
+            + chunk(b"IDAT", zlib.compress(b"\x00\x00\x00\x00\x00")) + chunk(b"IEND", b"")
+        open("blank.png", "wb").write(png)
+        PY
+        echo "1 0 0 blank.png" > cfg
+        xcursorgen cfg cursors/blank
+        rm blank.png cfg
+        for f in $(ls ${pkgs.adwaita-icon-theme}/share/icons/Adwaita/cursors); do
+          [ "$f" = blank ] || ln -s blank cursors/$f
+        done
+        printf '[Icon Theme]\nName=blank\n' > index.theme
+      '';
 in
 {
   imports = [
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
-    ../../modules/core
-    ../../modules/hardware
+    ../../profiles/base/core
+    ../../profiles/base/hardware
     ../../modules/services
-    ../../modules/programs
+    ../../features/programs
     ../../modules/desktop
+    ../../features
     ./network-aula.nix
   ];
 
@@ -76,7 +87,10 @@ in
   # Deploys build on the desktop and push here over SSH. Those paths are
   # unsigned, so the Surface's Nix rejects them ("lacks a signature by a
   # trusted key") unless the copying user is trusted.
-  nix.settings.trusted-users = [ "root" "jano" ];
+  nix.settings.trusted-users = [
+    "root"
+    "jano"
+  ];
 
   # ---- disk: by label, no hardware-configuration.nix (UUIDs never committed) ---
   # mkfs.fat -F32 -n NIXBOOT <p1>; mkfs.ext4 -L NIXROOT <p2>
@@ -100,7 +114,12 @@ in
     memoryPercent = lib.mkForce 50;
     memoryMax = lib.mkForce 4294967296; # 4 GiB
   };
-  swapDevices = [ { device = "/swapfile"; size = 8192; } ];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 8192;
+    }
+  ];
   boot.resumeDevice = "/dev/disk/by-label/NIXROOT";
 
   # Daily autoupgrade builds are too heavy here; deploy from the PC instead.
@@ -120,7 +139,10 @@ in
 
   # ---- SP5 hardware quirks ---------------------------------------------------------
   # Panel Self Refresh blanks the eDP output on this panel.
-  boot.kernelParams = [ "i915.enable_psr=0" "cfg80211.ieee80211_regdom=ES" ];
+  boot.kernelParams = [
+    "i915.enable_psr=0"
+    "cfg80211.ieee80211_regdom=ES"
+  ];
 
   # iHD VA-API driver (intel-media-driver), right for Kaby Lake (HD 620). It
   # also drops nixos-hardware's legacy intel-vaapi-driver (i965) and intel-ocl,
@@ -133,7 +155,10 @@ in
   # channels are passive-only / hidden.
   hardware.wirelessRegulatoryDatabase = true;
   # Phone hotspots often ship a dead DNS relay; always try public DNS first.
-  networking.networkmanager.insertNameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.networkmanager.insertNameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
 
   # The radio ends up soft-blocked after failed activations and nothing clears
   # it; clear it every boot so it is recoverable without a keyboard.
@@ -228,7 +253,12 @@ in
       StartLimitIntervalSec = 600;
       StartLimitBurst = 3;
     };
-    path = [ pkgs.kmod pkgs.systemd pkgs.gawk pkgs.coreutils ];
+    path = [
+      pkgs.kmod
+      pkgs.systemd
+      pkgs.gawk
+      pkgs.coreutils
+    ];
     serviceConfig.Type = "oneshot";
     script = ''
       units=$(systemctl list-units --all --plain --no-legend 'iptsd@*' | awk '{print $1}')

@@ -4,12 +4,12 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/core
-    ../../modules/hardware
+    ../../profiles/base/core
+    ../../profiles/base/hardware
     ../../modules/services
-    ../../modules/programs
-    ../../modules/programs/orchard.nix
+    ../../features/programs
     ../../modules/desktop
+    ../../features
     ../../hosts/desktop/matrix.nix
   ];
 

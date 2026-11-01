@@ -1,0 +1,25 @@
+{ lib, pkgs, ... }:
+
+pkgs.rustPlatform.buildRustPackage {
+  pname = "niXscout";
+  version = "0.1.0";
+  src = builtins.path {
+    path = ./.;
+    name = "niXscout";
+  };
+  cargoLock = {
+    lockFile = ./Cargo.lock;
+  };
+  nativeBuildInputs = [ pkgs.pkg-config ];
+  buildInputs = [
+    pkgs.gtk4
+    pkgs.libadwaita
+    pkgs.glib
+    pkgs.sqlite
+  ];
+  meta = {
+    description = "Read-only browser for the Nix world";
+    mainProgram = "niXscout";
+    license = lib.licenses.mit;
+  };
+}

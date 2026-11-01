@@ -23,15 +23,15 @@ if [ "${1:-}" = "--cleanup" ]; then
 fi
 
 HOST="${1:?usage: $0 <host> | --cleanup}"
-mkdir -p "dotfiles/$HOST"
+mkdir -p "hosts/$HOST/dotfiles"
 for n in "${NAMES[@]}"; do
   if [ -d "dotfiles/$n" ] && [ ! -L "dotfiles/$n" ]; then
-    if [ -e "dotfiles/$HOST/$n" ]; then echo "skip   dotfiles/$HOST/$n already exists" >&2; continue; fi
-    git mv "dotfiles/$n" "dotfiles/$HOST/$n"
+    if [ -e "hosts/$HOST/dotfiles/$n" ]; then echo "skip   hosts/$HOST/dotfiles/$n already exists" >&2; continue; fi
+    git mv "dotfiles/$n" "hosts/$HOST/dotfiles/$n"
     ln -s "$HOST/$n" "dotfiles/$n"
     # keep the temporary links out of `git add -A`
     grep -qxF "/dotfiles/$n" .git/info/exclude 2>/dev/null || echo "/dotfiles/$n" >> .git/info/exclude
-    echo "moved  dotfiles/$n -> dotfiles/$HOST/$n (compat link left behind)"
+    echo "moved  dotfiles/$n -> hosts/$HOST/dotfiles/$n (compat link left behind)"
   fi
 done
 echo "Now: sudo nixos-rebuild switch --flake .#$HOST, then: scripts/migrate-dotfiles-per-host.sh --cleanup"

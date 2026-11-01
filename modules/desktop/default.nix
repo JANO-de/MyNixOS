@@ -5,12 +5,19 @@
 #   defaults:         session = "mango"  shell = "dynisland"   (legacy)
 #   desktop, laptop:  session = "hyprland"  shell = "ii"       (variant: p3drovfx | vynx)
 #   halos1:           session = "hyprland"  shell = "ii" (temporary test) | "halo" (own shell, shell/halo/)
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.modules.desktop;
   theme = "share/sddm/themes/catppuccin-mocha-mauve";
-  oskTheme = import ./sddm-osk.nix { inherit (pkgs) lib stdenvNoCC catppuccin-sddm; };
+  oskTheme = import ../../features/greeter/sddm-osk.nix {
+    inherit (pkgs) lib stdenvNoCC catppuccin-sddm;
+  };
 
   # Greeter theme for hosts without the on-screen keyboard (desktop, laptop).
   # Change embeddedTheme (astronaut, black_hole, cyberpunk, hyprland_kath,
@@ -24,32 +31,38 @@ in
   imports = [
     ./sessions/mango/mango.nix
     ./sessions/niri/niri.nix
-    ./sessions/hyprland/hyprland.nix
-    ./sessions/hyprland/hyprland-touch.nix
-    ./shells/chronos.nix
-    ./shells/halo.nix
-    ./shells/dynisland.nix
+    ../../features/hyprland-session
+    ../../features/hyprland-session/hyprland-touch.nix
     ./shells/ii.nix
-    ./shells/immaterial.nix
-    ./dotfiles.nix
-    ./greeter/greeter.nix
-    ./splash.nix
-    ./droidloom.nix
+    ../../features/greeter
   ];
 
   options.modules.desktop = {
     session = lib.mkOption {
-      type = lib.types.enum [ "mango" "niri" "hyprland" ];
+      type = lib.types.enum [
+        "mango"
+        "niri"
+        "hyprland"
+      ];
       default = "mango";
       description = "Compositor started by the login screen. 'niri' is the chronos fork; 'hyprland' runs through UWSM (see hyprland.nix).";
     };
     shell = lib.mkOption {
-      type = lib.types.enum [ "dynisland" "chronos" "halo" "ii" "immaterial" ];
+      type = lib.types.enum [
+        "dynisland"
+        "chronos"
+        "halo"
+        "ii"
+        "immaterial"
+      ];
       default = "dynisland";
       description = "Quickshell shell (island, dock, launcher, lock) autostarted in the session.";
     };
     hyprlandMode = lib.mkOption {
-      type = lib.types.enum [ "tablet" "desktop" ];
+      type = lib.types.enum [
+        "tablet"
+        "desktop"
+      ];
       default = "desktop";
       description = "Hyprland mode at first login of a boot (tablet = touch UI, desktop = pointer UI). Written to /etc/hypr/default-mode.";
     };
@@ -69,10 +82,12 @@ in
       services.displayManager.sddm = {
         enable = true;
         wayland.enable = false;
-        extraPackages = with pkgs.kdePackages; [ qtmultimedia qtsvg qtvirtualkeyboard ];
-        theme = if cfg.greeterOsk.enable
-          then "${oskTheme}/${theme}"
-          else "sddm-astronaut-theme";
+        extraPackages = with pkgs.kdePackages; [
+          qtmultimedia
+          qtsvg
+          qtvirtualkeyboard
+        ];
+        theme = if cfg.greeterOsk.enable then "${oskTheme}/${theme}" else "sddm-astronaut-theme";
       };
       services.displayManager.defaultSession =
         if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
@@ -94,32 +109,42 @@ in
         { settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark"; }
         { settings."org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true; }
       ];
-      environment.sessionVariables.QML2_IMPORT_PATH = lib.makeSearchPath "lib/qt-6/qml" [ pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting ];
+      environment.sessionVariables.QML2_IMPORT_PATH = lib.makeSearchPath "lib/qt-6/qml" [
+        pkgs.qt6.qt5compat
+        pkgs.qt6.qtmultimedia
+        pkgs.qt6.qtpositioning
+        pkgs.qt6.qtsvg
+        pkgs.kdePackages.kirigami.unwrapped
+        pkgs.kdePackages.syntax-highlighting
+      ];
       environment.sessionVariables.XDG_DATA_DIRS = [
         "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
         "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
       ];
 
       # Tools the shell and the keybinds call at runtime
-      environment.systemPackages = with pkgs; [
-        wl-clipboard
-        cliphist
-        libnotify
-        grim
-        slurp
-        wf-recorder
-        brightnessctl
-        playerctl
-        xdg-utils
-        adwaita-icon-theme # cursor theme
-        pavucontrol
-        localsend-cli
-        gdk-pixbuf
-        librsvg
-        bc
-        glib
-        imagemagick
-      ] ++ lib.optional (!cfg.greeterOsk.enable && config.services.displayManager.sddm.enable) astronaut;
+      environment.systemPackages =
+        with pkgs;
+        [
+          wl-clipboard
+          cliphist
+          libnotify
+          grim
+          slurp
+          wf-recorder
+          brightnessctl
+          playerctl
+          xdg-utils
+          adwaita-icon-theme # cursor theme
+          pavucontrol
+          localsend-cli
+          gdk-pixbuf
+          librsvg
+          bc
+          glib
+          imagemagick
+        ]
+        ++ lib.optional (!cfg.greeterOsk.enable && config.services.displayManager.sddm.enable) astronaut;
     }
 
     (lib.mkIf cfg.greeterOsk.enable {
@@ -130,8 +155,12 @@ in
         # The theme's `import QtQuick.VirtualKeyboard` needs the QML modules and
         # the input-context plugin on the greeter's paths (see sddm-osk.nix for
         # the theme that actually draws the keyboard).
-        GreeterEnvironment = "QT_IM_MODULE=qtvirtualkeyboard,QML2_IMPORT_PATH="
-          + lib.makeSearchPath "lib/qt-6/qml" [ pkgs.qt6.qtdeclarative pkgs.qt6.qtvirtualkeyboard ]
+        GreeterEnvironment =
+          "QT_IM_MODULE=qtvirtualkeyboard,QML2_IMPORT_PATH="
+          + lib.makeSearchPath "lib/qt-6/qml" [
+            pkgs.qt6.qtdeclarative
+            pkgs.qt6.qtvirtualkeyboard
+          ]
           + ",QT_PLUGIN_PATH="
           + lib.makeSearchPath "lib/qt-6/plugins" [
             pkgs.qt6.qtvirtualkeyboard

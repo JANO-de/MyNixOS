@@ -10,8 +10,8 @@ let
         config.allowUnfree = true;
       };
     in
-    pkgs.callPackage ../pkgs/orchard/default.nix { };
-  niXscoutPkg = pkgs.callPackage ../pkgs/niXscout/default.nix { };
+    pkgs.callPackage ../features/orchard/pkg/default.nix { };
+  niXscoutPkg = pkgs.callPackage ../features/nixscout/pkg/default.nix { };
   iiPkg = pkgs.callPackage ../pkgs/ii-p3drovfx/default.nix { };
   iiVynxPkg = pkgs.callPackage ../pkgs/ii-vynx/default.nix { src = inputs.ii-halos; };
   hyprmonPkg = pkgs.callPackage ../pkgs/hyprmon/default.nix { };
@@ -43,8 +43,8 @@ in
     };
   };
   overlay = final: prev: {
-    orchard = final.callPackage ../pkgs/orchard/default.nix { };
-    niXscout = final.callPackage ../pkgs/niXscout/default.nix { };
+    orchard = final.callPackage ../features/orchard/pkg/default.nix { };
+    niXscout = final.callPackage ../features/nixscout/pkg/default.nix { };
     ii = final.callPackage ../pkgs/ii-p3drovfx/default.nix { };
     ii-vynx = final.callPackage ../pkgs/ii-vynx/default.nix { src = inputs.ii-halos; };
     hyprmon = final.callPackage ../pkgs/hyprmon/default.nix { };

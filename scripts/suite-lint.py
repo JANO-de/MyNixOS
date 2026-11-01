@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """suite-lint: static checks for the Halo app suite QML (no QML runtime needed).
 
-Usage:  python3 scripts/suite-lint.py [apps_dir]      (default: shell/halo/apps)
+Usage:  python3 scripts/suite-lint.py [apps_dir]      (default: features/halo/src/apps)
 Checks: bracket balance, icon names exist in common/Ic.qml, every element type is known,
         qs.common / qs.suite imports present, duplicate ids, anchors on Row/Column/Grid/Flow children,
         `anchors { ... };`, method names starting with an uppercase letter.
@@ -11,7 +11,7 @@ import re
 import sys
 from pathlib import Path
 
-root = Path(sys.argv[1] if len(sys.argv) > 1 else "shell/halo/apps")
+root = Path(sys.argv[1] if len(sys.argv) > 1 else "features/halo/src/apps")
 
 BUILTIN = set("""Item Rectangle Text Column Row Grid Flow Repeater ListView GridView Flickable MouseArea TextInput TextEdit Timer
 Behavior NumberAnimation ColorAnimation Image Component Connections Shape ShapePath PathAngleArc PathSvg MultiEffect

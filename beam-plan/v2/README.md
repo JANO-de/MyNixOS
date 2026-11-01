@@ -63,3 +63,12 @@ Question: <only if blocked>
 ## Kickoff message for Beam
 
 > Read `beam-plan/v2/README.md` fully, then `D-delete.md`. Start at task D-0. Follow the rules and report format exactly. Ask when blocked.
+
+## Recipe: Add a feature
+
+1. Create `features/<name>/` with `default.nix` (options+config, option names unchanged), `pkg/` if it has a package, `src/` if it owns QML/scripts.
+2. Add one line to `features/default.nix`.
+3. Remove the old import line from the relevant aggregator.
+4. Update `nix/packages.nix` callPackage paths (3 places) if a package moved.
+5. Update `docs/modules.md` row.
+6. Verify: `git add -A`, `drv-check.sh after` (IDENTICAL or hash-only churn explained), `nixfmt`, `bash -n`.

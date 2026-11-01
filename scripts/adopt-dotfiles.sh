@@ -17,7 +17,7 @@ while [ $# -gt 0 ]; do
     *) echo "unknown argument: $1" >&2; exit 1 ;;
   esac
 done
-DEST="$REPO/dotfiles/$HOST"
+DEST="$REPO/hosts/$HOST/dotfiles"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 CFG="$HOME/.config"
 

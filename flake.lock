@@ -612,6 +612,7 @@
       "original": {
         "owner": "XephyLon",
         "repo": "immaterial-impulse",
+        "rev": "a79750979c7d5343744eee30f80439688bae49c9",
         "type": "github"
       }
     },
@@ -854,7 +855,6 @@
     "quickshell": {
       "inputs": {
         "nixpkgs": [
-          "immaterial-impulse",
           "nixpkgs"
         ]
       },
