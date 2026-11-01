@@ -54,7 +54,7 @@ in
     ../../profiles/base/hardware
     ../../modules/services
     ../../features/programs
-    ../../modules/desktop
+    ../../features/desktop
     ../../features
     ./network-aula.nix
   ];

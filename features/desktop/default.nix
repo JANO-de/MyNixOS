@@ -15,7 +15,7 @@
 let
   cfg = config.modules.desktop;
   theme = "share/sddm/themes/catppuccin-mocha-mauve";
-  oskTheme = import ../../features/greeter/sddm-osk.nix {
+  oskTheme = import ../greeter/sddm-osk.nix {
     inherit (pkgs) lib stdenvNoCC catppuccin-sddm;
   };
 
@@ -29,12 +29,12 @@ let
 in
 {
   imports = [
-    ./sessions/mango/mango.nix
-    ./sessions/niri/niri.nix
-    ../../features/hyprland-session
-    ../../features/hyprland-session/hyprland-touch.nix
-    ./shells/ii.nix
-    ../../features/greeter
+    ../../modules/desktop/sessions/mango/mango.nix
+    ../../modules/desktop/sessions/niri/niri.nix
+    ../hyprland-session
+    ../hyprland-session/hyprland-touch.nix
+    ../../modules/desktop/shells/ii.nix
+    ../greeter
   ];
 
   options.modules.desktop = {

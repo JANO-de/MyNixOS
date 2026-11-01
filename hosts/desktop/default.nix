@@ -8,7 +8,7 @@
     ../../profiles/base/hardware
     ../../modules/services
     ../../features/programs
-    ../../modules/desktop
+    ../../features/desktop
     ../../features
     ../../hosts/desktop/matrix.nix
   ];
