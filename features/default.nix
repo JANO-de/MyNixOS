@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./hyprland-session
     ./halo
     ./dynisland
     ./chronos

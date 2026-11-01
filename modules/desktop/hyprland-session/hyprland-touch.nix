@@ -1,4 +1,4 @@
-# Hyprland touch helpers (surface-rotate, on-screen keyboard height). Imported by features/desktop.
+# Hyprland touch helpers (surface-rotate, on-screen keyboard height). Imported by hyprland-session.
 {
   config,
   lib,

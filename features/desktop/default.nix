@@ -29,8 +29,6 @@ let
 in
 {
   imports = [
-    ../hyprland-session
-    ../hyprland-session/hyprland-touch.nix
   ];
 
   options.modules.desktop = {

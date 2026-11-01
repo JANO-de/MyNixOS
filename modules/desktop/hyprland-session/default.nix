@@ -127,6 +127,8 @@ let
       (builtins.readFile ./hyprland.lua);
 in
 {
+  imports = [ ./hyprland-touch.nix ];
+
   options.modules.desktop.drmDevices = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     default = null;
