@@ -79,8 +79,8 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 ## M8 two-folder modules layout (M-modules.md)
 - [x] M-plan Plan doc written (nothing moved)
 - [x] M-0 Recon + option table (notes/M-0.md; ASK-9, 10 answered)
-- [~] M-1 Loader (modules/default.nix + one import line per host; untested: no nix here)
-- [ ] M-2 profiles/base to modules
+- [x] M-1 Loader (verified 2026-11-01: drv IDENTICAL x3, flake check, desktop build)
+- [x] M-2 profiles/base to modules (bec7177, d00d8a7, 25f42bc, 5a2cd01; desktop built, laptop and halos1 not built; drv churn = udev rule order + home-manager-path order, explained)
 - [ ] M-3 features to modules (one per commit)
 - [ ] M-4 pkgs
 - [ ] M-5 scripts (rule 13, owner approval)
