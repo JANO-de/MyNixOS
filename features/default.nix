@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./dotfiles
     ./hyprland-session
     ./greeter
     ./halo
