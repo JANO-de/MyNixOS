@@ -16,7 +16,7 @@ FloatingWindow {
     property string query: ""
     readonly property string cur: wide ? (page === "" ? "wifi" : page) : page
 
-    // Order follows AOSP top_level_settings.xml (see docs/B1-aosp-settings.md).
+    // Order follows AOSP top_level_settings.xml (see .plan/docs/B1-aosp-settings.md).
     readonly property var allCats: [
         { key: "wifi", glyph: "≋", label: "Network & internet" },
         { key: "bluetooth", glyph: "✧", label: "Connected devices" },
