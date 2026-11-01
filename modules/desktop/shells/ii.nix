@@ -48,7 +48,7 @@ in
     services.upower.enable = lib.mkDefault true;
     users.users.jano.extraGroups = [ "i2c" ];
     environment.systemPackages = [ iiPkg pkgs.matugen pkgs.quickshell pkgs.hyprmon pkgs.qt6.qt5compat pkgs.qt6.qtmultimedia pkgs.qt6.qtpositioning pkgs.qt6.qtsvg pkgs.kdePackages.kirigami.unwrapped pkgs.kdePackages.syntax-highlighting pkgs.bc pkgs.coreutils pkgs.curl pkgs.wget pkgs.ripgrep pkgs.jq pkgs.xdg-user-dirs pkgs.rsync pkgs.eza pkgs.fish pkgs.starship pkgs.kitty pkgs.hyprsunset pkgs.hyprshot pkgs.swappy pkgs.tesseract pkgs.wf-recorder pkgs.upower pkgs.wtype pkgs.ydotool pkgs.fuzzel pkgs.hypridle pkgs.hyprlock pkgs.hyprpicker pkgs.translate-shell pkgs.wlogout pkgs.libqalculate pkgs.cava pkgs.pavucontrol pkgs.wireplumber pkgs.pipewire pkgs.ddcutil pkgs.geoclue2 pkgs.networkmanager pkgs.kdePackages.plasma-nm pkgs.kdePackages.dolphin
-pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist
+pkgs.kdePackages.systemsettings pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk pkgs.wl-clipboard pkgs.slurp pkgs.brightnessctl pkgs.playerctl pkgs.cliphist pkgs.upscayl
       # --- added by deps audit (runtime tools ii calls) ---
       pkgs.pulseaudio # pactl (pipewire does not ship it)
       pkgs.bluez pkgs.blueman pkgs.libnotify pkgs.glib pkgs.gtk3 pkgs.gjs
