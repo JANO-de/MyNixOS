@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./droidloom
     ./dotfiles
     ./hyprland-session
     ./greeter
