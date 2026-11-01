@@ -3,8 +3,8 @@
 Legend: [ ] open · [~] in progress · [x] done · [?] waiting for owner
 Finished work and task detail: `v2/STATUS.md`. This file: what is open, in order.
 
-- [~] L-6 Docs and guide (`L6-docs.patch`: owner applies)
-- [ ] L-7 Final verify
+- [x] L-6 Docs and guide (31a3997)
+- [x] L-7 Final verify: drvs equal to baseline, flake check and 3 builds pass, bash -n pass. nixfmt: 11 files unformatted, 10 untouched by L, `networking.nix` is a pure rename (R100)
 - [ ] R-0..R-3 Cleanup: baseline, root and docs tree, comment and doc drift, thin `flake.nix`
 - [ ] D-0..D-3 Delete: inventory, appOutlet-nix, Tokri leftovers, close
 - [~] N-8, N-10, N-12, N-13 nixscout: third-party fetchers, detail pages, packaging, docs

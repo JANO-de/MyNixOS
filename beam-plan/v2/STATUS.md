@@ -66,8 +66,8 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] L-3 features (one per commit)
 - [x] L-4 dotfiles -> hosts/<h>/dotfiles
 - [x] L-5 halo + dynisland sources
-- [ ] L-6 docs and guide
-- [ ] L-7 final verify
+- [x] L-6 docs and guide
+- [x] L-7 final verify
 - Root cause: `qs` in PATH resolved to nixpkgs qs 0.3.2 (ABI mismatch with Qt 6.11); immaterial needs the upstream quickshell-wrapped.
 - Fix: execs.lua now calls `/run/current-system/sw/bin/qs` (wrapped, added to systemPackages); laptop hypr migrated to upstream immaterial config (custom/ preserved); render_power clamped to 4.
 - Verified: wrapped qs launches shell; desktop+laptop+halos1 build; flake check; nixfmt; bash -n.
