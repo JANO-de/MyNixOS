@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./nvidia
     ./orchard
     ./nixscout
     ./droidloom

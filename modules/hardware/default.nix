@@ -7,5 +7,6 @@
     ./bluetooth.nix
     ./firmware.nix
     ./drives.nix
+    ./nvidia.nix
   ];
 }

@@ -23,7 +23,7 @@ let
   drmDevices =
     if cfg.drmDevices != null then
       cfg.drmDevices
-    else if config.hardware.nvidia.enable or false then
+    else if config.modules.hardware.nvidia.enable then
       "/dev/dri/igpu:/dev/dri/dgpu"
     else
       "/dev/dri/igpu";

@@ -14,6 +14,7 @@
   networking.hostName = "desktop";
 
   modules.hardware.enable = true;
+  modules.hardware.nvidia.enable = true;
   modules.services.enable = true;
   modules.services.qmk.enable = true;
   modules.theme.enable = true;

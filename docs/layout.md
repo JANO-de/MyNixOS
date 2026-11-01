@@ -27,7 +27,6 @@ docs/                this directory; beam-plan/ = agent guide + status
 | halo, immaterial, dynisland, chronos | the shells (`modules.desktop.shell`); `halo/src`, `dynisland/src` hold the QML |
 | dotfiles | `~/.config/{hypr,hyprmon,matugen}` linked into `hosts/<host>/dotfiles/` |
 | droidloom | Android apps |
-| nvidia | `hardware.nvidia.enable` |
 | orchard, nixscout | app packages (`pkg/`) and their `programs.*.enable` |
 | programs | profile `full` / `lean`, deskflow |
 

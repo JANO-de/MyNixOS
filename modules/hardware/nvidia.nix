@@ -1,14 +1,14 @@
-# NVIDIA driver (switchable).
+# NVIDIA driver. Off until a host sets modules.hardware.nvidia.enable
+# (the Surface only has Intel graphics).
 { config, lib, ... }:
 
+let
+  cfg = config.modules.hardware.nvidia;
+in
 {
-  options.hardware.nvidia.enable = lib.mkOption {
-    type = lib.types.bool;
-    default = true;
-    description = "Set up the NVIDIA driver. Turn off on hosts without an NVIDIA GPU (the Surface only has Intel graphics).";
-  };
+  options.modules.hardware.nvidia.enable = lib.mkEnableOption "the NVIDIA driver";
 
-  config = lib.mkIf config.hardware.nvidia.enable {
+  config = lib.mkIf cfg.enable {
     services.xserver.videoDrivers = [ "nvidia" ];
     hardware.nvidia = {
       package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.legacy_580;
