@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    ../../hosts/desktop/matrix.nix
+    ./matrix.nix
   ];
 
   networking.hostName = "desktop";
@@ -16,6 +16,7 @@
   modules.services.qmk.enable = true;
   modules.theme.enable = true;
   modules.programs.enable = true;
+  modules.desktop.enable = true;
   modules.scripts.all = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are

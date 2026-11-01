@@ -147,7 +147,7 @@ in
       };
     }
 
-    (lib.mkIf (cfg.session == "hyprland") {
+    (lib.mkIf (cfg.enable && cfg.session == "hyprland") {
       programs.hyprland = {
         enable = true;
         withUWSM = true; # session entry: "hyprland-uwsm"

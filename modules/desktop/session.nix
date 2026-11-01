@@ -32,6 +32,7 @@ in
   ];
 
   options.modules.desktop = {
+    enable = lib.mkEnableOption "the desktop session (login screen, Wayland session basics, Hyprland through UWSM)";
     session = lib.mkOption {
       type = lib.types.enum [ "hyprland" ];
       default = "hyprland";
@@ -63,7 +64,7 @@ in
   };
 
   config = lib.mkMerge [
-    {
+    (lib.mkIf cfg.enable {
       # ---- login screen ------------------------------------------------------
       # X11 greeter on every host: the reliable path (NVIDIA on desktop/laptop,
       # touch on the Surface). The session itself is Wayland.
@@ -134,7 +135,7 @@ in
           imagemagick
         ]
         ++ lib.optional (!cfg.greeterOsk.enable && config.services.displayManager.sddm.enable) astronaut;
-    }
+    })
 
     (lib.mkIf cfg.greeterOsk.enable {
       services.displayManager.sddm.settings.General = {

@@ -61,6 +61,7 @@ in
   modules.services.qmk.enable = true;
   modules.theme.enable = true;
   modules.programs.enable = true;
+  modules.desktop.enable = true;
 
   # ---- session -------------------------------------------------------------
   modules.desktop = {
