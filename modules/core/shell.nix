@@ -34,17 +34,17 @@
       gp = "git push";
       gl = "git log --oneline --graph";
        ff = "fastfetch";
-       qsdev = "nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
-       qsrestart = "pkill -f shell.qml; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
-       qsdevlog = "qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml 2>&1 | tee /tmp/ii-shell.log";
-       qsstop = "pkill -f shell.qml";
+       qsdev = "systemctl --user stop ii 2>/dev/null; pkill -f quickshell 2>/dev/null; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
+       qsrestart = "systemctl --user stop ii 2>/dev/null; pkill -f quickshell 2>/dev/null; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
+       qsdevlog = "systemctl --user stop ii 2>/dev/null; pkill -f quickshell 2>/dev/null; sleep 1; qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml 2>&1 | tee /tmp/ii-shell.log";
+       qsstop = "pkill -f quickshell 2>/dev/null; systemctl --user start ii 2>/dev/null";
      };
   };
   environment.shellAliases = {
-    qsdev = "nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
-    qsrestart = "pkill -f shell.qml; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
-    qsdevlog = "qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml 2>&1 | tee /tmp/ii-shell.log";
-    qsstop = "pkill -f shell.qml";
+    qsdev = "systemctl --user stop ii 2>/dev/null; pkill -f quickshell 2>/dev/null; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
+    qsrestart = "systemctl --user stop ii 2>/dev/null; pkill -f quickshell 2>/dev/null; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
+    qsdevlog = "systemctl --user stop ii 2>/dev/null; pkill -f quickshell 2>/dev/null; sleep 1; qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml 2>&1 | tee /tmp/ii-shell.log";
+    qsstop = "pkill -f quickshell 2>/dev/null; systemctl --user start ii 2>/dev/null";
   };
 
   environment.sessionVariables = {
