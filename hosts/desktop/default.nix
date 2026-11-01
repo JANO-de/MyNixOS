@@ -4,8 +4,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../features/desktop
-    ../../features
     ../../modules
     ../../hosts/desktop/matrix.nix
   ];

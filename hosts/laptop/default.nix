@@ -5,8 +5,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../features/desktop
-    ../../features
     ../../modules
   ];
 

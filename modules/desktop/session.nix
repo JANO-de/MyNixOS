@@ -15,7 +15,7 @@
 let
   cfg = config.modules.desktop;
   theme = "share/sddm/themes/catppuccin-mocha-mauve";
-  oskTheme = import ../../modules/desktop/greeter/sddm-osk.nix {
+  oskTheme = import ./greeter/sddm-osk.nix {
     inherit (pkgs) lib stdenvNoCC catppuccin-sddm;
   };
 

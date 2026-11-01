@@ -50,8 +50,6 @@ in
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
-    ../../features/desktop
-    ../../features
     ../../modules
     ./network-aula.nix
   ];
