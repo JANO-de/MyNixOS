@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./nixscout
     ./droidloom
     ./dotfiles
     ./hyprland-session

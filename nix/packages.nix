@@ -11,7 +11,7 @@ let
       };
     in
     pkgs.callPackage ../modules/programs/orchard/pkg/default.nix { };
-  niXscoutPkg = pkgs.callPackage ../features/nixscout/pkg/default.nix { };
+  niXscoutPkg = pkgs.callPackage ../modules/programs/nixscout/pkg/default.nix { };
   hyprmonPkg = pkgs.callPackage ../pkgs/hyprmon/default.nix { };
   localsendCliPkg = pkgs.callPackage ../pkgs/localsend-cli/default.nix { };
   matugenPkg = pkgs.callPackage ../pkgs/matugen/default.nix { };
@@ -36,7 +36,7 @@ in
   };
   overlay = final: prev: {
     orchard = final.callPackage ../modules/programs/orchard/pkg/default.nix { };
-    niXscout = final.callPackage ../features/nixscout/pkg/default.nix { };
+    niXscout = final.callPackage ../modules/programs/nixscout/pkg/default.nix { };
     hyprmon = final.callPackage ../pkgs/hyprmon/default.nix { };
     localsend-cli = final.callPackage ../pkgs/localsend-cli/default.nix { };
     matugen = final.callPackage ../pkgs/matugen/default.nix { };

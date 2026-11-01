@@ -41,5 +41,6 @@
     ./full.nix
     ./deskflow.nix
     ./orchard
+    ./nixscout
   ];
 }

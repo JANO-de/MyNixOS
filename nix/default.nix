@@ -10,7 +10,7 @@ in
   apps.${system} = pkgsOut.apps;
   overlays.default = pkgsOut.overlay;
   nixosModules.orchard = ../modules/programs/orchard/default.nix;
-  nixosModules.niXscout = ../features/nixscout/default.nix;
+  nixosModules.niXscout = ../modules/programs/nixscout/default.nix;
   nixosConfigurations = hosts;
   devShells.${system} = dev.shells;
   formatter.${system} = dev.formatter;
