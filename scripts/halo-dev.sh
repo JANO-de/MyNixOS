@@ -10,10 +10,6 @@ cd "$(dirname "$0")/.."
 SSHO=(-o ControlMaster=auto -o "ControlPath=$HOME/.ssh/cm-%r@%h" -o ControlPersist=10m)
 
 rsync -a --delete -e "ssh ${SSHO[*]}" features/halo/src/ "jano@$IP:~/halo/"
-# Before the first rebuild /etc/halo/wallpapers does not exist yet: copy the wallpapers to the picture folder.
-if ! ssh "${SSHO[@]}" "jano@$IP" 'test -d /etc/halo/wallpapers'; then
-  rsync -a --ignore-existing -e "ssh ${SSHO[*]}" assets/wallpapers/ "jano@$IP:~/Pictures/Wallpapers/"
-fi
 
 ssh "${SSHO[@]}" "jano@$IP" 'bash -s' <<'REMOTE'
 set -u
