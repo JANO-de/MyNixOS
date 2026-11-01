@@ -63,7 +63,7 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] L-0 Recon + map
 - [x] L-1 lib/ and nix/
 - [x] L-2 profiles/base
-- [~] L-3 features (one per commit)
+- [x] L-3 features (one per commit)
 - [x] L-4 dotfiles -> hosts/<h>/dotfiles
 - [x] L-5 halo + dynisland sources
 - [ ] L-6 docs and guide
