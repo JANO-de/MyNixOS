@@ -72,3 +72,6 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - Fix: execs.lua now calls `/run/current-system/sw/bin/qs` (wrapped, added to systemPackages); laptop hypr migrated to upstream immaterial config (custom/ preserved); render_power clamped to 4.
 - Verified: wrapped qs launches shell; desktop+laptop+halos1 build; flake check; nixfmt; bash -n.
 - Owner verified: imi autostarts on launch (2026-11-01).
+
+## M7 beam-plan docs refresh (B)
+- [x] B-1 Rewrite guidelines/ask-first/README/todo for MyNixOS; archive v1 steps/roadmap/prompt-beam; fix v2/README facts

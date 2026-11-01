@@ -1,20 +1,18 @@
 # Ask first
 
-Use the question feature (2-4 options, recommended first). Ask only what the step needs. One round, then work.
+Use the question feature (2-4 options, recommended first). Ask only what the task needs. One round, then work.
 
-## Every step
-1. Scope: do exactly the step / a subset / add something?
+## Every task
+1. Scope: do exactly the task / a subset / add something?
 2. Approach: recommended way vs alternative (name the trade-off in one line).
-3. Test: does the owner run `qs -p ...` now, or batch several edits first?
+3. Test: which command does the owner run, now or batched? (`scripts/halo-dev.sh` for Halo QML; `nixos-rebuild build --flake .#<host>` for Nix)
 
-## Per step
-- 1: copy p3's script as is, or rewrite it smaller?
-- 3: which Hyprland options first; sliders or number boxes; apply instantly or with an Apply button?
-- 4: what a profile contains; where in the UI.
-- 5: send a sample `hyprmon.lua`; edit it directly or through `hyprctl keyword`?
-- 6: which picker styles/options; per-monitor or global?
-- 7: which menu entries; icons or text only?
-- 8: pin to a commit or to a tag?
+## Per task type
+- Delete or move: show the exact `git rm` / `git mv` list first (rule 14); ask about anything not listed.
+- Halo QML: UX, naming, defaults, scope. Never decide alone.
+- New feature folder: name, options, which hosts enable it.
+- Input or pin change: full `rev` or tag? Who owns the repo?
+- ASK items in `v2/STATUS.md` ("Owner questions") and in the task doc: answer first.
 
 ## Blockers
-Missing file, `UNVERIFIED` API, error twice, design choice: stop and ask.
+Missing file, `UNVERIFIED` item, error twice, design choice: stop and ask.

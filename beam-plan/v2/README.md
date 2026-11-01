@@ -11,15 +11,17 @@ Facts below were checked by the director on the owner's tarball (2026-10-27) wit
 |----|------|-----|
 | M2 `D` | Delete appOutlet-nix and Tokri leftovers | `D-delete.md` |
 | M3 `R` | Clean, modularize, document the flake repo | `R-cleanup.md` |
-| M4 `I` | ii-p3drovfx shell on Hyprland, replacing mango on desktop + laptop (never halos1) | `I-ii.md` |
+| M4 `I` | ii-p3drovfx shell on Hyprland. **Superseded by M5** (ii removed) | `I-ii.md` |
 | M1 `N` | `nixscout`: Bazaar-style read-only browser (packages, options, modules, flakes, third-party flakes) | `N-nixscout.md` |
+| M5 `W` | immaterial-impulse as the only shell on desktop + laptop | `W-immaterial.md` |
+| M6 `L` | Feature-folder layout (behaviour-neutral) | `L-layout.md` |
 
-Order: **D first** (small; keeps later diffs clean). Then N and R are independent. N-0..N-11 touch only `pkgs/nixscout/` and `beam-plan/v2/notes/`. N-12 edits `flake.nix`: do it **after R-3**. M4 `I` runs **after R-4** (module layout final).
+Order: **D first** (small; keeps later diffs clean). Then N and R are independent. N-0..N-11 touch only `features/nixscout/pkg/` and `beam-plan/v2/notes/`. N-12 edits `flake.nix`: do it **after R-3**. M4 `I` is superseded by M5 `W`.
 
 ## Owner decisions (fixed)
 
 - Orchard stays (not in scope).
-- Desktop and laptop move from mango to Hyprland + ii (M4). mango and dynisland are removed only after the owner accepts ii.
+- Desktop and laptop run immaterial-impulse (M5). mango and the ii shell are removed. dynisland and chronos stay until the owner approves removal.
 - nixscout is **read-only**: it never installs, removes or runs Nix. Copy-to-clipboard buttons are allowed.
 - nixscout = Rust + GTK4/libadwaita (same toolkit as Bazaar). No Electron, no webview, no async runtime.
 - Refactor is behaviour-neutral. Paths the owner types stay valid (rule 13).
@@ -38,7 +40,7 @@ Order: **D first** (small; keeps later diffs clean). Then N and R are independen
 10. **Secrets.** No tokens committed. `GITHUB_TOKEN` is read from the environment only, never stored.
 11. **Stop and ask** when: file/context missing; same error fails twice; destructive action not listed in the task; design choice not covered; scope creep. Items marked **ASK** always need the owner's answer first.
 12. **Git.** Branch `beam/<milestone>`. One commit per task: `<task-id>: <what>`. `git add -A` before any `nix` command (flakes only see tracked files).
-13. **Do not break these paths** (the owner types them; HANDOFF.md §0c quotes them): `shell/halo/` (rsync source of `scripts/halo-dev.sh`, `shellDir` in `modules/desktop/shell/halo.nix`), `scripts/halo-dev.sh`, `scripts/halos1-deploy.sh`, `scripts/halos1-reboot.sh`, `HANDOFF.md` at repo root. Moving any of them needs owner approval and every referrer fixed in the same commit.
+13. **Do not break these paths** (the owner types them; HANDOFF.md §0c quotes them): `features/halo/src/` (rsync source of `scripts/halo-dev.sh`), `shellDir` in `features/halo/default.nix`, `scripts/halo-dev.sh`, `scripts/halos1-deploy.sh`, `scripts/halos1-reboot.sh`, `HANDOFF.md` at repo root. Moving any of them needs owner approval and every referrer fixed in the same commit.
 14. **List before deleting.** Show the exact `git rm` list in the task report before running it, unless the task already lists it.
 15. **Behaviour-neutral proof.** `beam-plan/v2/drv-check.sh before` once at the start of a task, `after` at the end. Same `drvPath` = proven neutral. Different = run `nix store diff-closures` between old and new toplevel, explain every line, or revert.
 
@@ -52,17 +54,19 @@ Order: **D first** (small; keeps later diffs clean). Then N and R are independen
 
 ## Report format (after each task)
 
+Same as `../guidelines.md` §7:
+
 ```
-[ID] DONE|BLOCKED|NEEDS-INPUT
+Step <ID>: <title>   Status: done | blocked
 Changed: <files>
-Verified: <command> → <result tail, max 5 lines>
-Next: <ID>
-Question: <only if blocked>
+Verified: <command -> result, tail max 5 lines>
+Owner must: <commands>
+Open: <questions>
 ```
 
 ## Kickoff message for Beam
 
-> Read `beam-plan/v2/README.md` fully, then `D-delete.md`. Start at task D-0. Follow the rules and report format exactly. Ask when blocked.
+> Read `beam-plan/v2/README.md` fully, then `v2/STATUS.md` and `beam-plan/todo.md`. Start at the next open task. Follow the rules and report format exactly. Ask when blocked.
 
 ## Recipe: Add a feature
 

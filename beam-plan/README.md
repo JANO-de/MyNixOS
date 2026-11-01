@@ -1,19 +1,19 @@
 # beam-plan
 
-Project: **ii-halos**, the owner's fork of ii-vynx (`github.com/JANO-de/ii-halos`), used by `pkgs/ii-vynx`.
-Goal: add p3drovfx-style features to vynx **from scratch**, small and fast. No bulk port of p3drovfx.
+Project: **MyNixOS**, the owner's NixOS flake (hosts `desktop`, `laptop`, `halos1`).
 Director: Claude · Executor: **Beam** · Owner: user (also the junior learning QML; explain briefly, never lecture).
 
 | File | Purpose |
 |------|---------|
-| `guidelines.md` | rules. Read first, fully |
-| `steps.md` | ordered build steps with exact files, commands, checks |
-| `todo.md` | checklist. Update after every step |
-| `roadmap.md` | phases and the order of features |
+| `guidelines.md` | persona, work rules, repo map, test loop, report format. Read first, fully |
+| `todo.md` | open work in order + owner questions. Update after every step |
 | `ask-first.md` | questions to ask the owner before each step |
 | `prompt-jarvis.md` | prompt for the senior (Jarvis/Claude) |
-| `prompt-beam.md` | prompt for the junior (Beam) |
-| `notes/` | scratch notes per step (delete when closed) |
+| `v2/README.md` | repo-wide standing rules, milestones, recipe: add a feature |
+| `v2/STATUS.md` | task status per milestone (source for finished work) |
+| `v2/<ID>-*.md` | one doc per milestone |
+| `notes/`, `v2/notes/` | scratch notes per step (delete when closed) |
 
-Repo-wide Nix rules (build never switch, hashes, pins, git): `../beam-plans/README.md`. Both apply; on conflict, stricter wins.
-Start: read `guidelines.md`, `todo.md`, then run `ask-first.md` for the next open step.
+Archive: `docs/archive/beam-ii-halos/` (old ii-halos plan: steps, roadmap, Beam prompt).
+Rules in `guidelines.md` and `v2/README.md` both apply; on conflict, stricter wins.
+Start: read `guidelines.md`, `todo.md`, then run `ask-first.md` for the next open task.
