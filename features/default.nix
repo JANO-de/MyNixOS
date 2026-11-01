@@ -6,7 +6,6 @@
     ./dotfiles
     ./hyprland-session
     ./greeter
-    ./immaterial
     ./halo
     ./dynisland
     ./chronos
