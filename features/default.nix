@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./halo
     ./dynisland
     ./chronos
   ];

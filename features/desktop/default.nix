@@ -4,7 +4,7 @@
 #
 #   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
 #   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
-#   halos1:           session = "hyprland"  modules.halo.enable = true (own shell, features/halo/)
+#   halos1:           session = "hyprland"  modules.halo.enable = true (own shell, modules/desktop/halo/)
 {
   config,
   lib,

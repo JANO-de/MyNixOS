@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 # One password prompt for the whole run (connection is reused).
 SSHO=(-o ControlMaster=auto -o "ControlPath=$HOME/.ssh/cm-%r@%h" -o ControlPersist=10m)
 
-rsync -a --delete -e "ssh ${SSHO[*]}" features/halo/src/ "jano@$IP:~/halo/"
+rsync -a --delete -e "ssh ${SSHO[*]}" modules/desktop/halo/src/ "jano@$IP:~/halo/"
 
 ssh "${SSHO[@]}" "jano@$IP" 'bash -s' <<'REMOTE'
 set -u

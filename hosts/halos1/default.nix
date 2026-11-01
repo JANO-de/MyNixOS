@@ -72,7 +72,7 @@ in
     haloSplash.enable = true; # quiet boot + Halo ring splash
     droidloom.enable = true; # Android apps in native windows
   };
-  modules.halo.enable = true; # own shell (features/halo)
+  modules.halo.enable = true; # own shell (modules/desktop/halo)
   modules.programs.profile = "lean";
   programs.niXscout.enable = true;
 

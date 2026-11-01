@@ -9,7 +9,7 @@
 }:
 let
   cfg = config.modules.desktop.haloGreeter;
-  dir = ../../../../features/halo/src/greeter;
+  dir = ../../halo/src/greeter;
 in
 {
   options.modules.desktop.haloGreeter = {

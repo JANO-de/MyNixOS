@@ -59,7 +59,7 @@ let
     '';
   };
 
-  # wvkbd heights in px (portrait / landscape). Keep in sync with features/halo/src/services/Kbd.qml.
+  # wvkbd heights in px (portrait / landscape). Keep in sync with modules/desktop/halo/src/services/Kbd.qml.
   kbdH = "420";
   kbdL = "300";
 
