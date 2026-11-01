@@ -4,7 +4,6 @@
 {
   imports = [
     ./hyprland-session
-    ./greeter
     ./halo
     ./dynisland
     ./chronos
