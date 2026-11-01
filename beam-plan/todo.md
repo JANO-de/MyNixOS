@@ -11,8 +11,8 @@ Legend: [ ] open · [~] in progress · [x] done · [?] waiting for owner
 - [x] 3d Misc
 - [x] 4 Profiles
 - [x] 5 Displays (hyprmon)
-- [ ] 6 Wallpaper picker styles
-- [ ] 7 Right-click background menu
+- [x] 6 Wallpaper picker styles
+- [x] 7 Right-click background menu
 - [x] 8 Nix pin (pkgs/ii-vynx -> ii-halos)
 
 ## Open questions for the owner

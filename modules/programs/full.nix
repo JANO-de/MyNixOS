@@ -29,7 +29,7 @@ lib.mkIf full {
     llama
 
     libreoffice-qt
-    inputs.classwork.packages.${system}.default
+    #inputs.classwork.packages.${system}.default
 
     nautilus
     yazi chafa ffmpegthumbnailer poppler-utils p7zip
