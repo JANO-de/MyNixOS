@@ -40,6 +40,13 @@
        qsstop = "pkill -f shell.qml";
      };
   };
+  environment.shellAliases = {
+    qsdev = "nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
+    qsrestart = "pkill -f shell.qml; sleep 1; nohup qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml >/tmp/ii-shell.log 2>&1 &";
+    qsdevlog = "qs -p ~/Proyectos/ii-halos/dots/.config/quickshell/ii/shell.qml 2>&1 | tee /tmp/ii-shell.log";
+    qsstop = "pkill -f shell.qml";
+  };
+
   environment.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "nvim";
