@@ -3,10 +3,10 @@
 Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## M2 Delete (D-delete.md)
-- [ ] D-0 Inventory + baseline
-- [ ] D-1 Remove appOutlet-nix
-- [ ] D-2 Remove Tokri leftovers
-- [ ] D-3 Close
+- [x] D-0 Inventory + baseline (owner grep 2026-11-01: only docs/archive/beam-v1/STATUS.md:18 outside .kilo and beam-plan)
+- [x] D-1 Remove appOutlet-nix (already gone: no tracked target)
+- [x] D-2 Remove Tokri leftovers (already gone)
+- [x] D-3 Close (no commit needed)
 
 ## M3 Cleanup (R-cleanup.md)
 - [ ] R-0 Baseline
