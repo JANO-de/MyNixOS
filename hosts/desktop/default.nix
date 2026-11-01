@@ -15,6 +15,7 @@
 
   modules.hardware.enable = true;
   modules.services.enable = true;
+  modules.services.qmk.enable = true;
   modules.theme.enable = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are

@@ -9,5 +9,10 @@
     ./printing.nix
     ./ssh.nix
     ./flatpak.nix
+    ./sunshine.nix
+    ./waydroid.nix
+    ./powertop.nix
+    ./smartd.nix
+    ./qmk.nix
   ];
 }

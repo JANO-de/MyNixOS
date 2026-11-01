@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./services-extras
     ./nvidia
     ./orchard
     ./nixscout

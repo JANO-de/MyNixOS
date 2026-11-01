@@ -15,6 +15,7 @@
 
   modules.hardware.enable = true;
   modules.services.enable = true;
+  modules.services.qmk.enable = true;
   modules.theme.enable = true;
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.

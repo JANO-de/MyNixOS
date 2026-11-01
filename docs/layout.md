@@ -30,7 +30,6 @@ docs/                this directory; beam-plan/ = agent guide + status
 | nvidia | `hardware.nvidia.enable` |
 | orchard, nixscout | app packages (`pkg/`) and their `programs.*.enable` |
 | programs | profile `full` / `lean`, deskflow |
-| services-extras | sunshine, waydroid, powertop, smartd |
 
 ## Add a feature
 

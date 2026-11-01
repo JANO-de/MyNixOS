@@ -24,7 +24,7 @@ Naming: local modules use `modules.<area>.*`; single-app wrappers (orchard, niXs
 | Option | File |
 |--------|------|
 | `modules.programs.{profile,role,serverAddress}` | features/programs/default.nix (profile `full`/`lean`; deskflow role) |
-| `modules.services.{sunshine,waydroid,powertop,smartd}.enable` | features/services-extras/default.nix |
+| `modules.services.{sunshine,waydroid,powertop,smartd,qmk}.enable` | modules/services/{sunshine,waydroid,powertop,smartd,qmk}.nix |
 | `hardware.nvidia.enable` | features/nvidia/default.nix |
 | `programs.orchard.enable`, `programs.niXscout.enable` | features/{orchard,nixscout}/default.nix |
 
