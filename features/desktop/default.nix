@@ -1,10 +1,10 @@
 # Desktop session: which compositor runs (hyprland), which shell sits on top
-# (dynisland | chronos | halo | ii), the SDDM login screen (optional on-screen keyboard for
+# (dynisland | chronos | halo | immaterial), the SDDM login screen (optional on-screen keyboard for
 # touch-only devices) and the Wayland session basics every host shares.
 #
 #   defaults:         session = "hyprland"  shell = "dynisland"   (legacy)
-#   desktop, laptop:  session = "hyprland"  shell = "ii"       (variant: p3drovfx | vynx)
-#   halos1:           session = "hyprland"  shell = "ii" (temporary test) | "halo" (own shell, shell/halo/)
+#   desktop, laptop:  session = "hyprland"  shell = "immaterial"
+#   halos1:           session = "hyprland"  shell = "halo" (own shell, features/halo/)
 {
   config,
   lib,
@@ -31,7 +31,6 @@ in
   imports = [
     ../hyprland-session
     ../hyprland-session/hyprland-touch.nix
-    ../../modules/desktop/shells/ii.nix
     ../greeter
   ];
 
@@ -46,7 +45,6 @@ in
         "dynisland"
         "chronos"
         "halo"
-        "ii"
         "immaterial"
       ];
       default = "dynisland";

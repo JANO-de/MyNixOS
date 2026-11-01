@@ -4,7 +4,6 @@
 - [hosts.md](hosts.md): per-host table.
 - [modules.md](modules.md): naming convention and every `modules.*` option.
 - [inputs.md](inputs.md): flake inputs table.
-- [ii.md](ii.md): ii shell, both forks (p3drovfx, vynx), switching, rollback.
 - [workflow.md](workflow.md): build / deploy / rollback / halo-dev loop.
 - [orchard.md](orchard.md), [niXscout.md](niXscout.md): app packages.
 - [suite-style.md](suite-style.md): Halo suite QML style guide.

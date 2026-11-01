@@ -14,4 +14,3 @@ One line per script (what, who runs it, where).
 - `adopt-dotfiles.sh` — first-time import of `~/.config/{hypr,hyprmon,illogical-impulse,matugen}` into `hosts/<host>/dotfiles/` BEFORE the first rebuild with `dotfiles.enable`. Run on the target host.
 - `migrate-dotfiles-per-host.sh` — move the legacy flat `dotfiles/` layout to `hosts/<host>/dotfiles/` (`--cleanup` removes the old copies). Run on the target host.
 - `config-backup.sh` — back up / restore the mutable ii, Hyprland, hyprmon configs. Run on the target host.
-- `ii-deps-check.sh` — audit ii runtime deps (binaries, python modules, fonts); prints only problems. Run on the target host.

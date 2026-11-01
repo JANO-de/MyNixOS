@@ -179,18 +179,16 @@ in
             EOF
           '';
 
-      home-manager.users.jano.home.activation.hyprlandLua =
-        lib.mkIf (cfg.shell != "ii" && cfg.shell != "immaterial")
-          (
-            inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-              run mkdir -p "$HOME/.config/hypr"
-              if [ -L "$HOME/.config/hypr/hyprland.lua" ] || [ ! -e "$HOME/.config/hypr/hyprland.lua" ]; then
-                run rm -f "$HOME/.config/hypr/hyprland.lua"
-                run cp ${pkgs.writeText "hyprland.lua" content} "$HOME/.config/hypr/hyprland.lua"
-                run chmod u+w "$HOME/.config/hypr/hyprland.lua"
-              fi
-            ''
-          );
+      home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (cfg.shell != "immaterial") (
+        inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run mkdir -p "$HOME/.config/hypr"
+          if [ -L "$HOME/.config/hypr/hyprland.lua" ] || [ ! -e "$HOME/.config/hypr/hyprland.lua" ]; then
+            run rm -f "$HOME/.config/hypr/hyprland.lua"
+            run cp ${pkgs.writeText "hyprland.lua" content} "$HOME/.config/hypr/hyprland.lua"
+            run chmod u+w "$HOME/.config/hypr/hyprland.lua"
+          fi
+        ''
+      );
     })
   ];
 }

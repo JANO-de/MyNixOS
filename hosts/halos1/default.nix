@@ -64,13 +64,12 @@ in
   # ---- session -------------------------------------------------------------
   modules.desktop = {
     session = "hyprland"; # Hyprland (UWSM) + Halo; the newest generation is always the default boot entry
-    shell = "ii"; # TEMPORARY: testing ii tablet mode
+    shell = "halo"; # own shell (features/halo)
     autoMode = true; # tablet/desktop from attached keyboards (halo-autokbd)
     haloGreeter.enable = true; # Halo greetd login screen instead of SDDM (see greeter.nix)
     haloSplash.enable = true; # quiet boot + Halo ring splash
     droidloom.enable = true; # Android apps in native windows
   };
-  modules.desktop.ii.enable = true;
   modules.programs.profile = "lean";
   programs.niXscout.enable = true;
   hardware.nvidia.enable = false; # Intel HD 620 only
