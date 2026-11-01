@@ -3,6 +3,5 @@
 { ... }@args:
 {
   imports = [
-    ./chronos
   ];
 }
