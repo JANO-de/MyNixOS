@@ -1,4 +1,4 @@
-# Home Manager wiring (per-user config lives in ../home.nix).
+# Home Manager wiring (per-user config comes from modules/theme).
 { inputs, theme, ... }:
 
 {
@@ -7,6 +7,5 @@
     useUserPackages = true;
     backupFileExtension = null;
     extraSpecialArgs = { inherit inputs theme; };
-    users.jano = import ../theme/home.nix;
   };
 }
