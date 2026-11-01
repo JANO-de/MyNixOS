@@ -1,4 +1,4 @@
-# Halo shell (Quickshell): apps, theme, services. Imported by modules/desktop/shell.
+# Halo shell (Quickshell): apps, theme, services. Imported by features/desktop (shell = "halo").
 {
   config,
   lib,

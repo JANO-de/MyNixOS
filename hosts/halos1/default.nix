@@ -106,7 +106,7 @@ in
   boot.loader.timeout = 2;
 
   # ---- memory: 4 GB RAM / 128 GB disk ------------------------------------------
-  # zram below half of RAM (overrides modules/core), plus an 8 GB swapfile
+  # zram below half of RAM (overrides profiles/base/core), plus an 8 GB swapfile
   # for suspend/hibernate headroom (created on first activation). Verify a real
   # hibernate/resume cycle before relying on it.
   zramSwap = {

@@ -1,5 +1,5 @@
 # Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: `cachyos` flag in nix/hosts.nix, off).
-# Hyprland + ii (variant vynx).
+# Hyprland + immaterial-impulse.
 { lib, ... }:
 
 {

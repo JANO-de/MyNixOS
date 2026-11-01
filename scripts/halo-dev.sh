@@ -22,7 +22,7 @@ echo "quickshell: $qs"
 sig=$(ls /run/user/1000/hypr 2>/dev/null | grep -v chronos-shell | head -1 || true)
 sock=$(ls /run/user/1000 2>/dev/null | grep -E '^wayland-[0-9]+$' | head -1 || true)
 if [ -z "$sig" ] || [ -z "$sock" ]; then
-  echo "!! Hyprland is not running on the Surface (you are in mango or logged out)."
+  echo "!! Hyprland is not running on the Surface (you are logged out)."
   echo "   Boot the hyprland entry first: scripts/halos1-deploy.sh, or on the Surface:"
   echo "   sudo bootctl set-oneshot <id from: bootctl list | grep hyprland>; reboot"
   exit 1

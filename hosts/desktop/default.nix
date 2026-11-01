@@ -1,4 +1,4 @@
-# Desktop PC: AMD + NVIDIA (GTX 1060). Hyprland + ii (variant vynx).
+# Desktop PC: AMD + NVIDIA (GTX 1060). Hyprland + immaterial-impulse.
 { lib, ... }:
 
 {

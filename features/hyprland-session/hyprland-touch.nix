@@ -1,4 +1,4 @@
-# Hyprland touch helpers (surface-rotate, on-screen keyboard height). Imported by modules/desktop.
+# Hyprland touch helpers (surface-rotate, on-screen keyboard height). Imported by features/desktop.
 {
   config,
   lib,
@@ -59,7 +59,7 @@ let
     '';
   };
 
-  # wvkbd heights in px (portrait / landscape). Keep in sync with shell/halo/services/Kbd.qml.
+  # wvkbd heights in px (portrait / landscape). Keep in sync with features/halo/src/services/Kbd.qml.
   kbdH = "420";
   kbdL = "300";
 

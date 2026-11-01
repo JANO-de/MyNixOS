@@ -47,7 +47,7 @@ let
     exit 0
   '';
 
-  # same shell binds as mango.nix / niri.nix
+  # shell binds (dynisland only)
   shellBinds = lib.optionalString (cfg.shell == "dynisland") (
     lib.concatMapStringsSep "\n" (b: ''hl.bind("${b.key}", hl.dsp.exec_cmd("dynisland ipc ${b.ipc}"))'')
       [
@@ -153,7 +153,7 @@ in
         portalPackage = hypr.xdg-desktop-portal-hyprland;
       };
 
-      # Applies to every shell (ii does not set it in its own Hyprland config).
+      # Applies to every shell.
       environment.sessionVariables.AQ_DRM_DEVICES = drmDevices;
 
       # The flake is built against its own nixpkgs: use that Mesa so the GL/GBM

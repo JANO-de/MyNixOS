@@ -1,25 +1,23 @@
 # Modules
 
-Naming: local modules use `modules.<area>.*`; single-app wrappers (orchard, niXscout) keep `programs.<name>.enable` like nixpkgs. Areas: `core`, `hardware`, `theme` live under `profiles/base/`; capabilities live under `features/`. Each has a `default.nix` that only imports.
+Naming: local modules use `modules.<area>.*`; single-app wrappers (orchard, niXscout) keep `programs.<name>.enable` like nixpkgs. Areas: `core`, `hardware`, `services`, `theme` live under `profiles/base/`; capabilities live under `features/`. Each has a `default.nix` that only imports.
 
-## `modules.desktop.*` (`modules/desktop/`)
+## `modules.desktop.*` (`features/desktop/` and the features below)
 
 | Option | File | Meaning |
 |--------|------|---------|
-| `session` (`mango`/`niri`/`hyprland`) | default.nix | compositor from the login screen |
-| `shell` (`dynisland`/`chronos`/`halo`/`ii`/`immaterial`) | default.nix | Quickshell shell autostarted |
-| `hyprlandMode` (`tablet`/`desktop`) | default.nix | first-login mode |
-| `hyprlandTouch.enable` | default.nix | touch/tablet layer (halos1) |
-| `greeterOsk.enable` | default.nix | on-screen keyboard in SDDM |
+| `session` (`hyprland`) | features/desktop/default.nix | compositor from the login screen |
+| `shell` (`dynisland`/`chronos`/`halo`/`immaterial`) | features/desktop/default.nix | Quickshell shell autostarted |
+| `hyprlandMode` (`tablet`/`desktop`) | features/desktop/default.nix | first-login mode |
+| `hyprlandTouch.enable` | features/desktop/default.nix | touch/tablet layer (halos1) |
+| `greeterOsk.enable` | features/desktop/default.nix | on-screen keyboard in SDDM |
 | `drmDevices` | features/hyprland-session/default.nix | DRM devices for Aquamarine |
-| `ii.enable`, `ii.variant` (`p3drovfx`/`vynx`) | modules/desktop/shells/ii.nix | ii shell and which fork |
 | `immaterial.enable` | features/immaterial/default.nix | immaterial-impulse shell (desktop/laptop) |
-| `dotfiles.{enable,repoPath,host,dir,quickshell}` | features/dotfiles/default.nix | configs stored in the repo via symlinks |
+| `dotfiles.{enable,repoPath,host,dir}` | features/dotfiles/default.nix | configs stored in the repo via symlinks |
 | `autoMode` | features/halo/default.nix | tablet/desktop from keyboards |
 | `haloGreeter.{enable,scale,user}` | features/greeter/greeter/greeter.nix | Halo greetd login |
 | `haloSplash.enable` | features/greeter/splash.nix | Plymouth splash |
 | `droidloom.{enable,user,sharedFolder,autoStart}` | features/droidloom/default.nix | Android apps |
-| `mango.monitorRules` | modules/desktop/sessions/mango/mango.nix | legacy |
 
 ## Others
 
