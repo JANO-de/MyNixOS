@@ -56,6 +56,7 @@ in
     ../../features/programs
     ../../features/desktop
     ../../features
+    ../../modules
     ./network-aula.nix
   ];
 

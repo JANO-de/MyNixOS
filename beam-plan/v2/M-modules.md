@@ -30,7 +30,7 @@ MyNixOS/
     ├── services/             today profiles/base/services + features/services-extras (sunshine, waydroid, powertop, smartd)
     ├── theme/                today profiles/base/theme (palette.nix is consumed by path)
     ├── desktop/              today features/{desktop,hyprland-session,greeter,halo,immaterial,dynisland,chronos,dotfiles,droidloom}
-    ├── apps/                 today features/{programs,orchard,nixscout}
+    ├── programs/             today features/{programs,orchard,nixscout}
     ├── dev/                  new: fullstack.nix, java.nix (contents ASK-7)
     ├── gaming/               new: steam.nix, gamemode.nix, all.nix (contents ASK-7)
     ├── scripts/              today scripts/ (one module per script, command on PATH)
@@ -91,6 +91,9 @@ Per task: one commit `M-n: <what>` on branch `beam/modules`, `git add -A` first,
 5. ANSWERED (ASK-5): the `cachyos` flag is a per-host option in `hosts/<h>/default.nix`; `flake.nix` reads it from there (M-7).
 6. ANSWERED (ASK-6): drv-hash churn from import order is accepted only if `nix store diff-closures` shows no behaviour change; every line explained in the report.
 7. ANSWERED (ASK-7): `dev.fullstack`, `dev.java`, `gaming.*` are created empty (option + `mkIf`, no packages); the owner sends the package lists later.
+
+9. ANSWERED (ASK-9): folder = option namespace. `modules/programs/` and `modules.programs.*` stay (no `apps`).
+10. ANSWERED (ASK-10): `modules.halo.enable` replaces `modules.desktop.shell = "halo"`, like `imi`. After both, `shell` only keeps the legacy `dynisland`/`chronos` values until their removal is approved.
 
 ## ASK (still open)
 

@@ -1,0 +1,264 @@
+./nix/packages.nix:13:    pkgs.callPackage ../features/orchard/pkg/default.nix { };
+./nix/packages.nix:14:  niXscoutPkg = pkgs.callPackage ../features/nixscout/pkg/default.nix { };
+./nix/packages.nix:15:  hyprmonPkg = pkgs.callPackage ../pkgs/hyprmon/default.nix { };
+./nix/packages.nix:16:  localsendCliPkg = pkgs.callPackage ../pkgs/localsend-cli/default.nix { };
+./nix/packages.nix:17:  matugenPkg = pkgs.callPackage ../pkgs/matugen/default.nix { };
+./nix/packages.nix:38:    orchard = final.callPackage ../features/orchard/pkg/default.nix { };
+./nix/packages.nix:39:    niXscout = final.callPackage ../features/nixscout/pkg/default.nix { };
+./nix/packages.nix:40:    hyprmon = final.callPackage ../pkgs/hyprmon/default.nix { };
+./nix/packages.nix:41:    localsend-cli = final.callPackage ../pkgs/localsend-cli/default.nix { };
+./nix/packages.nix:42:    matugen = final.callPackage ../pkgs/matugen/default.nix { };
+./nix/hosts.nix:10:  theme = import ../profiles/base/theme/palette.nix;
+./nix/hosts.nix:11:  mkHost = import ../lib/mkHost.nix { inherit inputs system theme; };
+./nix/default.nix:12:  nixosModules.orchard = ../features/orchard/default.nix;
+./nix/default.nix:13:  nixosModules.niXscout = ../features/nixscout/default.nix;
+./nix/dev.nix:24:      ${nixfmt}/bin/nixfmt --check ${../flake.nix} ${../nix/default.nix} ${../nix/hosts.nix} ${../nix/packages.nix} ${../nix/dev.nix}
+./features/hyprland-session/hyprland-touch.nix:1:# Hyprland touch helpers (surface-rotate, on-screen keyboard height). Imported by features/desktop.
+./features/hyprland-session/hyprland-touch.nix:62:  # wvkbd heights in px (portrait / landscape). Keep in sync with features/halo/src/services/Kbd.qml.
+./features/desktop/default.nix:7:#   halos1:           session = "hyprland"  shell = "halo" (own shell, features/halo/)
+./features/orchard/pkg/default.nix:130:    p = "scripts/meson-cargo-build.py"
+./features/dotfiles/default.nix:9:# First time on a host: run scripts/adopt-dotfiles.sh --host <host> BEFORE the rebuild.
+./features/dotfiles/default.nix:46:        old flat layout (<repo>/dotfiles) until it is migrated with scripts/migrate-dotfiles-per-host.sh.
+./features/halo/default.nix:1:# Halo shell (Quickshell): apps, theme, services. Imported by features/desktop (shell = "halo").
+./features/halo/default.nix:37:  # app_id matches the .desktop entry. Prefers the dev copy in ~/halo (scripts/halo-dev.sh).
+./features/halo/src/components/SetPageAndroid.qml:105:            subtitle: "Install F-Droid and Aurora Store with scripts/halos1-android-apps.sh"
+./features/halo/src/apps/files/FilesWindow.qml:18:    readonly property string sd: Qt.resolvedUrl("scripts/").toString().replace("file://", "")
+./features/halo/src/apps/gallery/GalleryWindow.qml:24:    readonly property string sd: Qt.resolvedUrl("scripts/").toString().replace("file://", "")
+./features/halo/src/apps/gallery/GalleryWindow.qml:25:    readonly property string fsd: Qt.resolvedUrl("../files/scripts/").toString().replace("file://", "")
+./features/dynisland/default.nix:99:  repoShell = "$HOME/Proyectos/MyNixOS/features/dynisland/src/shell.qml";
+./features/droidloom/default.nix:72:  # that std::env::current_exe() of the programs still finds ../lib/droidloom/*.
+./features/greeter/greeter/greeter.nix:12:  dir = ../../../features/halo/src/greeter;
+./docs/README.md:11:- `B1-aosp-settings.md` (path referenced by `features/halo/src`), `halos1/`, `hardware/`, `roadmap/`: Surface notes, hardware dumps, roadmap.
+./docs/workflow.md:9:- Halo dev loop: `scripts/halo-dev.sh`
+./docs/workflow.md:10:- halos1 deploy / reboot: `scripts/halos1-deploy.sh`, `scripts/halos1-reboot.sh`
+./docs/layout.md:10:profiles/base/       always-on: core, hardware, services, theme
+./docs/layout.md:11:features/<name>/     one folder per capability (options + config), optional pkg/ and src/
+./docs/layout.md:12:pkgs/                packages shared by several features (hyprmon, matugen, localsend-cli)
+./docs/layout.md:13:scripts/             operational scripts (scripts/README.md)
+./docs/layout.md:19:`features/default.nix` is the explicit import list. Hosts import the base profile
+./docs/layout.md:20:(`profiles/base/{core,hardware,services}`), `features/programs`, `features/desktop` and `features`.
+./docs/layout.md:37:1. Create `features/<name>/default.nix` with a header: purpose, options, importer.
+./docs/layout.md:38:2. Add `./<name>` to `features/default.nix`.
+./docs/layout.md:44:Delete its folder and its line in `features/default.nix`. Remove its flake input and run
+./docs/hosts.md:7:| halos1 | Surface Pro 5 (i5-7300U, 4 GB) | hyprland (touch layer) | halo | lean | default | `scripts/halos1-deploy.sh` |
+./docs/suite-style.md:3:Reference look: **Files / Gallery** and the Settings app. Anyone (human or Beam) adding or changing a suite app follows this; run `python3 scripts/suite-lint.py` before shipping.
+./docs/suite-style.md:35:- [ ] `python3 scripts/suite-lint.py` prints OK
+./docs/orchard.md:3:YouTube Music client (Qt6/QML + Rust audio core). Packaged for MyNixOS as `pkgs/orchard`.
+./docs/orchard.md:27:1. Bump `rev` in `pkgs/orchard/default.nix`.
+./docs/architecture.md:9:- `profiles/base/`: always-on config (`core`, generic `hardware`, `services`, `theme`).
+./docs/architecture.md:10:- `features/<name>/`: one folder per capability: `default.nix` (options+config), `pkg/`, `src/`. `features/default.nix` is the explicit import list.
+./docs/architecture.md:11:- `pkgs/`: packages shared by several features (`hyprmon`, `matugen`, `localsend-cli`).
+./docs/architecture.md:12:- `features/halo/src/`: Halo QML shell (rsync source of `scripts/halo-dev.sh`). `features/dynisland/src/`: dynisland QML.
+./docs/architecture.md:13:- `scripts/`: operational scripts (see `scripts/README.md`).
+./docs/architecture.md:18:`flake.nix` → `nix/default.nix` → `nix/hosts.nix` (`mkHost`) → `hosts/<name>/default.nix` → `profiles/base/*` + `features/*`.
+./docs/architecture.md:24:- `features/dotfiles/default.nix` links `~/.config/*` to the live checkout (`repoPath`), not the store, on purpose.
+./docs/modules.md:3:Naming: local modules use `modules.<area>.*`; single-app wrappers (orchard, niXscout) keep `programs.<name>.enable` like nixpkgs. Areas: `core`, `hardware`, `services`, `theme` live under `profiles/base/`; capabilities live under `features/`. Each has a `default.nix` that only imports.
+./docs/modules.md:5:## `modules.desktop.*` (`features/desktop/` and the features below)
+./docs/modules.md:9:| `session` (`hyprland`) | features/desktop/default.nix | compositor from the login screen |
+./docs/modules.md:10:| `shell` (`dynisland`/`chronos`/`halo`/`immaterial`) | features/desktop/default.nix | Quickshell shell autostarted |
+./docs/modules.md:11:| `hyprlandMode` (`tablet`/`desktop`) | features/desktop/default.nix | first-login mode |
+./docs/modules.md:12:| `hyprlandTouch.enable` | features/desktop/default.nix | touch/tablet layer (halos1) |
+./docs/modules.md:13:| `greeterOsk.enable` | features/desktop/default.nix | on-screen keyboard in SDDM |
+./docs/modules.md:14:| `drmDevices` | features/hyprland-session/default.nix | DRM devices for Aquamarine |
+./docs/modules.md:15:| `immaterial.enable` | features/immaterial/default.nix | immaterial-impulse shell (desktop/laptop) |
+./docs/modules.md:16:| `dotfiles.{enable,repoPath,host,dir}` | features/dotfiles/default.nix | configs stored in the repo via symlinks |
+./docs/modules.md:17:| `autoMode` | features/halo/default.nix | tablet/desktop from keyboards |
+./docs/modules.md:18:| `haloGreeter.{enable,scale,user}` | features/greeter/greeter/greeter.nix | Halo greetd login |
+./docs/modules.md:19:| `haloSplash.enable` | features/greeter/splash.nix | Plymouth splash |
+./docs/modules.md:20:| `droidloom.{enable,user,sharedFolder,autoStart}` | features/droidloom/default.nix | Android apps |
+./docs/modules.md:26:| `modules.programs.{profile,role,serverAddress}` | features/programs/default.nix (profile `full`/`lean`; deskflow role) |
+./docs/modules.md:27:| `modules.services.{sunshine,waydroid,powertop,smartd}.enable` | features/services-extras/default.nix |
+./docs/modules.md:28:| `hardware.nvidia.enable` | features/nvidia/default.nix |
+./docs/modules.md:29:| `programs.orchard.enable`, `programs.niXscout.enable` | features/{orchard,nixscout}/default.nix |
+./docs/inputs.md:6:| home-manager | `release-26.05` | `profiles/base`, features | follows nixpkgs |
+./docs/inputs.md:7:| hyprland | compositor flake package | `features/hyprland-session` | **no follows** (keeps Cachix valid) |
+./docs/inputs.md:8:| hyprgrass | touch gestures plugin | `features/hyprland-session/hyprland-touch.nix` | follows hyprland |
+./docs/inputs.md:9:| chronos | niri fork + shell | `features/chronos` | **impure local path** (input commented out in `flake.nix`) |
+./docs/inputs.md:10:| zen-browser, opencode-flake, forge, claude-desktop, classwork | apps | `features/programs/default.nix`, `nix/hosts.nix` | claude-desktop and opencode: own nixpkgs; classwork: impure local path |
+./docs/inputs.md:11:| arcticons | icon set | `features/halo/default.nix` | `flake = false` |
+./docs/inputs.md:15:| immaterial-impulse | Hyprland shell (replaces ii on desktop+laptop) | `features/immaterial/default.nix`, `flake.nix` | follows nixpkgs; quickshell pinned upstream |
+./beam-plan/notes/session-2026-10-31.md:20:- Created `scripts/hyprland/hyprconfigurator.py` from `p3/dev` (commit `c83fde49`).
+./beam-plan/notes/session-2026-10-31.md:48:- Created `scripts/hyprland/hyprmon_config.py` to write `hyprmon.lua` Lua format.
+./beam-plan/notes/session-2026-10-31.md:56:- Pinned `pkgs/ii-vynx/default.nix` to `JANO-de/ii-halos` rev `a0c1f9df36d000ebca544aacb8d25a282ca90997`, hash from build.
+./beam-plan/todo.md:16:- R-1: ANSWERED (2026-11-01): delete `scripts/rename-halos1.sh` and `scripts/desktop-clear-oneshot.sh` (list shown before `git rm`, rule 14).
+./beam-plan/todo.md:19:- Legacy removal: `features/dynisland`, `features/chronos`, `niri` in `hosts/halos1/tablet.nix`.
+./beam-plan/todo.md:25:- Halo QML loop: `scripts/halo-dev.sh [halos1-ip]`.
+./beam-plan/guidelines.md:23:- Wiring: `flake.nix` → `nix/` (host table) → `lib/mkHost.nix` → `hosts/<host>/default.nix` → `profiles/base/` + `features/<n>/`. Import lists are explicit: `features/default.nix`.
+./beam-plan/guidelines.md:24:- A feature = `features/<n>/default.nix` (+ `pkg/` for a package, `src/` for QML/scripts). Recipe: `v2/README.md`.
+./beam-plan/guidelines.md:25:- Halo shell (halos1): QML in `features/halo/src/` (`shell.qml`, `components/`, `services/`, `apps/`). dynisland QML: `features/dynisland/src/`. immaterial-impulse is an upstream flake input pinned in `flake.nix`: not edited here.
+./beam-plan/guidelines.md:26:- Hyprland: `features/hyprland-session/` (Lua config, touch layer). App-written configs live in `hosts/<host>/dotfiles/`.
+./beam-plan/guidelines.md:32:scripts/halo-dev.sh [halos1-ip]
+./beam-plan/guidelines.md:34:Rsyncs `features/halo/src/` to `~/halo` on the Surface and runs `quickshell -p ~/halo` as user unit `halo-test`. The Surface must be logged into the hyprland entry. Read the printed journal; fix the first error first.
+./beam-plan/ask-first.md:8:3. Test: which command does the owner run, now or batched? (`scripts/halo-dev.sh` for Halo QML; `nixos-rebuild build --flake .#<host>` for Nix)
+./beam-plan/v2/L-layout.md:5:Tasks: L-0 recon+map, L-1 lib/ and nix/, L-2 profiles/base, L-3 features (one per commit), L-4 dotfiles -> hosts/<h>/dotfiles, L-5 halo+dynisland sources, L-6 docs, L-7 final verify.
+./beam-plan/v2/README.md:19:Order: **D first** (small; keeps later diffs clean). Then N and R are independent. N-0..N-11 touch only `features/nixscout/pkg/` and `beam-plan/v2/notes/`. N-12 edits `flake.nix`: do it **after R-3**. M4 `I` is superseded by M5 `W`.
+./beam-plan/v2/README.md:43:13. **Do not break these paths** (the owner types them; HANDOFF.md §0c quotes them): `features/halo/src/` (rsync source of `scripts/halo-dev.sh`), `shellDir` in `features/halo/default.nix`, `scripts/halo-dev.sh`, `scripts/halos1-deploy.sh`, `scripts/halos1-reboot.sh`, `HANDOFF.md` at repo root. Moving any of them needs owner approval and every referrer fixed in the same commit.
+./beam-plan/v2/README.md:73:1. Create `features/<name>/` with `default.nix` (options+config, option names unchanged), `pkg/` if it has a package, `src/` if it owns QML/scripts.
+./beam-plan/v2/README.md:74:2. Add one line to `features/default.nix`.
+./beam-plan/v2/R-cleanup.md:42:| `scripts/ssh-config-halos1.txt` | `docs/halos1/ssh-config.txt` |
+./beam-plan/v2/R-cleanup.md:43:| `scripts/rename-halos1.sh`, `scripts/desktop-clear-oneshot.sh` | **ASK** (delete if the rename is deployed and the oneshot is obsolete) |
+./beam-plan/v2/R-cleanup.md:82:Do **not** move scripts (the owner types the names). Add `scripts/README.md`: one line per script (what, who runs it, where). `bash -n` every `.sh`. **Verify** `grep -rn 'scripts/' hosts modules flake.nix HANDOFF.md` paths all exist.
+./beam-plan/v2/R-cleanup.md:100:bash -n scripts/*.sh
+./beam-plan/v2/notes/D-0.md:6:- pkgs/appoutlet-nix/ (dir)
+./beam-plan/v2/notes/D-0.md:37:- Source tree (features/, hosts/, pkgs/, lib/, nix/, profiles/, scripts/, flake.nix): 0 hits.
+./beam-plan/v2/notes/D-0.md:40:- Listed paths from the old list are already gone: pkgs/appoutlet-nix, modules/programs/appoutlet.nix, docs/appoutlet-nix.md, beam-plan/02-appoutlet.md, 03-tokri-dynisland.md, notes/A-*.md, notes/T-0.md, prompt.md, HANDOFF.md hits.
+./beam-plan/v2/notes/D-0.md:43:- Extra finding: `features/nixscout/pkg/target/` (Rust build output, binaries) is in the tarball. Tracked or ignored? Owner checks with `git ls-files features/nixscout/pkg/target | head`.
+./beam-plan/v2/notes/N-0.md:3:## Packaging pattern to reuse (from pkgs/orchard/default.nix)
+./beam-plan/v2/notes/R-0.md:12:All other inputs appear in hosts/modules/pkgs/scripts too.
+./beam-plan/v2/notes/R-0.md:20:- pkgs/orchard/default.nix 201
+./beam-plan/v2/notes/W-1.md:18:- pkgs/ii-p3drovfx, pkgs/ii-vynx, pkgs/ii-shapes.nix.
+./beam-plan/v2/notes/W-1.md:20:- flake.nix input `ii-halos` (used by pkgs/ii-vynx and halos1).
+./beam-plan/v2/notes/W-1.md:28:- pkgs/ii-p3drovfx/, pkgs/ii-vynx/, pkgs/ii-shapes.nix
+./beam-plan/v2/notes/N-1a-sources.md:12:Pin channel artifacts by hash; bump via pkgs/nixscout/update.sh. Owner runs measurements on halos1.
+./beam-plan/v2/notes/L-0.md:15:- pkgs/: hyprmon, localsend-cli, matugen, niXscout, orchard, ii-p3drovfx, ii-vynx
+./beam-plan/v2/notes/L-0.md:19:- scripts/: 17
+./beam-plan/v2/notes/L-0.md:29:| modules/core/* | profiles/base/core/* | unconditional | profile |
+./beam-plan/v2/notes/L-0.md:30:| modules/hardware/* | profiles/base/hardware/* (nvidia maybe feature) | unconditional/gated | profile/feature |
+./beam-plan/v2/notes/L-0.md:31:| modules/services/* (audio,networking,printing,ssh,flatpak) | profiles/base/services/* | unconditional | profile |
+./beam-plan/v2/notes/L-0.md:32:| modules/services/extras.nix | features/services-extras | modules.services.* | feature |
+./beam-plan/v2/notes/L-0.md:33:| modules/theme/* | profiles/base/theme/* | unconditional | profile |
+./beam-plan/v2/notes/L-0.md:34:| modules/programs/niXscout.nix | features/nixscout | programs.niXscout | feature |
+./beam-plan/v2/notes/L-0.md:35:| modules/programs/orchard.nix | features/orchard | programs.orchard | feature |
+./beam-plan/v2/notes/L-0.md:36:| modules/programs/{full,lean,deskflow}.nix | features/programs | modules.programs.* | feature |
+./beam-plan/v2/notes/L-0.md:37:| modules/desktop/default.nix | features/desktop (shell/session options) | modules.desktop.* | feature |
+./beam-plan/v2/notes/L-0.md:38:| modules/desktop/dotfiles.nix | features/dotfiles | modules.desktop.dotfiles | feature |
+./beam-plan/v2/notes/L-0.md:39:| modules/desktop/greeter, splash, sddm-osk | features/greeter | modules.desktop.* | feature |
+./beam-plan/v2/notes/L-0.md:40:| modules/desktop/sessions/hyprland/* | features/hyprland-session | modules.desktop.session | feature |
+./beam-plan/v2/notes/L-0.md:41:| modules/desktop/sessions/{mango,niri} | features/{mango,niri} (or delete if W removed) | session choice | feature |
+./beam-plan/v2/notes/L-0.md:42:| modules/desktop/shells/{chronos,dynisland,halo,ii,immaterial}.nix | features/{chronos,dynisland,halo,ii,immaterial} | modules.desktop.shell | feature |
+./beam-plan/v2/notes/L-0.md:43:| modules/desktop/shell/dynisland tree | features/dynisland/src | dynisland feature | src |
+./beam-plan/v2/notes/L-0.md:44:| shell/halo tree | features/halo/src | halo feature | src |
+./beam-plan/v2/notes/L-0.md:45:| modules/desktop/droidloom.nix | features/droidloom | modules.desktop.droidloom | feature |
+./beam-plan/v2/notes/L-0.md:46:| modules/desktop/plymouth/* | features/plymouth (or profiles?) | splash | feature |
+./beam-plan/v2/notes/L-0.md:47:| pkgs/hyprmon, matugen, localsend-cli | pkgs/ (shared) | - | shared pkg |
+./beam-plan/v2/notes/L-0.md:48:| pkgs/orchard, niXscout | features/{orchard,nixscout}/pkg | - | feature pkg |
+./beam-plan/v2/notes/L-0.md:49:| pkgs/ii-p3drovfx, ii-vynx, ii-shapes | features/ii/pkg or keep until halos1 migrates | - | (not this milestone for deletion) |
+./beam-plan/v2/notes/L-0.md:54:| scripts/* | scripts/* (names unchanged, paths fixed) | - | scripts |
+./beam-plan/v2/notes/L-0.md:60:- scripts/halo-dev.sh, halos1-deploy.sh, halos1-reboot.sh, adopt-dotfiles.sh, migrate-dotfiles-per-host.sh, config-backup.sh
+./beam-plan/v2/notes/L-0.md:75:Propose: profiles/base includes core/theme/generic hardware only; role presets (workstation/tablet/lean) only if approved. UNVERIFIED whether extraction is wanted.
+./beam-plan/v2/STATUS.md:46:- R-1: ANSWERED (2026-11-01): delete `scripts/rename-halos1.sh` and `scripts/desktop-clear-oneshot.sh` (list shown before `git rm`, rule 14).
+./beam-plan/v2/STATUS.md:65:- [x] L-2 profiles/base
+./beam-plan/v2/STATUS.md:83:- [ ] M-2 profiles/base to modules
+./beam-plan/v2/I-ii.md:23:Versions: `nix eval --raw nixpkgs/nixos-26.05#matugen.version`, same for `quickshell`; the `hyprland` rev in `flake.lock` and its version vs 0.56.1; how the repo's Hyprland config (`hyprland.nix`, `hyprland.lua`, `hyprland-touch.nix`, `hyprland-mode.lua`) is wired today (director's reading is in Decisions: re-verify it).
+./beam-plan/v2/I-ii.md:28:**Do** `pkgs/ii-p3drovfx/default.nix`: installs `ii/` + helper scripts; Python env via `python3.withPackages` (replaces any venv); the two Rust helpers via `rustPlatform`; fonts and runtime tools on the wrapper `PATH`. Matugen too old in nixpkgs → **ASK** (overlay vs pinned fetch).
+./beam-plan/v2/I-ii.md:49:**Do** `docs/ii.md` (what, options, rollback via boot entry, known limits); `scripts/ii-update.sh` (bump input, rebuild check, patch rebase hint if patches exist). **Done when** `STATUS.md` updated and the report lists what is untested.
+./beam-plan/v2/M-modules.md:28:    ├── core/                 today profiles/base/core: boot, fonts, locale, nix, shell, users, home-manager
+./beam-plan/v2/M-modules.md:29:    ├── hardware/             today profiles/base/hardware + features/nvidia
+./beam-plan/v2/M-modules.md:30:    ├── services/             today profiles/base/services + features/services-extras (sunshine, waydroid, powertop, smartd)
+./beam-plan/v2/M-modules.md:31:    ├── theme/                today profiles/base/theme (palette.nix is consumed by path)
+./beam-plan/v2/M-modules.md:32:    ├── desktop/              today features/{desktop,hyprland-session,greeter,halo,immaterial,dynisland,chronos,dotfiles,droidloom}
+./beam-plan/v2/M-modules.md:33:    ├── apps/                 today features/{programs,orchard,nixscout}
+./beam-plan/v2/M-modules.md:36:    ├── scripts/              today scripts/ (one module per script, command on PATH)
+./beam-plan/v2/M-modules.md:37:    └── pkgs/                 today pkgs/ (packages, not NixOS modules)
+./beam-plan/v2/M-modules.md:46:5. `hosts/<h>/dotfiles/` stays where it is. `features/dotfiles` only reads `${repoPath}/hosts/${host}/dotfiles`, so no Home Manager link target changes and `~/.config/hypr` cannot dangle.
+./beam-plan/v2/M-modules.md:52:- `scripts/halo-dev.sh` does `cd "$(dirname "$0")/.."` and rsyncs `features/halo/src/`. As a store script that breaks: the wrapper must `cd` to a configured repo path and use the new source path.
+./beam-plan/v2/M-modules.md:54:- Rule 13 paths touched (approved, ASK-3): `scripts/halo-dev.sh`, `halos1-deploy.sh`, `halos1-reboot.sh`, `features/halo/src/`, `shellDir` in `features/halo/default.nix`. `HANDOFF.md` is not in the tarball and the owner does not need it for M.
+./beam-plan/v2/M-modules.md:55:- `nix/default.nix` exports `nixosModules.orchard` and `nixosModules.niXscout` by path; `nix/packages.nix` has 3 callPackage path groups; `features/greeter/greeter/greeter.nix:12` and `features/nixscout/pkg/index.nix:9` use relative paths. All fixed in the same commit as their move.
+./beam-plan/v2/M-modules.md:67:**M-2 profiles/base to modules.** Do: `git mv profiles/base/core modules/core`, then hardware, services, theme (one commit each); remove the import line from each host; each file gets an `enable` option and `mkIf`; hosts set `modules.core.enable = true` etc. `nix/hosts.nix` theme path updated. Verify: build desktop + drv-check. Done when: `profiles/` is gone.
+./beam-plan/v2/M-modules.md:69:**M-3 features to modules, one per commit.** Order (small and independent first): services-extras, nvidia, programs, orchard, nixscout, droidloom, immaterial, dotfiles, greeter, hyprland-session, halo, dynisland, chronos, desktop. Do: `git mv`, fix relative paths, add `mkIf`/`enable` without renaming existing options, drop the line from `features/default.nix`. Update `nixosModules.*` exports and `nix/packages.nix` as each package moves. Verify: per commit. Done when: `features/` is gone.
+./beam-plan/v2/M-modules.md:73:**M-5 scripts (rule 13, needs ASK-2 and ASK-3 answered).** Do: one module per script in `modules/scripts/<name>/` with the `.sh` beside a `default.nix` using `writeShellApplication`; wrapper sets repo path from `modules.scripts.repoPath` (default `/home/jano/Proyectos/MyNixOS`, same as dotfiles); enabled on the dev hosts only. Bootstrap scripts also exposed as flake `apps`. Fix every referrer (`scripts/README.md`, docs, `features/halo` comments). Verify: `bash -n` on each source; desktop builds; owner runs `halo-dev` once. Done when: `scripts/` is gone and the command names match the owner's answer.
+./beam-plan/v2/M-modules.md:81:**M-9 Final verify.** `nix flake check`; `nixos-rebuild build --flake .#desktop`; `nixfmt`; `bash -n`; stale-path grep for `features/`, `profiles/`, `scripts/`, `lib/`, `nix/`. Report what was not tested (laptop, halos1, runtime).
+./beam-plan/v2/M-modules.md:90:3. ANSWERED (ASK-3): approved to move `features/halo/src/`, `shellDir`, `halo-dev`, `halos1-deploy`, `halos1-reboot`; every referrer fixed in the same commit. `HANDOFF.md` is not needed: not edited or delivered in M.
+./beam-plan/v2/N-nixscout.md:19:The channel artifacts are pinned by hash and bumped by a script (`pkgs/nixscout/update.sh`), so the 4 GB Surface never evaluates nixpkgs. If N-1 finds a source dead or changed, **ASK** before substituting.
+./beam-plan/v2/N-nixscout.md:21:## Architecture (Rust workspace in `pkgs/nixscout/`)
+./beam-plan/v2/N-nixscout.md:47:**Do** Read `pkgs/orchard/default.nix` (the Rust packaging pattern here) and `docs/orchard.md`, `modules/home.nix` (GTK/Qt theming), `modules/programs/orchard.nix`. Record: `nix eval --raw nixpkgs#rustc.version`, `nixpkgs#libadwaita.version`, `nixpkgs#gtk4.version`, `nixpkgs#sqlite.version`; whether `rust-overlay` is needed (MSRV of chosen crates vs nixpkgs rustc).
+./beam-plan/v2/N-nixscout.md:56:**Do** `devShells.default` (rustc, cargo, `pkg-config`, gtk4, libadwaita, sqlite, `nixfmt`) in `nix/dev.nix` (or `flake.nix` if R-3 is not done: tiny, movable). Hello-world `AdwApplicationWindow`. Write `scripts/nixscout-measure.sh <pid>`: prints PSS, RSS, threads, open fds, startup time.
+./beam-plan/v2/N-nixscout.md:89:**Do** Measure on desktop (Beam) and halos1 (owner runs `scripts/nixscout-measure.sh`). Compare against N-2 budgets; fix only the worst offender; re-measure; try `opt-level="s"` vs `3` and record. **Done when** all budgets met or the owner accepts the numbers.
+./beam-plan/v2/N-nixscout.md:92:**Do** `pkgs/nixscout/default.nix` (`rustPlatform.buildRustPackage`, `cargoLock.lockFile`, `meta.mainProgram`, `meta.license`), `index.nix` (runs `nixscout-index` over `data/*` → `$out/share/nixscout/index.sqlite`), wrapper sets `NIXSCOUT_INDEX`, desktop entry + symbolic icon. Flake: `packages`, `apps`, overlay, `nixosModules.nixscout` = `programs.nixscout.enable` (+ `package`). Enable on `desktop`, `laptop`, `halos1` host files.
+./beam-plan/v2/N-nixscout.md:97:grep -rn 'Command::new\|std::process' pkgs/nixscout/crates/app   # must be empty (read-only invariant)
+./beam-plan/v2/D-delete.md:6:- appOutlet-nix: `pkgs/appoutlet-nix/`, `modules/programs/appoutlet.nix`, `docs/appoutlet-nix.md`, `beam-plan/02-appoutlet.md`, `notes/A-0.md`, `notes/A-1.md`, `notes/A-3.md`, `flake.nix` (4 blocks), `hosts/desktop/default.nix` (import + enable), `hosts/laptop/default.nix` (import + enable), `beam-plan/README.md`, `beam-plan/STATUS.md`, `prompt.md`.
+./beam-plan/v2/D-delete.md:22:2. `git rm -r pkgs/appoutlet-nix modules/programs/appoutlet.nix docs/appoutlet-nix.md beam-plan/02-appoutlet.md notes/A-0.md notes/A-1.md notes/A-3.md`
+./scripts/halo-dev.sh:3:# Usage: scripts/halo-dev.sh [halos1-ip]     (default 192.168.0.115)
+./scripts/halo-dev.sh:12:rsync -a --delete -e "ssh ${SSHO[*]}" features/halo/src/ "jano@$IP:~/halo/"
+./scripts/halo-dev.sh:26:  echo "   Boot the hyprland entry first: scripts/halos1-deploy.sh, or on the Surface:"
+./scripts/README.md:1:# scripts/
+./scripts/README.md:6:- `halo-ipc.sh` — talk to the halo-test shell on the Surface (`scripts/halo-ipc.sh call shade toggle`). Run on dev machine.
+./scripts/adopt-dotfiles.sh:5:# Usage: scripts/adopt-dotfiles.sh [--host NAME] [--repo PATH] [--quickshell]
+./scripts/migrate-dotfiles-per-host.sh:6:#   scripts/migrate-dotfiles-per-host.sh desktop      # 1) move + compat links
+./scripts/migrate-dotfiles-per-host.sh:8:#   scripts/migrate-dotfiles-per-host.sh --cleanup    # 3) remove the compat links
+./scripts/migrate-dotfiles-per-host.sh:37:echo "Now: sudo nixos-rebuild switch --flake .#$HOST, then: scripts/migrate-dotfiles-per-host.sh --cleanup"
+./scripts/halos1-clean.sh:3:# Usage: scripts/halos1-clean.sh [halos1-ip]
+./scripts/halos1-android-apps.sh:3:#   ssh halos1 'bash -s' < scripts/halos1-android-apps.sh
+./scripts/config-backup.sh:4:#   scripts/config-backup.sh backup [dest]   # copy configs to dest (default: ./config-backup-<date>)
+./scripts/config-backup.sh:5:#   scripts/config-backup.sh restore [src]   # copy configs from src back into place
+./scripts/halos1-deploy.sh:3:# Usage: scripts/halos1-deploy.sh [halos1-ip]     (default 192.168.0.115)
+./scripts/halos1-deploy.sh:13:echo "Done. Reboot the Surface:  scripts/halos1-reboot.sh $IP"
+./scripts/halo-ipc.sh:2:# Usage: scripts/halo-ipc.sh call shade toggle   (talks to the halo-test shell on the Surface)
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'foot' 'kitty -1' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:12:codeEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:13:officeSoftware = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:14:textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:15:volumeMixer = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:16:settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'qs -p ~/.config/quickshell/$qsConfig/settings.qml' 'systemsettings' 'gnome-control-center' 'better-control'"
+./dotfiles/desktop-vynx/hypr/hyprland/variables.lua:17:taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
+./dotfiles/desktop-vynx/hypr/hyprland/execs.lua:5:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/start_geoclue_agent.sh")
+./dotfiles/desktop-vynx/hypr/hyprland/execs.lua:6:    hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
+./dotfiles/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'foot' 'kitty -1' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./dotfiles/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./dotfiles/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+./dotfiles/hypr/hyprland/variables.lua:12:codeEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"
+./dotfiles/hypr/hyprland/variables.lua:13:officeSoftware = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"
+./dotfiles/hypr/hyprland/variables.lua:14:textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"
+./dotfiles/hypr/hyprland/variables.lua:15:volumeMixer = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"
+./dotfiles/hypr/hyprland/variables.lua:16:settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'qs -c $qsConfig ipc call settings toggle' 'systemsettings' 'gnome-control-center' 'better-control'"
+./dotfiles/hypr/hyprland/variables.lua:17:taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
+./dotfiles/hypr/hyprland/execs.lua:5:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/start_geoclue_agent.sh")
+./dotfiles/hypr/hyprland/execs.lua:6:    hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
+./dotfiles/hypr/custom/variables.lua:4:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf' 'zen'"  --@g browser
+./dotfiles/hypr/custom/variables.lua:5:textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs' 'nvim'"  --@g textEditor
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'foot' 'kitty -1' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:12:codeEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:13:officeSoftware = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:14:textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:15:volumeMixer = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:16:settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'qs -p ~/.config/quickshell/$qsConfig/settings.qml' 'systemsettings' 'gnome-control-center' 'better-control'"
+./dotfiles/laptop-vynx/hypr/hyprland/variables.lua:17:taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
+./dotfiles/laptop-vynx/hypr/hyprland/execs.lua:5:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/start_geoclue_agent.sh")
+./dotfiles/laptop-vynx/hypr/hyprland/execs.lua:6:    hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:12:codeEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:13:officeSoftware = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:14:textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:15:volumeMixer = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:16:settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'qs -c $qsConfig ipc call settings toggle' 'systemsettings' 'gnome-control-center' 'better-control'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:17:taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
+./hosts/desktop/dotfiles/hypr/hyprland/execs.lua:6:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/start_geoclue_agent.sh")
+./hosts/desktop/dotfiles/hypr/hyprland/execs.lua:12:    hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
+./hosts/desktop/dotfiles/hypr/hyprland/execs.lua:33:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/apply_saved_cursor.sh")
+./hosts/desktop/default.nix:7:    ../../profiles/base/core
+./hosts/desktop/default.nix:8:    ../../profiles/base/hardware
+./hosts/desktop/default.nix:9:    ../../profiles/base/services
+./hosts/desktop/default.nix:10:    ../../features/programs
+./hosts/desktop/default.nix:11:    ../../features/desktop
+./hosts/halos1/default.nix:53:    ../../profiles/base/core
+./hosts/halos1/default.nix:54:    ../../profiles/base/hardware
+./hosts/halos1/default.nix:55:    ../../profiles/base/services
+./hosts/halos1/default.nix:56:    ../../features/programs
+./hosts/halos1/default.nix:57:    ../../features/desktop
+./hosts/halos1/default.nix:67:    shell = "halo"; # own shell (features/halo)
+./hosts/halos1/default.nix:109:  # zram below half of RAM (overrides profiles/base/core), plus an 8 GB swapfile
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:12:codeEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:13:officeSoftware = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:14:textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:15:volumeMixer = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:16:settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'qs -c $qsConfig ipc call settings toggle' 'systemsettings' 'gnome-control-center' 'better-control'"
+./hosts/laptop/dotfiles/hypr/hyprland/variables.lua:17:taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
+./hosts/laptop/dotfiles/hypr/hyprland/execs.lua:5:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/start_geoclue_agent.sh")
+./hosts/laptop/dotfiles/hypr/hyprland/execs.lua:11:    hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
+./hosts/laptop/dotfiles/hypr/hyprland/execs.lua:32:    hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/apply_saved_cursor.sh")
+./hosts/laptop/dotfiles/hypr/custom/variables.lua:4:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf' 'zen'"  --@g browser
+./hosts/laptop/default.nix:8:    ../../profiles/base/core
+./hosts/laptop/default.nix:9:    ../../profiles/base/hardware
+./hosts/laptop/default.nix:10:    ../../profiles/base/services
+./hosts/laptop/default.nix:11:    ../../features/programs
+./hosts/laptop/default.nix:12:    ../../features/desktop
+./flake.nix:6:    nixpkgs.url = "nixpkgs/nixos-26.05";

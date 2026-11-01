@@ -10,6 +10,7 @@
     ../../features/programs
     ../../features/desktop
     ../../features
+    ../../modules
     ../../hosts/desktop/matrix.nix
   ];
 

@@ -11,6 +11,7 @@
     ../../features/programs
     ../../features/desktop
     ../../features
+    ../../modules
   ];
 
   networking.hostName = "laptop";

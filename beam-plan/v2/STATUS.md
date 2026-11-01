@@ -10,7 +10,7 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## M3 Cleanup (R-cleanup.md)
 - [ ] R-0 Baseline
-- [ ] R-1 Root and docs tree
+- [x] R-1 Root and docs tree (one-shot scripts removed, e8734f7; flake check passes; other table rows already done in L)
 - [ ] R-2 Comment and doc drift
 - [ ] R-3 Thin flake.nix
 - [x] R-4 Modularize modules/
@@ -43,7 +43,7 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [ ] I-4 Docs + update path
 
 ## Owner questions (ASK items)
-- R-1: ANSWERED (2026-11-01): delete `scripts/rename-halos1.sh` and `scripts/desktop-clear-oneshot.sh` (list shown before `git rm`, rule 14).
+- R-1: DONE (e8734f7): deleted `scripts/rename-halos1.sh` and `scripts/desktop-clear-oneshot.sh`.
 - R-3: `chronos` input (absolute path): keep, publish, or vendor? Remove unused inputs (list comes from R-0)?
 - N: app name (`nixscout` is a placeholder).
 
@@ -78,8 +78,8 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 
 ## M8 two-folder modules layout (M-modules.md)
 - [x] M-plan Plan doc written (nothing moved)
-- [ ] M-0 Recon + option table
-- [ ] M-1 Loader
+- [x] M-0 Recon + option table (notes/M-0.md; ASK-9, 10 answered)
+- [~] M-1 Loader (modules/default.nix + one import line per host; untested: no nix here)
 - [ ] M-2 profiles/base to modules
 - [ ] M-3 features to modules (one per commit)
 - [ ] M-4 pkgs
