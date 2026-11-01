@@ -7,7 +7,7 @@
 | hyprland | compositor flake package | `features/hyprland-session` | **no follows** (keeps Cachix valid) |
 | hyprgrass | touch gestures plugin | `features/hyprland-session/hyprland-touch.nix` | follows hyprland |
 | chronos | niri fork + shell | `features/chronos` | **impure local path** (input commented out in `flake.nix`) |
-| zen-browser, opencode-flake, forge, claude-desktop, classwork | apps | `features/programs/default.nix`, `nix/hosts.nix` | claude-desktop and opencode: own nixpkgs; classwork: impure local path |
+| zen-browser, opencode-flake, forge, claude-desktop, classwork | apps | `modules/programs/{lean,full}.nix`, `nix/hosts.nix` | claude-desktop and opencode: own nixpkgs; classwork: impure local path |
 | arcticons | icon set | `features/halo/default.nix` | `flake = false` |
 | rust-overlay | Rust toolchain | `nix/hosts.nix`, `nix/packages.nix` (orchard needs >= 1.96) | follows nixpkgs |
 | nixos-hardware | Surface modules | `hosts/halos1` | none |

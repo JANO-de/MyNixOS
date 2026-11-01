@@ -22,10 +22,10 @@ let
   };
 in
 {
-  systemd.user.services.deskflow-server = lib.mkIf (cfg.deskflow.role == "server") (
+  systemd.user.services.deskflow-server = lib.mkIf (cfg.enable && cfg.deskflow.role == "server") (
     mkService "server"
   );
-  systemd.user.services.deskflow-client = lib.mkIf (cfg.deskflow.role == "client") (
+  systemd.user.services.deskflow-client = lib.mkIf (cfg.enable && cfg.deskflow.role == "client") (
     mkService "client"
   );
 }

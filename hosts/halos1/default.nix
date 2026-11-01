@@ -50,7 +50,6 @@ in
     # linux-surface kernel, IPTS touch/pen, Marvell wifi firmware, thermald, S0ix.
     inputs.nixos-hardware.nixosModules.microsoft-surface-pro-intel
 
-    ../../features/programs
     ../../features/desktop
     ../../features
     ../../modules
@@ -63,6 +62,7 @@ in
   modules.services.enable = true;
   modules.services.qmk.enable = true;
   modules.theme.enable = true;
+  modules.programs.enable = true;
 
   # ---- session -------------------------------------------------------------
   modules.desktop = {

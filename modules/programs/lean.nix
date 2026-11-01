@@ -9,8 +9,9 @@
 
 let
   system = pkgs.stdenv.hostPlatform.system;
+  cfg = config.modules.programs;
 in
-{
+lib.mkIf cfg.enable {
   environment.systemPackages = with pkgs; [
     neovim
     git

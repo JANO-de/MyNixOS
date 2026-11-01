@@ -16,8 +16,7 @@ docs/                this directory; beam-plan/ = agent guide + status
 
 ## Features
 
-`features/default.nix` is the explicit import list. Hosts import `features/programs`,
-`features/desktop`, `features` and `modules` (auto-loaded; hosts set `modules.<area>.enable`).
+`features/default.nix` is the explicit import list. Hosts import `features/desktop`, `features` and `modules` (auto-loaded; hosts set `modules.<area>.enable`).
 
 | Folder | What |
 |--------|------|

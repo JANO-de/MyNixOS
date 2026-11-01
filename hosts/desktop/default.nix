@@ -4,7 +4,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../features/programs
     ../../features/desktop
     ../../features
     ../../modules
@@ -18,6 +17,7 @@
   modules.services.enable = true;
   modules.services.qmk.enable = true;
   modules.theme.enable = true;
+  modules.programs.enable = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds, and the daemon just rebuilds from

@@ -6,7 +6,6 @@
     ./orchard
     ./nixscout
     ./droidloom
-    ./programs
     ./dotfiles
     ./hyprland-session
     ./greeter

@@ -7,6 +7,8 @@
 
 {
   options.modules.programs = {
+    enable = lib.mkEnableOption "the program sets (lean/full profile, deskflow)";
+
     profile = lib.mkOption {
       type = lib.types.enum [
         "full"

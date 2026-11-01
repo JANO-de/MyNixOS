@@ -9,7 +9,7 @@
 let
   cfg = config.modules.programs;
   system = pkgs.stdenv.hostPlatform.system;
-  full = cfg.profile == "full";
+  full = cfg.enable && cfg.profile == "full";
   llama = pkgs.llama-cpp.override { vulkanSupport = true; };
 in
 lib.mkIf full {
