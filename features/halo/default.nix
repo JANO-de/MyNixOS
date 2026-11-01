@@ -210,8 +210,6 @@ in
       pkgs.matugen # wallpaper-derived theme colours (Theme.qml)
     ];
     services.udev.packages = [ pkgs.brightnessctl ]; # backlight writable without root
-    # Bundled wallpapers (assets/wallpapers) -> /etc/halo/wallpapers; its own store path, so shell edits do not copy them again.
-    environment.etc."halo/wallpapers".source = ../../../assets/wallpapers;
     services.upower.enable = lib.mkDefault true; # battery widget
     services.udisks2.enable = lib.mkDefault true; # Files: mount / unmount drives
     services.power-profiles-daemon.enable = lib.mkDefault true; # Settings > Battery > Power mode (powerprofilesctl)

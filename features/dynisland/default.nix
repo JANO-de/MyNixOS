@@ -167,7 +167,7 @@ in
 
       # QML tree lives in ~/.config/quickshell/dynisland (qs -c dynisland)
       xdg.configFile."quickshell/dynisland".source = builtins.path {
-        path = ../src;
+        path = ./src;
         name = "dynisland";
       };
       fonts.fontconfig.enable = true;
