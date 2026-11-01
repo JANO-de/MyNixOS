@@ -52,7 +52,7 @@ in
 
     ../../profiles/base/core
     ../../profiles/base/hardware
-    ../../modules/services
+    ../../profiles/base/services
     ../../features/programs
     ../../features/desktop
     ../../features
