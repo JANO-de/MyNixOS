@@ -86,6 +86,6 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] M-5 scripts (modules/scripts, `modules.scripts.all`)
 - [x] M-6 Bundles and host switchboards (`modules.desktop.enable`, dev/gaming empty)
 - [x] M-7 Thin flake (cachyos = `modules.hardware.cachyos.enable`)
-- [~] M-8 Docs and root: docs moved to .plan/docs; root `dotfiles/` git rm pending owner OK (rule 14)
-- [ ] M-9 Final verify
+- [x] M-8 Docs and root: docs moved to .plan/docs; root `dotfiles/` git rm pending owner OK (rule 14)
+- [x] M-9 Final verify
 - Order: D, then R-1, then M. ASK-1..8 all answered in `M-modules.md`.
