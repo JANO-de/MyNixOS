@@ -40,5 +40,6 @@
     ./lean.nix
     ./full.nix
     ./deskflow.nix
+    ./orchard
   ];
 }

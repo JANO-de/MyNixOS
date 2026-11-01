@@ -3,7 +3,6 @@
 { ... }@args:
 {
   imports = [
-    ./orchard
     ./nixscout
     ./droidloom
     ./dotfiles

@@ -10,7 +10,7 @@ let
         config.allowUnfree = true;
       };
     in
-    pkgs.callPackage ../features/orchard/pkg/default.nix { };
+    pkgs.callPackage ../modules/programs/orchard/pkg/default.nix { };
   niXscoutPkg = pkgs.callPackage ../features/nixscout/pkg/default.nix { };
   hyprmonPkg = pkgs.callPackage ../pkgs/hyprmon/default.nix { };
   localsendCliPkg = pkgs.callPackage ../pkgs/localsend-cli/default.nix { };
@@ -35,7 +35,7 @@ in
     };
   };
   overlay = final: prev: {
-    orchard = final.callPackage ../features/orchard/pkg/default.nix { };
+    orchard = final.callPackage ../modules/programs/orchard/pkg/default.nix { };
     niXscout = final.callPackage ../features/nixscout/pkg/default.nix { };
     hyprmon = final.callPackage ../pkgs/hyprmon/default.nix { };
     localsend-cli = final.callPackage ../pkgs/localsend-cli/default.nix { };
