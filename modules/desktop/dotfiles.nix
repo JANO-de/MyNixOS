@@ -1,12 +1,13 @@
 # Keep app-written configs inside the flake repo instead of loose files in ~/.config.
 #
-# ~/.config/{hypr,hyprmon,matugen} become symlinks to
-# <repoPath>/dotfiles/<host>/<name>. One folder per host, because some files are machine-specific
-# (hyprmon.lua monitor layout, per-GPU settings).
-# Hyprland and hyprmon (hyprmon.lua, profiles) then write straight into the repo, so `git diff` shows every change. The links point at
-# the live checkout (not the Nix store), so edits apply without a rebuild.
+# ~/.config/{hypr,hyprmon,dms,matugen} and ~/.local/state/dms become symlinks to
+# <repoPath>/hosts/<host>/dotfiles/<name>. One folder per host, because some files are
+# machine-specific (hyprmon.lua monitor layout, per-GPU settings).
+# Hyprland, hyprmon (hyprmon.lua, profiles) and the DMS Settings app then write straight into
+# the repo, so `git diff` shows every change. The links point at the live checkout (not the Nix
+# store), so edits apply without a rebuild.
 #
-# First time on a host: run adopt-dotfiles --host <host> BEFORE the rebuild.
+# First time on a host: run adopt-dotfiles --host <host> (and dms-adopt.sh <host>) BEFORE the rebuild.
 {
   config,
   lib,
@@ -21,12 +22,14 @@ let
   names = [
     "hypr"
     "hyprmon"
+    "dms"
+    "dms-state"
   ]
   ++ lib.optional (!imi) "matugen";
 in
 {
   options.modules.desktop.dotfiles = {
-    enable = lib.mkEnableOption "app configs (hypr, hyprmon, matugen) stored in the flake repo via symlinks";
+    enable = lib.mkEnableOption "app configs (hypr, hyprmon, dms, matugen) stored in the flake repo via symlinks";
     repoPath = lib.mkOption {
       type = lib.types.str;
       default = "/home/jano/Proyectos/MyNixOS";
@@ -58,10 +61,13 @@ in
       xdg.configFile = {
         "hypr".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hypr";
         "hyprmon".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hyprmon";
+        "dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms";
       }
       // lib.optionalAttrs (!imi) {
         "matugen".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/matugen";
       };
+
+      xdg.stateFile."dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms-state";
     };
   };
 }

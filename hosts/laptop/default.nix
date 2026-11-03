@@ -38,7 +38,9 @@
   };
 
   modules.desktop.session = "hyprland";
-  modules.imi.enable = true;
+  modules.imi.enable = false;
+  modules.dms.enable = true;
+  modules.dux.greeter.enable = true;
   modules.desktop.drmDevices = "/dev/dri/igpu:/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
 

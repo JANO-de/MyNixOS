@@ -39,6 +39,11 @@
   imports = [
     ./lean.nix
     ./full.nix
+    ./apps.nix
+    ./office.nix
+    ./files.nix
+    ./ai.nix
+    ./spotify.nix
     ./deskflow.nix
     ./orchard
     ./nixscout

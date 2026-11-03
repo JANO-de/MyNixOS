@@ -1,0 +1,35 @@
+{
+  "webSearch": {
+    "enabled": true,
+    "searchEngines": [],
+    "disabledEngines": []
+  },
+  "bitwarden": {
+    "enabled": true
+  },
+  "githubHeatmapPlus": {
+    "enabled": true
+  },
+  "developerUtilities": {
+    "enabled": true
+  },
+  "dankChat": {
+    "enabled": true
+  },
+  "wallpaperCarousel": {
+    "enabled": true
+  },
+  "quickCapture": {
+    "enabled": true
+  },
+  "dankNotepadModule": {
+    "enabled": true
+  },
+  "calculator": {
+    "enabled": true,
+    "trigger": "="
+  },
+  "dankKDEConnect": {
+    "enabled": true
+  }
+}

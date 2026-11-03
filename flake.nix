@@ -42,6 +42,32 @@
       url = "github:JANO-de/Forge-TUI"; # terminal UI for OpenCode
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # DankMaterialShell (Dux Shell): Quickshell-based desktop shell + the Dux suite.
+    # If one of the Dux apps fails with a Go version error (needs Go 1.27),
+    # remove its `inputs.nixpkgs.follows` line so it uses its own nixpkgs pin.
+    dms = {
+      url = "github:duxlabs-dev/dux-shell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-files = {
+      url = "github:duxlabs-dev/dux-files";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-search = {
+      url = "github:duxlabs-dev/dux-search";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-calendar = {
+      url = "github:duxlabs-dev/dux-calendar/v2.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-gop = {
+      url = "github:duxlabs-dev/dux-gop";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Native Claude Desktop (Electron) wrapper. Not made to follow our nixpkgs:
     # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
@@ -80,6 +106,8 @@
           modules = [
             inputs.home-manager.nixosModules.home-manager
             inputs.forge.nixosModules.default
+            inputs.dms.nixosModules.default
+            inputs.dux-files.nixosModules.dux-files # defines programs.dux-files
             ./hosts/${host}/default.nix
             {
               nixpkgs.overlays = [
