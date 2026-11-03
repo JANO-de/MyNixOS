@@ -3,12 +3,12 @@
     {
       "id": "dock",
       "name": "Dock",
-      "enabled": false,
+      "enabled": true,
       "screenPreferences": [
         "all"
       ],
       "showOnLastDisplay": true,
-      "position": 1,
+      "position": 3,
       "mode": "compact",
       "taskbarAlign": "center",
       "widgetExpansion": "popout",
@@ -20,7 +20,7 @@
       "transparency": 1,
       "followInterfaceStyle": true,
       "autoHide": false,
-      "smartAutoHide": false,
+      "smartAutoHide": true,
       "useOverlayLayer": false,
       "editOnRightClick": false,
       "showOnFullscreen": false,
@@ -77,7 +77,7 @@
       "id": "default",
       "name": "Main Bar",
       "enabled": true,
-      "position": 0,
+      "position": 2,
       "screenPreferences": [
         "all"
       ],
@@ -85,18 +85,30 @@
       "leftWidgets": [
         "launcherButton",
         "workspaceSwitcher",
-        "focusedWindow"
+        "focusedWindow",
+        {
+          "id": "developerUtilities",
+          "enabled": true
+        },
+        {
+          "id": "hyprWorkspaceManager",
+          "enabled": true
+        }
       ],
       "centerWidgets": [
         "music",
         "clock",
-        "weather"
+        "weather",
+        {
+          "id": "dankKDEConnect",
+          "enabled": true
+        }
       ],
       "rightWidgets": [
-        "systemTray",
-        "clipboard",
-        "cpuUsage",
-        "memUsage",
+        {
+          "id": "githubHeatmapPlus",
+          "enabled": true
+        },
         "notificationButton",
         "battery",
         "controlCenterButton"
@@ -129,5 +141,44 @@
   "configVersion": 42,
   "dmsWindowsFloatingSeeded": [
     "hyprland"
-  ]
+  ],
+  "currentThemeName": "dynamic",
+  "currentThemeCategory": "dynamic",
+  "matugenScheme": "scheme-content",
+  "keyboardLayouts": "es",
+  "keyboardVariants": "nodeadkeys",
+  "builtInPluginSettings": {
+    "dms_qr_generator": {
+      "trigger": "qrg"
+    },
+    "dms_power": {
+      "trigger": "pw"
+    },
+    "dms_clipboard_search": {
+      "trigger": "cb"
+    },
+    "dms_settings_search": {
+      "trigger": "?"
+    }
+  },
+  "launcherStyle": "spotlight",
+  "connectedFrameBarStyleBackups": {
+    "default": {
+      "shadowIntensity": 0,
+      "squareCorners": false,
+      "attachToScreenEdge": false,
+      "gothCornersEnabled": false,
+      "borderEnabled": false
+    }
+  },
+  "frameEnabled": true,
+  "frameRounding": 12,
+  "frameThickness": 6,
+  "blurBorderEnabled": true,
+  "blurEnabled": false,
+  "blurBorderSeeded": true,
+  "popupTransparency": 0.57,
+  "foregroundLayerTransparency": 0.66,
+  "fontFamily": "Inter Variable",
+  "monoFontFamily": "Liberation Mono"
 }

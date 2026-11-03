@@ -62,3 +62,5 @@ require("dms.binds-user")
 if is_file_exists(HOME .. "/.config/hypr/hyprland/shellOverrides/keybinds.lua") then
     require("hyprland.shellOverrides.keybinds")
 end
+require("dms.outputs")
+require("dms.input")

@@ -30,6 +30,10 @@
     "trigger": "="
   },
   "dankKDEConnect": {
-    "enabled": true
+    "enabled": true,
+    "selectedDeviceId": "0b6952177b20488db3caa245fae86145"
+  },
+  "hyprWorkspaceManager": {
+    "enabled": false
   }
 }

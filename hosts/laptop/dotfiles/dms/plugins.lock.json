@@ -38,7 +38,7 @@
     "quickCapture": {
       "repo": "https://github.com/hthienloc/dms-plugins",
       "path": "quickCapture",
-      "commit": "34e18ee0ec9823f28afe1f0cecb92950072ce8af"
+      "commit": "7472e6152f8b1c2fadea9e48f597b47660480afb"
     },
     "wallpaperCarousel": {
       "repo": "https://github.com/motor-dev/wallpaperCarousel",
