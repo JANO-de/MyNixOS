@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "currentTabIndex": 1,
+  "tabs": [
+    {
+      "id": 1793723960092,
+      "title": "Untitled",
+      "filePath": "notepad-files/untitled-1793723960092.txt",
+      "isTemporary": true,
+      "lastModified": "2026-11-05T16:49:03.842Z",
+      "cursorPosition": 0,
+      "scrollPosition": 0
+    },
+    {
+      "id": 1793892727089,
+      "title": "Cuentas",
+      "filePath": "/home/jano/Documents/Secrets/Cuentas",
+      "isTemporary": false,
+      "lastModified": "2026-11-05T15:37:03.686Z",
+      "cursorPosition": 0,
+      "scrollPosition": 0,
+      "hasUnsavedChanges": false,
+      "lastSavedContent": "# DDG mask:\n---\n\n## C1\n- chip-shingle-upper@duck.com\n## C2\n- player-clever-woof@duck.com\n## C3\n- gammma-used-ellipse@duck.com\n## C4\n- gazing-gag-closure@duck.com\n## C5\n- falcon-street-gray@duck.com\n## C6\n- dry-mushy-curly@duck.com\n## C7\n- motor-deviate-lure@duck.com\n## C8\n- onto-heavily-avid@duck.com\n\n# Mails\n---\n## C-NoMask\n- jan0@tutanota.de\n## Proton\n- jan01sp@proton.me"
+    }
+  ]
+}

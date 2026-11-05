@@ -14,5 +14,6 @@
     ./powertop.nix
     ./smartd.nix
     ./qmk.nix
+    ./odysseus.nix
   ];
 }

@@ -63,8 +63,10 @@
   modules.desktop.session = "hyprland";
   modules.imi.enable = false;
   modules.dms.enable = true;
+  modules.dux.greeter.enable = true;
   modules.desktop.drmDevices = "/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
+    modules.services.odysseus.enable = true;
 
   system.stateVersion = "26.05";
 }

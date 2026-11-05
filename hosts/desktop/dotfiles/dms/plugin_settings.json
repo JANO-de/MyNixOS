@@ -27,8 +27,6 @@
   "webSearch": {
     "enabled": true,
     "disabledEngines": [
-      "aur",
-      "archlinux",
       "ebay",
       "bing",
       "google"
@@ -67888,6 +67886,19 @@
     "trigger": "="
   },
   "dankKDEConnect": {
+    "enabled": true,
+    "selectedDeviceId": "e849717e34d643daa5c44559eadfa52e"
+  },
+  "screenshotPlus": {
+    "enabled": false
+  },
+  "dankNotepadModule": {
+    "enabled": true
+  },
+  "clipboardPlus": {
+    "enabled": true
+  },
+  "dockerManager": {
     "enabled": true
   }
 }
