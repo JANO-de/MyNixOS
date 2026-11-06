@@ -34,8 +34,8 @@
       "borderColor": "surfaceText",
       "borderOpacity": 1,
       "borderThickness": 1,
-      "launcherEnabled": true,
-      "launcherLogoMode": "os",
+      "launcherEnabled": false,
+      "launcherLogoMode": "apps",
       "launcherLogoCustomPath": "",
       "launcherLogoColorOverride": "",
       "launcherLogoSizeOffset": 0,
@@ -44,7 +44,7 @@
       "maxVisibleApps": 0,
       "maxVisibleRunningApps": 0,
       "showOverflowBadge": true,
-      "showTrash": true,
+      "showTrash": false,
       "trashFileManager": "default",
       "trashCustomCommand": "",
       "magnification": false,
@@ -61,8 +61,7 @@
         {
           "id": "dock_apps",
           "widgetId": "appsDock",
-          "enabled": true,
-          "runningAppsCurrentWorkspace": false
+          "enabled": true
         },
         {
           "id": "dock_trash",
@@ -86,14 +85,30 @@
       "leftWidgets": [
         "launcherButton",
         "workspaceSwitcher",
-        "focusedWindow"
+        "focusedWindow",
+        {
+          "id": "developerUtilities",
+          "enabled": true
+        },
+        {
+          "id": "dockerManager",
+          "enabled": true
+        }
       ],
       "centerWidgets": [
         "music",
         "clock",
-        "weather"
+        "weather",
+        {
+          "id": "dankKDEConnect",
+          "enabled": true
+        }
       ],
       "rightWidgets": [
+        {
+          "id": "githubHeatmapPlus",
+          "enabled": true
+        },
         "notificationButton",
         "battery",
         "controlCenterButton"
@@ -102,7 +117,7 @@
       "innerPadding": 4,
       "bottomGap": 0,
       "transparency": 1,
-      "widgetTransparency": 0.35,
+      "widgetTransparency": 1,
       "squareCorners": false,
       "noBackground": false,
       "gothCornersEnabled": false,
@@ -120,14 +135,7 @@
       "popupGapsAuto": true,
       "popupGapsManual": 4,
       "followInterfaceStyle": true,
-      "widgetFollowInterfaceStyle": true,
-      "island": true,
-      "dot": false,
-      "islandNotch": true,
-      "islandReserveThickness": 34,
-      "islandAlongOffset": 0,
-      "hoverPopouts": true,
-      "widgetStyle": "pills"
+      "widgetFollowInterfaceStyle": true
     }
   ],
   "configVersion": 42,
@@ -136,30 +144,9 @@
   ],
   "currentThemeName": "dynamic",
   "currentThemeCategory": "dynamic",
-  "matugenScheme": "scheme-fidelity",
-  "iconThemeDark": "TokyoNight-SE",
-  "cursorSettings": {
-    "theme": "Sweet-cursors",
-    "size": 24,
-    "niri": {
-      "hideWhenTyping": false,
-      "hideAfterInactiveMs": 0
-    },
-    "hyprland": {
-      "hideOnKeyPress": true,
-      "hideOnTouch": false,
-      "inactiveTimeout": 0
-    },
-    "dwl": {
-      "cursorHideTimeout": 0
-    },
-    "mango": {
-      "cursorHideTimeout": 0
-    }
-  },
+  "matugenScheme": "scheme-content",
   "keyboardLayouts": "es",
   "keyboardVariants": "nodeadkeys",
-  "keyboardModel": "",
   "builtInPluginSettings": {
     "dms_qr_generator": {
       "trigger": "qrg"
@@ -175,13 +162,25 @@
     }
   },
   "launcherStyle": "spotlight",
-  "fontFamily": "JetBrains Mono NL",
-  "monoFontFamily": "JetBrainsMonoNL Nerd Font",
-  "motionEffect": 0,
-  "reduceMotion": false,
-  "popupTransparency": 0.64,
-  "foregroundLayerTransparency": 0.02,
-  "blurForegroundLayers": true,
-  "blurLayerOutlineOpacity": 0.4,
-  "blurBorderEnabled": false
+  "connectedFrameBarStyleBackups": {
+    "default": {
+      "shadowIntensity": 0,
+      "squareCorners": false,
+      "attachToScreenEdge": false,
+      "gothCornersEnabled": false,
+      "borderEnabled": false
+    }
+  },
+  "frameEnabled": true,
+  "frameRounding": 12,
+  "frameThickness": 6,
+  "blurBorderEnabled": true,
+  "blurEnabled": false,
+  "blurBorderSeeded": true,
+  "popupTransparency": 0.57,
+  "foregroundLayerTransparency": 0.66,
+  "fontFamily": "Inter Variable",
+  "monoFontFamily": "Liberation Mono",
+  "notepadShowLineNumbers": false,
+  "notepadDefaultMode": "slideout"
 }

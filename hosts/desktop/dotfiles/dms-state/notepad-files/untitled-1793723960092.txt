@@ -1,0 +1,58 @@
+forget. How to install https://odysseusai.dev/ on my nixos flake. It says recommended 8-16GB of ram. I have 16GB of ram so Im good.
+
+I don’t know of a Nix package for Odysseus, and I wouldn’t invent one. The documented route is Docker Compose, which works fine on NixOS: your flake enables Docker (and optionally Ollama), and the app itself runs from a cloned repo.
+
+Check the source first
+
+odysseusai.dev says it’s an independent guide, not affiliated with the official maintainers, and it sells paid setup support. The project lives at github.com/odysseus-dev/odysseus, and the guide itself says to verify commands against website/setup.md in that repo. 
+odysseusai
+
+1. NixOS config (in your flake)
+
+nix
+{ pkgs, ... }: {
+  virtualisation.docker.enable = true;
+  users.users.<youruser>.extraGroups = [ "docker" ];   # docker group is effectively root
+
+  # Optional local models:
+  services.ollama = {
+    enable = true;
+    host = "0.0.0.0";   # containers reach the host through the Docker gateway, not loopback
+  };
+}
+
+Replace <youruser>, then run sudo nixos-rebuild switch --flake .#<host> and log out and back in for the group to apply. The guide says an Ollama bound only to loopback is invisible to Odysseus in Docker, and to bind wider only on a trusted LAN. Binding to 0.0.0.0 exposes port 11434 to your network, so don’t open it in the firewall to the outside. If the container can’t reach Ollama afterwards, tell me the error and I’ll work out the firewall rule for the Docker bridge. 
+odysseusai
+odysseusai
+
+2. Install
+
+git clone --branch main https://github.com/odysseus-dev/odysseus.git
+cd odysseus
+cp .env.example .env
+docker compose up -d --build
+
+The guide says a plain clone gets dev, which may be unstable, and the maintainer curates main as the stable branch, so I added --branch main. There are no tagged releases. Keep it in your home directory, not in the Nix store, since it bind-mounts ./data. If you hit permission errors, set PUID and PGID in .env to the output of id -u and id -g. 
+odysseusai
+
+3. First login
+
+Open http://localhost:7011.
+The admin password is printed once in the logs: docker compose logs odysseus | grep -i "temporary password". To choose your own, set ODYSSEUS_ADMIN_PASSWORD in .env before the first start.
+Username is admin.
+
+4. Connect Ollama
+
+In Settings, add the endpoint http://host.docker.internal:11434/v1, then pull a model (ollama pull <model>). The compose file already maps that hostname on Linux, so you shouldn’t need to edit it.
+
+About your 16GB of RAM
+
+The guide’s actual wording is 8GB RAM minimum, 16GB+ recommended if you will run local models. So 16GB is the floor for local models, not a comfortable margin. Model quality depends mostly on GPU VRAM, not system RAM, and the guide says that with no GPU you’re limited to small models of 1 to 4B parameters, which are fine for simple chat but slow for agents. The containers also have no memory limits, so a large model or research run can take the whole host. Watch docker stats the first time. If your NixOS machine has no discrete GPU, an API provider (OpenRouter, for example) will probably work better than local models. 
+odysseusai
+odysseusai
+
+Security
+
+The stack binds to 127.0.0.1 by default. Leave it that way. The app’s agents can use shell, files and web tools behind approval gates, so approve actions deliberately and don’t expose the port.
+
+Is this the Surface, or a different machine? That affects the GPU and Ollama advice.

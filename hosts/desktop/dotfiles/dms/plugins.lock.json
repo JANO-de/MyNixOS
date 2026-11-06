@@ -9,6 +9,11 @@
       "repo": "https://github.com/rochacbruno/DankCalculator",
       "commit": "a27b80ad8c3dd42da11af83461674fb362817515"
     },
+    "clipboardPlus": {
+      "repo": "https://github.com/Dadangdut33/dms-plugins",
+      "path": "ClipboardPlus",
+      "commit": "63fe6b87c497f1f7c2ea61432716817db1c5c3a4"
+    },
     "dankChat": {
       "repo": "https://github.com/coldi1337/DankChat",
       "commit": "59f39c334ce61357ef1f96736aa730bf20b6e205"
@@ -18,21 +23,22 @@
       "path": "DankKDEConnect",
       "commit": "be0b733a4036e0d1e5b3a1f11933569e61719be3"
     },
+    "dankNotepadModule": {
+      "repo": "https://github.com/duxlabs-dev/dux-plugins",
+      "path": "DankNotepadModule",
+      "commit": "be0b733a4036e0d1e5b3a1f11933569e61719be3"
+    },
     "developerUtilities": {
       "repo": "https://github.com/xxyangyoulin/dms-plugin-developer-utilities",
       "commit": "b115dcbbe0d82c80190f4fcc255a935e33889f4a"
-    },
-    "dmsThemeSync": {
-      "repo": "https://github.com/arqueon/dms-theme-sync",
-      "commit": "2d696a0d4799c83b17d195d38c8c8cf9c3d4f263"
     },
     "dmsconky": {
       "repo": "https://github.com/suruibin/dms-conky",
       "commit": "493e4d9191df0ef0c0e03fb7319d4ff19697f3f7"
     },
-    "emojiLauncher": {
-      "repo": "https://github.com/devnullvoid/dms-emoji-launcher",
-      "commit": "fc385900e6df292f0a7e5bdda4e3e37169897d7c"
+    "dockerManager": {
+      "repo": "https://github.com/LuckShiba/DmsDockerManager",
+      "commit": "f6f7d94c84510da098980a2bb733137e90f98fd8"
     },
     "githubHeatmapPlus": {
       "repo": "https://github.com/maxlen727/DMS-GitHub_HeatMap_Plus",
@@ -41,7 +47,7 @@
     "quickCapture": {
       "repo": "https://github.com/hthienloc/dms-plugins",
       "path": "quickCapture",
-      "commit": "34e18ee0ec9823f28afe1f0cecb92950072ce8af"
+      "commit": "7472e6152f8b1c2fadea9e48f597b47660480afb"
     },
     "wallpaperCarousel": {
       "repo": "https://github.com/motor-dev/wallpaperCarousel",

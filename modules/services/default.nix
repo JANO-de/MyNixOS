@@ -16,5 +16,7 @@
     ./artcraft
     ./virtualbox.nix
     ./qmk.nix
+    ./odysseus.nix
+    ./tailscale.nix
   ];
 }

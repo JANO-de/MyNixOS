@@ -14,6 +14,26 @@ in
 lib.mkIf cfg.enable {
   environment.systemPackages = with pkgs; [
     neovim
+    gcc
+    tree-sitter
+    nodejs
+    nil
+    lua-language-server
+    nixfmt
+    stylua
+    vtsls
+    tailwindcss-language-server
+    vscode-langservers-extracted
+    yaml-language-server
+    taplo
+    marksman
+    prettierd
+    bash-language-server
+    shellcheck
+    shfmt
+    statix
+    deadnix
+    lazygit
     git
     wget
     curl

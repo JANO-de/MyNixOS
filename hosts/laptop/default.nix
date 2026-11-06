@@ -14,7 +14,11 @@
   modules.hardware.nvidia.enable = true;
   modules.services.enable = true;
   modules.services.qmk.enable = true;
+<<<<<<< HEAD
   modules.services.virtualbox.enable = true;
+=======
+  modules.services.tailscale.enable = true;
+>>>>>>> 7248df4ee774f7b6cb4f165dd382bb89faf4fc3b
   modules.theme.enable = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
