@@ -14,6 +14,7 @@
   modules.hardware.nvidia.enable = true;
   modules.services.enable = true;
   modules.services.qmk.enable = true;
+  modules.services.tailscale.enable = true;
   modules.theme.enable = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
@@ -66,7 +67,7 @@
   modules.dux.greeter.enable = true;
   modules.desktop.drmDevices = "/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
-    modules.services.odysseus.enable = true;
+  modules.services.odysseus.enable = true;
 
   system.stateVersion = "26.05";
 }

@@ -14,6 +14,7 @@
   modules.hardware.nvidia.enable = true;
   modules.services.enable = true;
   modules.services.qmk.enable = true;
+  modules.services.tailscale.enable = true;
   modules.theme.enable = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
