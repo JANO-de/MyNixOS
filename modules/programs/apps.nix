@@ -18,6 +18,7 @@ in
     environment.systemPackages = with pkgs; [
       inputs.zen-browser.packages.${system}.default
       chromium
+      obsidian
       vesktop
       bazaar
       bitwarden-cli

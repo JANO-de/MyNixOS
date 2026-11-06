@@ -13,6 +13,8 @@
     ./waydroid.nix
     ./powertop.nix
     ./smartd.nix
+    ./artcraft
+    ./virtualbox.nix
     ./qmk.nix
   ];
 }

@@ -2,13 +2,33 @@
   "webSearch": {
     "enabled": true,
     "searchEngines": [],
-    "disabledEngines": []
+    "disabledEngines": [
+      "google",
+      "bing",
+      "ebay",
+      "linkedin",
+      "imdb",
+      "twitter",
+      "archlinux",
+      "aur"
+    ]
   },
   "bitwarden": {
     "enabled": true
   },
   "githubHeatmapPlus": {
-    "enabled": true
+    "enabled": true,
+    "username": "JANO-de",
+    "refreshInterval": 300,
+    "showNotifications": true,
+    "followThemeColor": false,
+    "pillShowSingleDay": false,
+    "pillSquareSize": 10,
+    "pillSpacing": 3,
+    "showDisplayName": true,
+    "desktopBackgroundOpacity": 70,
+    "desktopSquareSize": 11,
+    "desktopSquareSpacing": 3
   },
   "developerUtilities": {
     "enabled": true

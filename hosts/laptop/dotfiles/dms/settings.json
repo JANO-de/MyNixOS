@@ -93,6 +93,10 @@
         {
           "id": "hyprWorkspaceManager",
           "enabled": true
+        },
+        {
+          "id": "dankChat",
+          "enabled": true
         }
       ],
       "centerWidgets": [
@@ -135,7 +139,9 @@
       "popupGapsAuto": true,
       "popupGapsManual": 4,
       "followInterfaceStyle": true,
-      "widgetFollowInterfaceStyle": true
+      "widgetFollowInterfaceStyle": true,
+      "island": true,
+      "dot": false
     }
   ],
   "configVersion": 42,
@@ -162,16 +168,8 @@
     }
   },
   "launcherStyle": "spotlight",
-  "connectedFrameBarStyleBackups": {
-    "default": {
-      "shadowIntensity": 0,
-      "squareCorners": false,
-      "attachToScreenEdge": false,
-      "gothCornersEnabled": false,
-      "borderEnabled": false
-    }
-  },
-  "frameEnabled": true,
+  "connectedFrameBarStyleBackups": {},
+  "frameEnabled": false,
   "frameRounding": 12,
   "frameThickness": 6,
   "blurBorderEnabled": true,
