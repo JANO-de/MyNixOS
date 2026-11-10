@@ -677,3 +677,12 @@ layer-rule {
         xray false
     }
 }
+
+layer-rule {
+    match namespace="^noctalia-plugin:jano/island:island$"
+    geometry-corner-radius 24
+    background-effect {
+        blur true
+        xray false
+    }
+}

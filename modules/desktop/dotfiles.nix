@@ -49,6 +49,8 @@ in
         xdg.configFile = lib.genAttrs names (n: {
           source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/${n}";
         });
+        xdg.dataFile."noctalia/plugins/island".source =
+          config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/noctalia-plugin-island";
       };
   };
 }

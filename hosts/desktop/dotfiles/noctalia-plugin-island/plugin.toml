@@ -1,0 +1,14 @@
+id = "jano/island"
+name = "Island"
+version = "0.1.0"
+plugin_api = 51
+author = "jano"
+
+[[layer]]
+id = "island"
+entry = "island.luau"
+layer = "top"
+anchors = ["top"]
+margins = { top = 8 }
+output = "focused"
+visible = true
