@@ -19,6 +19,7 @@
   modules.theme.enable = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
+  modules.desktop.compositor = "niri";
   modules.scripts.all = true;
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.

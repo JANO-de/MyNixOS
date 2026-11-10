@@ -11,6 +11,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # --- desktop ---
+    niri-flake = {
+      url = "github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    mangowc.url = "github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f";
+    noctalia.url = "github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2";
+
     # --- apps ---
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     zen-browser = {
@@ -75,6 +83,9 @@
             inputs.home-manager.nixosModules.home-manager
             inputs.forge.nixosModules.default
             inputs.dux-files.nixosModules.dux-files # defines programs.dux-files
+            inputs.niri-flake.nixosModules.niri
+            inputs.mangowc.nixosModules.mango
+            inputs.noctalia.nixosModules.default
             ./hosts/${host}/default.nix
             {
               nixpkgs.overlays = [

@@ -18,6 +18,7 @@
   modules.theme.enable = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
+  modules.desktop.compositor = "niri";
   modules.scripts.all = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
