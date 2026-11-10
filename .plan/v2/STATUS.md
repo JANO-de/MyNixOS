@@ -89,3 +89,9 @@ Legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [x] M-8 Docs and root: docs moved to .plan/docs; root `dotfiles/` git rm pending owner OK (rule 14)
 - [x] M-9 Final verify
 - Order: D, then R-1, then M. ASK-1..8 all answered in `M-modules.md`.
+
+## C compositor step (2026-11-10)
+- [x] C-1 niri + mangowm switch (`modules.desktop.compositor`), Noctalia on both, kitty + rofi
+- [x] C-2 niri and mango configs tracked in `hosts/<h>/dotfiles/` (niri 25.08 default, validated)
+- [x] C-3 hyprmon package and `modules/scripts` removed (M-5 superseded); README and gitignores updated
+- Verified: desktop + laptop build, flake check, `niri validate`. Not switched.
