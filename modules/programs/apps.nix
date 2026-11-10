@@ -19,12 +19,11 @@ in
       inputs.zen-browser.packages.${system}.default
       chromium
       obsidian
+      vivali
       vesktop
       bazaar
       bitwarden-cli
-      inputs.claude-desktop.packages.${system}.claude-desktop-with-fhs
       inputs.opencode-flake.packages.${system}.opencode-avx
-      proton-vpn
     ];
   };
 }

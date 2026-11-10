@@ -11,7 +11,7 @@ let
 in
 {
   options.modules.services.powertop.enable =
-    lib.mkEnableOption "powertop --auto-tune once per boot (leaves Wi-Fi power saving alone, see hosts/halos1)";
+    lib.mkEnableOption "powertop --auto-tune once per boot";
 
   config = lib.mkIf cfg.enable {
     systemd.services.powertop-auto-tune = {

@@ -6,7 +6,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # zram: compressed in-memory swap. RAM-backed, so the effective ceiling is
-  # about your RAM size. halos1 overrides this (4 GB machine).
+  # about your RAM size.
   zramSwap = {
     enable = true;
     memoryPercent = 100;

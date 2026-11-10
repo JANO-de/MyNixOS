@@ -18,5 +18,6 @@
     ./qmk.nix
     ./odysseus.nix
     ./tailscale.nix
+    ./artcraft
   ];
 }

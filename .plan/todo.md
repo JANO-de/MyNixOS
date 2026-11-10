@@ -23,3 +23,6 @@ Finished work and task detail: `v2/STATUS.md`. This file: what is open, in order
 ## Notes
 - Owner runs `switch`/`test`/`sudo`. Beam only builds.
 - Halo QML loop: `halo-dev [halos1-ip]`.
+
+- [x] Halo removal (2026-11-10): halos1 host, modules/desktop/halo, Halo greeter/splash/sddm-osk, Halo scripts (halo-*, halos1-*, suite-lint), Hyprland touch layer, inputs arcticons/nixos-hardware/hyprgrass. Unbuilt. Run `nix flake lock` to prune flake.lock.
+- [ ] Next: choose compositor for desktop+laptop (niri+Noctalia vs mangowm), then remove dms/immaterial/dux/dynisland/chronos/droidloom accordingly.

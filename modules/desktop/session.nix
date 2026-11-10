@@ -1,10 +1,8 @@
 # Desktop session: which compositor runs (hyprland), which shell sits on top
-# (dynisland | chronos | halo | immaterial), the SDDM login screen (optional on-screen keyboard for
-# touch-only devices) and the Wayland session basics every host shares.
+# (dynisland | chronos | immaterial), the SDDM login screen and the Wayland session basics every host shares.
 #
 #   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
 #   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
-#   halos1:           session = "hyprland"  modules.halo.enable = true (own shell, modules/desktop/halo/)
 {
   config,
   lib,
@@ -14,10 +12,6 @@
 
 let
   cfg = config.modules.desktop;
-  theme = "share/sddm/themes/catppuccin-mocha-mauve";
-  oskTheme = import ./greeter/sddm-osk.nix {
-    inherit (pkgs) lib stdenvNoCC catppuccin-sddm;
-  };
 
   # Greeter theme for hosts without the on-screen keyboard (desktop, laptop).
   # Change embeddedTheme (astronaut, black_hole, cyberpunk, hyprland_kath,
@@ -46,21 +40,8 @@ in
         ]
       );
       default = null;
-      description = "Legacy Quickshell shell (dynisland, chronos). The current shells have their own switch: modules.imi.enable, modules.halo.enable.";
+      description = "Legacy Quickshell shell (dynisland, chronos). The current shell has its own switch: modules.imi.enable.";
     };
-    hyprlandMode = lib.mkOption {
-      type = lib.types.enum [
-        "tablet"
-        "desktop"
-      ];
-      default = "desktop";
-      description = "Hyprland mode at first login of a boot (tablet = touch UI, desktop = pointer UI). Written to /etc/hypr/default-mode.";
-    };
-    hyprlandTouch.enable = lib.mkEnableOption "Hyprland touch/tablet layer (Surface touch device, rotation, on-screen keyboard). Default false; halos1 sets true.";
-    greeterOsk.enable = lib.mkEnableOption ''
-      an on-screen keyboard in the SDDM greeter (Qt virtual keyboard), so a
-      touch-only device can be logged into
-    '';
   };
 
   config = lib.mkMerge [
@@ -77,7 +58,7 @@ in
           qtsvg
           qtvirtualkeyboard
         ];
-        theme = if cfg.greeterOsk.enable then "${oskTheme}/${theme}" else "sddm-astronaut-theme";
+        theme = "sddm-astronaut-theme";
       };
       services.displayManager.defaultSession =
         if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
@@ -134,32 +115,8 @@ in
           glib
           imagemagick
         ]
-        ++ lib.optional (!cfg.greeterOsk.enable && config.services.displayManager.sddm.enable) astronaut;
+        ++ lib.optional config.services.displayManager.sddm.enable astronaut;
     })
 
-    (lib.mkIf cfg.greeterOsk.enable {
-      services.displayManager.sddm.settings.General = {
-        # SDDM's documented knob for tablets: the greeter uses the Qt virtual
-        # keyboard as its input method.
-        InputMethod = "qtvirtualkeyboard";
-        # The theme's `import QtQuick.VirtualKeyboard` needs the QML modules and
-        # the input-context plugin on the greeter's paths (see sddm-osk.nix for
-        # the theme that actually draws the keyboard).
-        GreeterEnvironment =
-          "QT_IM_MODULE=qtvirtualkeyboard,QML2_IMPORT_PATH="
-          + lib.makeSearchPath "lib/qt-6/qml" [
-            pkgs.qt6.qtdeclarative
-            pkgs.qt6.qtvirtualkeyboard
-          ]
-          + ",QT_PLUGIN_PATH="
-          + lib.makeSearchPath "lib/qt-6/plugins" [
-            pkgs.qt6.qtvirtualkeyboard
-            pkgs.qt6.qtbase
-            pkgs.qt6.qtsvg
-            pkgs.qt6.qtdeclarative
-          ];
-      };
-      environment.systemPackages = [ pkgs.qt6.qtvirtualkeyboard ];
-    })
   ];
 }

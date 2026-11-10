@@ -1,7 +1,7 @@
 # Flake entry point: inputs + thin outputs. Hosts are the folders in ./hosts; packages, apps and
 # the dev shell live in modules/pkgs.
 {
-  description = "MyNixOS: desktop, laptop and halos1";
+  description = "MyNixOS: desktop and laptop";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
@@ -15,10 +15,6 @@
     # Hyprland (flake package: plugins must match its exact version). Do NOT add
     # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
     hyprland.url = "github:hyprwm/Hyprland";
-    hyprgrass = {
-      url = "github:horriblename/hyprgrass";
-      inputs.hyprland.follows = "hyprland";
-    };
 
     # Chronos: niri fork + Quickshell shell (also used by the Surface).
     #chronos.url = "git+file:///home/jano/Proyectos/chronos";
@@ -72,11 +68,6 @@
     # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
-    # Arcticons line-art icons (SVG), recoloured by halo-recolor-icons.
-    arcticons = {
-      url = "github:Donnnno/Arcticons";
-      flake = false;
-    };
     # Rust toolchain (Orchard needs >=1.96)
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -84,8 +75,6 @@
     };
 
     # --- hardware ---
-    # linux-surface kernel, IPTS touch, Marvell wifi firmware (surface).
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
     # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
     # override its nixpkgs input. Pin to 7.2.8 build (avoid 7.3.0 compile).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";

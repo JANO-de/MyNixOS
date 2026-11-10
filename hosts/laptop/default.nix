@@ -24,7 +24,7 @@
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   modules.services.sunshine.enable = true;
 
-  # Deskflow: this machine serves the keyboard/mouse; desktop and halos1 join.
+  # Deskflow: this machine serves the keyboard/mouse; desktop joins.
   modules.programs.deskflow.role = "server";
 
   programs.orchard.enable = true;

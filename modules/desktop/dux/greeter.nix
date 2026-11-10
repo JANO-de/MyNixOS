@@ -1,5 +1,5 @@
 # Dux Greeter (greetd login screen with the Dux Shell look). OFF by default.
-# Replaces SDDM, so it also replaces the Halo greeter/splash login: enable it on one host first
+# Replaces SDDM: enable it on one host first
 # (modules.dux.greeter.enable = true;) and keep the previous generation in the boot menu.
 # UNVERIFIED: the option below is the nixpkgs 26.05 module name from the pre-rename DankGreeter docs;
 # if the rebuild says it does not exist, check `nixos-option services.displayManager` for the new name.

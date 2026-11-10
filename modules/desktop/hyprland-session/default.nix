@@ -94,14 +94,6 @@ let
       ]
   );
 
-  sessionExtras =
-    if cfg.hyprlandTouch.enable then
-      ''
-        dofile("/etc/hypr/hyprland-touch.lua")
-        dofile("/etc/hypr/hyprland-mode.lua")''
-    else
-      "";
-
   content =
     lib.replaceStrings
       [
@@ -111,7 +103,6 @@ let
         "@SCREENSHOT@"
         "@WPCTL@"
         "@SHELL_BINDS@"
-        "@SESSION_EXTRAS@"
         "@DRM_DEVICES@"
       ]
       [
@@ -121,15 +112,12 @@ let
         "${screenshot}"
         "${pkgs.wireplumber}/bin/wpctl"
         shellBinds
-        sessionExtras
         drmDevices
       ]
       (builtins.readFile ./hyprland.lua);
 in
 {
-  imports = [ ./hyprland-touch.nix ];
-
-  options.modules.desktop.drmDevices = lib.mkOption {
+    options.modules.desktop.drmDevices = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     default = null;
     example = "/dev/dri/dgpu";
