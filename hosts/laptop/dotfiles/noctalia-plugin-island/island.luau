@@ -10,11 +10,19 @@ end
 local build
 
 local function refresh()
-  layer.render(build())
+  local ok, tree = pcall(build)
+  if not ok then
+    noctalia.log("island build error: " .. tostring(tree))
+    tree = ui.row({ fill = "surface/0.55", radius = 24, paddingH = 18, paddingV = 10 }, {
+      ui.label({ text = noctalia.formatTime("%H:%M"), fontSize = 14, color = "on_surface" }),
+    })
+  end
+  layer.render(tree)
 end
 
 local function toggle()
   expanded = not expanded
+  pcall(noctalia.layer.configure, "island", { width = 340, height = expanded and 140 or 44 })
   refresh()
 end
 
@@ -41,6 +49,8 @@ build = function()
     border = "on_surface/0.2",
     borderWidth = 1,
     align = "center",
+    justify = "center",
+    flexGrow = 1,
   }
 
   if not expanded or p == nil then

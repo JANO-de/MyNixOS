@@ -10,5 +10,7 @@ entry = "island.luau"
 layer = "top"
 anchors = ["top"]
 margins = { top = 8 }
+width = 340
+height = 44
 output = "focused"
 visible = true
