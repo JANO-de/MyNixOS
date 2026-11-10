@@ -39,14 +39,6 @@
     nvidiaBusId = "PCI:1:0:0";
   };
 
-  modules.dux.search.enable = true;
-  modules.dux.gop.enable = true;
-  modules.dux.calendar.enable = true;
-  programs.dux-files = {
-    enable = true;
-    systemd.enable = true;
-    portal.enable = true;
-  };
   modules.artcraft.enable = true;
   modules.desktop.dotfiles.enable = true;
 

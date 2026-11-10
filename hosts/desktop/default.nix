@@ -61,14 +61,6 @@
   programs.orchard.enable = true;
   programs.niXscout.enable = true;
 
-  modules.dux.search.enable = true;
-  modules.dux.gop.enable = true;
-  modules.dux.calendar.enable = true;
-  programs.dux-files = {
-    enable = true;
-    systemd.enable = true;
-    portal.enable = true;
-  };
   modules.desktop.dotfiles.enable = true;
   modules.services.odysseus.enable = true;
 
