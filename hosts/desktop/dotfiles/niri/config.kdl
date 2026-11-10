@@ -66,7 +66,7 @@ input {
 
     // Focus windows and outputs automatically when moving the mouse into them.
     // Setting max-scroll-amount="0%" makes it work only on windows already fully on screen.
-    // focus-follows-mouse max-scroll-amount="0%"
+    focus-follows-mouse max-scroll-amount="0%"
 }
 
 // You can configure outputs by their name, which you can find
@@ -155,6 +155,7 @@ layout {
 
     // You can change how the focus ring looks.
     focus-ring {
+        off
         // Uncomment this line to disable the focus ring.
         // off
 
@@ -195,11 +196,10 @@ layout {
     border {
         // The settings are the same as for the focus ring.
         // If you enable the border, you probably want to disable the focus ring.
-        off
 
-        width 4
-        active-color "#ffc87f"
-        inactive-color "#505050"
+        width 1
+        active-color "#ffffff80"
+        inactive-color "#ffffff26"
 
         // Color of the border around windows that request your attention.
         urgent-color "#9b0000"
@@ -214,6 +214,7 @@ layout {
 
     // You can enable drop shadows for windows.
     shadow {
+        on
         // Uncomment the next line to enable shadows.
         // on
 
@@ -237,16 +238,16 @@ layout {
         // pixels and match the CSS box-shadow properties.
 
         // Softness controls the shadow blur radius.
-        softness 30
+        softness 56
 
         // Spread expands the shadow.
-        spread 5
+        spread 4
 
         // Offset moves the shadow relative to the window.
-        offset x=0 y=5
+        offset x=0 y=14
 
         // You can also change the shadow color and opacity.
-        color "#0007"
+        color "#00000070"
     }
 
     // Struts shrink the area occupied by windows, similarly to layer-shell panels.
@@ -268,7 +269,6 @@ layout {
 // See the binds section below for more spawn examples.
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
-spawn-at-startup "waybar"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
@@ -630,3 +630,13 @@ window-rule {
     default-column-width { fixed 1400; }
     default-window-height { fixed 900; }
 }
+
+// Glass look: rounded windows, no client-side decorations
+prefer-no-csd
+
+window-rule {
+    geometry-corner-radius 20
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
