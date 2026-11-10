@@ -6,3 +6,4 @@ target/
 *.bak
 *.bak.*
 .idea/
+hosts/*/dotfiles/kitty/themes/

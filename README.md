@@ -101,7 +101,7 @@ Details: [`.plan/docs/hosts.md`](.plan/docs/hosts.md), [`.plan/docs/halos1/`](.p
 | `core` | always on | boot, nix, users, locale, fonts, shell, home-manager |
 | `hardware` | `modules.hardware.*` | firmware, bluetooth, drives, `nvidia`, `cachyos` |
 | `services` | `modules.services.*` | audio, networking, printing, ssh, flatpak, sunshine, waydroid, powertop, smartd, qmk |
-| `theme` | `modules.theme.enable` | palette (plain data, passed to all modules as `theme`), GTK/Qt, Alacritty |
+| `theme` | `modules.theme.enable` | palette (plain data, passed to all modules as `theme`), GTK/Qt |
 | `desktop` | `modules.desktop.*`, `modules.imi`, `modules.halo` | session, hyprland-session, greeter, halo, immaterial, dynisland, chronos, dotfiles, droidloom |
 | `programs` | `modules.programs.*`, `programs.*` | profile `full`/`lean`, deskflow, orchard, niXscout |
 | `dev` | `modules.dev.*` | `fullstack`, `java` (empty, waiting for package lists) |

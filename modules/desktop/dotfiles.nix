@@ -14,7 +14,7 @@
 let
   cfg = config.modules.desktop.dotfiles;
   hmDag = inputs.home-manager.lib.hm.dag;
-  names = [ "mango" "niri" ];
+  names = [ "kitty" "mango" "niri" "rofi" ];
 in
 {
   options.modules.desktop.dotfiles = {

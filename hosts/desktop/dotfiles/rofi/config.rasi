@@ -1,0 +1,31 @@
+* {
+  bg: rgba(28, 28, 30, 80%);
+  bg-alt: rgba(255, 255, 255, 8%);
+  fg: #f5f5f7;
+  accent: #0a84ff;
+  edge: rgba(255, 255, 255, 15%);
+  font: "Inter 13";
+  background-color: transparent;
+  text-color: @fg;
+}
+configuration {
+  modi: "drun,run";
+  show-icons: true;
+  drun-display-format: "{name}";
+}
+window {
+  width: 640px;
+  background-color: @bg;
+  border: 1px;
+  border-color: @edge;
+  border-radius: 20px;
+  padding: 14px;
+}
+mainbox { spacing: 10px; children: [ inputbar, listview ]; }
+inputbar { background-color: @bg-alt; border-radius: 12px; padding: 10px 14px; children: [ entry ]; }
+entry { placeholder: "Search"; placeholder-color: rgba(245, 245, 247, 55%); }
+listview { lines: 8; columns: 1; fixed-height: false; spacing: 4px; scrollbar: false; }
+element { padding: 8px 12px; border-radius: 12px; spacing: 10px; }
+element selected.normal { background-color: @accent; text-color: #ffffff; }
+element-icon { size: 28px; }
+element-text { vertical-align: 0.5; }

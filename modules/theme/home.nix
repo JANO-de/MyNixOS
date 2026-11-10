@@ -3,6 +3,5 @@
 {
   imports = [
     ./gtk-qt.nix
-    ./alacritty.nix
   ];
 }
