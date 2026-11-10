@@ -22,5 +22,9 @@
         "TIME"
       ]
   );
-  console.keyMap = "es";
+  services.xserver.xkb = {
+    layout = "es";
+    variant = "nodeadkeys";
+  };
+  console.useXkbConfig = true;
 }
