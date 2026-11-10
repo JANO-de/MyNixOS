@@ -59,7 +59,7 @@ in
       services.blueman.enable = true;
       programs.dconf.enable = true;
       programs.dconf.profiles.user.databases = [
-        { settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark"; }
+        { settings."org/gnome/desktop/interface".icon-theme = "WhiteSur-dark"; }
         { settings."org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true; }
       ];
       environment.sessionVariables.QML2_IMPORT_PATH = lib.makeSearchPath "lib/qt-6/qml" [

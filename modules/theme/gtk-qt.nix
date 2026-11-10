@@ -1,42 +1,14 @@
-# GTK / Qt theming for user jano.
-{
-  pkgs,
-  lib,
-  theme,
-  ...
-}:
+# GTK / Qt theming for user jano. Colors come from Noctalia templates (gtk3, gtk4, qt);
+# this module only installs the base theme, icons, cursor and font.
+{ pkgs, theme, ... }:
 
 let
-  c = theme.palette;
-
-  gtkPkg = pkgs.catppuccin-gtk.override {
-    variant = "mocha";
-    accents = [ "mauve" ];
-    size = "standard";
-    tweaks = [ "black" ];
+  gtkPkg = pkgs.whitesur-gtk-theme.override {
+    colorVariants = [ "light" "dark" ];
+    themeVariants = [ "default" ];
+    opacityVariants = [ "solid" ];
+    altVariants = [ "normal" ];
   };
-
-  kvantumPkg = pkgs.catppuccin-kvantum.override {
-    variant = "mocha";
-    accent = "mauve";
-  };
-
-  colorsCss = lib.concatStringsSep "\n" (
-    lib.mapAttrsToList (name: value: "@define-color ${name} ${value};") {
-      bg = c.base;
-      bg_alt = c.mantle;
-      surface = c.surface0;
-      surface_alt = c.surface1;
-      fg = c.text;
-      fg_muted = c.subtext1;
-      fg_subtle = c.overlay1;
-      accent = c.mauve;
-      accent_alt = c.lavender;
-      error = c.red;
-      success = c.green;
-      warning = c.yellow;
-    }
-  );
 in
 {
   home.username = "jano";
@@ -48,12 +20,12 @@ in
   gtk = {
     enable = true;
     theme = {
-      name = "catppuccin-mocha-mauve-standard+black";
+      name = "WhiteSur-Dark-solid";
       package = gtkPkg;
     };
     iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      name = "WhiteSur-dark";
+      package = pkgs.whitesur-icon-theme;
     };
     font = {
       name = theme.fonts.sans;
@@ -61,17 +33,17 @@ in
     };
   };
 
-  qt = {
-    enable = true;
-    platformTheme.name = "gtk3";
-    kvantum = {
-      enable = true;
-      settings.General.theme = "catppuccin-mocha-mauve";
-      themes = [ kvantumPkg ];
-    };
+  home.pointerCursor = {
+    package = pkgs.apple-cursor;
+    name = "macOS";
+    size = 24;
+    gtk.enable = true;
   };
 
-  xdg.configFile."gtk-3.0/colors.css".text = colorsCss;
+  qt = {
+    enable = true;
+    platformTheme.name = "qtct";
+  };
 
   xdg.configFile."gtk-3.0/settings.ini".force = true;
   xdg.configFile."gtk-4.0/settings.ini".force = true;
