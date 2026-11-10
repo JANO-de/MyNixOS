@@ -1,5 +1,4 @@
 # Generated / cache files: not worth tracking (patterns apply to every host folder).
-**/hypr/hyprmon_backups/
 **/hypr/hyprland/colors.conf
 **/hypr/hyprlock/colors.conf
 **/illogical-impulse/preset-store/

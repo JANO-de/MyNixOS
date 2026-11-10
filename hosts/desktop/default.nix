@@ -19,7 +19,6 @@
   modules.programs.enable = true;
   modules.desktop.enable = true;
   modules.desktop.compositor = "niri";
-  modules.scripts.all = true;
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds, and the daemon just rebuilds from

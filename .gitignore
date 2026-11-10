@@ -5,5 +5,4 @@ target/
 *.qcow2
 *.bak
 *.bak.*
-# preset-store/ and hyprmon_backups/ are ignored in dotfiles/.gitignore
 .idea/

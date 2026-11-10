@@ -3,7 +3,7 @@
 # ~/.config/<name> becomes a symlink to <repoPath>/hosts/<host>/dotfiles/<name> for every
 # name in `names`. One folder per host, because some files are machine-specific.
 # The links point at the live checkout (not the Nix store), so edits apply without a rebuild.
-# `names` stays empty until the niri/mangowm/Noctalia step fills it.
+# `names` lists the app configs linked from the repo; add niri here once its config is tracked.
 {
   config,
   lib,
@@ -14,7 +14,7 @@
 let
   cfg = config.modules.desktop.dotfiles;
   hmDag = inputs.home-manager.lib.hm.dag;
-  names = [ "mango" ];
+  names = [ "mango" "niri" ];
 in
 {
   options.modules.desktop.dotfiles = {

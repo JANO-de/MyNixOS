@@ -50,7 +50,7 @@ More: [`.plan/docs/workflow.md`](.plan/docs/workflow.md).
 flake.nix        inputs + thin outputs (hosts = the folders in hosts/)
 flake.lock       never edited by hand
 hosts/<host>/    switchboard (default.nix) + hardware + host-only files
-  dotfiles/      app-written configs kept in git (hypr, hyprmon, matugen, ...)
+  dotfiles/      app-written configs kept in git (mango, ...)
 modules/         every capability, one module each
 .plan/           guide, status and docs (see below)
 ```
@@ -84,7 +84,6 @@ modules.theme.enable = true;
 modules.programs.enable = true;
 modules.desktop.enable = true;
 modules.imi.enable = true;          # the shell
-modules.scripts.all = true;         # helper commands
 ```
 
 | Host | Notes |
@@ -107,7 +106,6 @@ Details: [`.plan/docs/hosts.md`](.plan/docs/hosts.md), [`.plan/docs/halos1/`](.p
 | `programs` | `modules.programs.*`, `programs.*` | profile `full`/`lean`, deskflow, orchard, niXscout |
 | `dev` | `modules.dev.*` | `fullstack`, `java` (empty, waiting for package lists) |
 | `gaming` | `modules.gaming.*` | `steam`, `gamemode`, `all` (empty, waiting for package lists) |
-| `scripts` | `modules.scripts.*` | one folder per helper command |
 | `pkgs` | n/a | packages and flake helpers, not NixOS modules |
 
 Every option, with its file: [`.plan/docs/modules.md`](.plan/docs/modules.md).
@@ -123,29 +121,9 @@ Every option, with its file: [`.plan/docs/modules.md`](.plan/docs/modules.md).
 
 Halo suite style guide: [`.plan/docs/suite-style.md`](.plan/docs/suite-style.md).
 
-## Commands
-
-Helper commands are packages under `modules/scripts/`, enabled with `modules.scripts.all = true;` or one at a time (`modules.scripts.<name>.enable`). They run from the checkout at `modules.scripts.repoPath`.
-
-| Command | What |
-|---------|------|
-| `halo-dev [ip]` | hot-reload loop for Halo on the Surface, no rebuild |
-| `halo-ipc call shade toggle` | talk to the running halo-test shell |
-| `halo-live-binds` | reset binds, add the top-edge shade bind |
-| `halos1-deploy [ip]` | build on the PC, push to the Surface |
-| `halos1-reboot [ip]` | reboot the Surface |
-| `halos1-clean [ip]` | drop old generations |
-| `halos1-android-apps` | install F-Droid, Aurora, microG into Droidloom |
-| `halos1-baseline` | battery baseline (on the Surface, on battery) |
-| `suite-lint` | lint the Halo suite QML |
-| `adopt-dotfiles`, `migrate-dotfiles-per-host`, `config-backup` | dotfiles bootstrap and backup |
-
-The two bootstrap scripts also run without being installed: `nix run .#adopt-dotfiles`.
-Reference: [`modules/scripts/README.md`](modules/scripts/README.md).
-
 ## Dotfiles
 
-`modules.desktop.dotfiles.enable` links `~/.config/{hypr,hyprmon,matugen}` to `hosts/<host>/dotfiles/<name>` **in the live checkout** (not the Nix store), so edits apply without a rebuild and `git diff` shows every change. First time on a host: run `adopt-dotfiles` **before** the rebuild.
+`modules.desktop.dotfiles.enable` links `~/.config/mango` to `hosts/<host>/dotfiles/<name>` **in the live checkout** (not the Nix store), so edits apply without a rebuild and `git diff` shows every change.
 
 ## Flake inputs
 

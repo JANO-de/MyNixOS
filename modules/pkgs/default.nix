@@ -12,15 +12,6 @@ let
     in
     pkgs.callPackage ../programs/orchard/pkg/default.nix { };
   niXscoutPkg = pkgs.callPackage ../programs/nixscout/pkg/default.nix { };
-  scriptPkg =
-    name:
-    import ../scripts/${name}/package.nix {
-      inherit pkgs;
-      repoPath = "$HOME/Proyectos/MyNixOS";
-    };
-  adoptDotfilesPkg = scriptPkg "adopt-dotfiles";
-  migrateDotfilesPkg = scriptPkg "migrate-dotfiles-per-host";
-  hyprmonPkg = pkgs.callPackage ./hyprmon/default.nix { };
   localsendCliPkg = pkgs.callPackage ./localsend-cli/default.nix { };
   matugenPkg = pkgs.callPackage ./matugen/default.nix { };
 in
@@ -28,7 +19,6 @@ in
   packages = {
     orchard = orchardPkg;
     niXscout = niXscoutPkg;
-    hyprmon = hyprmonPkg;
     localsend-cli = localsendCliPkg;
     matugen = matugenPkg;
   };
@@ -41,19 +31,10 @@ in
       type = "app";
       program = "${niXscoutPkg}/bin/niXscout";
     };
-    adopt-dotfiles = {
-      type = "app";
-      program = "${adoptDotfilesPkg}/bin/adopt-dotfiles";
-    };
-    migrate-dotfiles-per-host = {
-      type = "app";
-      program = "${migrateDotfilesPkg}/bin/migrate-dotfiles-per-host";
-    };
   };
   overlay = final: prev: {
     orchard = final.callPackage ../programs/orchard/pkg/default.nix { };
     niXscout = final.callPackage ../programs/nixscout/pkg/default.nix { };
-    hyprmon = final.callPackage ./hyprmon/default.nix { };
     localsend-cli = final.callPackage ./localsend-cli/default.nix { };
     matugen = final.callPackage ./matugen/default.nix { };
   };
