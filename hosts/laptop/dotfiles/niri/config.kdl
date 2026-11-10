@@ -622,3 +622,8 @@ window-rule {
     clip-to-geometry true
     draw-border-with-background false
 }
+
+cursor {
+    xcursor-theme "macOS"
+    xcursor-size 24
+}
