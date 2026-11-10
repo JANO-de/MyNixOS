@@ -1,5 +1,5 @@
 # Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: modules.hardware.cachyos.enable, off).
-# Hyprland + immaterial-impulse.
+# niri + Noctalia.
 { lib, ... }:
 
 {
@@ -39,12 +39,15 @@
     nvidiaBusId = "PCI:1:0:0";
   };
 
-  modules.desktop.session = "hyprland";
-  modules.imi.enable = false;
-  modules.dms.enable = true;
-  modules.dux.greeter.enable = true;
+  modules.dux.search.enable = true;
+  modules.dux.gop.enable = true;
+  modules.dux.calendar.enable = true;
+  programs.dux-files = {
+    enable = true;
+    systemd.enable = true;
+    portal.enable = true;
+  };
   modules.artcraft.enable = true;
-  modules.desktop.drmDevices = "/dev/dri/igpu:/dev/dri/dgpu";
   modules.desktop.dotfiles.enable = true;
 
   system.stateVersion = "26.05";

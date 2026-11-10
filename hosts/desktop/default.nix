@@ -1,11 +1,10 @@
-# Desktop PC: AMD + NVIDIA (GTX 1060). Hyprland + immaterial-impulse.
+# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Noctalia.
 { lib, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    ./matrix.nix
   ];
 
   networking.hostName = "desktop";
@@ -62,11 +61,14 @@
   programs.orchard.enable = true;
   programs.niXscout.enable = true;
 
-  modules.desktop.session = "hyprland";
-  modules.imi.enable = false;
-  modules.dms.enable = true;
-  modules.dux.greeter.enable = true;
-  modules.desktop.drmDevices = "/dev/dri/dgpu";
+  modules.dux.search.enable = true;
+  modules.dux.gop.enable = true;
+  modules.dux.calendar.enable = true;
+  programs.dux-files = {
+    enable = true;
+    systemd.enable = true;
+    portal.enable = true;
+  };
   modules.desktop.dotfiles.enable = true;
   modules.services.odysseus.enable = true;
 

@@ -1,8 +1,5 @@
-# Desktop session: which compositor runs (hyprland), which shell sits on top
-# (dynisland | chronos | immaterial), the SDDM login screen and the Wayland session basics every host shares.
-#
-#   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
-#   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
+# Desktop session: the SDDM login screen and the Wayland session basics every host shares.
+# Compositor and shell come with the compositor module.
 {
   config,
   lib,
@@ -26,22 +23,7 @@ in
   ];
 
   options.modules.desktop = {
-    enable = lib.mkEnableOption "the desktop session (login screen, Wayland session basics, Hyprland through UWSM)";
-    session = lib.mkOption {
-      type = lib.types.enum [ "hyprland" ];
-      default = "hyprland";
-      description = "Compositor started by the login screen. 'hyprland' runs through UWSM (see hyprland.nix).";
-    };
-    shell = lib.mkOption {
-      type = lib.types.nullOr (
-        lib.types.enum [
-          "dynisland"
-          "chronos"
-        ]
-      );
-      default = null;
-      description = "Legacy Quickshell shell (dynisland, chronos). The current shell has its own switch: modules.imi.enable.";
-    };
+    enable = lib.mkEnableOption "the desktop session (login screen, Wayland session basics)";
   };
 
   config = lib.mkMerge [
@@ -60,8 +42,6 @@ in
         ];
         theme = "sddm-astronaut-theme";
       };
-      services.displayManager.defaultSession =
-        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
       # SDDM prefers the last-used session over defaultSession; forget it every
       # boot so a stale choice (e.g. an old Plasma entry) can never win.
       systemd.tmpfiles.rules = lib.optional config.services.displayManager.sddm.enable "r /var/lib/sddm/state.conf";
@@ -70,6 +50,8 @@ in
       # Electron apps (vscodium, vesktop, claude-desktop...) run natively on Wayland
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
       security.polkit.enable = true;
+      xdg.portal.enable = lib.mkDefault true;
+      xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # file picker
 
       programs.kdeconnect.enable = true;
       services.tumbler.enable = true;

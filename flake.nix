@@ -11,21 +11,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # --- desktop / session ---
-    # Hyprland (flake package: plugins must match its exact version). Do NOT add
-    # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
-    hyprland.url = "github:hyprwm/Hyprland";
-
-    # Chronos: niri fork + Quickshell shell (also used by the Surface).
-    #chronos.url = "git+file:///home/jano/Proyectos/chronos";
-
-    # immaterial-impulse: Hyprland shell (replaces ii on desktop + laptop). XephyLon.
-    immaterial-impulse = {
-      url = "github:XephyLon/immaterial-impulse/a79750979c7d5343744eee30f80439688bae49c9";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # --- apps ---
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     zen-browser = {
@@ -39,14 +24,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # DankMaterialShell (Dux Shell): Quickshell-based desktop shell + the Dux suite.
-    # If one of the Dux apps fails with a Go version error (needs Go 1.27),
+    # Dux suite apps. If one fails with a Go version error (needs Go 1.27),
     # remove its `inputs.nixpkgs.follows` line so it uses its own nixpkgs pin.
-    dms = {
-      url = "github:duxlabs-dev/dux-shell/stable";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
-    };
     dux-files = {
       url = "github:duxlabs-dev/dux-files";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -95,7 +74,6 @@
           modules = [
             inputs.home-manager.nixosModules.home-manager
             inputs.forge.nixosModules.default
-            inputs.dms.nixosModules.default
             inputs.dux-files.nixosModules.dux-files # defines programs.dux-files
             ./hosts/${host}/default.nix
             {

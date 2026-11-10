@@ -1,13 +1,9 @@
 # Keep app-written configs inside the flake repo instead of loose files in ~/.config.
 #
-# ~/.config/{hypr,hyprmon,dms,matugen} and ~/.local/state/dms become symlinks to
-# <repoPath>/hosts/<host>/dotfiles/<name>. One folder per host, because some files are
-# machine-specific (hyprmon.lua monitor layout, per-GPU settings).
-# Hyprland, hyprmon (hyprmon.lua, profiles) and the DMS Settings app then write straight into
-# the repo, so `git diff` shows every change. The links point at the live checkout (not the Nix
-# store), so edits apply without a rebuild.
-#
-# First time on a host: run adopt-dotfiles --host <host> (and dms-adopt.sh <host>) BEFORE the rebuild.
+# ~/.config/<name> becomes a symlink to <repoPath>/hosts/<host>/dotfiles/<name> for every
+# name in `names`. One folder per host, because some files are machine-specific.
+# The links point at the live checkout (not the Nix store), so edits apply without a rebuild.
+# `names` stays empty until the niri/mangowm/Noctalia step fills it.
 {
   config,
   lib,
@@ -18,18 +14,11 @@
 let
   cfg = config.modules.desktop.dotfiles;
   hmDag = inputs.home-manager.lib.hm.dag;
-  imi = config.modules.imi.enable;
-  names = [
-    "hypr"
-    "hyprmon"
-    "dms"
-    "dms-state"
-  ]
-  ++ lib.optional (!imi) "matugen";
+  names = [ ];
 in
 {
   options.modules.desktop.dotfiles = {
-    enable = lib.mkEnableOption "app configs (hypr, hyprmon, dms, matugen) stored in the flake repo via symlinks";
+    enable = lib.mkEnableOption "app configs stored in the flake repo via symlinks";
     repoPath = lib.mkOption {
       type = lib.types.str;
       default = "/home/jano/Proyectos/MyNixOS";
@@ -44,30 +33,22 @@ in
     dir = lib.mkOption {
       type = lib.types.str;
       default = "${cfg.repoPath}/hosts/${cfg.host}/dotfiles";
-      description = ''
-        Directory the configs live in. Override only to keep a host on the
-        old flat layout (<repo>/dotfiles) until it is migrated with migrate-dotfiles-per-host.
-      '';
+      description = "Directory the configs live in.";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.jano = { config, ... }: {
-      # The link targets must exist before home-manager creates the links.
-      home.activation.dotfilesDirs = hmDag.entryBefore [ "linkGeneration" ] ''
-        run mkdir -p ${lib.concatMapStringsSep " " (n: "\"${cfg.dir}/${n}\"") names}
-      '';
-
-      xdg.configFile = {
-        "hypr".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hypr";
-        "hyprmon".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hyprmon";
-        "dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms";
-      }
-      // lib.optionalAttrs (!imi) {
-        "matugen".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/matugen";
+    home-manager.users.jano =
+      { config, ... }:
+      {
+        home.activation.dotfilesDirs = lib.mkIf (names != [ ]) (
+          hmDag.entryBefore [ "linkGeneration" ] ''
+            run mkdir -p ${lib.concatMapStringsSep " " (n: "\"${cfg.dir}/${n}\"") names}
+          ''
+        );
+        xdg.configFile = lib.genAttrs names (n: {
+          source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/${n}";
+        });
       };
-
-      xdg.stateFile."dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms-state";
-    };
   };
 }
