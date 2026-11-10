@@ -40,6 +40,7 @@ in
       })
       (lib.mkIf (cfg.compositor == "niri") {
         programs.niri.enable = true;
+        programs.niri.package = inputs.niri-flake.packages.${sys}.niri-unstable;
         programs.noctalia.systemd.enable = true;
         services.displayManager.defaultSession = "niri";
       })

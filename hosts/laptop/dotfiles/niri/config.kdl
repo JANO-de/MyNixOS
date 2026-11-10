@@ -627,3 +627,25 @@ cursor {
     xcursor-theme "macOS"
     xcursor-size 24
 }
+
+// Glass: blur only behind the translucent surfaces.
+window-rule {
+    match app-id="^kitty$"
+    background-effect {
+        blur true
+        xray false
+    }
+}
+layer-rule {
+    match namespace="^rofi$"
+    background-effect {
+        blur true
+        xray false
+    }
+}
+layer-rule {
+    match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+    background-effect {
+        xray false
+    }
+}
