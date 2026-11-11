@@ -10,6 +10,8 @@ pkgs.python3Packages.buildPythonPackage rec {
     hash = "1xqm4am5narw2hzmcww528galiv5lxngjcbc785zslc2zp5nx1xi";
   };
 
+  pyproject = true;
+
   meta = {
     description = "Aureli CLI (au)";
     homepage = "https://github.com/eq-desktop/cli";
