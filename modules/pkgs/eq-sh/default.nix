@@ -21,4 +21,6 @@ pkgs.python3Packages.buildPythonPackage rec {
       au = "au";
     };
   };
+
+  nativeBuildInputs = [ pkgs.setuptools ];
 }
