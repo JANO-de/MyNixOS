@@ -1,12 +1,9 @@
-{ pkgs }:
-let
-  inherit (pkgs) fetchFromGitHub;
-in
+{ lib, pkgs }:
 pkgs.python3Packages.buildPyprojectPackage rec {
   pname = "aureli";
   version = "0.1.0";
 
-  src = fetchFromGitHub {
+  src = pkgs.fetchFromGitHub {
     owner = "eq-desktop";
     repo = "cli";
     rev = "v${version}";
