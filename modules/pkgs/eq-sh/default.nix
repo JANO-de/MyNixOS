@@ -7,7 +7,7 @@ pkgs.python3Packages.buildPythonPackage rec {
     owner = "eq-desktop";
     repo = "cli";
     rev = "v${version}";
-    hash = "1xqm4am5narw2hzmcww528galiv5lxngjcbc785zslc2zp5nx1xi";
+    sha256 = "1xqm4am5narw2hzmcww528galiv5lxngjcbc785zslc2zp5nx1xi";
   };
 
   pyproject = true;
