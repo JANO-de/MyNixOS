@@ -12,8 +12,6 @@ pkgs.python3Packages.buildPythonPackage rec {
 
   propagatedBuildInputs = [ pkgs.requests ];
 
-  pyproject = { build-system = [ "setuptools" ]; };
-
   meta = {
     description = "Aureli CLI (au)";
     homepage = "https://github.com/eq-desktop/cli";
