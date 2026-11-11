@@ -10,6 +10,8 @@ pkgs.python3Packages.buildPythonPackage rec {
     sha256 = "1xqm4am5narw2hzmcww528galiv5lxngjcbc785zslc2zp5nx1xi";
   };
 
+  nativeBuildInputs = [ pkgs.setuptools ];
+
   pyproject = true;
 
   meta = {
