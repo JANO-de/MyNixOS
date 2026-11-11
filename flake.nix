@@ -36,9 +36,17 @@
     # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
+    deepseek-harness.url = "github:moraxyc/deepseek-harness.nix";
+
     # Rust toolchain (Orchard needs >=1.96)
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    ambxst.url = "github:Axenide/Ambxst";
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -66,6 +74,7 @@
             inputs.niri-flake.nixosModules.niri
             inputs.mangowc.nixosModules.mango
             inputs.noctalia.nixosModules.default
+            inputs.deepseek-harness.nixosModules.default
             ./hosts/${host}/default.nix
             {
               nixpkgs.overlays = [

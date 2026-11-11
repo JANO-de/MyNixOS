@@ -25,5 +25,4 @@ Finished work and task detail: `v2/STATUS.md`. This file: what is open, in order
 - Halo QML loop: `halo-dev [halos1-ip]`.
 
 - [x] Halo removal (2026-11-10): halos1 host, modules/desktop/halo, Halo greeter/splash/sddm-osk, Halo scripts (halo-*, halos1-*, suite-lint), Hyprland touch layer, inputs arcticons/nixos-hardware/hyprgrass. Unbuilt. Run `nix flake lock` to prune flake.lock.
-- [x] Compositor step (2026-11-10): niri + mangowm switch, Noctalia on both, kitty + rofi, niri/mango configs in dotfiles; hyprmon and modules/scripts removed. Built desktop+laptop, unswitched.
-- [ ] Next: remove dms/immaterial/dux/dynisland/chronos/droidloom and the niri entry in hosts/halos1 leftovers; README hypr leftovers.
+- [ ] Next: choose compositor for desktop+laptop (niri+Noctalia vs mangowm), then remove dms/immaterial/dux/dynisland/chronos/droidloom accordingly.

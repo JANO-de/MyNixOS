@@ -1,4 +1,4 @@
-# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Noctalia.
+# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Caelestia.
 { lib, ... }:
 
 {
@@ -19,6 +19,8 @@
   modules.programs.enable = true;
   modules.desktop.enable = true;
   modules.desktop.compositor = "niri";
+  modules.desktop.shell = "caelestia";
+  services.upower.enable = true; # battery service
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
   # silently ignored for this user's builds, and the daemon just rebuilds from

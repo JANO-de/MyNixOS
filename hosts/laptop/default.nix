@@ -20,6 +20,7 @@
   modules.programs.enable = true;
   modules.desktop.enable = true;
   modules.desktop.compositor = "niri";
+  modules.desktop.shell = "noctalia";
 
   # The Surface acts as an extra monitor via this sunshine server + moonlight.
   modules.services.sunshine.enable = true;

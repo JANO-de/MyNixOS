@@ -1,16 +1,21 @@
 id = "jano/island"
 name = "Island"
-version = "0.1.0"
+version = "0.3.0"
 plugin_api = 51
 author = "jano"
 
+# One layer-shell entry: top-center pill on the focused output.
+# Namespace niri sees: noctalia-plugin:jano/island:island
+# exclusiveZone is also forced to -1 at runtime (see island.luau init), so the
+# pill never reserves space or pushes your windows around.
 [[layer]]
 id = "island"
 entry = "island.luau"
 layer = "top"
 anchors = ["top"]
 margins = { top = 8 }
-width = 340
+width = 200
 height = 44
 output = "focused"
+exclusiveZone = -1
 visible = true

@@ -1,0 +1,18 @@
+// niri layer-rule for the island pill (niri-unstable syntax, verified against
+// the blur rules already present in hosts/*/dotfiles/niri/config.kdl).
+//
+// Both hosts' config.kdl already carry this rule with radius 24; radius 22
+// matches the pill's capsule (height 44 / 2). Replace the old block with this
+// one, or leave radius 24 — niri clamps it.
+//
+// The surface itself is resized every spring frame via noctalia.layer.configure,
+// so the blur region always hugs the pill without any extra rules.
+
+layer-rule {
+    match namespace="^noctalia-plugin:jano/island:island$"
+    geometry-corner-radius 22
+    background-effect {
+        blur true
+        xray false
+    }
+}

@@ -18,7 +18,7 @@ in
 
     programs.forge.enable = true;
     environment.shellAliases.llm = "$HOME/.local/bin/llm";
-
+    
     services.llama-cpp = {
       enable = true;
       package = llama;
