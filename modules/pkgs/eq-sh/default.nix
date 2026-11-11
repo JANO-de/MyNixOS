@@ -1,5 +1,5 @@
 { lib, pkgs }:
-pkgs.python3Packages.buildPyprojectPackage rec {
+pkgs.python3Packages.buildPythonPackage rec {
   pname = "aureli";
   version = "0.1.0";
 
@@ -9,6 +9,8 @@ pkgs.python3Packages.buildPyprojectPackage rec {
     rev = "v${version}";
     hash = "1xqm4am5narw2hzmcww528galiv5lxngjcbc785zslc2zp5nx1xi";
   };
+
+  propagatedBuildInputs = [ pkgs.requests ];
 
   meta = {
     description = "Aureli CLI (au)";
