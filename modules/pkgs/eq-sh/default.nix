@@ -1,4 +1,7 @@
 { lib, pkgs }:
+let
+  stdenv = pkgs.stdenv;
+in
 pkgs.python3Packages.buildPythonPackage rec {
   pname = "aureli";
   version = "0.1.0";
@@ -10,7 +13,7 @@ pkgs.python3Packages.buildPythonPackage rec {
     sha256 = "1xqm4am5narw2hzmcww528galiv5lxngjcbc785zslc2zp5nx1xi";
   };
 
-  propagatedBuildInputs = [ pkgs.setuptools ];
+  nativeBuildInputs = [ (with pkgs; setuptools) ];
 
   pyproject = true;
 
