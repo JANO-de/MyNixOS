@@ -80,11 +80,9 @@ in
       { environment.systemPackages = [ launcher ]; }
 
       (lib.mkIf (cfg.shell == "noctalia") {
-        programs.noctalia = {
+        services.noctalia-shell = {
           enable = true;
           package = noctalia;
-          recommendedServices.enable = true;
-          systemd.enable = cfg.compositor == "niri";
         };
       })
 

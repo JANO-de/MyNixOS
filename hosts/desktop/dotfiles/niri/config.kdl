@@ -419,9 +419,9 @@ binds {
     // Mod+Ctrl+J     { move-window-down-or-to-workspace-down; }
     // Mod+Ctrl+K     { move-window-up-or-to-workspace-up; }
 
-    Mod+Home { focus-column-first; }
+    Mod+Print { focus-column-first; }
     Mod+End  { focus-column-last; }
-    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+Print { move-column-to-first; }
     Mod+Ctrl+End  { move-column-to-last; }
 
     Mod+Shift+Left  { focus-monitor-left; }
@@ -593,9 +593,9 @@ binds {
     // Mod+Space       { switch-layout "next"; }
     // Mod+Shift+Space { switch-layout "prev"; }
 
-    Print { screenshot; }
-    Ctrl+Print { screenshot-screen; }
-    Alt+Print { screenshot-window; }
+    Home { screenshot; }
+    Ctrl+Home { screenshot-screen; }
+    Alt+Home { screenshot-window; }
 
     // Applications such as remote-desktop clients and software KVM switches may
     // request that niri stops processing the keyboard shortcuts defined here
@@ -658,29 +658,6 @@ window-rule {
 }
 layer-rule {
     match namespace="^rofi$"
-    background-effect {
-        blur true
-        xray false
-    }
-}
-layer-rule {
-    match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
-    background-effect {
-        xray false
-    }
-}
-
-layer-rule {
-    match namespace="^noctalia-(notification|dock|panel|attached-panel|osd)$"
-    background-effect {
-        blur true
-        xray false
-    }
-}
-
-layer-rule {
-    match namespace="^noctalia-plugin:jano/island:island$"
-    geometry-corner-radius 22
     background-effect {
         blur true
         xray false

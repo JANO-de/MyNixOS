@@ -21,9 +21,12 @@ in
       obsidian
       vivali
       vesktop
+      strawberry
       bazaar
       bitwarden-cli
       inputs.opencode-flake.packages.${system}.opencode-avx
+      inputs.viu.packages.${system}.default
+      codex
     ];
   };
 }

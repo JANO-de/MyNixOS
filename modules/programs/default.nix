@@ -47,5 +47,8 @@
     ./deskflow.nix
     ./orchard
     ./nixscout
+    ./nyaa-si
+    ./neo-mangal
+    ./vid-dl
   ];
 }

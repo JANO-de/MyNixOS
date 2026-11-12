@@ -1,7 +1,7 @@
 # Services module aggregator. Off until a host sets modules.services.enable.
 { lib, ... }:
 {
-  options.modules.services.enable = lib.mkEnableOption "audio, networking, printing, SSH and Flatpak";
+  options.modules.services.enable = lib.mkEnableOption "audio, networking, printing, SSH, Flatpak and Jellyfin";
 
   imports = [
     ./networking.nix
@@ -18,6 +18,10 @@
     ./qmk.nix
     ./odysseus.nix
     ./tailscale.nix
+    ./jellyfin.nix
+    ./homepage.nix
     ./artcraft
+    ./media-tracker.nix
+    ./media-stack.nix
   ];
 }

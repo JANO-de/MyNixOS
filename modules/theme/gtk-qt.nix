@@ -15,7 +15,15 @@ in
   home.homeDirectory = "/home/jano";
   home.stateVersion = "26.05";
 
-  home.packages = [ pkgs.jq ];
+  home.packages = [
+    pkgs.jq
+    (pkgs.catppuccin-kvantum.override {
+      variant = "mocha";
+      accent = "mauve";
+    })
+  ];
+
+  xdg.configFile."Kvantum/kvantum.kvconfig".text = "[General]\ntheme=catppuccin-mocha-mauve\n";
 
   gtk = {
     enable = true;
@@ -43,6 +51,7 @@ in
   qt = {
     enable = true;
     platformTheme.name = "qtct";
+    style.name = "kvantum";
   };
 
   xdg.configFile."gtk-3.0/settings.ini".force = true;

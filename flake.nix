@@ -17,7 +17,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mangowc.url = "github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f";
-    noctalia.url = "github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2";
+    noctalia.url = "github:noctalia-dev/noctalia-shell/3abfa1fc09b62dc4cdeeb7b787886f075696f0b7";
 
     # --- apps ---
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
@@ -27,6 +27,7 @@
     };
     #classwork.url = "git+file:///home/jano/Proyectos/Classwork";
     opencode-flake.url = "github:noblepayne/opencode-flake";
+    viu.url = "github:viu-media/viu";
     forge = {
       url = "github:JANO-de/Forge-TUI"; # terminal UI for OpenCode
       inputs.nixpkgs.follows = "nixpkgs";
@@ -35,6 +36,16 @@
     # Native Claude Desktop (Electron) wrapper. Not made to follow our nixpkgs:
     # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
+
+    # --- TUI apps: plain upstream sources, packaged in modules/programs/<name>/pkg ---
+    nyaa-si-src = {
+      url = "https://codeberg.org/madLinux/nyaa-si/archive/v1.0.0.tar.gz";
+      flake = false;
+    };
+    neo-mangal-src = {
+      url = "github:kalebhenrique/neo-mangal/086703a119a7bf72ab229eb7fc176fed877199fa";
+      flake = false;
+    };
 
     deepseek-harness.url = "github:moraxyc/deepseek-harness.nix";
 
@@ -94,6 +105,8 @@
       overlays.default = pkgsOut.overlay;
       nixosModules.orchard = ./modules/programs/orchard/default.nix;
       nixosModules.niXscout = ./modules/programs/nixscout/default.nix;
+      nixosModules.nyaa-si = ./modules/programs/nyaa-si/default.nix;
+      nixosModules.neo-mangal = ./modules/programs/neo-mangal/default.nix;
       nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
       devShells.${system} = dev.shells;
       formatter.${system} = dev.formatter;

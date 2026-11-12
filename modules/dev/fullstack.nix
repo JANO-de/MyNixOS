@@ -20,6 +20,7 @@ in
       cmake
       cargo
       rustc
+      rustup
       ninja
       pkg-config
       python3

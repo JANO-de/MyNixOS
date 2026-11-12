@@ -18,7 +18,7 @@ in
 
     programs.forge.enable = true;
     environment.shellAliases.llm = "$HOME/.local/bin/llm";
-    
+
     services.llama-cpp = {
       enable = true;
       package = llama;
@@ -32,32 +32,30 @@ in
         "qwen3-8b-unsloth" = {
           model = "/var/lib/llama-models/Qwen3-8B-unsloth-Q4_K_M.gguf";
           alias = "qwen3-8b-unsloth";
-          ctx-size = "8192";
-          fit-target = "640";
+          ctx-size = "4096";
+          fit-target = "256";
           temp = "0.6";
           top-p = "0.95";
           top-k = "20";
         };
-        "qwen3-4b" = {
-          model = "/var/lib/llama-models/Qwen3-4B-Instruct-2507-Q4_K_M.gguf";
-          alias = "qwen3-4b";
-          ctx-size = "8192";
-          n-gpu-layers = "99";
-          flash-attn = "on";
-          cache-type-k = "q8_0";
-          cache-type-v = "q8_0";
-          temp = "0.7";
-          top-p = "0.8";
-          top-k = "20";
-        };
-        "qwen3-14b" = {
-          model = "/var/lib/llama-models/Qwen3-14B-Q4_K_M.gguf";
-          alias = "qwen3-14b";
-          ctx-size = "8192";
-          fit-target = "640";
+
+        "qwen3-8b-abliterated" = {
+          model = "/var/lib/llama-models/Huihui-Qwen3-8B-abliterated-v2.Q4_K_M.gguf";
+          alias = "qwen3-8b-abliterated";
+          ctx-size = "4096";
+          fit-target = "256";
           temp = "0.6";
           top-p = "0.95";
           top-k = "20";
+        };
+
+        "dolphin3-8b" = {
+          model = "/var/lib/llama-models/Dolphin3.0-Llama3.1-8B-Q4_K_M.gguf";
+          alias = "dolphin3-8b";
+          ctx-size = "4096";
+          fit-target = "256";
+          temp = "0.8";
+          top-p = "0.95";
         };
       };
     };

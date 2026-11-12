@@ -30,6 +30,9 @@
 
   programs.orchard.enable = true;
   programs.niXscout.enable = true;
+  programs.nyaa-si.enable = true;
+  programs.neo-mangal.enable = true;
+  programs.vid-dl.enable = true;
   networking.firewall.allowedTCPPorts = [ 24800 ];
 
   # Hybrid graphics (Intel iGPU + RTX 3050): PRIME offload.

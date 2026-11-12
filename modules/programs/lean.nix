@@ -1,4 +1,4 @@
-# Lean profile: CLI essentials + zathura + moonlight + deskflow (all hosts).
+# Lean profile: CLI essentials + ffmpeg/yt-dlp + zathura + moonlight + deskflow (all hosts).
 {
   config,
   lib,
@@ -58,6 +58,8 @@ lib.mkIf cfg.enable {
     yq-go
     inputs.forge.packages.${system}.forge
     appimage-run
+    ffmpeg
+    yt-dlp
 
     deskflow
     moonlight-qt

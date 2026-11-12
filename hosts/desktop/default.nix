@@ -1,4 +1,4 @@
-# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Caelestia.
+# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Aureli.
 { lib, ... }:
 
 {
@@ -19,7 +19,7 @@
   modules.programs.enable = true;
   modules.desktop.enable = true;
   modules.desktop.compositor = "niri";
-  modules.desktop.shell = "caelestia";
+  modules.desktop.shell = "noctalia";
   services.upower.enable = true; # battery service
 
   # Without this, custom substituters (e.g. from a flake's nixConfig) are
@@ -62,9 +62,16 @@
 
   programs.orchard.enable = true;
   programs.niXscout.enable = true;
+  programs.nyaa-si.enable = true;
+  programs.neo-mangal.enable = true;
+  programs.vid-dl.enable = true;
 
   modules.desktop.dotfiles.enable = true;
-  modules.services.odysseus.enable = true;
+  modules.services.odysseus.enable = false;
+  modules.services.mediaTracker.enable = true;
+  modules.services.jellyfin.enable = true;
+  modules.services.homepage.enable = true;
+  modules.services.mediaStack.enable = true;
 
   system.stateVersion = "26.05";
 }
