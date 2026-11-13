@@ -11,6 +11,7 @@
 
   modules.hardware.enable = true;
   modules.hardware.nvidia.enable = true;
+  modules.hardware.openrgb.enable = true;
   modules.services.enable = true;
   modules.services.qmk.enable = true;
   modules.services.virtualbox.enable = true;
