@@ -50,5 +50,7 @@
     ./nyaa-si
     ./neo-mangal
     ./vid-dl
+    ./ytm-rs.nix
+    ./deviload.nix
   ];
 }

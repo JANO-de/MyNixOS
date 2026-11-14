@@ -19,7 +19,7 @@ in
       inputs.zen-browser.packages.${system}.default
       chromium
       obsidian
-      vivali
+      vivaldi
       vesktop
       strawberry
       bazaar

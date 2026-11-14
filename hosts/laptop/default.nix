@@ -1,6 +1,6 @@
 # Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: modules.hardware.cachyos.enable, off).
 # niri + Noctalia.
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -31,8 +31,9 @@
   programs.orchard.enable = true;
   programs.niXscout.enable = true;
   programs.nyaa-si.enable = true;
+  programs.ytm-rs.enable = true;
   programs.neo-mangal.enable = true;
-  programs.vid-dl.enable = true;
+  programs.deviload.enable = true;
   networking.firewall.allowedTCPPorts = [ 24800 ];
 
   # Hybrid graphics (Intel iGPU + RTX 3050): PRIME offload.
@@ -46,5 +47,7 @@
   modules.artcraft.enable = true;
   modules.desktop.dotfiles.enable = true;
 
+  #Required
+  environment.systemPackages = [ pkgs.xwayland-satellite ];
   system.stateVersion = "26.05";
 }
