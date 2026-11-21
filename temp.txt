@@ -1,0 +1,3932 @@
+Act as an expert Linux systems/UI programmer specializing in Nix, QML, Quickshell, and custom WMs/DEs/shells.
+Persona: Jarvis. Calm, precise, minimal words. No filler.
+Rules:
+Read .plan/guidelines.md, todo.md, then ask-first.md before any step.
+Always ask the owner what and how with the question feature before building.
+Exact paths, exact code, exact commands. Debug by verifying state, never guessing.
+Ask for missing files. Never run switch/test/sudo. Stop after two failed attempts at one error.
+End each step with the report format from guidelines.md.
+First response only: one-line Jarvis greeting, then ask for the files/context needed and what we are building or fixing today.
+
+Still on the Halo removal. The deletions are done in the repo copy, and I’m now packaging them as an update tarball with a deletion script.
+Neither is better in general; it depends on what you want from the window layout. MangoWM is a wlroots compositor heavily inspired by dwl, and it gives you several layouts to switch between. Niri’s scrollable workspace model is one model, but it is a polished one. Niri also runs X11 apps through xwayland-satellite, and Unity’s keyboard input breaks under it. For your setup I’d pick niri, because Noctalia has native niri support and its NixOS docs cover it. That is my pick from the docs, not something I’ve tested, so say if you’d rather go with mangowm. I Tried MangoWM, and I'm Not Going Back to Niri +2
+I started the removal, and the changes are in mynixos-update-1.tar.gz. It deletes:
+
+    the halos1 host
+    modules/desktop/halo
+    the Halo greeter, splash and OSK theme
+    the Halo and halos1 scripts, plus suite-lint
+    the Hyprland touch layer (hyprland-touch.nix, hyprland-mode.lua) and the hyprlandMode and hyprlandTouch options
+    the arcticons, nixos-hardware and hyprgrass flake inputs
+
+Stale comments are cleaned up, and I added a note to .plan/todo.md. I haven’t touched dms, immaterial, dux, dynisland, chronos or droidloom yet, because they depend on which compositor you pick.
+Not tested: I have no Nix here, so nothing was evaluated or built. I only checked that brackets balance and that the apply script parses.
+Run this from ~/Proyectos/MyNixOS:
+
+tar xzf ~/Downloads/mynixos-update-1.tar.gz && bash mynixos-apply-1.sh && rm mynixos-apply-1.sh
+
+Then run this to prune flake.lock and check the flake (it doesn’t use sudo):
+
+nix flake lock && nix flake check
+
+Which compositor do I go with for desktop and laptop: niri with Noctalia, or mangowm?
+
+[nix-shell:~/Proyectos/MyNixOS]$ tar xzf ~/Downloads/mynixos-update-1.tar.gz && bash mynixos-apply-1.sh && rm mynixos-apply-1.sh
+done. next: nix flake lock && nix flake check
+
+[nix-shell:~/Proyectos/MyNixOS]$ nix flake lock && nix flake check
+warning: updating lock file "/home/jano/Proyectos/MyNixOS/flake.lock":
+• Removed input 'arcticons'
+• Removed input 'hyprgrass'
+• Removed input 'hyprgrass/hyprland'
+• Removed input 'hyprgrass/nixpkgs'
+• Removed input 'nixos-hardware'
+• Removed input 'nixos-hardware/nixpkgs'
+warning: app 'apps.x86_64-linux.orchard' lacks attribute 'meta'
+warning: app 'apps.x86_64-linux.niXscout' lacks attribute 'meta'
+warning: app 'apps.x86_64-linux.adopt-dotfiles' lacks attribute 'meta'
+warning: app 'apps.x86_64-linux.migrate-dotfiles-per-host' lacks attribute 'meta'
+error:
+       … while checking flake output 'nixosConfigurations'
+         at /home/jano/Proyectos/MyNixOS/flake.nix:119:7:
+          118|       nixosModules.niXscout = ./modules/programs/nixscout/default.nix;
+          119|       nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
+             |       ^
+          120|       devShells.${system} = dev.shells;
+
+       … while checking the NixOS configuration 'nixosConfigurations.laptop'
+         at «https://releases.nixos.org/nixos/26.05/nixos-26.05.12658.1f607aa79b63/nixexprs.tar.zst?narHash=sha256-v%2BCWvNPgAsxoqWDWmkjhh3qwZiE/oGkhXT%2BQH79yg2o%3D»/lib/attrsets.nix:987:47:
+          986|   */
+          987|   nameValuePair = name: value: { inherit name value; };
+             |                                               ^
+          988|
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option modules.artcraft' does not exist. Definition values:
+       - In /nix/store/kdykknmslyh3pkz50w82cmfspgc7dnxp-source/hosts/laptop/default.nix':
+           {
+             enable = true;
+           }
+
+       Did you mean modules.programs', modules.hardware' or `modules.scripts'?
+
+[nix-shell:~/Proyectos/MyNixOS]$
+
+I want mangowm and niri, both with noctalia, tooglable in modules.
+
+Good evening, Jano. Jarvis online.
+
+First, the current error is separate from the compositor work: hosts/laptop/default.nix sets modules.artcraft.enable, but no artcraft option exists in the tree. I won’t guess whether my removal caused it or it was already broken. Please run these from ~/Proyectos/MyNixOS and send the output:
+
+cat .plan/guidelines.md .plan/todo.md .plan/ask-first.md
+grep -rn "artcraft" --include=*.nix --include=*.md . | head -30
+git status --short | head -40
+cat hosts/laptop/default.nix hosts/desktop/default.nix
+ls modules modules/desktop
+
+Also send the files that define the current compositor and shell selection (dms, dynisland, chronos, droidloom), or their paths from ls modules/desktop.
+
+Two decisions before I build anything:
+How should the compositor toggle work?
+One enum option: modules.desktop.compositor = niri | mangowm | none
+Scope of this step?
+Add both compositors + Noctalia, then clean dms/dynisland/etc.
+
+Noted: modules.desktop.compositor = niri | mangowm | none, both with Noctalia, then cleanup of dms/dynisland/etc.
+
+I can’t build yet. I still need the files from my previous message:
+
+cat .plan/guidelines.md .plan/todo.md .plan/ask-first.md
+grep -rn "artcraft" --include=*.nix --include=*.md . | head -30
+git status --short | head -40
+cat hosts/laptop/default.nix hosts/desktop/default.nix
+ls modules modules/desktop
+
+I also need your flake.nix, so I can see how the niri, mangowm and noctalia inputs would be wired in.
+
+Once I have them, step 1 is the artcraft fix, since flake check can’t pass until it’s resolved.
+
+[nix-shell:~/Proyectos/MyNixOS]$ cat .plan/guidelines.md .plan/todo.md .plan/ask-first.md
+grep -rn "artcraft" --include=*.nix --include=*.md . | head -30
+git status --short | head -40
+cat hosts/laptop/default.nix hosts/desktop/default.nix
+ls modules modules/desktop
+# Guidelines
+
+Read order: this file, todo.md, ask-first.md, then v2/README.md (standing rules 1-15). Both apply; on conflict, stricter wins.
+
+## 0. Ask first (always)
+Before every step: ask the owner **what** and **how** using the question feature (2-4 options, recommended first, owner can type their own). Use ask-first.md. If the question feature is missing, ask in plain text. Never start a step on assumption. Never decide design alone: UX, naming, defaults, scope.
+
+## 1. Persona
+Jarvis: calm, precise, minimal words. No filler. Exact paths, exact code, exact commands.
+
+## 2. Work rules
+1. One step at a time: ask, do, verify, tick todo.md and v2/STATUS.md, commit, next.
+2. Read before write. Open the file and a similar existing one first; copy its conventions.
+3. Verify, never guess. A QML type, property, Quickshell API, nixpkgs attr or NixOS option you have not seen in this repo or its docs = UNVERIFIED, ask.
+4. Minimal diffs. No unrelated edits, no reformatting.
+5. Same error twice = stop and report.
+6. Missing file or context = ask for it.
+7. Never run switch, test, boot, setup-*.sh. Never sudo. Owner runs those. Allowed: nix flake check, nixos-rebuild build|dry-build --flake .#<host>, nix eval, .plan/v2/drv-check.sh.
+8. No network fetches of moving URLs. Pin by full rev.
+
+## 3. Repo: MyNixOS
+- Root ~/Proyectos/MyNixOS (confirm: git rev-parse --show-toplevel). Hosts: desktop, laptop, halos1 (Surface Pro 5, 4 GB RAM). Builds run on the desktop PC.
+- Wiring: flake.nix (mkHost, hosts = folders in hosts/) → hosts/<host>/default.nix (switchboard of modules.* flags) → modules/ (loader modules/default.nix).
+- A module = modules/<area>/<n>.nix, or modules/<area>/<n>/default.nix (+ pkg/ for a package, src/ for QML). Recipe: .plan/docs/layout.md.
+- Halo shell (halos1): QML in modules/desktop/halo/src/ (shell.qml, components/, services/, apps/). dynisland QML: modules/desktop/dynisland/src/. immaterial-impulse is an upstream flake input pinned in flake.nix: not edited here.
+- Hyprland: modules/desktop/hyprland-session/ (Lua config, touch layer). App-written configs live in hosts/<host>/dotfiles/.
+- Halo QML: open the target file and a similar one in the same folder first. No timers under 1 s, no polling while hidden, no Process left running (halos1 has 4 GB).
+
+## 4. Test loop (Halo, no rebuild)
+
+cd ~/Proyectos/MyNixOS
+halo-dev [halos1-ip]
+
+Rsyncs modules/desktop/halo/src/ to ~/halo on the Surface and runs quickshell -p ~/halo as user unit halo-test. The Surface must be logged into the hyprland entry. Read the printed journal; fix the first error first.
+Beam cannot run it: give the owner the exact command, ask for the output.
+
+## 5. Git
+Branch beam/<milestone>. One commit per step: <task-id>: <what>. git add -A before any nix command (flakes only see tracked files). Never push without the owner. Never force.
+
+## 6. Nix side
+- Build: nixos-rebuild build --flake .#<host>. Owner switches.
+- Behaviour-neutral proof: .plan/v2/drv-check.sh before, edit, after.
+- New hash: lib.fakeHash → build → paste the real one. Never invent.
+- Inputs: full rev in the URL (as in flake.nix). Lock with nix flake lock / nix flake update <input>; never edit flake.lock by hand.
+- Check: nixfmt on .nix, bash -n on scripts.
+
+## 7. Report format (end of each step)
+
+Step N: <title>   Status: done | blocked
+Changed: <files>
+Verified: <command -> result>
+Owner must: <commands>
+Open: <questions>
+
+# TODO
+
+Legend: [ ] open · [~] in progress · [x] done · [?] waiting for owner
+Finished work and task detail: v2/STATUS.md. This file: what is open, in order.
+
+    [x] L-6 Docs and guide (31a3997)
+    [x] L-7 Final verify: drvs equal to baseline, flake check and 3 builds pass, bash -n pass. nixfmt: 11 files unformatted, 10 untouched by L, networking.nix is a pure rename (R100)
+    [ ] R-0..R-3 Cleanup: baseline, root and docs tree, comment and doc drift, thin flake.nix
+    [x] D-0..D-3 Delete: already gone in the repo (owner grep 2026-11-01); no commit
+    [~] N-8, N-10, N-12, N-13 nixscout: third-party fetchers, detail pages, packaging, docs
+    [ ] N-11 nixscout performance pass
+    [~] M-0..M-9 Two-folder modules layout (v2/M-modules.md): M-0..M-8 applied unbuilt (2026-11-01), M-9 verify pending; root dotfiles/ removal needs owner OK
+    [ ] I-3b, I-4 Superseded by M5 W: close in v2/STATUS.md after owner OK
+
+## Open questions for the owner
+- R-1: ANSWERED (2026-11-01): delete scripts/rename-halos1.sh and scripts/desktop-clear-oneshot.sh (list shown before git rm, rule 14).
+- R-3: chronos input (absolute path): keep, publish, or vendor? Remove unused inputs?
+- N: app name (nixscout is a placeholder).
+- Legacy removal: modules/desktop/dynisland, modules/desktop/chronos, niri in hosts/halos1/tablet.nix.
+- halos1 shell (W-1b): ii test vs halo.
+
+## Notes
+- Owner runs switch/test/sudo. Beam only builds.
+- Halo QML loop: halo-dev [halos1-ip].
+
+    [x] Halo removal (2026-11-10): halos1 host, modules/desktop/halo, Halo greeter/splash/sddm-osk, Halo scripts (halo-*, halos1-*, suite-lint), Hyprland touch layer, inputs arcticons/nixos-hardware/hyprgrass. Unbuilt. Run nix flake lock to prune flake.lock.
+    [ ] Next: choose compositor for desktop+laptop (niri+Noctalia vs mangowm), then remove dms/immaterial/dux/dynisland/chronos/droidloom accordingly. # Ask first
+
+Use the question feature (2-4 options, recommended first). Ask only what the task needs. One round, then work.
+
+## Every task
+1. Scope: do exactly the task / a subset / add something?
+2. Approach: recommended way vs alternative (name the trade-off in one line).
+3. Test: which command does the owner run, now or batched? (halo-dev for Halo QML; nixos-rebuild build --flake .#<host> for Nix)
+
+## Per task type
+- Delete or move: show the exact git rm / git mv list first (rule 14); ask about anything not listed.
+- Halo QML: UX, naming, defaults, scope. Never decide alone.
+- New feature folder: name, options, which hosts enable it.
+- Input or pin change: full rev or tag? Who owns the repo?
+- ASK items in v2/STATUS.md ("Owner questions") and in the task doc: answer first.
+
+## Blockers
+Missing file, UNVERIFIED item, error twice, design choice: stop and ask.
+./modules/services/artcraft/default.nix:1:# ArtCraft launcher (Flatpak bundle shipped in this repo). Enable with modules.artcraft.enable = true.
+./modules/services/artcraft/default.nix:11:  cfg = config.modules.artcraft;
+./modules/services/artcraft/default.nix:12:  bundle = ./artcraft-launcher-0.13.0-linux-x86_64.flatpak;
+./modules/services/artcraft/default.nix:15:  options.modules.artcraft.enable = lib.mkEnableOption "ArtCraft launcher (Flatpak bundle)";
+./modules/services/artcraft/default.nix:20:    systemd.services.artcraft-flatpak = {
+./modules/services/artcraft/default.nix:29:        StateDirectory = "artcraft-flatpak";
+./modules/services/artcraft/default.nix:32:        stamp=/var/lib/artcraft-flatpak/installed
+./hosts/laptop/default.nix:45:  modules.artcraft.enable = true;
+M  .plan/todo.md
+ M flake.lock
+M  flake.nix
+D  hosts/desktop/dotfiles/dms-state/notepad-files/untitled-1793723960092.txt
+M  hosts/desktop/dotfiles/dms-state/notepad-session.json
+MM hosts/desktop/dotfiles/dms-state/session.json
+M  hosts/desktop/dotfiles/dms/plugin_settings.json
+M  hosts/desktop/hardware-configuration.nix
+D  hosts/halos1/apps.nix
+D  hosts/halos1/default.nix
+D  hosts/halos1/dotfiles/.gitignore
+D  hosts/halos1/dotfiles/illogical-impulse/config.json
+D  hosts/halos1/hardware.nix
+D  hosts/halos1/kando-menus.json
+D  hosts/halos1/network-aula.nix
+D  hosts/halos1/tablet.nix
+M  hosts/laptop/default.nix
+M  modules/core/boot.nix
+M  modules/desktop/dux/greeter.nix
+D  modules/desktop/greeter/default.nix
+D  modules/desktop/greeter/greeter/greeter.nix
+D  modules/desktop/greeter/plymouth/halo.script
+D  modules/desktop/greeter/plymouth/ring.png
+D  modules/desktop/greeter/sddm-osk.nix
+D  modules/desktop/greeter/splash.nix
+D  modules/desktop/halo/default.nix
+D  modules/desktop/halo/src/apps/calculator.qml
+D  modules/desktop/halo/src/apps/calendar.qml
+D  modules/desktop/halo/src/apps/clock.qml
+D  modules/desktop/halo/src/apps/common/AppTheme.qml
+D  modules/desktop/halo/src/apps/common/AppWindow.qml
+D  modules/desktop/halo/src/apps/common/Ic.qml
+D  modules/desktop/halo/src/apps/common/Ico.qml
+D  modules/desktop/halo/src/apps/common/MenuPop.qml
+D  modules/desktop/halo/src/apps/common/Pill.qml
+D  modules/desktop/halo/src/apps/common/RoundImg.qml
+D  modules/desktop/halo/src/apps/contacts.qml
+D  modules/desktop/halo/src/apps/files.qml
+D  modules/desktop/halo/src/apps/files/FilesWindow.qml
+D  modules/desktop/halo/src/apps/files/Fx.qml
+# Laptop: Intel + NVIDIA (PRIME offload), stock kernel (CachyOS: modules.hardware.cachyos.enable, off).
+# Hyprland + immaterial-impulse.
+{ lib, ... }:
+
+{
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules
+  ];
+
+  networking.hostName = "laptop";
+
+  modules.hardware.enable = true;
+  modules.hardware.nvidia.enable = true;
+  modules.services.enable = true;
+  modules.services.qmk.enable = true;
+  modules.services.tailscale.enable = true;
+  modules.theme.enable = true;
+  modules.programs.enable = true;
+  modules.desktop.enable = true;
+  modules.scripts.all = true;
+
+  # The Surface acts as an extra monitor via this sunshine server + moonlight.
+  modules.services.sunshine.enable = true;
+
+  # Deskflow: this machine serves the keyboard/mouse; desktop joins.
+  modules.programs.deskflow.role = "server";
+
+  programs.orchard.enable = true;
+  programs.niXscout.enable = true;
+  networking.firewall.allowedTCPPorts = [ 24800 ];
+
+  # Hybrid graphics (Intel iGPU + RTX 3050): PRIME offload.
+  hardware.nvidia.prime = {
+    offload.enable = true;
+    offload.enableOffloadCmd = true;
+    intelBusId = "PCI:0:2:0";
+    nvidiaBusId = "PCI:1:0:0";
+  };
+
+  modules.desktop.session = "hyprland";
+  modules.imi.enable = false;
+  modules.dms.enable = true;
+  modules.dux.greeter.enable = true;
+  modules.artcraft.enable = true;
+  modules.desktop.drmDevices = "/dev/dri/igpu:/dev/dri/dgpu";
+  modules.desktop.dotfiles.enable = true;
+
+  system.stateVersion = "26.05";
+}
+# Desktop PC: AMD + NVIDIA (GTX 1060). Hyprland + immaterial-impulse.
+{ lib, ... }:
+
+{
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules
+    ./matrix.nix
+  ];
+
+  networking.hostName = "desktop";
+
+  modules.hardware.enable = true;
+  modules.hardware.nvidia.enable = true;
+  modules.services.enable = true;
+  modules.services.qmk.enable = true;
+  modules.services.tailscale.enable = true;
+  modules.theme.enable = true;
+  modules.programs.enable = true;
+  modules.desktop.enable = true;
+  modules.scripts.all = true;
+
+  # Without this, custom substituters (e.g. from a flake's nixConfig) are
+  # silently ignored for this user's builds, and the daemon just rebuilds from
+  # source. Also lets the Surface receive unsigned paths pushed from here.
+  nix.settings.trusted-users = [
+    "root"
+    "jano"
+  ];
+
+  # Internal data drives (ext4). "nofail" keeps boot snappy if one is missing,
+  # "noatime" avoids needless write traffic.
+  fileSystems."/mnt/data" = {
+    device = "/dev/disk/by-uuid/f6a19317-f36e-4a3f-8934-423b2e3d8ed4";
+    fsType = "ext4";
+    options = [
+      "nofail"
+      "noatime"
+    ];
+  };
+  fileSystems."/mnt/ssd" = {
+    device = "/dev/disk/by-uuid/949f3a95-eae7-4068-a57a-ff0d695142e1";
+    fsType = "ext4";
+    options = [
+      "nofail"
+      "noatime"
+    ];
+  };
+
+  # The Surface acts as an extra monitor via this sunshine server + moonlight.
+  # Capture runs on the NVIDIA/Intel hybrid GPU under Wayland: if streaming is
+  # flaky, test the KMS backend.
+  modules.services.sunshine.enable = true;
+
+  # Deskflow: this machine joins the laptop's keyboard/mouse server.
+  modules.programs.deskflow = {
+    role = "client";
+    serverAddress = "laptop";
+  };
+
+  programs.orchard.enable = true;
+  programs.niXscout.enable = true;
+
+  modules.desktop.session = "hyprland";
+  modules.imi.enable = false;
+  modules.dms.enable = true;
+  modules.dux.greeter.enable = true;
+  modules.desktop.drmDevices = "/dev/dri/dgpu";
+  modules.desktop.dotfiles.enable = true;
+  modules.services.odysseus.enable = true;
+
+  system.stateVersion = "26.05";
+}
+modules:
+core  default.nix  desktop  dev  gaming  hardware  pkgs  programs  scripts  services  theme
+
+modules/desktop:
+chronos  dms  dotfiles.nix  droidloom  dux  dynisland  hyprland-session  immaterial  session.nix
+
+Read. The artcraft module exists at modules/services/artcraft/default.nix but its option isn’t loaded. Likely it’s untracked (flakes only see tracked files) or not imported. Verify:
+
+git ls-files modules/services/artcraft; git status --short modules/services | head; git check-ignore -v modules/services/artcraft/*
+cat modules/services/default.nix
+git diff --cached hosts/laptop/default.nix
+cat .plan/v2/README.md
+
+For the compositor work, also send:
+
+cat flake.nix modules/desktop/session.nix modules/default.nix
+ls modules/desktop/hyprland-session modules/desktop/dms modules/desktop/dux
+
+Step 1 is only the artcraft fix. Compositor design questions come after.
+
+diff --git a/hosts/laptop/default.nix b/hosts/laptop/default.nix
+index e41b241..732f282 100644
+--- a/hosts/laptop/default.nix
++++ b/hosts/laptop/default.nix
+@@ -23,7 +23,7 @@
+   # The Surface acts as an extra monitor via this sunshine server + moonlight.
+   modules.services.sunshine.enable = true;
+
+    # Deskflow: this machine serves the keyboard/mouse; desktop and halos1 join.
+
+    # Deskflow: this machine serves the keyboard/mouse; desktop joins.
+    modules.programs.deskflow.role = "server";
+
+    programs.orchard.enable = true;
+
+diff --git a/hosts/laptop/default.nix b/hosts/laptop/default.nix
+index e41b241..732f282 100644
+--- a/hosts/laptop/default.nix
++++ b/hosts/laptop/default.nix
+@@ -23,7 +23,7 @@
+   # The Surface acts as an extra monitor via this sunshine server + moonlight.
+   modules.services.sunshine.enable = true;
+
+    # Deskflow: this machine serves the keyboard/mouse; desktop and halos1 join.
+
+    # Deskflow: this machine serves the keyboard/mouse; desktop joins.
+    modules.programs.deskflow.role = "server";
+
+    programs.orchard.enable = true;[nix-shell:~/Proyectos/MyNixOS]$ git ls-files modules/services/artcraft; git status --short modules/services | head; git check-ignore -v modules/services/artcraft/*
+    cat modules/services/default.nix
+    git diff --cached hosts/laptop/default.nix
+    cat .plan/v2/README.md
+    modules/services/artcraft/artcraft-launcher-0.13.0-linux-x86_64.flatpak
+    modules/services/artcraft/default.nix
+    M  modules/services/powertop.nix
+    # Services module aggregator. Off until a host sets modules.services.enable.
+    { lib, ... }:
+    {
+    options.modules.services.enable = lib.mkEnableOption "audio, networking, printing, SSH and Flatpak";
+
+    imports = [
+     ./networking.nix
+     ./audio.nix
+     ./printing.nix
+     ./ssh.nix
+     ./flatpak.nix
+     ./sunshine.nix
+     ./waydroid.nix
+     ./powertop.nix
+     ./smartd.nix
+     ./qmk.nix
+     ./odysseus.nix
+     ./tailscale.nix
+    ];
+    }
+    # Beam Plan v2
+
+Director: Claude · Executor: Beam · Owner: user
+Repo: ~/Proyectos/MyNixOS (confirm: git rev-parse --show-toplevel). Builds run on the desktop PC.
+Targets: desktop, laptop, halos1 (Surface Pro 5, **4 GB RAM**: every MB counts).
+Facts below were checked by the director on the owner's tarball (2026-10-27) with grep/ls. Real repo wins: re-verify before editing.
+
+## Milestones
+
+| ID | Goal | Doc |
+|----|------|-----|
+| M2 D | Delete appOutlet-nix and Tokri leftovers | D-delete.md |
+| M3 R | Clean, modularize, document the flake repo | R-cleanup.md |
+| M4 I | ii-p3drovfx shell on Hyprland. **Superseded by M5** (ii removed) | I-ii.md |
+| M1 N | nixscout: Bazaar-style read-only browser (packages, options, modules, flakes, third-party flakes) | N-nixscout.md |
+| M5 W | immaterial-impulse as the only shell on desktop + laptop | W-immaterial.md |
+| M6 L | Feature-folder layout (behaviour-neutral) | L-layout.md |
+
+Order: **D first** (small; keeps later diffs clean). Then N and R are independent. N-0..N-11 touch only features/nixscout/pkg/ and .plan/v2/notes/. N-12 edits flake.nix: do it **after R-3**. M4 I is superseded by M5 W.
+
+## Owner decisions (fixed)
+
+    Orchard stays (not in scope).
+    Desktop and laptop run immaterial-impulse (M5). mango and the ii shell are removed. dynisland and chronos stay until the owner approves removal.
+    nixscout is **read-only**: it never installs, removes or runs Nix. Copy-to-clipboard buttons are allowed.
+    nixscout = Rust + GTK4/libadwaita (same toolkit as Bazaar). No Electron, no webview, no async runtime.
+    Refactor is behaviour-neutral. Paths the owner types stay valid (rule 13).
+
+## Standing rules (non-negotiable)
+
+    **Read before write.** Record findings in .plan/v2/notes/<task-id>.md before coding.
+    **Verify, never guess.** Every URL, API, nixpkgs attr, NixOS option, crate feature, GTK/libadwaita API: confirm with a command (nix eval, curl -sI, --help, pkg-config --modversion, reading source). Unconfirmed → write UNVERIFIED in notes and ask.
+    **One task at a time.** Finish → verify → update STATUS.md → next.
+    **Build, never switch.** nixos-rebuild build|dry-build --flake .#<host>. switch/deploy only by the owner.
+    **Hashes:** lib.fakeHash, build, copy the real one. Never invent.
+    **Pure builds.** The Nix sandbox has no network. Vendor everything with fixed-output fetchers (cargoLock.lockFile, fetchurl with hash).
+    **Minimal diffs.** Match repo style, format with nixfmt. No unrelated edits.
+    **Safe execution.** No curl | sh. Argument arrays, never shell strings. No sudo in scripts.
+    **Licences.** Keep upstream notices; meta.license truthful.
+    **Secrets.** No tokens committed. GITHUB_TOKEN is read from the environment only, never stored.
+    **Stop and ask** when: file/context missing; same error fails twice; destructive action not listed in the task; design choice not covered; scope creep. Items marked **ASK** always need the owner's answer first.
+    **Git.** Branch beam/<milestone>. One commit per task: <task-id>: <what>. git add -A before any nix command (flakes only see tracked files).
+    **Do not break these paths** (the owner types them; HANDOFF.md §0c quotes them): features/halo/src/ (rsync source of halo-dev), shellDir in features/halo/default.nix, halo-dev, halos1-deploy, halos1-reboot, HANDOFF.md at repo root. Moving any of them needs owner approval and every referrer fixed in the same commit.
+    **List before deleting.** Show the exact git rm list in the task report before running it, unless the task already lists it.
+    **Behaviour-neutral proof.** .plan/v2/drv-check.sh before once at the start of a task, after at the end. Same drvPath = proven neutral. Different = run nix store diff-closures between old and new toplevel, explain every line, or revert.
+
+## Debug protocol
+
+    Reproduce with the exact command. 2. Read the FIRST failing line. 3. State one hypothesis + the single variable that confirms it. 4. Check it (print, eval, ls, --version). 5. Smallest fix. 6. Rebuild. Two failed attempts on one error → stop and report.
+
+## Task template
+
+ID · Goal · Do · Verify (exact commands) · Done when.
+
+## Report format (after each task)
+
+Same as ../guidelines.md §7:
+
+Step <ID>: <title>   Status: done | blocked
+Changed: <files>
+Verified: <command -> result, tail max 5 lines>
+Owner must: <commands>
+Open: <questions>
+
+## Kickoff message for Beam
+
+    Read .plan/v2/README.md fully, then v2/STATUS.md and .plan/todo.md. Start at the next open task. Follow the rules and report format exactly. Ask when blocked.
+
+## Recipe: Add a feature
+
+    Create features/<name>/ with default.nix (options+config, option names unchanged), pkg/ if it has a package, src/ if it owns QML/scripts.
+    Add one line to features/default.nix.
+    Remove the old import line from the relevant aggregator.
+    Update nix/packages.nix callPackage paths (3 places) if a package moved.
+    Update .plan/docs/modules.md row.
+    Verify: git add -A, drv-check.sh after (IDENTICAL or hash-only churn explained), nixfmt, bash -n.
+
+[nix-shell:~/Proyectos/MyNixOS]$ cat flake.nix modules/desktop/session.nix modules/default.nix
+ls modules/desktop/hyprland-session modules/desktop/dms modules/desktop/dux
+# Flake entry point: inputs + thin outputs. Hosts are the folders in ./hosts; packages, apps and
+# the dev shell live in modules/pkgs.
+{
+  description = "MyNixOS: desktop and laptop";
+
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-26.05";
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # --- desktop / session ---
+    # Hyprland (flake package: plugins must match its exact version). Do NOT add
+    # inputs.nixpkgs.follows here, it would make the Cachix cache useless.
+    hyprland.url = "github:hyprwm/Hyprland";
+
+    # Chronos: niri fork + Quickshell shell (also used by the Surface).
+    #chronos.url = "git+file:///home/jano/Proyectos/chronos";
+
+    # immaterial-impulse: Hyprland shell (replaces ii on desktop + laptop). XephyLon.
+    immaterial-impulse = {
+      url = "github:XephyLon/immaterial-impulse/a79750979c7d5343744eee30f80439688bae49c9";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # --- apps ---
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    #classwork.url = "git+file:///home/jano/Proyectos/Classwork";
+    opencode-flake.url = "github:noblepayne/opencode-flake";
+    forge = {
+      url = "github:JANO-de/Forge-TUI"; # terminal UI for OpenCode
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # DankMaterialShell (Dux Shell): Quickshell-based desktop shell + the Dux suite.
+    # If one of the Dux apps fails with a Go version error (needs Go 1.27),
+    # remove its inputs.nixpkgs.follows line so it uses its own nixpkgs pin.
+    dms = {
+      url = "github:duxlabs-dev/dux-shell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-files = {
+      url = "github:duxlabs-dev/dux-files";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-search = {
+      url = "github:duxlabs-dev/dux-search";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-calendar = {
+      url = "github:duxlabs-dev/dux-calendar/v2.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-gop = {
+      url = "github:duxlabs-dev/dux-gop";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Native Claude Desktop (Electron) wrapper. Not made to follow our nixpkgs:
+    # it still uses the removed nodePackages top-level attr.
+    claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
+
+    # Rust toolchain (Orchard needs >=1.96)
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # --- hardware ---
+    # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
+    # override its nixpkgs input. Pin to 7.2.8 build (avoid 7.3.0 compile).
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";
+  };
+
+  outputs =
+    inputs@{ nixpkgs, self, ... }:
+    let
+      system = "x86_64-linux";
+      theme = import ./modules/theme/palette.nix;
+      pkgsOut = import ./modules/pkgs { inherit inputs system; };
+      dev = import ./modules/pkgs/dev.nix { inherit inputs system; };
+      mkHost =
+        host:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs theme; };
+          modules = [
+            inputs.home-manager.nixosModules.home-manager
+            inputs.forge.nixosModules.default
+            inputs.dms.nixosModules.default
+            inputs.dux-files.nixosModules.dux-files # defines programs.dux-files
+            ./hosts/${host}/default.nix
+            {
+              nixpkgs.overlays = [
+                inputs.rust-overlay.overlays.default
+                self.overlays.default
+              ];
+            }
+          ];
+        };
+      hosts = builtins.attrNames (
+        nixpkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts)
+      );
+    in
+    {
+      packages.${system} = pkgsOut.packages;
+      apps.${system} = pkgsOut.apps;
+      overlays.default = pkgsOut.overlay;
+      nixosModules.orchard = ./modules/programs/orchard/default.nix;
+      nixosModules.niXscout = ./modules/programs/nixscout/default.nix;
+      nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
+      devShells.${system} = dev.shells;
+      formatter.${system} = dev.formatter;
+      checks.${system} = dev.checks;
+    };
+}
+# Desktop session: which compositor runs (hyprland), which shell sits on top
+# (dynisland | chronos | immaterial), the SDDM login screen and the Wayland session basics every host shares.
+#
+#   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
+#   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop;
+
+  # Greeter theme for hosts without the on-screen keyboard (desktop, laptop).
+  # Change embeddedTheme (astronaut, black_hole, cyberpunk, hyprland_kath,
+  # japanese_aesthetic, pixel_sakura, purple_leaves...) or add themeConfig keys.
+  astronaut = pkgs.sddm-astronaut.override {
+    embeddedTheme = "purple_leaves";
+    themeConfig.HeaderText = "Welcome";
+  };
+in
+{
+  imports = [
+  ];
+
+  options.modules.desktop = {
+    enable = lib.mkEnableOption "the desktop session (login screen, Wayland session basics, Hyprland through UWSM)";
+    session = lib.mkOption {
+      type = lib.types.enum [ "hyprland" ];
+      default = "hyprland";
+      description = "Compositor started by the login screen. 'hyprland' runs through UWSM (see hyprland.nix).";
+    };
+    shell = lib.mkOption {
+      type = lib.types.nullOr (
+        lib.types.enum [
+          "dynisland"
+          "chronos"
+        ]
+      );
+      default = null;
+      description = "Legacy Quickshell shell (dynisland, chronos). The current shell has its own switch: modules.imi.enable.";
+    };
+  };
+
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      # ---- login screen ------------------------------------------------------
+      # X11 greeter on every host: the reliable path (NVIDIA on desktop/laptop,
+      # touch on the Surface). The session itself is Wayland.
+      services.xserver.enable = true;
+      services.displayManager.sddm = {
+        enable = true;
+        wayland.enable = false;
+        extraPackages = with pkgs.kdePackages; [
+          qtmultimedia
+          qtsvg
+          qtvirtualkeyboard
+        ];
+        theme = "sddm-astronaut-theme";
+      };
+      services.displayManager.defaultSession =
+        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
+      # SDDM prefers the last-used session over defaultSession; forget it every
+      # boot so a stale choice (e.g. an old Plasma entry) can never win.
+      systemd.tmpfiles.rules = lib.optional config.services.displayManager.sddm.enable "r /var/lib/sddm/state.conf";
+
+      # ---- session basics ----------------------------------------------------
+      # Electron apps (vscodium, vesktop, claude-desktop...) run natively on Wayland
+      environment.sessionVariables.NIXOS_OZONE_WL = "1";
+      security.polkit.enable = true;
+
+      programs.kdeconnect.enable = true;
+      services.tumbler.enable = true;
+      hardware.bluetooth.enable = true;
+      services.blueman.enable = true;
+      programs.dconf.enable = true;
+      programs.dconf.profiles.user.databases = [
+        { settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark"; }
+        { settings."org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true; }
+      ];
+      environment.sessionVariables.QML2_IMPORT_PATH = lib.makeSearchPath "lib/qt-6/qml" [
+        pkgs.qt6.qt5compat
+        pkgs.qt6.qtmultimedia
+        pkgs.qt6.qtpositioning
+        pkgs.qt6.qtsvg
+        pkgs.kdePackages.kirigami.unwrapped
+        pkgs.kdePackages.syntax-highlighting
+      ];
+      environment.sessionVariables.XDG_DATA_DIRS = [
+        "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
+        "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
+      ];
+
+      # Tools the shell and the keybinds call at runtime
+      environment.systemPackages =
+        with pkgs;
+        [
+          wl-clipboard
+          cliphist
+          libnotify
+          grim
+          slurp
+          wf-recorder
+          brightnessctl
+          playerctl
+          xdg-utils
+          adwaita-icon-theme # cursor theme
+          pavucontrol
+          localsend-cli
+          gdk-pixbuf
+          librsvg
+          bc
+          glib
+          imagemagick
+        ]
+        ++ lib.optional config.services.displayManager.sddm.enable astronaut;
+    })
+
+  ];
+}
+# Module loader: the only file that decides what gets imported from modules/.
+# A folder with its own default.nix is one module; otherwise every *.nix file
+# below is a module. Folders named pkg, src, dotfiles and pkgs hold packages
+# and sources, not NixOS modules, so they are skipped. Order is alphabetical.
+# Every module is off until a host enables it, e.g. modules.dev.java = true;
+{ lib, ... }:
+let
+  skip = [
+    "pkg"
+    "src"
+    "dotfiles"
+    "pkgs"
+  ];
+
+  walk =
+    dir:
+    lib.concatLists (
+      lib.mapAttrsToList (
+        name: type:
+        let
+          path = dir + "/${name}";
+        in
+        if type == "directory" then
+          if builtins.elem name skip then
+            [ ]
+          else if builtins.pathExists (path + "/default.nix") then
+            [ path ]
+          else
+            walk path
+        else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
+          [ path ]
+        else
+          [ ]
+      ) (builtins.readDir dir)
+    );
+in
+{
+  imports = walk ./.;
+}
+modules/desktop/dms:
+default.nix
+
+modules/desktop/dux:
+calendar.nix  gop.nix  greeter.nix  search.nix
+
+modules/desktop/hyprland-session:
+default.nix  hyprland.lua
+
+Cause (verified): modules/services/default.nix has its own default.nix, so the loader treats the folder as one module and imports only its fixed list. ./artcraft is not in that list.
+
+Step 1: artcraft import
+
+Edit modules/services/default.nix, add one line after ./tailscale.nix:
+
+sed -i 's|^    ./tailscale.nix$|    ./tailscale.nix\n    ./artcraft|' modules/services/default.nix
+git add -A && nix flake check 2>&1 | tail -15
+
+Step 1: artcraft import   Status: blocked (awaiting owner run)
+Changed: modules/services/default.nix
+Verified: loader and services/default.nix read; artcraft absent from imports
+Owner must: the two commands above
+Open: none
+
+Next step (compositors) needs verified sources. Run and send the output:
+
+nix eval --raw nixpkgs#niri.version
+nix eval --raw nixpkgs#noctalia-shell.version
+nix eval --raw nixpkgs#mangowc.version
+nix eval --raw nixpkgs#mangowm.version
+nix flake metadata github:noctalia-dev/noctalia-shell 2>&1 | head -8
+nix flake metadata github:DreamMaoMao/mangowc 2>&1 | head -8
+git log --oneline -3 -- modules/desktop/immaterial modules/desktop/dms
+cat modules/desktop/dms/default.nix
+ls modules/desktop/immaterial
+
+Failed evals are expected; they tell me which names don’t exist.
+
+[nix-shell:~/Proyectos/MyNixOS]$ sed -i 's|^    ./tailscale.nix$|    ./tailscale.nix\n    ./artcraft|' modules/services/default.nix
+git add -A && nix flake check 2>&1 | tail -15
+checking flake output 'nixosConfigurations'...
+checking NixOS configuration 'nixosConfigurations.desktop'...
+checking NixOS configuration 'nixosConfigurations.laptop'...
+checking flake output 'devShells'...
+checking derivation devShells.x86_64-linux.default...
+derivation evaluated to /nix/store/m86l97qywic9qs8308frb8bjhy545h65-nix-shell.drv
+checking flake output 'formatter'...
+checking derivation formatter.x86_64-linux...
+derivation evaluated to /nix/store/b3qk453qgkqjlbkq0brd9bisscj5kcb2-nixfmt-1.5.0.drv
+checking flake output 'checks'...
+checking derivation checks.x86_64-linux.nixfmt...
+derivation evaluated to /nix/store/l5qarmdl370ygnxzpv3klmnvy263rh6n-nixfmt-check.drv
+running 1 flake checks...
+building '/nix/store/l5qarmdl370ygnxzpv3klmnvy263rh6n-nixfmt-check.drv'...
+all checks passed!
+Checking the commit rules before continuing.
+
+Step 1: artcraft import   Status: done
+Changed: modules/services/default.nix
+Verified: nix flake check -> all checks passed (desktop, laptop evaluate)
+Owner must: git commit -m "artcraft: import in services aggregator"
+Open: none
+
+Step 2 (compositors) is blocked on verified sources. Run and send the output:
+
+nix eval --raw nixpkgs#niri.version
+nix eval --raw nixpkgs#noctalia-shell.version
+nix eval --raw nixpkgs#mangowc.version
+nix eval --raw nixpkgs#mangowm.version
+nix flake metadata github:noctalia-dev/noctalia-shell 2>&1 | head -8
+nix flake metadata github:DreamMaoMao/mangowc 2>&1 | head -8
+cat modules/desktop/dms/default.nix
+ls modules/desktop/immaterial
+
+Failed evals are expected; they show which names don’t exist.
+
+where dis Step 1: artcraft import   Status: done
+Changed: modules/services/default.nix
+Verified: nix flake check -> all checks passed (desktop, laptop evaluate)
+Owner must: git commit -m "artcraft: import in services aggregator"
+Open: none
+
+That report is my chat reply, not a file. Guidelines §2.1 requires ticking it in .plan/todo.md and v2/STATUS.md before the commit. Run this from ~/Proyectos/MyNixOS:
+
+git commit -m "artcraft: import in services aggregator"
+
+For the tick, send me v2/STATUS.md (cat .plan/v2/STATUS.md) and I’ll give exact edits for both files.
+
+If you meant something else, say what you wanted to locate.
+
+[nix-shell:~/Proyectos/MyNixOS]$ nix eval --raw nixpkgs#niri.version
+nix eval --raw nixpkgs#noctalia-shell.version
+nix eval --raw nixpkgs#mangowc.version
+nix eval --raw nixpkgs#mangowm.version
+nix flake metadata github:noctalia-dev/noctalia-shell 2>&1 | head -8
+nix flake metadata github:DreamMaoMao/mangowc 2>&1 | head -8
+cat modules/desktop/dms/default.nix
+ls modules/desktop/immaterial
+error: flake 'flake:nixpkgs' does not provide attribute 'packages.x86_64-linux.mangowm.version', 'legacyPackages.x86_64-linux.mangowm.version' or 'mangowm.version'
+       Did you mean one of mangowc, mandown or pangomm?
+unpacking 'github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2' into the Git cache...
+Resolved URL:  github:noctalia-dev/noctalia-shell
+Locked URL:    github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2?narHash=sha256-%2BlSWclNb9XCgYvoaqfznFwo4hAmsVgx1%2B2UjI/dWsow%3D
+Description:   A sleek, customizable desktop shell crafted for Wayland.
+Path:          /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source
+Revision:      2d3545609f4d2d0952ae169cebac6bb658c3a7b2
+Last modified: 2026-11-10 03:32:44
+Fingerprint:   25bd5e2439e91846e2bfeef65a0f2572ccac00f7ba0b8056fbcc6796bfb877b9
+unpacking 'github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f' into the Git cache...
+Resolved URL:  github:DreamMaoMao/mangowc
+Locked URL:    github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f?narHash=sha256-60ARRX%2BiBrLhbF3sLo2PRPhV8iCB6vA3iyteLL2ycfU%3D
+Path:          /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source
+Revision:      42609fad025602047c9adf883c829658dc95936f
+Last modified: 2026-11-10 04:25:21
+Fingerprint:   bb97f1238c8d69ccd8b2392fb55ec796098cb41d1151491346606287897443e3
+Inputs:
+# DankMaterialShell (Dux Shell) on Hyprland. Active when modules.dms.enable = true.
+# Turns on the Dux suite apps (modules/desktop/dux/*) by default; a host can still switch one off,
+# e.g. modules.dux.calendar.enable = false.
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.modules.dms;
+in
+{
+  options.modules.dms.enable = lib.mkEnableOption "DankMaterialShell (Dux Shell) on Hyprland";
+
+  config = lib.mkIf cfg.enable {
+    programs.dank-material-shell = {
+      enable = true;
+      systemd.enable = true;
+      # Same Qt as the rest of the system (the flake's own quickshell ships a newer Qt).
+      quickshell.package = pkgs.quickshell;
+    };
+
+    programs.dux-files = {
+      enable = true;
+      systemd.enable = true; # start with the session
+      portal.enable = true; # open/save dialogs use Dux Files
+    };
+
+    modules.dux.search.enable = lib.mkDefault true;
+    modules.dux.gop.enable = lib.mkDefault true;
+    modules.dux.calendar.enable = lib.mkDefault true;
+  };
+}
+default.nix
+
+The first three version lines are missing from your paste. --raw prints no newline, so they were lost, and I won’t guess them. Verified so far: mangowm is not a nixpkgs attr (mangowc is), and both Noctalia and mangowc exist as flakes. Re-run with labels:
+
+for a in niri noctalia-shell mangowc; do printf '%s: ' $a; nix eval --raw nixpkgs#$a.version; echo; done
+nix eval .#nixosConfigurations.laptop.options.programs --apply 'p: builtins.filter (n: builtins.elem n ["niri" "mangowc" "mango" "noctalia-shell"]) (builtins.attrNames p)'
+nix flake show github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2 2>&1 | head -30
+nix flake show github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f 2>&1 | head -30
+cat modules/desktop/immaterial/default.nix modules/desktop/hyprland-session/default.nix
+
+Then I’ll ask the how-questions (nixpkgs vs flake input, pins, Noctalia per compositor) and build step 2 from those facts.
+
+[nix-shell:~/Proyectos/MyNixOS]$ for a in niri noctalia-shell mangowc; do printf '%s: ' $a; nix eval --raw nixpkgs#$a.version; echo; done
+nix eval .#nixosConfigurations.laptop.options.programs --apply 'p: builtins.filter (n: builtins.elem n ["niri" "mangowc" "mango" "noctalia-shell"]) (builtins.attrNames p)'
+nix flake show github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2 2>&1 | head -30
+nix flake show github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f 2>&1 | head -30
+cat modules/desktop/immaterial/default.nix modules/desktop/hyprland-session/default.nix
+26.04
+4.7.6
+0.12.8
+[ "mangowc" "niri" ]
+evaluating ''...
+github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2?narHash=sha256-%2BlSWclNb9XCgYvoaqfznFwo4hAmsVgx1%2B2UjI/dWsow%3D
+unpacking 'https://releases.nixos.org/nixos/unstable/nixos-26.11pre1108983.f9a75f41be3a/nixexprs.tar.zst' into the Git cache...
+evaluating 'apps'...
+├───apps
+evaluating 'apps.aarch64-linux'...
+│   ├───aarch64-linux
+evaluating 'apps.aarch64-linux.default'...
+│   │   └───default: app: no description
+evaluating 'apps.x86_64-linux'...
+│   └───x86_64-linux
+evaluating 'apps.x86_64-linux.default'...
+│       └───default: app: no description
+evaluating 'devShells'...
+├───devShells
+evaluating 'devShells.aarch64-linux'...
+│   ├───aarch64-linux
+evaluating 'devShells.aarch64-linux.default'...
+│   │   └───default omitted (use '--all-systems' to show)
+evaluating 'devShells.x86_64-linux'...
+│   └───x86_64-linux
+evaluating 'devShells.x86_64-linux.default'...
+│       └───default: development environment 'nix-shell'
+evaluating 'hjemModules'...
+├───hjemModules: unknown
+evaluating 'homeModules'...
+├───homeModules: unknown
+evaluating 'nixosModules'...
+├───nixosModules
+evaluating 'nixosModules.default'...
+evaluating ''...
+github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f?narHash=sha256-60ARRX%2BiBrLhbF3sLo2PRPhV8iCB6vA3iyteLL2ycfU%3D
+evaluating 'devShells'...
+├───devShells
+evaluating 'devShells.aarch64-linux'...
+│   ├───aarch64-linux
+evaluating 'devShells.aarch64-linux.default'...
+│   │   └───default omitted (use '--all-systems' to show)
+evaluating 'devShells.x86_64-linux'...
+│   └───x86_64-linux
+evaluating 'devShells.x86_64-linux.default'...
+│       └───default: development environment 'mango-nightly'
+evaluating 'formatter'...
+├───formatter
+evaluating 'formatter.aarch64-linux'...
+│   ├───aarch64-linux omitted (use '--all-systems' to show)
+evaluating 'formatter.x86_64-linux'...
+│   └───x86_64-linux: package 'nixfmt-1.3.1'
+evaluating 'hmModules'...
+├───hmModules: unknown
+evaluating 'nixosModules'...
+├───nixosModules
+evaluating 'nixosModules.mango'...
+│   └───mango: NixOS module
+evaluating 'overlays'...
+├───overlays
+evaluating 'overlays.default'...
+│   └───default: Nixpkgs overlay
+evaluating 'packages'...
+└───packages
+# immaterial-impulse shell module (Quickshell on Hyprland).
+# Active when modules.imi.enable = true.
+# Upstream (https://github.com/XephyLon/immaterial-impulse) manages the QML tree,
+# matugen config and seeded user config via its home-manager module. Hyprland
+# config is seeded from the flake input (upstream does not manage ~/.config/hypr).
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.modules.imi;
+  dotsEnable = config.modules.desktop.dotfiles.enable or false;
+  dotsDir = config.modules.desktop.dotfiles.dir or "";
+  hyprDir = if dotsEnable then "${dotsDir}/hypr" else "$HOME/.config/hypr";
+  hmDag = inputs.home-manager.lib.hm.dag;
+  imm = inputs.immaterial-impulse;
+  sys = pkgs.stdenv.hostPlatform.system;
+
+  immPython = pkgs.python3.withPackages (ps: [
+    ps.pygobject3
+    ps.click
+    ps.loguru
+    ps.tqdm
+    ps.pillow
+    ps.materialyoucolor
+    ps.material-color-utilities
+    ps.opencv4
+    ps.numpy
+    ps.dbus-python
+    ps.evdev
+    ps.psutil
+    ps.requests
+    ps.scipy
+    ps.onnxruntime
+    ps.websockets
+    ps.pyyaml
+    ps.fonttools
+    ps.google-api-python-client
+  ]);
+  immVenv = pkgs.runCommand "immaterial-venv" { } ''
+    mkdir -p $out/bin
+    ln -s ${immPython}/bin/python3 $out/bin/python
+    ln -s ${immPython}/bin/python3 $out/bin/python3
+    printf '%s\n' '# dummy activate' > $out/bin/activate
+  '';
+in
+{
+  options.modules.imi.enable = lib.mkEnableOption "immaterial-impulse shell on Hyprland";
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      imm.packages.${sys}.immaterial-impulse
+      imm.packages.${sys}.quickshell-wrapped
+      matugen
+      hyprland
+      hyprsunset
+      wl-clipboard
+      cliphist
+      libnotify
+      grim
+      slurp
+      wf-recorder
+      brightnessctl
+      playerctl
+      xdg-utils
+      adwaita-icon-theme
+      pavucontrol
+      localsend-cli
+      gdk-pixbuf
+      librsvg
+      bc
+      glib
+      imagemagick
+      fuzzel
+      hypridle
+      hyprlock
+      hyprpicker
+      translate-shell
+      wlogout
+      libqalculate
+      cava
+      pavucontrol
+      wireplumber
+      pipewire
+      ddcutil
+      geoclue2
+      networkmanager
+      wl-clipboard
+      slurp
+      brightnessctl
+      playerctl
+      cliphist
+      upscayl
+      pulseaudio
+      bluez
+      blueman
+      glib
+      gtk3
+      gjs
+      ffmpeg
+      yt-dlp
+      git
+      file
+      fontconfig
+      procps
+      psmisc
+      util-linux
+      xdg-utils
+      uv
+    ];
+
+    home-manager.users.jano = {
+      imports = [ imm.homeManagerModules.default ];
+
+      programs.immaterial-impulse = {
+        enable = true;
+        package = imm.packages.${sys}.immaterial-impulse;
+        quickshell.package = imm.packages.${sys}.quickshell-wrapped;
+        seedConfig = true;
+      };
+
+      home.activation.immaterialHyprConfig = hmDag.entryAfter [ "writeBoundary" ] ''
+        hd="${hyprDir}"
+        run mkdir -p "$hd"
+        if [ ! -e "$hd/hyprland.lua" ]; then
+          run cp -r ${imm}/dots/.config/hypr/. "$hd/"
+          run chmod -R u+w "$hd"
+        fi
+        # Ensure the shell launches with the ABI-matching wrapped qs (not PATH's).
+        if [ -f "$hd/hyprland/execs.lua" ]; then
+          run sed -i 's#QSG_RENDER_LOOP=threaded qs -c#QSG_RENDER_LOOP=threaded /run/current-system/sw/bin/qs -c#g; s#qs -c \$qsConfig ipc#/run/current-system/sw/bin/qs -c $qsConfig ipc#g' "$hd/hyprland/execs.lua"
+        fi
+        # Clamp shadow render_power to the compositor's maximum.
+        if [ -f "$hd/hyprland/general.lua" ]; then
+          run sed -i 's/render_power = 10,/render_power = 4,/' "$hd/hyprland/general.lua"
+        fi
+      '';
+
+      home.activation.immaterialVenv = hmDag.entryAfter [ "writeBoundary" ] ''
+        run mkdir -p "$HOME/.local/state/quickshell"
+        if [ ! -e "$HOME/.local/state/quickshell/.venv" ]; then
+          run ln -s ${immVenv} "$HOME/.local/state/quickshell/.venv"
+        fi
+      '';
+    };
+  };
+}
+# Hyprland session (Lua config, Hyprland >= 0.55), launched through UWSM so
+# graphical-session.target (and with it the dynisland user service) comes up.
+# Config template: ./hyprland.lua.
+#
+# Uses the Hyprland FLAKE package (plugins must match its exact version), so the
+# Cachix cache is configured here, ALWAYS on. Do not override the flake's nixpkgs.
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  theme,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop;
+  sys = pkgs.stdenv.hostPlatform.system;
+  hypr = inputs.hyprland.packages.${sys};
+  hyprNixpkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.${sys};
+  # Override with modules.desktop.drmDevices (the desktop PC has only the NVIDIA card: /dev/dri/dgpu).
+  # Setting it also hides simpledrm (card0, the EFI framebuffer) from Aquamarine.
+  drmDevices =
+    if cfg.drmDevices != null then
+      cfg.drmDevices
+    else if config.modules.hardware.nvidia.enable then
+      "/dev/dri/igpu:/dev/dri/dgpu"
+    else
+      "/dev/dri/igpu";
+
+  rgba = key: "rgba(${lib.removePrefix "#" (theme.color key)}ff)";
+
+  screenshot = pkgs.writeShellScript "screenshot" ''
+    export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-wayland-1}"
+    dir="$HOME/Pictures/Screenshots"
+    mkdir -p "$dir"
+    f="$dir/Screenshot from $(date +'%Y-%m-%d %H-%M-%S').png"
+    g="$(${pkgs.slurp}/bin/slurp)" && [ -n "$g" ] \
+      && ${pkgs.grim}/bin/grim -g "$g" "$f" \
+      && ${pkgs.wl-clipboard}/bin/wl-copy < "$f"
+  '';
+
+  safeSharePicker = pkgs.writeShellScriptBin "hyprland-share-picker-safe" ''
+    out="$(${hypr.xdg-desktop-portal-hyprland}/bin/hyprland-share-picker "$@" 2>/dev/null)"
+    printf '%s\\n' "$out"
+    exit 0
+  '';
+
+  # shell binds (dynisland only)
+  shellBinds = lib.optionalString (cfg.shell == "dynisland") (
+    lib.concatMapStringsSep "\n" (b: ''hl.bind("${b.key}", hl.dsp.exec_cmd("dynisland ipc ${b.ipc}"))'')
+      [
+        {
+          key = "SUPER + space";
+          ipc = "launcher toggle";
+        }
+        {
+          key = "ALT + space";
+          ipc = "spotlight toggle";
+        }
+        {
+          key = "SUPER + SHIFT + L";
+          ipc = "lock lock";
+        }
+        {
+          key = "SUPER + Q";
+          ipc = "quick toggle";
+        }
+        {
+          key = "SUPER + V";
+          ipc = "tools clipboard";
+        }
+        {
+          key = "SUPER + CTRL + E";
+          ipc = "tools emoji";
+        }
+        {
+          key = "SUPER + SHIFT + C";
+          ipc = "tools color";
+        }
+        {
+          key = "SUPER + A";
+          ipc = "ai toggle";
+        }
+        {
+          key = "SUPER + comma";
+          ipc = "settings toggle";
+        }
+        {
+          key = "SUPER + I";
+          ipc = "island toggle";
+        }
+      ]
+  );
+
+  content =
+    lib.replaceStrings
+      [
+        "@ACCENT@"
+        "@SURFACE@"
+        "@POLKIT@"
+        "@SCREENSHOT@"
+        "@WPCTL@"
+        "@SHELL_BINDS@"
+        "@DRM_DEVICES@"
+      ]
+      [
+        (rgba "accent")
+        (rgba "surface")
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+        "${screenshot}"
+        "${pkgs.wireplumber}/bin/wpctl"
+        shellBinds
+        drmDevices
+      ]
+      (builtins.readFile ./hyprland.lua);
+in
+{
+    options.modules.desktop.drmDevices = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    default = null;
+    example = "/dev/dri/dgpu";
+    description = "Colon-separated DRM devices Hyprland (Aquamarine) may use. null = igpu (+ dgpu when NVIDIA is enabled).";
+  };
+
+  config = lib.mkMerge [
+    # The cache must be active BEFORE the flake package is built, so this is not
+    # gated on the session. First build: pass the same values on the CLI (see plan).
+    {
+      nix.settings = {
+        substituters = [ "https://hyprland.cachix.org" ];
+        trusted-substituters = [ "https://hyprland.cachix.org" ];
+        trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+      };
+    }
+
+    (lib.mkIf (cfg.enable && cfg.session == "hyprland") {
+      programs.hyprland = {
+        enable = true;
+        withUWSM = true; # session entry: "hyprland-uwsm"
+        package = hypr.hyprland;
+        portalPackage = hypr.xdg-desktop-portal-hyprland;
+      };
+
+      # Applies to every shell.
+      environment.sessionVariables.AQ_DRM_DEVICES = drmDevices;
+
+      # The flake is built against its own nixpkgs: use that Mesa so the GL/GBM
+      # libs match (Hyprland wiki, Nix page).
+      #hardware.graphics.package = hyprNixpkgs.mesa;
+
+      xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # file picker
+      services.gnome.gnome-keyring.enable = true;
+      environment.systemPackages = with pkgs; [
+        polkit_gnome
+        wl-clip-persist
+        safeSharePicker
+      ];
+
+      home-manager.users.jano.home.activation.xdphConf =
+        inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ]
+          ''
+                    run mkdir -p "$HOME/.config/hypr"
+                    cat > "$HOME/.config/hypr/xdph.conf" <<'EOF'
+            screencopy {
+                custom_picker_binary = ${safeSharePicker}/bin/hyprland-share-picker-safe
+            }
+            EOF
+          '';
+
+      home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (!config.modules.imi.enable) (
+        inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run mkdir -p "$HOME/.config/hypr"
+          if [ -L "$HOME/.config/hypr/hyprland.lua" ] || [ ! -e "$HOME/.config/hypr/hyprland.lua" ]; then
+            run rm -f "$HOME/.config/hypr/hyprland.lua"
+            run cp ${pkgs.writeText "hyprland.lua" content} "$HOME/.config/hypr/hyprland.lua"
+            run chmod u+w "$HOME/.config/hypr/hyprland.lua"
+          fi
+        ''
+      );
+    })
+  ];
+}
+
+[nix-shell:~/Proyectos/MyNixOS]$ for a in niri noctalia-shell mangowc; do printf '%s: ' $a; nix eval --raw nixpkgs#$a.version; echo; done
+nix eval .#nixosConfigurations.laptop.options.programs --apply 'p: builtins.filter (n: builtins.elem n ["niri" "mangowc" "mango" "noctalia-shell"]) (builtins.attrNames p)'
+nix flake show github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2 2>&1 | head -30
+nix flake show github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f 2>&1 | head -30
+cat modules/desktop/immaterial/default.nix modules/desktop/hyprland-session/default.nix
+26.04
+4.7.6
+0.12.8
+[ "mangowc" "niri" ]
+evaluating ''...
+github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2?narHash=sha256-%2BlSWclNb9XCgYvoaqfznFwo4hAmsVgx1%2B2UjI/dWsow%3D
+unpacking 'https://releases.nixos.org/nixos/unstable/nixos-26.11pre1108983.f9a75f41be3a/nixexprs.tar.zst' into the Git cache...
+evaluating 'apps'...
+├───apps
+evaluating 'apps.aarch64-linux'...
+│   ├───aarch64-linux
+evaluating 'apps.aarch64-linux.default'...
+│   │   └───default: app: no description
+evaluating 'apps.x86_64-linux'...
+│   └───x86_64-linux
+evaluating 'apps.x86_64-linux.default'...
+│       └───default: app: no description
+evaluating 'devShells'...
+├───devShells
+evaluating 'devShells.aarch64-linux'...
+│   ├───aarch64-linux
+evaluating 'devShells.aarch64-linux.default'...
+│   │   └───default omitted (use '--all-systems' to show)
+evaluating 'devShells.x86_64-linux'...
+│   └───x86_64-linux
+evaluating 'devShells.x86_64-linux.default'...
+│       └───default: development environment 'nix-shell'
+evaluating 'hjemModules'...
+├───hjemModules: unknown
+evaluating 'homeModules'...
+├───homeModules: unknown
+evaluating 'nixosModules'...
+├───nixosModules
+evaluating 'nixosModules.default'...
+evaluating ''...
+github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f?narHash=sha256-60ARRX%2BiBrLhbF3sLo2PRPhV8iCB6vA3iyteLL2ycfU%3D
+evaluating 'devShells'...
+├───devShells
+evaluating 'devShells.aarch64-linux'...
+│   ├───aarch64-linux
+evaluating 'devShells.aarch64-linux.default'...
+│   │   └───default omitted (use '--all-systems' to show)
+evaluating 'devShells.x86_64-linux'...
+│   └───x86_64-linux
+evaluating 'devShells.x86_64-linux.default'...
+│       └───default: development environment 'mango-nightly'
+evaluating 'formatter'...
+├───formatter
+evaluating 'formatter.aarch64-linux'...
+│   ├───aarch64-linux omitted (use '--all-systems' to show)
+evaluating 'formatter.x86_64-linux'...
+│   └───x86_64-linux: package 'nixfmt-1.3.1'
+evaluating 'hmModules'...
+├───hmModules: unknown
+evaluating 'nixosModules'...
+├───nixosModules
+evaluating 'nixosModules.mango'...
+│   └───mango: NixOS module
+evaluating 'overlays'...
+├───overlays
+evaluating 'overlays.default'...
+│   └───default: Nixpkgs overlay
+evaluating 'packages'...
+└───packages
+# immaterial-impulse shell module (Quickshell on Hyprland).
+# Active when modules.imi.enable = true.
+# Upstream (https://github.com/XephyLon/immaterial-impulse) manages the QML tree,
+# matugen config and seeded user config via its home-manager module. Hyprland
+# config is seeded from the flake input (upstream does not manage ~/.config/hypr).
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.modules.imi;
+  dotsEnable = config.modules.desktop.dotfiles.enable or false;
+  dotsDir = config.modules.desktop.dotfiles.dir or "";
+  hyprDir = if dotsEnable then "${dotsDir}/hypr" else "$HOME/.config/hypr";
+  hmDag = inputs.home-manager.lib.hm.dag;
+  imm = inputs.immaterial-impulse;
+  sys = pkgs.stdenv.hostPlatform.system;
+
+  immPython = pkgs.python3.withPackages (ps: [
+    ps.pygobject3
+    ps.click
+    ps.loguru
+    ps.tqdm
+    ps.pillow
+    ps.materialyoucolor
+    ps.material-color-utilities
+    ps.opencv4
+    ps.numpy
+    ps.dbus-python
+    ps.evdev
+    ps.psutil
+    ps.requests
+    ps.scipy
+    ps.onnxruntime
+    ps.websockets
+    ps.pyyaml
+    ps.fonttools
+    ps.google-api-python-client
+  ]);
+  immVenv = pkgs.runCommand "immaterial-venv" { } ''
+    mkdir -p $out/bin
+    ln -s ${immPython}/bin/python3 $out/bin/python
+    ln -s ${immPython}/bin/python3 $out/bin/python3
+    printf '%s\n' '# dummy activate' > $out/bin/activate
+  '';
+in
+{
+  options.modules.imi.enable = lib.mkEnableOption "immaterial-impulse shell on Hyprland";
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      imm.packages.${sys}.immaterial-impulse
+      imm.packages.${sys}.quickshell-wrapped
+      matugen
+      hyprland
+      hyprsunset
+      wl-clipboard
+      cliphist
+      libnotify
+      grim
+      slurp
+      wf-recorder
+      brightnessctl
+      playerctl
+      xdg-utils
+      adwaita-icon-theme
+      pavucontrol
+      localsend-cli
+      gdk-pixbuf
+      librsvg
+      bc
+      glib
+      imagemagick
+      fuzzel
+      hypridle
+      hyprlock
+      hyprpicker
+      translate-shell
+      wlogout
+      libqalculate
+      cava
+      pavucontrol
+      wireplumber
+      pipewire
+      ddcutil
+      geoclue2
+      networkmanager
+      wl-clipboard
+      slurp
+      brightnessctl
+      playerctl
+      cliphist
+      upscayl
+      pulseaudio
+      bluez
+      blueman
+      glib
+      gtk3
+      gjs
+      ffmpeg
+      yt-dlp
+      git
+      file
+      fontconfig
+      procps
+      psmisc
+      util-linux
+      xdg-utils
+      uv
+    ];
+
+    home-manager.users.jano = {
+      imports = [ imm.homeManagerModules.default ];
+
+      programs.immaterial-impulse = {
+        enable = true;
+        package = imm.packages.${sys}.immaterial-impulse;
+        quickshell.package = imm.packages.${sys}.quickshell-wrapped;
+        seedConfig = true;
+      };
+
+      home.activation.immaterialHyprConfig = hmDag.entryAfter [ "writeBoundary" ] ''
+        hd="${hyprDir}"
+        run mkdir -p "$hd"
+        if [ ! -e "$hd/hyprland.lua" ]; then
+          run cp -r ${imm}/dots/.config/hypr/. "$hd/"
+          run chmod -R u+w "$hd"
+        fi
+        # Ensure the shell launches with the ABI-matching wrapped qs (not PATH's).
+        if [ -f "$hd/hyprland/execs.lua" ]; then
+          run sed -i 's#QSG_RENDER_LOOP=threaded qs -c#QSG_RENDER_LOOP=threaded /run/current-system/sw/bin/qs -c#g; s#qs -c \$qsConfig ipc#/run/current-system/sw/bin/qs -c $qsConfig ipc#g' "$hd/hyprland/execs.lua"
+        fi
+        # Clamp shadow render_power to the compositor's maximum.
+        if [ -f "$hd/hyprland/general.lua" ]; then
+          run sed -i 's/render_power = 10,/render_power = 4,/' "$hd/hyprland/general.lua"
+        fi
+      '';
+
+      home.activation.immaterialVenv = hmDag.entryAfter [ "writeBoundary" ] ''
+        run mkdir -p "$HOME/.local/state/quickshell"
+        if [ ! -e "$HOME/.local/state/quickshell/.venv" ]; then
+          run ln -s ${immVenv} "$HOME/.local/state/quickshell/.venv"
+        fi
+      '';
+    };
+  };
+}
+# Hyprland session (Lua config, Hyprland >= 0.55), launched through UWSM so
+# graphical-session.target (and with it the dynisland user service) comes up.
+# Config template: ./hyprland.lua.
+#
+# Uses the Hyprland FLAKE package (plugins must match its exact version), so the
+# Cachix cache is configured here, ALWAYS on. Do not override the flake's nixpkgs.
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  theme,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop;
+  sys = pkgs.stdenv.hostPlatform.system;
+  hypr = inputs.hyprland.packages.${sys};
+  hyprNixpkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.${sys};
+  # Override with modules.desktop.drmDevices (the desktop PC has only the NVIDIA card: /dev/dri/dgpu).
+  # Setting it also hides simpledrm (card0, the EFI framebuffer) from Aquamarine.
+  drmDevices =
+    if cfg.drmDevices != null then
+      cfg.drmDevices
+    else if config.modules.hardware.nvidia.enable then
+      "/dev/dri/igpu:/dev/dri/dgpu"
+    else
+      "/dev/dri/igpu";
+
+  rgba = key: "rgba(${lib.removePrefix "#" (theme.color key)}ff)";
+
+  screenshot = pkgs.writeShellScript "screenshot" ''
+    export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-wayland-1}"
+    dir="$HOME/Pictures/Screenshots"
+    mkdir -p "$dir"
+    f="$dir/Screenshot from $(date +'%Y-%m-%d %H-%M-%S').png"
+    g="$(${pkgs.slurp}/bin/slurp)" && [ -n "$g" ] \
+      && ${pkgs.grim}/bin/grim -g "$g" "$f" \
+      && ${pkgs.wl-clipboard}/bin/wl-copy < "$f"
+  '';
+
+  safeSharePicker = pkgs.writeShellScriptBin "hyprland-share-picker-safe" ''
+    out="$(${hypr.xdg-desktop-portal-hyprland}/bin/hyprland-share-picker "$@" 2>/dev/null)"
+    printf '%s\\n' "$out"
+    exit 0
+  '';
+
+  # shell binds (dynisland only)
+  shellBinds = lib.optionalString (cfg.shell == "dynisland") (
+    lib.concatMapStringsSep "\n" (b: ''hl.bind("${b.key}", hl.dsp.exec_cmd("dynisland ipc ${b.ipc}"))'')
+      [
+        {
+          key = "SUPER + space";
+          ipc = "launcher toggle";
+        }
+        {
+          key = "ALT + space";
+          ipc = "spotlight toggle";
+        }
+        {
+          key = "SUPER + SHIFT + L";
+          ipc = "lock lock";
+        }
+        {
+          key = "SUPER + Q";
+          ipc = "quick toggle";
+        }
+        {
+          key = "SUPER + V";
+          ipc = "tools clipboard";
+        }
+        {
+          key = "SUPER + CTRL + E";
+          ipc = "tools emoji";
+        }
+        {
+          key = "SUPER + SHIFT + C";
+          ipc = "tools color";
+        }
+        {
+          key = "SUPER + A";
+          ipc = "ai toggle";
+        }
+        {
+          key = "SUPER + comma";
+          ipc = "settings toggle";
+        }
+        {
+          key = "SUPER + I";
+          ipc = "island toggle";
+        }
+      ]
+  );
+
+  content =
+    lib.replaceStrings
+      [
+        "@ACCENT@"
+        "@SURFACE@"
+        "@POLKIT@"
+        "@SCREENSHOT@"
+        "@WPCTL@"
+        "@SHELL_BINDS@"
+        "@DRM_DEVICES@"
+      ]
+      [
+        (rgba "accent")
+        (rgba "surface")
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+        "${screenshot}"
+        "${pkgs.wireplumber}/bin/wpctl"
+        shellBinds
+        drmDevices
+      ]
+      (builtins.readFile ./hyprland.lua);
+in
+{
+    options.modules.desktop.drmDevices = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    default = null;
+    example = "/dev/dri/dgpu";
+    description = "Colon-separated DRM devices Hyprland (Aquamarine) may use. null = igpu (+ dgpu when NVIDIA is enabled).";
+  };
+
+  config = lib.mkMerge [
+    # The cache must be active BEFORE the flake package is built, so this is not
+    # gated on the session. First build: pass the same values on the CLI (see plan).
+    {
+      nix.settings = {
+        substituters = [ "https://hyprland.cachix.org" ];
+        trusted-substituters = [ "https://hyprland.cachix.org" ];
+        trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+      };
+    }
+
+    (lib.mkIf (cfg.enable && cfg.session == "hyprland") {
+      programs.hyprland = {
+        enable = true;
+        withUWSM = true; # session entry: "hyprland-uwsm"
+        package = hypr.hyprland;
+        portalPackage = hypr.xdg-desktop-portal-hyprland;
+      };
+
+      # Applies to every shell.
+      environment.sessionVariables.AQ_DRM_DEVICES = drmDevices;
+
+      # The flake is built against its own nixpkgs: use that Mesa so the GL/GBM
+      # libs match (Hyprland wiki, Nix page).
+      #hardware.graphics.package = hyprNixpkgs.mesa;
+
+      xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # file picker
+      services.gnome.gnome-keyring.enable = true;
+      environment.systemPackages = with pkgs; [
+        polkit_gnome
+        wl-clip-persist
+        safeSharePicker
+      ];
+
+      home-manager.users.jano.home.activation.xdphConf =
+        inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ]
+          ''
+                    run mkdir -p "$HOME/.config/hypr"
+                    cat > "$HOME/.config/hypr/xdph.conf" <<'EOF'
+            screencopy {
+                custom_picker_binary = ${safeSharePicker}/bin/hyprland-share-picker-safe
+            }
+            EOF
+          '';
+
+      home-manager.users.jano.home.activation.hyprlandLua = lib.mkIf (!config.modules.imi.enable) (
+        inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run mkdir -p "$HOME/.config/hypr"
+          if [ -L "$HOME/.config/hypr/hyprland.lua" ] || [ ! -e "$HOME/.config/hypr/hyprland.lua" ]; then
+            run rm -f "$HOME/.config/hypr/hyprland.lua"
+            run cp ${pkgs.writeText "hyprland.lua" content} "$HOME/.config/hypr/hyprland.lua"
+            run chmod u+w "$HOME/.config/hypr/hyprland.lua"
+          fi
+        ''
+      );
+    })
+  ];
+}
+
+Verified (your output):
+
+    nixpkgs 26.05 has niri 26.04, noctalia-shell 4.7.6 and mangowc 0.12.8.
+    programs.niri and programs.mangowc NixOS options exist.
+    The Noctalia flake exports nixosModules.default, homeModules and hjemModules. The mangowc flake exports nixosModules.mango, hmModules and an overlay.
+
+UNVERIFIED, so I will check these before coding: Noctalia’s module option names, how Noctalia autostarts under niri and mango, and the mangowc config path.
+
+Three questions before I build:
+Source for niri, mangowc and Noctalia?
+Flake inputs pinned by full rev (newest, new inputs in flake.nix)
+What happens to Hyprland + imi + dms in this step?
+Remove Hyprland, imi and dms now
+Default compositor per host after this step?
+Both hosts = niri
+
+Recorded: flake inputs pinned by rev, Hyprland, imi and dms removed now, both hosts on niri.
+
+I won’t write module code against unverified options. Rule 14 also requires the exact git rm list before I delete anything. Run these and send the output:
+
+find /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source -name '*.nix' -not -path '*/tests/*' | head -40
+cat /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/nixos-module.nix 2>&1 | head -80
+cat /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/nixos-modules.nix 2>&1 | head -80
+grep -rnE "hyprland|modules\.imi|modules\.dms|immaterial|dank-material|dux-|modules\.dux" --include=*.nix --include=*.lua --include=*.md . | grep -vE '^\./(modules/desktop/(hyprland-session|immaterial|dms)|\.plan)/' | head -60
+cat modules/desktop/dux/greeter.nix modules/desktop/dotfiles.nix
+ls -R hosts/desktop/dotfiles hosts/laptop/dotfiles | head -60
+git ls-files | grep -iE "hypr|immaterial|dms" | head -40
+
+The two cat paths for the module files are guesses, so ignore any “No such file” lines. The find output gives me the real filenames.
+
+Step 2 is “Remove Hyprland, imi, dms”. I’ll list the git rm set and the flake.nix and host edits for your approval before touching anything. After that, step 3 adds modules.desktop.compositor with niri, mangowm and Noctalia.
+
+[nix-shell:~/Proyectos/MyNixOS]$ find /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source -name '*.nix' -not -path '*/tests/*' | head -40
+cat /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/nixos-module.nix 2>&1 | head -80
+cat /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/nixos-modules.nix 2>&1 | head -80
+grep -rnE "hyprland|modules\.imi|modules\.dms|immaterial|dank-material|dux-|modules\.dux" --include=*.nix --include=*.lua --include=*.md . | grep -vE '^\./(modules/desktop/(hyprland-session|immaterial|dms)|\.plan)/' | head -60
+cat modules/desktop/dux/greeter.nix modules/desktop/dotfiles.nix
+ls -R hosts/desktop/dotfiles hosts/laptop/dotfiles | head -60
+git ls-files | grep -iE "hypr|immaterial|dms" | head -40
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/package.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/home-module.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/devshell.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/hjem-module.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/nixos-module.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/default.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/flake.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/lib.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/nixos-modules.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/generate-options.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/hm-modules.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/default.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/flake.nix
+{
+  config,
+  lib,
+  ...
+}:
+let
+  cfg = config.programs.noctalia;
+in
+{
+  # The module from this flake predates the module in nixpkgs.
+  # To avoid conflicts, we disable the nixpkgs module.
+  disabledModules = [ "programs/wayland/noctalia.nix" ];
+
+  options.programs.noctalia = {
+    enable = lib.mkEnableOption "Whether to enable noctalia, a lightweight Wayland shell and bar.";
+
+    package = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = null;
+      description = "The noctalia package to install.";
+    };
+
+    systemd = {
+      enable = lib.mkEnableOption "Enables a systemd user service for noctalia.";
+
+      target = lib.mkOption {
+        type = lib.types.str;
+        default = "graphical-session.target";
+        example = "hyprland-session.target";
+        description = "The systemd user target for the noctalia service.";
+      };
+    };
+
+    recommendedServices.enable = lib.mkEnableOption ''
+      NixOS services used by Noctalia v5 integrations, including NetworkManager,
+      Bluetooth, UPower, and a power profile service.
+    '';
+  };
+
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        hardware.graphics.enable = lib.mkDefault true;
+
+        environment.systemPackages = lib.optional (cfg.package != null) cfg.package;
+
+        systemd.user.services.noctalia = lib.mkIf cfg.systemd.enable {
+          description = "Noctalia - A lightweight Wayland shell and bar";
+          documentation = [ "https://docs.noctalia.dev/noctalia/" ];
+          partOf = [ cfg.systemd.target ];
+          after = [ cfg.systemd.target ];
+          wantedBy = [ cfg.systemd.target ];
+          restartTriggers = [ cfg.package ];
+
+          environment.PATH = lib.mkForce null;
+
+          serviceConfig = {
+            ExecStart = lib.getExe cfg.package;
+            Restart = "on-failure";
+          };
+        };
+
+        assertions = [
+          {
+            assertion = !cfg.systemd.enable || cfg.package != null;
+            message = "programs.noctalia.package cannot be null when programs.noctalia.systemd.enable is true";
+          }
+        ];
+      }
+
+      (lib.mkIf cfg.recommendedServices.enable {
+        networking.networkmanager.enable = lib.mkDefault true;
+        hardware.bluetooth.enable = lib.mkDefault true;
+        services.upower.enable = lib.mkDefault true;
+        services.power-profiles-daemon.enable = lib.mkIf (!config.services.tuned.enable) (
+          lib.mkDefault true
+        );
+      })
+    ]
+  );
+self:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.programs.mango;
+in
+{
+  disabledModules = [ "programs/wayland/mango.nix" ];
+
+  options = {
+    programs.mango = {
+      enable = lib.mkEnableOption "mango, a wayland compositor based on dwl";
+      addLoginEntry = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to add a login entry to the display manager for mango. Only has effect if a display manager is configured (e.g. SDDM, GDM via services.displayManager).";
+      };
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = self.packages.${pkgs.stdenv.hostPlatform.system}.mango;
+        description = "The mango package to use";
+      };
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = [
+      cfg.package
+    ];
+
+    xdg.portal = {
+      enable = lib.mkDefault true;
+
+      config = {
+        mango = {
+          default = [
+            "gtk"
+          ];
+          # except those
+          "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+          "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
+          "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
+
+          # wlr does not have this interface
+          "org.freedesktop.impl.portal.Inhibit" = [ ];
+        };
+      };
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-wlr
+        xdg-desktop-portal-gtk
+      ];
+
+      wlr.enable = lib.mkDefault true;
+
+      configPackages = [ cfg.package ];
+    };
+
+    security.polkit.enable = lib.mkDefault true;
+
+    programs.xwayland.enable = lib.mkDefault true;
+
+    services = {
+      displayManager.sessionPackages = lib.mkIf cfg.addLoginEntry [ cfg.package ];
+
+      graphical-desktop.enable = lib.mkDefault true;
+    };
+  };
+}
+./modules/desktop/dux/search.nix:1:# Dux Search (system-wide search service for Dux Shell). On with modules.dms.enable.
+./modules/desktop/dux/search.nix:10:  cfg = config.modules.dux.search;
+./modules/desktop/dux/search.nix:13:  options.modules.dux.search.enable = lib.mkEnableOption "Dux Search";
+./modules/desktop/dux/search.nix:16:    environment.systemPackages = [ inputs.dux-search.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+./modules/desktop/dux/greeter.nix:3:# (modules.dux.greeter.enable = true;) and keep the previous generation in the boot menu.
+./modules/desktop/dux/greeter.nix:13:  cfg = config.modules.dux.greeter;
+./modules/desktop/dux/greeter.nix:16:  options.modules.dux.greeter.enable = lib.mkEnableOption "Dux Greeter (replaces SDDM)";
+./modules/desktop/dux/greeter.nix:25:      # Not hyprland: its Lua config (0.56+) rejects the classic-syntax config the greeter generates.
+./modules/desktop/dux/gop.nix:1:# Dux GOP (system monitor). On with modules.dms.enable.
+./modules/desktop/dux/gop.nix:10:  cfg = config.modules.dux.gop;
+./modules/desktop/dux/gop.nix:13:  options.modules.dux.gop.enable = lib.mkEnableOption "Dux GOP";
+./modules/desktop/dux/gop.nix:16:    environment.systemPackages = [ inputs.dux-gop.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+./modules/desktop/dux/calendar.nix:1:# Dux Calendar. On with modules.dms.enable.
+./modules/desktop/dux/calendar.nix:10:  cfg = config.modules.dux.calendar;
+./modules/desktop/dux/calendar.nix:13:  options.modules.dux.calendar.enable = lib.mkEnableOption "Dux Calendar";
+./modules/desktop/dux/calendar.nix:16:    environment.systemPackages = [ inputs.dux-calendar.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+./modules/desktop/dotfiles.nix:21:  imi = config.modules.imi.enable;
+./modules/desktop/session.nix:1:# Desktop session: which compositor runs (hyprland), which shell sits on top
+./modules/desktop/session.nix:2:# (dynisland | chronos | immaterial), the SDDM login screen and the Wayland session basics every host shares.
+./modules/desktop/session.nix:4:#   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
+./modules/desktop/session.nix:5:#   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
+./modules/desktop/session.nix:17:  # Change embeddedTheme (astronaut, black_hole, cyberpunk, hyprland_kath,
+./modules/desktop/session.nix:31:      type = lib.types.enum [ "hyprland" ];
+./modules/desktop/session.nix:32:      default = "hyprland";
+./modules/desktop/session.nix:33:      description = "Compositor started by the login screen. 'hyprland' runs through UWSM (see hyprland.nix).";
+./modules/desktop/session.nix:43:      description = "Legacy Quickshell shell (dynisland, chronos). The current shell has its own switch: modules.imi.enable.";
+./modules/desktop/session.nix:64:        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
+./modules/desktop/dynisland/default.nix:20:  wmPackage = config.programs.hyprland.package;
+./modules/pkgs/hyprmon/default.nix:21:      --run 'export HYPRLAND_CONFIG="$HOME/.config/hypr/hyprland.lua"'
+./README.md:7:| desktop | AMD + NVIDIA GTX 1060 | immaterial-impulse | full |
+./README.md:8:| laptop | Intel + NVIDIA RTX 3050 (PRIME offload) | immaterial-impulse | full |
+./README.md:86:modules.imi.enable = true;          # the shell
+./README.md:106:| desktop | modules.desktop.*, modules.imi, modules.halo | session, hyprland-session, greeter, halo, immaterial, dynisland, chronos, dotfiles, droidloom |
+./README.md:119:| immaterial-impulse | modules.imi.enable | desktop, laptop | upstream flake input (not edited here) |
+./README.md:152:nixpkgs nixos-26.05, home-manager, hyprland (no follows, keeps Cachix valid), hyprgrass, immaterial-impulse, zen-browser, opencode-flake, forge, claude-desktop, arcticons, rust-overlay, nixos-hardware, nix-cachyos-kernel (pinned). Policy per input: [.plan/docs/inputs.md](.plan/docs/inputs.md).
+./hosts/desktop/dotfiles/dms/plugins/dmsThemeSync/README.md:34:- [Dux 2.0 compatibility](#dux-20-compatibility)
+./hosts/desktop/dotfiles/dms/plugins/dmsThemeSync/README.md:283:See [Dux 2.0 compatibility](#dux-20-compatibility) for the boundaries.
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/shared/README_TEMPLATE.md:59:**Hyprland (hyprland.conf):**
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/quickCapture/docs/ipc-and-settings.md:46:#### Hyprland Keybinds (hyprland.conf)
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/quickCapture/docs/developer-guide.md:202:journalctl --user -f -u dank-material-shell
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/quickCapture/CONTRIBUTING.md:25:journalctl --user -f -u dank-material-shell
+./hosts/desktop/dotfiles/dms/plugins/.repos/9c4af04f163b7baa/README.md:3:A collection of first-party, officially maintained plugins for Dux Shell
+./hosts/desktop/dotfiles/dms/plugins/wallpaperCarousel/README.md:131:In ~/.config/hypr/hyprland.conf:
+./hosts/desktop/dotfiles/hypr/dms/colors.lua:2:-- Remove require("dms.colors") from hyprland.lua to override.
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:38:hl.bind("SUPER + Slash", hl.dsp.exec_cmd("dms ipc call keybinds toggle hyprland"), { description = "Shell: Keybind cheatsheet" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:50:hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"), { description = "App: Task manager" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:58:hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"), { description = "App: Terminal" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:62:hl.bind("CTRL + SUPER + SHIFT + ALT + W", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"), { description = "App: Office software" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:64:hl.bind("CTRL + SUPER + V", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"), { description = "App: Volume mixer" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:68:hl.bind("SUPER + C", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"), { description = "App: Code editor" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:70:hl.bind("SUPER + E", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dfiles' 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"), { description = "App: File manager" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:72:hl.bind("SUPER + Period", hl.dsp.exec_cmd("$HOME/.config/hypr/hyprland/scripts/fuzzel-emoji.sh copy"), { description = "Utilities: Emoji >> clipboard" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:76:hl.bind("SUPER + SHIFT + A", hl.dsp.exec_cmd("pidof slurp || $HOME/.config/hypr/hyprland/scripts/snip_to_search.sh"), { description = "Utilities: Google Lens" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:80:hl.bind("SUPER + SHIFT + ALT + mouse:273", hl.dsp.exec_cmd("$HOME/.config/hypr/hyprland/scripts/ai/primary-buffer-query.sh"), { description = "Utilities: Generate AI summary for selected text" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:102:hl.bind("SUPER + T", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"), { description = "App: Terminal" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:104:hl.bind("SUPER + W", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf' 'zen'"), { description = "App: Browser" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:106:hl.bind("SUPER + X", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"), { description = "App: Text editor" })
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+# Dux Greeter (greetd login screen with the Dux Shell look). OFF by default.
+# Replaces SDDM: enable it on one host first
+# (modules.dux.greeter.enable = true;) and keep the previous generation in the boot menu.
+# UNVERIFIED: the option below is the nixpkgs 26.05 module name from the pre-rename DankGreeter docs;
+# if the rebuild says it does not exist, check nixos-option services.displayManager for the new name.
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.modules.dux.greeter;
+in
+{
+  options.modules.dux.greeter.enable = lib.mkEnableOption "Dux Greeter (replaces SDDM)";
+
+  config = lib.mkIf cfg.enable {
+    services.displayManager.sddm.enable = lib.mkForce false;
+
+    programs.sway.enable = true; # the greeter's compositor must be installed system-wide
+
+    services.displayManager.dms-greeter = {
+      enable = true;
+      # Not hyprland: its Lua config (0.56+) rejects the classic-syntax config the greeter generates.
+      compositor.name = "sway";
+      configHome = "/home/jano"; # sync the user's Dux Shell theme with the greeter
+      quickshell.package = pkgs.quickshell;
+    };
+
+    # The greeter runs its own Hyprland as user dms-greeter, which starts graphical-session.target and
+    # with it every global user service (full shell, files, sunshine, deskflow). Keep those for real users.
+    systemd.user.services = lib.genAttrs (
+      [
+        "dms"
+        "dfiles"
+      ]
+      ++ lib.optional config.modules.services.sunshine.enable "sunshine"
+      ++ lib.optional (config.modules.programs.deskflow.role == "server") "deskflow-server"
+      ++ lib.optional (config.modules.programs.deskflow.role == "client") "deskflow-client"
+    ) (_: {
+      unitConfig.ConditionUser = "!dms-greeter";
+    });
+  };
+}
+# Keep app-written configs inside the flake repo instead of loose files in ~/.config.
+#
+# ~/.config/{hypr,hyprmon,dms,matugen} and ~/.local/state/dms become symlinks to
+# <repoPath>/hosts/<host>/dotfiles/<name>. One folder per host, because some files are
+# machine-specific (hyprmon.lua monitor layout, per-GPU settings).
+# Hyprland, hyprmon (hyprmon.lua, profiles) and the DMS Settings app then write straight into
+# the repo, so git diff shows every change. The links point at the live checkout (not the Nix
+# store), so edits apply without a rebuild.
+#
+# First time on a host: run adopt-dotfiles --host <host> (and dms-adopt.sh <host>) BEFORE the rebuild.
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop.dotfiles;
+  hmDag = inputs.home-manager.lib.hm.dag;
+  imi = config.modules.imi.enable;
+  names = [
+    "hypr"
+    "hyprmon"
+    "dms"
+    "dms-state"
+  ]
+  ++ lib.optional (!imi) "matugen";
+in
+{
+  options.modules.desktop.dotfiles = {
+    enable = lib.mkEnableOption "app configs (hypr, hyprmon, dms, matugen) stored in the flake repo via symlinks";
+    repoPath = lib.mkOption {
+      type = lib.types.str;
+      default = "/home/jano/Proyectos/MyNixOS";
+      description = "Absolute path of this repo's checkout on the machine (the links point here).";
+    };
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = config.networking.hostName;
+      defaultText = lib.literalExpression "config.networking.hostName";
+      description = "Folder name under dotfiles/ used by this machine.";
+    };
+    dir = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.repoPath}/hosts/${cfg.host}/dotfiles";
+      description = ''
+        Directory the configs live in. Override only to keep a host on the
+        old flat layout (<repo>/dotfiles) until it is migrated with migrate-dotfiles-per-host.
+      '';
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users.jano = { config, ... }: {
+      # The link targets must exist before home-manager creates the links.
+      home.activation.dotfilesDirs = hmDag.entryBefore [ "linkGeneration" ] ''
+        run mkdir -p ${lib.concatMapStringsSep " " (n: "\"${cfg.dir}/${n}\"") names}
+      '';
+
+      xdg.configFile = {
+        "hypr".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hypr";
+        "hyprmon".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hyprmon";
+        "dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms";
+      }
+      // lib.optionalAttrs (!imi) {
+        "matugen".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/matugen";
+      };
+
+      xdg.stateFile."dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms-state";
+    };
+  };
+}
+hosts/desktop/dotfiles:
+dms
+dms-state
+hypr
+hyprmon
+illogical-impulse
+matugen
+nvim
+
+hosts/desktop/dotfiles/dms:
+plugins
+plugin_settings.json
+plugins.lock.json
+settings.json
+zen.css
+
+hosts/desktop/dotfiles/dms/plugins:
+bitwarden
+clipboardPlus
+clipboardPlus.meta
+dankKDEConnect
+dankKDEConnect.meta
+dankNotepadModule
+dankNotepadModule.meta
+desktopCommand
+developerUtilities
+dmsconky
+dmsThemeSync
+dockerManager
+githubHeatmapPlus
+quickCapture
+quickCapture.meta
+wallpaperCarousel
+webSearch
+
+hosts/desktop/dotfiles/dms/plugins/bitwarden:
+agent
+BarWidget.qml
+bin
+BitwardenModel.js
+bw-fast-exit.js
+bw-login-code.js
+CHANGELOG.md
+ChoiceTile.qml
+CustomFieldsEditor.qml
+Daemon.qml
+demo
+deny.toml
+DetailField.qml
+DmsUi
+docs
+FidoModel.js
+FidoSetupScreen.qml
+FidoUnlock.qml
+FormPickerRow.qml
+LICENSE
+LidState.qml
+LineField.qml
+manifest.json
+NumberEntry.qml
+.plan/v2/W-immaterial.md
+hosts/desktop/dotfiles/dms-state/.gitignore
+hosts/desktop/dotfiles/dms-state/notepad-session.json
+hosts/desktop/dotfiles/dms-state/session.json
+hosts/desktop/dotfiles/dms/.changelog-2.0
+hosts/desktop/dotfiles/dms/.firstlaunch
+hosts/desktop/dotfiles/dms/.gitignore
+hosts/desktop/dotfiles/dms/plugin_settings.json
+hosts/desktop/dotfiles/dms/plugins.lock.json
+hosts/desktop/dotfiles/dms/settings.json
+hosts/desktop/dotfiles/dms/zen.css
+hosts/desktop/dotfiles/hypr/custom/env.lua
+hosts/desktop/dotfiles/hypr/custom/execs.lua
+hosts/desktop/dotfiles/hypr/custom/general.lua
+hosts/desktop/dotfiles/hypr/custom/keybinds.lua
+hosts/desktop/dotfiles/hypr/custom/rules.lua
+hosts/desktop/dotfiles/hypr/custom/scripts/__restore_video_wallpaper.sh
+hosts/desktop/dotfiles/hypr/custom/variables.lua
+hosts/desktop/dotfiles/hypr/dms-theme-sync.lua
+hosts/desktop/dotfiles/hypr/dms/binds-user.lua
+hosts/desktop/dotfiles/hypr/dms/binds.lua
+hosts/desktop/dotfiles/hypr/dms/colors.lua
+hosts/desktop/dotfiles/hypr/dms/cursor.lua
+hosts/desktop/dotfiles/hypr/dms/input.lua
+hosts/desktop/dotfiles/hypr/dms/layout.lua
+hosts/desktop/dotfiles/hypr/dms/outputs.lua
+hosts/desktop/dotfiles/hypr/dms/windowrules.lua
+hosts/desktop/dotfiles/hypr/hypridle.conf
+hosts/desktop/dotfiles/hypr/hyprland.lua
+hosts/desktop/dotfiles/hypr/hyprland.lua.dmsbackup1793722436
+hosts/desktop/dotfiles/hypr/hyprland/colors.lua
+hosts/desktop/dotfiles/hypr/hyprland/env.lua
+hosts/desktop/dotfiles/hypr/hyprland/execs.lua
+hosts/desktop/dotfiles/hypr/hyprland/general.lua
+hosts/desktop/dotfiles/hypr/hyprland/keybinds.lua
+hosts/desktop/dotfiles/hypr/hyprland/lib/init.lua
+hosts/desktop/dotfiles/hypr/hyprland/rules.lua
+hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/license_show-loaded-ollama-models.txt
+hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/primary-buffer-query.sh
+hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/show-loaded-ollama-models.sh
+
+[nix-shell:~/Proyectos/MyNixOS]$ find /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source -name '*.nix' -not -path '*/tests/*' | head -40
+cat /nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/nixos-module.nix 2>&1 | head -80
+cat /nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/nixos-modules.nix 2>&1 | head -80
+grep -rnE "hyprland|modules\.imi|modules\.dms|immaterial|dank-material|dux-|modules\.dux" --include=*.nix --include=*.lua --include=*.md . | grep -vE '^\./(modules/desktop/(hyprland-session|immaterial|dms)|\.plan)/' | head -60
+cat modules/desktop/dux/greeter.nix modules/desktop/dotfiles.nix
+ls -R hosts/desktop/dotfiles hosts/laptop/dotfiles | head -60
+git ls-files | grep -iE "hypr|immaterial|dms" | head -40
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/package.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/home-module.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/devshell.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/hjem-module.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/nix/nixos-module.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/default.nix
+/nix/store/xgnkl0lxfff7ghri9y7pv9f8n8vw435j-source/flake.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/lib.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/nixos-modules.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/generate-options.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/hm-modules.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/nix/default.nix
+/nix/store/g81fidplhh497w2rq5yv0q24r11p9r6d-source/flake.nix
+{
+  config,
+  lib,
+  ...
+}:
+let
+  cfg = config.programs.noctalia;
+in
+{
+  # The module from this flake predates the module in nixpkgs.
+  # To avoid conflicts, we disable the nixpkgs module.
+  disabledModules = [ "programs/wayland/noctalia.nix" ];
+
+  options.programs.noctalia = {
+    enable = lib.mkEnableOption "Whether to enable noctalia, a lightweight Wayland shell and bar.";
+
+    package = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = null;
+      description = "The noctalia package to install.";
+    };
+
+    systemd = {
+      enable = lib.mkEnableOption "Enables a systemd user service for noctalia.";
+
+      target = lib.mkOption {
+        type = lib.types.str;
+        default = "graphical-session.target";
+        example = "hyprland-session.target";
+        description = "The systemd user target for the noctalia service.";
+      };
+    };
+
+    recommendedServices.enable = lib.mkEnableOption ''
+      NixOS services used by Noctalia v5 integrations, including NetworkManager,
+      Bluetooth, UPower, and a power profile service.
+    '';
+  };
+
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        hardware.graphics.enable = lib.mkDefault true;
+
+        environment.systemPackages = lib.optional (cfg.package != null) cfg.package;
+
+        systemd.user.services.noctalia = lib.mkIf cfg.systemd.enable {
+          description = "Noctalia - A lightweight Wayland shell and bar";
+          documentation = [ "https://docs.noctalia.dev/noctalia/" ];
+          partOf = [ cfg.systemd.target ];
+          after = [ cfg.systemd.target ];
+          wantedBy = [ cfg.systemd.target ];
+          restartTriggers = [ cfg.package ];
+
+          environment.PATH = lib.mkForce null;
+
+          serviceConfig = {
+            ExecStart = lib.getExe cfg.package;
+            Restart = "on-failure";
+          };
+        };
+
+        assertions = [
+          {
+            assertion = !cfg.systemd.enable || cfg.package != null;
+            message = "programs.noctalia.package cannot be null when programs.noctalia.systemd.enable is true";
+          }
+        ];
+      }
+
+      (lib.mkIf cfg.recommendedServices.enable {
+        networking.networkmanager.enable = lib.mkDefault true;
+        hardware.bluetooth.enable = lib.mkDefault true;
+        services.upower.enable = lib.mkDefault true;
+        services.power-profiles-daemon.enable = lib.mkIf (!config.services.tuned.enable) (
+          lib.mkDefault true
+        );
+      })
+    ]
+  );
+self:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.programs.mango;
+in
+{
+  disabledModules = [ "programs/wayland/mango.nix" ];
+
+  options = {
+    programs.mango = {
+      enable = lib.mkEnableOption "mango, a wayland compositor based on dwl";
+      addLoginEntry = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to add a login entry to the display manager for mango. Only has effect if a display manager is configured (e.g. SDDM, GDM via services.displayManager).";
+      };
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = self.packages.${pkgs.stdenv.hostPlatform.system}.mango;
+        description = "The mango package to use";
+      };
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = [
+      cfg.package
+    ];
+
+    xdg.portal = {
+      enable = lib.mkDefault true;
+
+      config = {
+        mango = {
+          default = [
+            "gtk"
+          ];
+          # except those
+          "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+          "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
+          "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
+
+          # wlr does not have this interface
+          "org.freedesktop.impl.portal.Inhibit" = [ ];
+        };
+      };
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-wlr
+        xdg-desktop-portal-gtk
+      ];
+
+      wlr.enable = lib.mkDefault true;
+
+      configPackages = [ cfg.package ];
+    };
+
+    security.polkit.enable = lib.mkDefault true;
+
+    programs.xwayland.enable = lib.mkDefault true;
+
+    services = {
+      displayManager.sessionPackages = lib.mkIf cfg.addLoginEntry [ cfg.package ];
+
+      graphical-desktop.enable = lib.mkDefault true;
+    };
+  };
+}
+./modules/desktop/dux/search.nix:1:# Dux Search (system-wide search service for Dux Shell). On with modules.dms.enable.
+./modules/desktop/dux/search.nix:10:  cfg = config.modules.dux.search;
+./modules/desktop/dux/search.nix:13:  options.modules.dux.search.enable = lib.mkEnableOption "Dux Search";
+./modules/desktop/dux/search.nix:16:    environment.systemPackages = [ inputs.dux-search.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+./modules/desktop/dux/greeter.nix:3:# (modules.dux.greeter.enable = true;) and keep the previous generation in the boot menu.
+./modules/desktop/dux/greeter.nix:13:  cfg = config.modules.dux.greeter;
+./modules/desktop/dux/greeter.nix:16:  options.modules.dux.greeter.enable = lib.mkEnableOption "Dux Greeter (replaces SDDM)";
+./modules/desktop/dux/greeter.nix:25:      # Not hyprland: its Lua config (0.56+) rejects the classic-syntax config the greeter generates.
+./modules/desktop/dux/gop.nix:1:# Dux GOP (system monitor). On with modules.dms.enable.
+./modules/desktop/dux/gop.nix:10:  cfg = config.modules.dux.gop;
+./modules/desktop/dux/gop.nix:13:  options.modules.dux.gop.enable = lib.mkEnableOption "Dux GOP";
+./modules/desktop/dux/gop.nix:16:    environment.systemPackages = [ inputs.dux-gop.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+./modules/desktop/dux/calendar.nix:1:# Dux Calendar. On with modules.dms.enable.
+./modules/desktop/dux/calendar.nix:10:  cfg = config.modules.dux.calendar;
+./modules/desktop/dux/calendar.nix:13:  options.modules.dux.calendar.enable = lib.mkEnableOption "Dux Calendar";
+./modules/desktop/dux/calendar.nix:16:    environment.systemPackages = [ inputs.dux-calendar.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+./modules/desktop/dotfiles.nix:21:  imi = config.modules.imi.enable;
+./modules/desktop/session.nix:1:# Desktop session: which compositor runs (hyprland), which shell sits on top
+./modules/desktop/session.nix:2:# (dynisland | chronos | immaterial), the SDDM login screen and the Wayland session basics every host shares.
+./modules/desktop/session.nix:4:#   defaults:         session = "hyprland"  shell = null (legacy values: dynisland, chronos)
+./modules/desktop/session.nix:5:#   desktop, laptop:  session = "hyprland"  modules.imi.enable = true
+./modules/desktop/session.nix:17:  # Change embeddedTheme (astronaut, black_hole, cyberpunk, hyprland_kath,
+./modules/desktop/session.nix:31:      type = lib.types.enum [ "hyprland" ];
+./modules/desktop/session.nix:32:      default = "hyprland";
+./modules/desktop/session.nix:33:      description = "Compositor started by the login screen. 'hyprland' runs through UWSM (see hyprland.nix).";
+./modules/desktop/session.nix:43:      description = "Legacy Quickshell shell (dynisland, chronos). The current shell has its own switch: modules.imi.enable.";
+./modules/desktop/session.nix:64:        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
+./modules/desktop/dynisland/default.nix:20:  wmPackage = config.programs.hyprland.package;
+./modules/pkgs/hyprmon/default.nix:21:      --run 'export HYPRLAND_CONFIG="$HOME/.config/hypr/hyprland.lua"'
+./README.md:7:| desktop | AMD + NVIDIA GTX 1060 | immaterial-impulse | full |
+./README.md:8:| laptop | Intel + NVIDIA RTX 3050 (PRIME offload) | immaterial-impulse | full |
+./README.md:86:modules.imi.enable = true;          # the shell
+./README.md:106:| desktop | modules.desktop.*, modules.imi, modules.halo | session, hyprland-session, greeter, halo, immaterial, dynisland, chronos, dotfiles, droidloom |
+./README.md:119:| immaterial-impulse | modules.imi.enable | desktop, laptop | upstream flake input (not edited here) |
+./README.md:152:nixpkgs nixos-26.05, home-manager, hyprland (no follows, keeps Cachix valid), hyprgrass, immaterial-impulse, zen-browser, opencode-flake, forge, claude-desktop, arcticons, rust-overlay, nixos-hardware, nix-cachyos-kernel (pinned). Policy per input: [.plan/docs/inputs.md](.plan/docs/inputs.md).
+./hosts/desktop/dotfiles/dms/plugins/dmsThemeSync/README.md:34:- [Dux 2.0 compatibility](#dux-20-compatibility)
+./hosts/desktop/dotfiles/dms/plugins/dmsThemeSync/README.md:283:See [Dux 2.0 compatibility](#dux-20-compatibility) for the boundaries.
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/shared/README_TEMPLATE.md:59:**Hyprland (hyprland.conf):**
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/quickCapture/docs/ipc-and-settings.md:46:#### Hyprland Keybinds (hyprland.conf)
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/quickCapture/docs/developer-guide.md:202:journalctl --user -f -u dank-material-shell
+./hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a/quickCapture/CONTRIBUTING.md:25:journalctl --user -f -u dank-material-shell
+./hosts/desktop/dotfiles/dms/plugins/.repos/9c4af04f163b7baa/README.md:3:A collection of first-party, officially maintained plugins for Dux Shell
+./hosts/desktop/dotfiles/dms/plugins/wallpaperCarousel/README.md:131:In ~/.config/hypr/hyprland.conf:
+./hosts/desktop/dotfiles/hypr/dms/colors.lua:2:-- Remove require("dms.colors") from hyprland.lua to override.
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:38:hl.bind("SUPER + Slash", hl.dsp.exec_cmd("dms ipc call keybinds toggle hyprland"), { description = "Shell: Keybind cheatsheet" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:50:hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"), { description = "App: Task manager" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:58:hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"), { description = "App: Terminal" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:62:hl.bind("CTRL + SUPER + SHIFT + ALT + W", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'wps' 'onlyoffice-desktopeditors' 'libreoffice'"), { description = "App: Office software" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:64:hl.bind("CTRL + SUPER + V", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"), { description = "App: Volume mixer" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:68:hl.bind("SUPER + C", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'windsurf' 'antigravity' 'code' 'codium' 'cursor' 'zed' 'zedit' 'zeditor' 'kate' 'gnome-text-editor' 'emacs' 'command -v nvim && kitty -1 nvim' 'command -v micro && kitty -1 micro'"), { description = "App: Code editor" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:70:hl.bind("SUPER + E", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dfiles' 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"), { description = "App: File manager" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:72:hl.bind("SUPER + Period", hl.dsp.exec_cmd("$HOME/.config/hypr/hyprland/scripts/fuzzel-emoji.sh copy"), { description = "Utilities: Emoji >> clipboard" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:76:hl.bind("SUPER + SHIFT + A", hl.dsp.exec_cmd("pidof slurp || $HOME/.config/hypr/hyprland/scripts/snip_to_search.sh"), { description = "Utilities: Google Lens" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:80:hl.bind("SUPER + SHIFT + ALT + mouse:273", hl.dsp.exec_cmd("$HOME/.config/hypr/hyprland/scripts/ai/primary-buffer-query.sh"), { description = "Utilities: Generate AI summary for selected text" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:102:hl.bind("SUPER + T", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"), { description = "App: Terminal" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:104:hl.bind("SUPER + W", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf' 'zen'"), { description = "App: Browser" })
+./hosts/desktop/dotfiles/hypr/dms/binds-user.lua:106:hl.bind("SUPER + X", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' 'gnome-text-editor' 'emacs'"), { description = "App: Text editor" })
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:9:terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kitty -1' 'foot' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:10:fileManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'dolphin' 'nautilus' 'nemo' 'thunar' 'kitty -1 fish -c yazi'"
+./hosts/desktop/dotfiles/hypr/hyprland/variables.lua:11:browser = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'google-chrome-stable' 'zen-browser' 'firefox' 'brave' 'chromium' 'microsoft-edge-stable' 'opera' 'librewolf'"
+# Dux Greeter (greetd login screen with the Dux Shell look). OFF by default.
+# Replaces SDDM: enable it on one host first
+# (modules.dux.greeter.enable = true;) and keep the previous generation in the boot menu.
+# UNVERIFIED: the option below is the nixpkgs 26.05 module name from the pre-rename DankGreeter docs;
+# if the rebuild says it does not exist, check nixos-option services.displayManager for the new name.
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.modules.dux.greeter;
+in
+{
+  options.modules.dux.greeter.enable = lib.mkEnableOption "Dux Greeter (replaces SDDM)";
+
+  config = lib.mkIf cfg.enable {
+    services.displayManager.sddm.enable = lib.mkForce false;
+
+    programs.sway.enable = true; # the greeter's compositor must be installed system-wide
+
+    services.displayManager.dms-greeter = {
+      enable = true;
+      # Not hyprland: its Lua config (0.56+) rejects the classic-syntax config the greeter generates.
+      compositor.name = "sway";
+      configHome = "/home/jano"; # sync the user's Dux Shell theme with the greeter
+      quickshell.package = pkgs.quickshell;
+    };
+
+    # The greeter runs its own Hyprland as user dms-greeter, which starts graphical-session.target and
+    # with it every global user service (full shell, files, sunshine, deskflow). Keep those for real users.
+    systemd.user.services = lib.genAttrs (
+      [
+        "dms"
+        "dfiles"
+      ]
+      ++ lib.optional config.modules.services.sunshine.enable "sunshine"
+      ++ lib.optional (config.modules.programs.deskflow.role == "server") "deskflow-server"
+      ++ lib.optional (config.modules.programs.deskflow.role == "client") "deskflow-client"
+    ) (_: {
+      unitConfig.ConditionUser = "!dms-greeter";
+    });
+  };
+}
+# Keep app-written configs inside the flake repo instead of loose files in ~/.config.
+#
+# ~/.config/{hypr,hyprmon,dms,matugen} and ~/.local/state/dms become symlinks to
+# <repoPath>/hosts/<host>/dotfiles/<name>. One folder per host, because some files are
+# machine-specific (hyprmon.lua monitor layout, per-GPU settings).
+# Hyprland, hyprmon (hyprmon.lua, profiles) and the DMS Settings app then write straight into
+# the repo, so git diff shows every change. The links point at the live checkout (not the Nix
+# store), so edits apply without a rebuild.
+#
+# First time on a host: run adopt-dotfiles --host <host> (and dms-adopt.sh <host>) BEFORE the rebuild.
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop.dotfiles;
+  hmDag = inputs.home-manager.lib.hm.dag;
+  imi = config.modules.imi.enable;
+  names = [
+    "hypr"
+    "hyprmon"
+    "dms"
+    "dms-state"
+  ]
+  ++ lib.optional (!imi) "matugen";
+in
+{
+  options.modules.desktop.dotfiles = {
+    enable = lib.mkEnableOption "app configs (hypr, hyprmon, dms, matugen) stored in the flake repo via symlinks";
+    repoPath = lib.mkOption {
+      type = lib.types.str;
+      default = "/home/jano/Proyectos/MyNixOS";
+      description = "Absolute path of this repo's checkout on the machine (the links point here).";
+    };
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = config.networking.hostName;
+      defaultText = lib.literalExpression "config.networking.hostName";
+      description = "Folder name under dotfiles/ used by this machine.";
+    };
+    dir = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.repoPath}/hosts/${cfg.host}/dotfiles";
+      description = ''
+        Directory the configs live in. Override only to keep a host on the
+        old flat layout (<repo>/dotfiles) until it is migrated with migrate-dotfiles-per-host.
+      '';
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users.jano = { config, ... }: {
+      # The link targets must exist before home-manager creates the links.
+      home.activation.dotfilesDirs = hmDag.entryBefore [ "linkGeneration" ] ''
+        run mkdir -p ${lib.concatMapStringsSep " " (n: "\"${cfg.dir}/${n}\"") names}
+      '';
+
+      xdg.configFile = {
+        "hypr".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hypr";
+        "hyprmon".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/hyprmon";
+        "dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms";
+      }
+      // lib.optionalAttrs (!imi) {
+        "matugen".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/matugen";
+      };
+
+      xdg.stateFile."dms".source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/dms-state";
+    };
+  };
+}
+hosts/desktop/dotfiles:
+dms
+dms-state
+hypr
+hyprmon
+illogical-impulse
+matugen
+nvim
+
+hosts/desktop/dotfiles/dms:
+plugins
+plugin_settings.json
+plugins.lock.json
+settings.json
+zen.css
+
+hosts/desktop/dotfiles/dms/plugins:
+bitwarden
+clipboardPlus
+clipboardPlus.meta
+dankKDEConnect
+dankKDEConnect.meta
+dankNotepadModule
+dankNotepadModule.meta
+desktopCommand
+developerUtilities
+dmsconky
+dmsThemeSync
+dockerManager
+githubHeatmapPlus
+quickCapture
+quickCapture.meta
+wallpaperCarousel
+webSearch
+
+hosts/desktop/dotfiles/dms/plugins/bitwarden:
+agent
+BarWidget.qml
+bin
+BitwardenModel.js
+bw-fast-exit.js
+bw-login-code.js
+CHANGELOG.md
+ChoiceTile.qml
+CustomFieldsEditor.qml
+Daemon.qml
+demo
+deny.toml
+DetailField.qml
+DmsUi
+docs
+FidoModel.js
+FidoSetupScreen.qml
+FidoUnlock.qml
+FormPickerRow.qml
+LICENSE
+LidState.qml
+LineField.qml
+manifest.json
+NumberEntry.qml
+.plan/v2/W-immaterial.md
+hosts/desktop/dotfiles/dms-state/.gitignore
+hosts/desktop/dotfiles/dms-state/notepad-session.json
+hosts/desktop/dotfiles/dms-state/session.json
+hosts/desktop/dotfiles/dms/.changelog-2.0
+hosts/desktop/dotfiles/dms/.firstlaunch
+hosts/desktop/dotfiles/dms/.gitignore
+hosts/desktop/dotfiles/dms/plugin_settings.json
+hosts/desktop/dotfiles/dms/plugins.lock.json
+hosts/desktop/dotfiles/dms/settings.json
+hosts/desktop/dotfiles/dms/zen.css
+hosts/desktop/dotfiles/hypr/custom/env.lua
+hosts/desktop/dotfiles/hypr/custom/execs.lua
+hosts/desktop/dotfiles/hypr/custom/general.lua
+hosts/desktop/dotfiles/hypr/custom/keybinds.lua
+hosts/desktop/dotfiles/hypr/custom/rules.lua
+hosts/desktop/dotfiles/hypr/custom/scripts/__restore_video_wallpaper.sh
+hosts/desktop/dotfiles/hypr/custom/variables.lua
+hosts/desktop/dotfiles/hypr/dms-theme-sync.lua
+hosts/desktop/dotfiles/hypr/dms/binds-user.lua
+hosts/desktop/dotfiles/hypr/dms/binds.lua
+hosts/desktop/dotfiles/hypr/dms/colors.lua
+hosts/desktop/dotfiles/hypr/dms/cursor.lua
+hosts/desktop/dotfiles/hypr/dms/input.lua
+hosts/desktop/dotfiles/hypr/dms/layout.lua
+hosts/desktop/dotfiles/hypr/dms/outputs.lua
+hosts/desktop/dotfiles/hypr/dms/windowrules.lua
+hosts/desktop/dotfiles/hypr/hypridle.conf
+hosts/desktop/dotfiles/hypr/hyprland.lua
+hosts/desktop/dotfiles/hypr/hyprland.lua.dmsbackup1793722436
+hosts/desktop/dotfiles/hypr/hyprland/colors.lua
+hosts/desktop/dotfiles/hypr/hyprland/env.lua
+hosts/desktop/dotfiles/hypr/hyprland/execs.lua
+hosts/desktop/dotfiles/hypr/hyprland/general.lua
+hosts/desktop/dotfiles/hypr/hyprland/keybinds.lua
+hosts/desktop/dotfiles/hypr/hyprland/lib/init.lua
+hosts/desktop/dotfiles/hypr/hyprland/rules.lua
+hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/license_show-loaded-ollama-models.txt
+hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/primary-buffer-query.sh
+hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/show-loaded-ollama-models.sh
+
+Verified from your output:
+
+    programs.noctalia has enable, package (default null, so I must set it), systemd.{enable,target} and recommendedServices.enable.
+    programs.mango has enable, addLoginEntry and package. It adds the login entry itself.
+    dynisland/default.nix:20 uses config.programs.hyprland.package, so removing Hyprland breaks it.
+    dux/greeter.nix uses services.displayManager.dms-greeter, which comes from the dms input, so it must go with dms.
+    modules.desktop.drmDevices is defined in hyprland-session. The laptop sets it, so that line goes too.
+
+My earlier grep was cut off by head -60, so I can’t claim the reference list is complete. Rule 14 also needs the exact deletion list. Proposed git rm:
+
+git rm -r modules/desktop/hyprland-session modules/desktop/immaterial modules/desktop/dms modules/desktop/dux/greeter.nix
+git rm -r hosts/desktop/dotfiles/dms hosts/desktop/dotfiles/dms-state hosts/desktop/dotfiles/hypr hosts/desktop/dotfiles/hyprmon
+
+Edits, not deletions:
+
+    flake.nix: drop the hyprland, immaterial-impulse and dms inputs and the inputs.dms.nixosModules.default line.
+    Both hosts: drop session, imi, dms, dux.greeter and drmDevices.
+    session.nix and dotfiles.nix: remove the Hyprland and dms parts.
+
+Please decide these, then send the commands below:
+Dux apps (search, gop, calendar, dux-files)?
+Keep all Dux except the greeter
+dynisland breaks without Hyprland. What now?
+Delete dynisland and chronos
+Old dotfiles dirs on desktop?
+Delete dms, dms-state, hypr, hyprmon (as listed)
+
+Final git rm list, pending your OK once the references are verified:
+
+git rm -r modules/desktop/hyprland-session modules/desktop/immaterial modules/desktop/dms modules/desktop/dynisland modules/desktop/chronos
+git rm modules/desktop/dux/greeter.nix
+git rm -r hosts/desktop/dotfiles/dms hosts/desktop/dotfiles/dms-state hosts/desktop/dotfiles/hypr hosts/desktop/dotfiles/hyprmon
+
+One consequence of keeping the Dux apps: modules/desktop/dms/default.nix is what enables them (programs.dux-files plus the lib.mkDefault switches). Once it’s gone they need a new enabler. I propose explicit modules.dux.*.enable lines in both hosts. Whether they run without dms is UNVERIFIED.
+
+My earlier grep missed files after the head -60 cut. Run these and send the output:
+
+grep -rlE "hypr|dms|modules\.imi|immaterial|dynisland|chronos" --include=*.nix --include=*.sh --include=*.md . | grep -vE '^\./(hosts/desktop/dotfiles|\.plan)/'
+git ls-files modules/desktop/chronos modules/desktop/dynisland | head -40
+git ls-files hosts/laptop | grep -vE 'dotfiles/(dms|hypr)' | head -30
+ls $(nix eval --raw .#nixosConfigurations.laptop.pkgs.path)/nixos/modules/programs/wayland | grep -iE "mango|niri|noctalia"
+nix eval github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2#packages.x86_64-linux --apply builtins.attrNames
+nix flake metadata github:YaLTeR/niri 2>&1 | head -6
+nix flake show github:sodiboo/niri-flake 2>&1 | grep -E "nixosModules|packages|niri" | head -15
+
+The last two decide which niri flake we pin. The ls line checks whether the mango flake’s disabledModules path exists in nixpkgs 26.05.
+
+Step 2: Remove Hyprland, imi, dms, dynisland, chronos   Status: blocked
+Changed: none
+Verified: module interfaces for noctalia and mango read; dynisland and greeter dependencies confirmed
+Owner must: run the commands above
+Open: Dux apps need a new enabler (proposed: explicit host lines)
+
+[nix-shell:~/Proyectos/MyNixOS]$ git rm -r modules/desktop/hyprland-session modules/desktop/immaterial modules/desktop/dms modules/desktop/dynisland modules/desktop/chronos
+git rm modules/desktop/dux/greeter.nix
+git rm -r hosts/desktop/dotfiles/dms hosts/desktop/dotfiles/dms-state hosts/desktop/dotfiles/hypr hosts/desktop/dotfiles/hyprmon
+rm 'modules/desktop/chronos/default.nix'
+rm 'modules/desktop/dms/default.nix'
+rm 'modules/desktop/dynisland/default.nix'
+rm 'modules/desktop/dynisland/src/README.md'
+rm 'modules/desktop/dynisland/src/cava.conf'
+rm 'modules/desktop/dynisland/src/components/Chips.qml'
+rm 'modules/desktop/dynisland/src/components/Field.qml'
+rm 'modules/desktop/dynisland/src/components/GridPicker.qml'
+rm 'modules/desktop/dynisland/src/components/Icon.qml'
+rm 'modules/desktop/dynisland/src/components/IconButton.qml'
+rm 'modules/desktop/dynisland/src/components/PanelFrame.qml'
+rm 'modules/desktop/dynisland/src/components/PillButton.qml'
+rm 'modules/desktop/dynisland/src/components/SSlider.qml'
+rm 'modules/desktop/dynisland/src/components/SettingRow.qml'
+rm 'modules/desktop/dynisland/src/components/Swatches.qml'
+rm 'modules/desktop/dynisland/src/components/Toggle.qml'
+rm 'modules/desktop/dynisland/src/components/ValueSlider.qml'
+rm 'modules/desktop/dynisland/src/config/Config.qml'
+rm 'modules/desktop/dynisland/src/docs/AI.md'
+rm 'modules/desktop/dynisland/src/docs/HANDOFF.md'
+rm 'modules/desktop/dynisland/src/docs/calendar-sync.md'
+rm 'modules/desktop/dynisland/src/docs/plugins.md'
+rm 'modules/desktop/dynisland/src/modules/ai/AIChat.qml'
+rm 'modules/desktop/dynisland/src/modules/background/DesktopMenu.qml'
+rm 'modules/desktop/dynisland/src/modules/background/Wallpaper.qml'
+rm 'modules/desktop/dynisland/src/modules/dock/Dock.qml'
+rm 'modules/desktop/dynisland/src/modules/dock/DockIcon.qml'
+rm 'modules/desktop/dynisland/src/modules/dock/DockMedia.qml'
+rm 'modules/desktop/dynisland/src/modules/island/ActivityFullView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/ActivityView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/ClockCard.qml'
+rm 'modules/desktop/dynisland/src/modules/island/ControlsCard.qml'
+rm 'modules/desktop/dynisland/src/modules/island/FullView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/GlowRing.qml'
+rm 'modules/desktop/dynisland/src/modules/island/IdleView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/Island.qml'
+rm 'modules/desktop/dynisland/src/modules/island/MediaCard.qml'
+rm 'modules/desktop/dynisland/src/modules/island/NotifView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/OsdView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/PanelView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/Pomodoro.qml'
+rm 'modules/desktop/dynisland/src/modules/island/QuickPage.qml'
+rm 'modules/desktop/dynisland/src/modules/island/QuickTile.qml'
+rm 'modules/desktop/dynisland/src/modules/island/TrayMenuView.qml'
+rm 'modules/desktop/dynisland/src/modules/island/TrayStrip.qml'
+rm 'modules/desktop/dynisland/src/modules/island/Visualizer.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/AudioPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/BluetoothPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/CalendarPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/ClipboardPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/ClockPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/EmojiPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/HistoryPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/NotePanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/PowerPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/WeatherPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/island/panels/WifiPanel.qml'
+rm 'modules/desktop/dynisland/src/modules/launcher/AppCell.qml'
+rm 'modules/desktop/dynisland/src/modules/launcher/LauncherDrawer.qml'
+rm 'modules/desktop/dynisland/src/modules/lock/Lock.qml'
+rm 'modules/desktop/dynisland/src/modules/lock/LockSurface.qml'
+rm 'modules/desktop/dynisland/src/modules/lock/LockWidgets.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/AIPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/AppearancePage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/CalendarPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/DockPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/DockPreview.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/IslandPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/IslandPreview.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/LockPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/Page.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/ProfilePage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/ServerPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/Settings.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/SystemPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/VisualizerPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/VisualizerPreview.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/WMPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/WallpaperSlide.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/WidgetsPage.qml'
+rm 'modules/desktop/dynisland/src/modules/settings/WidgetsPreview.qml'
+rm 'modules/desktop/dynisland/src/modules/spotlight/Spotlight.qml'
+rm 'modules/desktop/dynisland/src/modules/widgets/DesktopWidget.qml'
+rm 'modules/desktop/dynisland/src/modules/widgets/DesktopWidgets.qml'
+rm 'modules/desktop/dynisland/src/services/AI.qml'
+rm 'modules/desktop/dynisland/src/services/Activities.qml'
+rm 'modules/desktop/dynisland/src/services/Agenda.qml'
+rm 'modules/desktop/dynisland/src/services/Cava.qml'
+rm 'modules/desktop/dynisland/src/services/Clip.qml'
+rm 'modules/desktop/dynisland/src/services/Clock.qml'
+rm 'modules/desktop/dynisland/src/services/Clocks.qml'
+rm 'modules/desktop/dynisland/src/services/Emoji.qml'
+rm 'modules/desktop/dynisland/src/services/Glass.qml'
+rm 'modules/desktop/dynisland/src/services/IconMap.qml'
+rm 'modules/desktop/dynisland/src/services/Launcher.qml'
+rm 'modules/desktop/dynisland/src/services/Media.qml'
+rm 'modules/desktop/dynisland/src/services/Notifs.qml'
+rm 'modules/desktop/dynisland/src/services/Osd.qml'
+rm 'modules/desktop/dynisland/src/services/Recent.qml'
+rm 'modules/desktop/dynisland/src/services/Server.qml'
+rm 'modules/desktop/dynisland/src/services/Stats.qml'
+rm 'modules/desktop/dynisland/src/services/Sys.qml'
+rm 'modules/desktop/dynisland/src/services/Theme.qml'
+rm 'modules/desktop/dynisland/src/services/UiState.qml'
+rm 'modules/desktop/dynisland/src/services/Updates.qml'
+rm 'modules/desktop/dynisland/src/services/Usb.qml'
+rm 'modules/desktop/dynisland/src/services/Wall.qml'
+rm 'modules/desktop/dynisland/src/services/Weather.qml'
+rm 'modules/desktop/dynisland/src/services/Wm.qml'
+rm 'modules/desktop/dynisland/src/services/aiharness.js'
+rm 'modules/desktop/dynisland/src/services/ics.js'
+rm 'modules/desktop/dynisland/src/shell.qml'
+rm 'modules/desktop/dynisland/src/tests/aiharness.test.js'
+rm 'modules/desktop/hyprland-session/default.nix'
+rm 'modules/desktop/hyprland-session/hyprland.lua'
+rm 'modules/desktop/immaterial/default.nix'
+rm 'modules/desktop/dux/greeter.nix'
+fatal: ruta especificada 'hosts/desktop/dotfiles/hyprmon' no concordó con ningún archivo
+
+[nix-shell:~/Proyectos/MyNixOS]$ grep -rlE "hypr|dms|modules\.imi|immaterial|dynisland|chronos" --include=*.nix --include=*.sh --include=*.md . | grep -vE '^\./(hosts/desktop/dotfiles|\.plan)/'
+git ls-files modules/desktop/chronos modules/desktop/dynisland | head -40
+git ls-files hosts/laptop | grep -vE 'dotfiles/(dms|hypr)' | head -30
+ls $(nix eval --raw .#nixosConfigurations.laptop.pkgs.path)/nixos/modules/programs/wayland | grep -iE "mango|niri|noctalia"
+nix eval github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2#packages.x86_64-linux --apply builtins.attrNames
+nix flake metadata github:YaLTeR/niri 2>&1 | head -6
+nix flake show github:sodiboo/niri-flake 2>&1 | grep -E "nixosModules|packages|niri" | head -15
+./modules/desktop/dux/search.nix
+./modules/desktop/dux/gop.nix
+./modules/desktop/dux/calendar.nix
+./modules/desktop/dotfiles.nix
+./modules/desktop/session.nix
+./modules/scripts/README.md
+./modules/scripts/config-backup/config-backup.sh
+./modules/scripts/config-backup/default.nix
+./modules/scripts/adopt-dotfiles/adopt-dotfiles.sh
+./modules/scripts/adopt-dotfiles/default.nix
+./modules/scripts/migrate-dotfiles-per-host/migrate-dotfiles-per-host.sh
+./modules/pkgs/hyprmon/default.nix
+./modules/pkgs/default.nix
+./README.md
+./hosts/desktop/matrix.nix
+./hosts/desktop/default.nix
+./hosts/laptop/dotfiles/hypr/hyprlock/check-capslock.sh
+./hosts/laptop/dotfiles/hypr/hyprland/scripts/apply_saved_cursor.sh
+./hosts/laptop/default.nix
+./flake.nix
+hosts/laptop/default.nix
+hosts/laptop/dotfiles/.gitignore
+hosts/laptop/dotfiles/illogical-impulse/config.json
+hosts/laptop/dotfiles/illogical-impulse/local-preferences.json
+hosts/laptop/dotfiles/illogical-impulse/presets/.active
+hosts/laptop/dotfiles/illogical-impulse/presets/Crabcake.jpg
+hosts/laptop/dotfiles/illogical-impulse/presets/Crabcake.json
+hosts/laptop/dotfiles/illogical-impulse/presets/Crabcake_banner.png
+hosts/laptop/dotfiles/illogical-impulse/presets/StayFocused.json
+hosts/laptop/dotfiles/illogical-impulse/presets/StayFocused.png
+hosts/laptop/dotfiles/illogical-impulse/profile.png
+hosts/laptop/dotfiles/illogical-impulse/widget_extensions.json
+hosts/laptop/dotfiles/matugen/config.toml
+hosts/laptop/dotfiles/matugen/config.toml.backup
+hosts/laptop/dotfiles/matugen/templates.json.backup
+hosts/laptop/dotfiles/matugen/templates/ags/_material.scss
+hosts/laptop/dotfiles/matugen/templates/ags/sourceviewtheme-light.xml
+hosts/laptop/dotfiles/matugen/templates/ags/sourceviewtheme.xml
+hosts/laptop/dotfiles/matugen/templates/colors.json
+hosts/laptop/dotfiles/matugen/templates/colors.json.backup
+hosts/laptop/dotfiles/matugen/templates/firefox/materialfox.css.backup
+hosts/laptop/dotfiles/matugen/templates/firefox/pywalfox-colors.json.backup
+hosts/laptop/dotfiles/matugen/templates/fuzzel/fuzzel_theme.ini
+hosts/laptop/dotfiles/matugen/templates/fuzzel/fuzzel_theme.ini.backup
+hosts/laptop/dotfiles/matugen/templates/gtk-3.0/gtk.css
+hosts/laptop/dotfiles/matugen/templates/gtk-3.0/gtk.css.backup
+hosts/laptop/dotfiles/matugen/templates/gtk-4.0/gtk.css
+hosts/laptop/dotfiles/matugen/templates/gtk-4.0/gtk.css.backup
+hosts/laptop/dotfiles/matugen/templates/hyprland/colors.conf
+hosts/laptop/dotfiles/matugen/templates/hyprland/hyprlock-colors.conf
+error:
+       … while evaluating the attribute '_module.args'
+         at «https://releases.nixos.org/nixos/26.05/nixos-26.05.12658.1f607aa79b63/nixexprs.tar.zst?narHash=sha256-v%2BCWvNPgAsxoqWDWmkjhh3qwZiE/oGkhXT%2BQH79yg2o%3D»/lib/modules.nix:403:9:
+          402|         config = checked (removeAttrs config [ "_module" ]);
+          403|         _module = checked (config._module);
+             |         ^
+          404|         inherit (doCollect { }) graph;
+
+       … while calling the 'seq' builtin
+         at «https://releases.nixos.org/nixos/26.05/nixos-26.05.12658.1f607aa79b63/nixexprs.tar.zst?narHash=sha256-v%2BCWvNPgAsxoqWDWmkjhh3qwZiE/oGkhXT%2BQH79yg2o%3D»/lib/modules.nix:403:19:
+          402|         config = checked (removeAttrs config [ "_module" ]);
+          403|         _module = checked (config._module);
+             |                   ^
+          404|         inherit (doCollect { }) graph;
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option modules.desktop.drmDevices' does not exist. Definition values:
+       - In /nix/store/pd1ripc8kib4lp9vyc1xw5hybb9vcw3y-source/hosts/laptop/default.nix': "/dev/dri/igpu:/dev/dri/dgpu"
+
+       Did you mean modules.desktop.dotfiles', modules.desktop.droidloom' or `modules.desktop.enable'?
+ls: cannot access '/nixos/modules/programs/wayland': No existe el fichero o el directorio
+[ "cuda" "default" ]
+unpacking 'github:YaLTeR/niri/7f81a7f77b0e93464645232bd15ba2dc43ca3782' into the Git cache...
+Resolved URL:  github:YaLTeR/niri
+Locked URL:    github:YaLTeR/niri/7f81a7f77b0e93464645232bd15ba2dc43ca3782?narHash=sha256-mv7j%2Br7l7w9Ysek1xQBErjDGo0StteVCjK7MuYr5pJg%3D
+Description:   Niri: A scrollable-tiling Wayland compositor.
+Path:          /nix/store/hnrp2sww8f1h8xlhw0nr5plincyazfa5-source
+Revision:      7f81a7f77b0e93464645232bd15ba2dc43ca3782
+unpacking 'github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e' into the Git cache...
+github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e?narHash=sha256-25q05zpF1sqOCxPPUG9DPPGd%2BEDW7SiAOWCzBWRS7r0%3D
+evaluating 'apps.aarch64-linux.niri-stable'...
+│   │   ├───niri-stable: app: no description
+evaluating 'apps.aarch64-linux.niri-unstable'...
+│   │   ├───niri-unstable: app: no description
+evaluating 'apps.x86_64-linux.niri-stable'...
+│       ├───niri-stable: app: no description
+evaluating 'apps.x86_64-linux.niri-unstable'...
+│       ├───niri-unstable: app: no description
+evaluating 'checks.aarch64-linux.cached-packages'...
+│   │   ├───cached-packages omitted (use '--all-systems' to show)
+evaluating 'checks.x86_64-linux.cached-packages'...
+│       ├───cached-packages: derivation 'all-niri-flake-packages'
+evaluating 'nixosModules'...
+Replacing the DankMaterialShell pin with the Dux shell flake
+
+Thought for 1m 2s
+
+Checking the state of the git removals.
+
+Rerunning the removal without the missing hyprmon directory.
+
+Weighing which niri flake to use for the session.
+
+Listing the remaining dotfile and script references to remove.
+
+Drafting the flake.nix and host file edits.
+
+Settling the host file edits and Dux app options.
+
+Writing the host edits and session cleanup now.
+
+Preparing the session.nix cleanup edits.
+
+Rewriting the dotfiles module to drop the old config names.
+
+Catching an empty-list mkdir error in the dotfiles module.
+
+Writing the flake.nix and host edits, then checking the flake.
+
+Replacing the DankMaterialShell pin with the Dux shell flake.
+
+git rm is atomic. The hyprmon pathspec doesn’t exist, so dms, dms-state and hypr were not removed. Everything else was. The eval error is expected: the hosts still set the deleted options.
+
+Verified: noctalia packages = [cuda default], so I’ll use .default. Both niri flakes exist, so I need your choice below.
+
+Run from ~/Proyectos/MyNixOS.
+
+    Remaining deletion:
+
+git rm -r hosts/desktop/dotfiles/dms hosts/desktop/dotfiles/dms-state hosts/desktop/dotfiles/hypr
+
+    flake.nix (drops the hyprland, immaterial-impulse and dms inputs and the dms module line):
+
+python3 - <<'EOF'
+p='flake.nix'; s=open(p).read()
+i=s.index('    # --- desktop / session ---\n')
+e='inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";\n    };\n\n'
+j=s.index(e,i)+len(e); s=s[:i]+s[j:]
+a='''    # DankMaterialShell (Dux Shell): Quickshell-based desktop shell + the Dux suite.
+    # If one of the Dux apps fails with a Go version error (needs Go 1.27),
+    # remove its `inputs.nixpkgs.follows` line so it uses its own nixpkgs pin.
+    dms = {
+      url = "github:duxlabs-dev/dux-shell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
+    };
+'''
+b='''    # Dux suite apps. If one fails with a Go version error (needs Go 1.27),
+    # remove its `inputs.nixpkgs.follows` line so it uses its own nixpkgs pin.
+'''
+assert a in s; s=s.replace(a,b,1)
+c='            inputs.dms.nixosModules.default\n'
+assert c in s; s=s.replace(c,'',1)
+open(p,'w').write(s)
+EOF
+
+    Hosts (hosts/desktop/default.nix and hosts/laptop/default.nix). The Dux apps get their enablers back here:
+
+sed -i -e '/^  modules\.desktop\.session = /d' -e '/^  modules\.imi\.enable = /d' -e '/^  modules\.dux\.greeter\.enable = /d' -e '/^  modules\.desktop\.drmDevices = /d' -e 's|^  modules\.dms\.enable = true;$|  modules.dux.search.enable = true;\n  modules.dux.gop.enable = true;\n  modules.dux.calendar.enable = true;\n  programs.dux-files = {\n    enable = true;\n    systemd.enable = true;\n    portal.enable = true;\n  };|' -e 's|Hyprland + immaterial-impulse\.|niri + Noctalia.|' hosts/desktop/default.nix hosts/laptop/default.nix
+
+    modules/desktop/session.nix (removes the session and shell options and the defaultSession line):
+
+python3 - <<'EOF'
+import re
+p='modules/desktop/session.nix'; s=open(p).read()
+i=s.index('# Desktop session:'); j=s.index('{\n  config,')
+s=s[:i]+'# Desktop session: the SDDM login screen and the Wayland session basics every host shares.\n# Compositor and shell come with the compositor module.\n{\n  config,'+s[j+len('{\n  config,'):]
+i=s.index('    session = lib.mkOption {'); j=s.index('  };\n\n  config')
+s=s[:i]+s[j:]
+a='''      services.displayManager.defaultSession =
+        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
+'''
+assert a in s; s=s.replace(a,'',1)
+s=s.replace('(login screen, Wayland session basics, Hyprland through UWSM)','(login screen, Wayland session basics)')
+open(p,'w').write(s)
+EOF
+
+    Full rewrite of modules/desktop/dotfiles.nix. names is empty until step 3, and the mkIf guards the empty mkdir:
+
+cat > modules/desktop/dotfiles.nix <<'EOF'
+# Keep app-written configs inside the flake repo instead of loose files in ~/.config.
+#
+# ~/.config/<name> becomes a symlink to <repoPath>/hosts/<host>/dotfiles/<name> for every
+# name in `names`. One folder per host, because some files are machine-specific.
+# The links point at the live checkout (not the Nix store), so edits apply without a rebuild.
+# `names` stays empty until the niri/mangowm/Noctalia step fills it.
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop.dotfiles;
+  hmDag = inputs.home-manager.lib.hm.dag;
+  names = [ ];
+in
+{
+  options.modules.desktop.dotfiles = {
+    enable = lib.mkEnableOption "app configs stored in the flake repo via symlinks";
+    repoPath = lib.mkOption {
+      type = lib.types.str;
+      default = "/home/jano/Proyectos/MyNixOS";
+      description = "Absolute path of this repo's checkout on the machine (the links point here).";
+    };
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = config.networking.hostName;
+      defaultText = lib.literalExpression "config.networking.hostName";
+      description = "Folder name under dotfiles/ used by this machine.";
+    };
+    dir = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.repoPath}/hosts/${cfg.host}/dotfiles";
+      description = "Directory the configs live in.";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users.jano =
+      { config, ... }:
+      {
+        home.activation.dotfilesDirs = lib.mkIf (names != [ ]) (
+          hmDag.entryBefore [ "linkGeneration" ] ''
+            run mkdir -p ${lib.concatMapStringsSep " " (n: "\"${cfg.dir}/${n}\"") names}
+          ''
+        );
+        xdg.configFile = lib.genAttrs names (n: {
+          source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/${n}";
+        });
+      };
+  };
+}
+EOF
+
+    Verify:
+
+git add -A && nix flake lock && nix flake check 2>&1 | tail -15
+
+Next-step data. Run this after step 6, whatever its result:
+
+nix eval github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e#nixosModules --apply builtins.attrNames
+nix eval github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e#packages.x86_64-linux --apply builtins.attrNames
+nix eval github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f#packages.x86_64-linux --apply builtins.attrNames
+ls $(nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixpkgs.outPath')/nixos/modules/programs/wayland | grep -iE "mango|niri|noctalia"
+grep -nE "hypr|dms|imi|immaterial|dynisland|chronos" hosts/desktop/matrix.nix modules/pkgs/default.nix modules/scripts/*/default.nix
+
+Two decisions for step 3 and the laptop dotfiles:
+
+Q: Which niri flake to pin?
+A: sodiboo/niri-flake rev 9ee3e13b (NixOS module, stable/unstable packages)
+
+Q: Laptop dotfiles hosts/laptop/dotfiles/?
+A: Delete hypr, dms, illogical-impulse and matugen on the laptop
+Failed to send. A retry control is available on the message.
+
+[nix-shell:~/Proyectos/MyNixOS]$ git rm -r hosts/desktop/dotfiles/dms hosts/desktop/dotfiles/dms-state hosts/desktop/dotfiles/hypr
+rm 'hosts/desktop/dotfiles/dms-state/.gitignore'
+rm 'hosts/desktop/dotfiles/dms-state/notepad-session.json'
+rm 'hosts/desktop/dotfiles/dms-state/session.json'
+rm 'hosts/desktop/dotfiles/dms/.changelog-2.0'
+rm 'hosts/desktop/dotfiles/dms/.firstlaunch'
+rm 'hosts/desktop/dotfiles/dms/.gitignore'
+rm 'hosts/desktop/dotfiles/dms/plugin_settings.json'
+rm 'hosts/desktop/dotfiles/dms/plugins.lock.json'
+rm 'hosts/desktop/dotfiles/dms/settings.json'
+rm 'hosts/desktop/dotfiles/dms/zen.css'
+rm 'hosts/desktop/dotfiles/hypr/custom/env.lua'
+rm 'hosts/desktop/dotfiles/hypr/custom/execs.lua'
+rm 'hosts/desktop/dotfiles/hypr/custom/general.lua'
+rm 'hosts/desktop/dotfiles/hypr/custom/keybinds.lua'
+rm 'hosts/desktop/dotfiles/hypr/custom/rules.lua'
+rm 'hosts/desktop/dotfiles/hypr/custom/scripts/__restore_video_wallpaper.sh'
+rm 'hosts/desktop/dotfiles/hypr/custom/variables.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms-theme-sync.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/binds-user.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/binds.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/colors.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/cursor.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/input.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/layout.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/outputs.lua'
+rm 'hosts/desktop/dotfiles/hypr/dms/windowrules.lua'
+rm 'hosts/desktop/dotfiles/hypr/hypridle.conf'
+rm 'hosts/desktop/dotfiles/hypr/hyprland.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland.lua.dmsbackup1793722436'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/colors.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/env.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/execs.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/general.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/keybinds.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/lib/init.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/rules.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/license_show-loaded-ollama-models.txt'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/primary-buffer-query.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/ai/show-loaded-ollama-models.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/apply_saved_cursor.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/fuzzel-emoji.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/launch_first_available.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/snip_to_search.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/scripts/start_geoclue_agent.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/services/create_custom_config.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/services/init.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/shellOverrides/animations.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/shellOverrides/main.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/shellOverrides/popupBlur.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprland/variables.lua'
+rm 'hosts/desktop/dotfiles/hypr/hyprlock.conf'
+rm 'hosts/desktop/dotfiles/hypr/hyprlock/check-capslock.sh'
+rm 'hosts/desktop/dotfiles/hypr/hyprlock/status.sh'
+rm 'hosts/desktop/dotfiles/hypr/monitors.lua'
+rm 'hosts/desktop/dotfiles/hypr/xdph.conf'
+
+[nix-shell:~/Proyectos/MyNixOS]$ python3 - <<'EOF'
+p='flake.nix'; s=open(p).read()
+i=s.index('    # --- desktop / session ---\n')
+e='inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";\n    };\n\n'
+j=s.index(e,i)+len(e); s=s[:i]+s[j:]
+a='''    # DankMaterialShell (Dux Shell): Quickshell-based desktop shell + the Dux suite.
+    # If one of the Dux apps fails with a Go version error (needs Go 1.27),
+    # remove its `inputs.nixpkgs.follows` line so it uses its own nixpkgs pin.
+    dms = {
+      url = "github:duxlabs-dev/dux-shell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.inputs.nixpkgs.follows = "nixpkgs";
+    };
+'''
+b='''    # Dux suite apps. If one fails with a Go version error (needs Go 1.27),
+    # remove its `inputs.nixpkgs.follows` line so it uses its own nixpkgs pin.
+'''
+assert a in s; s=s.replace(a,b,1)
+c='            inputs.dms.nixosModules.default\n'
+assert c in s; s=s.replace(c,'',1)
+open(p,'w').write(s)
+EOF
+
+[nix-shell:~/Proyectos/MyNixOS]$ sed -i -e '/^  modules\.desktop\.session = /d' -e '/^  modules\.imi\.enable = /d' -e '/^  modules\.dux\.greeter\.enable = /d' -e '/^  modules\.desktop\.drmDevices = /d' -e 's|^  modules\.dms\.enable = true;$|  modules.dux.search.enable = true;\n  modules.dux.gop.enable = true;\n  modules.dux.calendar.enable = true;\n  programs.dux-files = {\n    enable = true;\n    systemd.enable = true;\n    portal.enable = true;\n  };|' -e 's|Hyprland + immaterial-impulse\.|niri + Noctalia.|' hosts/desktop/default.nix hosts/laptop/default.nix
+
+[nix-shell:~/Proyectos/MyNixOS]$ python3 - <<'EOF'
+import re
+p='modules/desktop/session.nix'; s=open(p).read()
+i=s.index('# Desktop session:'); j=s.index('{\n  config,')
+s=s[:i]+'# Desktop session: the SDDM login screen and the Wayland session basics every host shares.\n# Compositor and shell come with the compositor module.\n{\n  config,'+s[j+len('{\n  config,'):]
+i=s.index('    session = lib.mkOption {'); j=s.index('  };\n\n  config')
+s=s[:i]+s[j:]
+a='''      services.displayManager.defaultSession =
+        if cfg.session == "hyprland" then "hyprland-uwsm" else cfg.session;
+'''
+assert a in s; s=s.replace(a,'',1)
+s=s.replace('(login screen, Wayland session basics, Hyprland through UWSM)','(login screen, Wayland session basics)')
+open(p,'w').write(s)
+EOF
+
+[nix-shell:~/Proyectos/MyNixOS]$
+[nix-shell:~/Proyectos/MyNixOS]$ cat > modules/desktop/dotfiles.nix <<'EOF'
+# Keep app-written configs inside the flake repo instead of loose files in ~/.config.
+#
+# ~/.config/<name> becomes a symlink to <repoPath>/hosts/<host>/dotfiles/<name> for every
+# name in `names`. One folder per host, because some files are machine-specific.
+# The links point at the live checkout (not the Nix store), so edits apply without a rebuild.
+# `names` stays empty until the niri/mangowm/Noctalia step fills it.
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.modules.desktop.dotfiles;
+  hmDag = inputs.home-manager.lib.hm.dag;
+  names = [ ];
+in
+{
+  options.modules.desktop.dotfiles = {
+    enable = lib.mkEnableOption "app configs stored in the flake repo via symlinks";
+    repoPath = lib.mkOption {
+      type = lib.types.str;
+      default = "/home/jano/Proyectos/MyNixOS";
+      description = "Absolute path of this repo's checkout on the machine (the links point here).";
+    };
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = config.networking.hostName;
+      defaultText = lib.literalExpression "config.networking.hostName";
+      description = "Folder name under dotfiles/ used by this machine.";
+    };
+    dir = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.repoPath}/hosts/${cfg.host}/dotfiles";
+      description = "Directory the configs live in.";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users.jano =
+      { config, ... }:
+      {
+        home.activation.dotfilesDirs = lib.mkIf (names != [ ]) (
+          hmDag.entryBefore [ "linkGeneration" ] ''
+            run mkdir -p ${lib.concatMapStringsSep " " (n: "\"${cfg.dir}/${n}\"") names}
+          ''
+        );
+        xdg.configFile = lib.genAttrs names (n: {
+          source = config.lib.file.mkOutOfStoreSymlink "${cfg.dir}/${n}";
+        });
+      };
+  };
+}
+EOF
+
+[nix-shell:~/Proyectos/MyNixOS]$ git add -A && nix flake lock && nix flake check 2>&1 | tail -15
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/.repos/7c0d8f010141a5dc
+hint: You've added another git repository inside your current repository.
+hint: Clones of the outer repository will not contain the contents of
+hint: the embedded repository and will not know how to obtain it.
+hint: If you meant to add a submodule, use:
+hint:
+hint: 	git submodule add <url> hosts/desktop/dotfiles/dms/plugins/.repos/7c0d8f010141a5dc
+hint:
+hint: If you added this path by mistake, you can remove it from the
+hint: index with:
+hint:
+hint: 	git rm --cached hosts/desktop/dotfiles/dms/plugins/.repos/7c0d8f010141a5dc
+hint:
+hint: See "git help submodule" for more information.
+hint: Disable this message with "git config set advice.addEmbeddedRepo false"
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/.repos/9c4af04f163b7baa
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/.repos/f61334b18b68859a
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/bitwarden
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/desktopCommand
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/developerUtilities
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/dmsThemeSync
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/dmsconky
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/dockerManager
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/githubHeatmapPlus
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/wallpaperCarousel
+advertencia: agregando repositorio de git embebido: hosts/desktop/dotfiles/dms/plugins/webSearch
+warning: updating lock file "/home/jano/Proyectos/MyNixOS/flake.lock":
+• Removed input 'dms'
+• Removed input 'dms/dank-qml-common'
+• Removed input 'dms/flake-compat'
+• Removed input 'dms/nixpkgs'
+• Removed input 'hyprland'
+• Removed input 'hyprland/aquamarine'
+• Removed input 'hyprland/aquamarine/hyprutils'
+• Removed input 'hyprland/aquamarine/hyprwayland-scanner'
+• Removed input 'hyprland/aquamarine/nixpkgs'
+• Removed input 'hyprland/aquamarine/systems'
+• Removed input 'hyprland/hyprcursor'
+• Removed input 'hyprland/hyprcursor/hyprlang'
+• Removed input 'hyprland/hyprcursor/nixpkgs'
+• Removed input 'hyprland/hyprcursor/systems'
+• Removed input 'hyprland/hyprgraphics'
+• Removed input 'hyprland/hyprgraphics/hyprutils'
+• Removed input 'hyprland/hyprgraphics/nixpkgs'
+• Removed input 'hyprland/hyprgraphics/systems'
+• Removed input 'hyprland/hyprland-guiutils'
+• Removed input 'hyprland/hyprland-guiutils/aquamarine'
+• Removed input 'hyprland/hyprland-guiutils/hyprgraphics'
+• Removed input 'hyprland/hyprland-guiutils/hyprlang'
+• Removed input 'hyprland/hyprland-guiutils/hyprtoolkit'
+• Removed input 'hyprland/hyprland-guiutils/hyprutils'
+• Removed input 'hyprland/hyprland-guiutils/hyprwayland-scanner'
+• Removed input 'hyprland/hyprland-guiutils/nixpkgs'
+• Removed input 'hyprland/hyprland-guiutils/systems'
+• Removed input 'hyprland/hyprland-protocols'
+• Removed input 'hyprland/hyprland-protocols/nixpkgs'
+• Removed input 'hyprland/hyprland-protocols/systems'
+• Removed input 'hyprland/hyprlang'
+• Removed input 'hyprland/hyprlang/hyprutils'
+• Removed input 'hyprland/hyprlang/nixpkgs'
+• Removed input 'hyprland/hyprlang/systems'
+• Removed input 'hyprland/hyprtoolkit'
+• Removed input 'hyprland/hyprtoolkit/aquamarine'
+• Removed input 'hyprland/hyprtoolkit/hyprgraphics'
+• Removed input 'hyprland/hyprtoolkit/hyprlang'
+• Removed input 'hyprland/hyprtoolkit/hyprutils'
+• Removed input 'hyprland/hyprtoolkit/hyprwayland-scanner'
+• Removed input 'hyprland/hyprtoolkit/nixpkgs'
+• Removed input 'hyprland/hyprtoolkit/systems'
+• Removed input 'hyprland/hyprutils'
+• Removed input 'hyprland/hyprutils/nixpkgs'
+• Removed input 'hyprland/hyprutils/systems'
+• Removed input 'hyprland/hyprwayland-scanner'
+• Removed input 'hyprland/hyprwayland-scanner/nixpkgs'
+• Removed input 'hyprland/hyprwayland-scanner/systems'
+• Removed input 'hyprland/hyprwire'
+• Removed input 'hyprland/hyprwire/hyprutils'
+• Removed input 'hyprland/hyprwire/nixpkgs'
+• Removed input 'hyprland/hyprwire/systems'
+• Removed input 'hyprland/nixpkgs'
+• Removed input 'hyprland/pre-commit-hooks'
+• Removed input 'hyprland/pre-commit-hooks/flake-compat'
+• Removed input 'hyprland/pre-commit-hooks/nixpkgs'
+• Removed input 'hyprland/systems'
+• Removed input 'hyprland/xdph'
+• Removed input 'hyprland/xdph/aquamarine'
+• Removed input 'hyprland/xdph/hyprgraphics'
+• Removed input 'hyprland/xdph/hyprland-protocols'
+• Removed input 'hyprland/xdph/hyprlang'
+• Removed input 'hyprland/xdph/hyprtoolkit'
+• Removed input 'hyprland/xdph/hyprutils'
+• Removed input 'hyprland/xdph/hyprwayland-scanner'
+• Removed input 'hyprland/xdph/nixpkgs'
+• Removed input 'hyprland/xdph/systems'
+• Removed input 'immaterial-impulse'
+• Removed input 'immaterial-impulse/nixpkgs'
+• Removed input 'immaterial-impulse/quickshell'
+• Removed input 'immaterial-impulse/quickshell/nixpkgs'
+
+       … while evaluating definitions from `/nix/store/3kdyk85p180ya894a4qnq41h8hb5b2ig-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.services':
+
+       … while evaluating definitions from `/nix/store/21wf6mwn8jqb7grlbq2gw9di9a45i2jx-source/hosts/desktop/matrix.nix':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: attribute 'shell' missing
+       at /home/jano/Proyectos/MyNixOS/hosts/desktop/matrix.nix:9:53:
+            8|
+            9|   systemd.services.tailscale-cert-renew = lib.mkIf (config.modules.desktop.shell == "dynisland") {
+             |                                                     ^
+           10|     description = "Renew Tailscale TLS cert";
+
+[nix-shell:~/Proyectos/MyNixOS]$ nix eval github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e#nixosModules --apply builtins.attrNames
+nix eval github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e#packages.x86_64-linux --apply builtins.attrNames
+nix eval github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f#packages.x86_64-linux --apply builtins.attrNames
+ls $(nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixpkgs.outPath')/nixos/modules/programs/wayland | grep -iE "mango|niri|noctalia"
+grep -nE "hypr|dms|imi|immaterial|dynisland|chronos" hosts/desktop/matrix.nix modules/pkgs/default.nix modules/scripts/*/default.nix
+[ "niri" ]
+[ "niri-stable" "niri-unstable" "xwayland-satellite-stable" "xwayland-satellite-unstable" ]
+[ "default" "hm-options-json" "mango" "nixos-options-json" ]
+mangowc.nix
+niri.nix
+hosts/desktop/matrix.nix:9:  systemd.services.tailscale-cert-renew = lib.mkIf (config.modules.desktop.shell == "dynisland") {
+hosts/desktop/matrix.nix:28:  systemd.timers.tailscale-cert-renew = lib.mkIf (config.modules.desktop.shell == "dynisland") {
+modules/pkgs/default.nix:23:  hyprmonPkg = pkgs.callPackage ./hyprmon/default.nix { };
+modules/pkgs/default.nix:31:    hyprmon = hyprmonPkg;
+modules/pkgs/default.nix:56:    hyprmon = final.callPackage ./hyprmon/default.nix { };
+modules/scripts/adopt-dotfiles/default.nix:1:# adopt-dotfiles: first-time import of ~/.config/{hypr,hyprmon,illogical-impulse,matugen} into hosts/<host>/dotfiles (run BEFORE the first rebuild with dotfiles.enable).
+modules/scripts/config-backup/default.nix:1:# config-backup: back up / restore the mutable ii, Hyprland and hyprmon configs.
+
+[nix-shell:~/Proyectos/MyNixOS]$
+
+Act as an expert Linux systems/UI programmer specializing in Nix, QML, Quickshell, and custom WMs/DEs/shells. Persona: Jarvis. Calm, precise, minimal words. No filler. Rules: Read .plan/guidelines.md, todo.md, then ask-first.md before any step. Always ask the owner what and how with the question fea
+
+pasted
+
+[nix-shell:~/Proyectos/MyNixOS]$ sed -n 415,560p $NF/flake.nix
+M=$(nix build nixpkgs#mangowc.src --no-link --print-out-paths)
+ls $M
+grep -rniE "autostart|exec-once|config\.conf|xdg_config" $M --include=*.md --include=*.c --include=*.h --include=*.conf -l | head
+grep -rniE "autostart|exec-once" $M --include=*.md --include=*.conf | head -15
+nix eval nixpkgs#mangowc.meta.mainProgram
+          ...
+        }:
+        let
+          cfg = config.programs.niri;
+        in
+        {
+          imports = [
+            settings.module
+          ];
+
+          options.programs.niri = {
+            package = nixpkgs.lib.mkOption {
+              type = nixpkgs.lib.types.package;
+              default = (make-package-set pkgs).niri-stable;
+              description = "The niri package to use.";
+            };
+          };
+
+          config.lib.niri = {
+            actions = nixpkgs.lib.mergeAttrsList (
+              map (name: {
+                ${name} = kdl.magic-leaf name;
+              }) (import ./memo-binds.nix)
+            );
+          };
+
+          config.xdg.configFile.niri-config = {
+            enable = cfg.finalConfig != null;
+            target = "niri/config.kdl";
+            source = validated-config-for pkgs cfg.package cfg.finalConfig;
+          };
+        };
+      nixosModules.niri =
+        {
+          config,
+          options,
+          pkgs,
+          ...
+        }:
+        let
+          cfg = config.programs.niri;
+        in
+        {
+          # The module from this flake predates the module in nixpkgs by a long shot.
+          # To avoid conflicts, we disable the nixpkgs module.
+          # Eventually, this module (e.g. niri.nixosModules.niri) will be deprecated
+          # in favour of other modules that aren't redundant with nixpkgs (and don't yet exist)
+          disabledModules = [ "programs/wayland/niri.nix" ];
+
+          options.programs.niri = {
+            enable = nixpkgs.lib.mkEnableOption "niri";
+            package = nixpkgs.lib.mkOption {
+              type = nixpkgs.lib.types.package;
+              default = (make-package-set pkgs).niri-stable;
+              description = "The niri package to use.";
+            };
+          };
+
+          options.niri-flake.cache.enable = nixpkgs.lib.mkEnableOption "the niri-flake binary cache" // {
+            default = true;
+          };
+
+          config = nixpkgs.lib.mkMerge [
+            (nixpkgs.lib.mkIf config.niri-flake.cache.enable {
+              nix.settings = {
+                substituters = [ "https://niri.cachix.org" ];
+                trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
+              };
+            })
+            (nixpkgs.lib.mkIf cfg.enable {
+              environment.systemPackages = [
+                pkgs.xdg-utils
+                cfg.package
+              ];
+              xdg = {
+                autostart.enable = nixpkgs.lib.mkDefault true;
+                menus.enable = nixpkgs.lib.mkDefault true;
+                mime.enable = nixpkgs.lib.mkDefault true;
+                icons.enable = nixpkgs.lib.mkDefault true;
+              };
+
+              services.displayManager.sessionPackages = [ cfg.package ];
+              hardware.graphics.enable = nixpkgs.lib.mkDefault true;
+
+              xdg.portal = {
+                enable = true;
+                extraPortals = nixpkgs.lib.mkIf (
+                  !cfg.package.cargoBuildNoDefaultFeatures
+                  || builtins.elem "xdp-gnome-screencast" cfg.package.cargoBuildFeatures
+                ) [ pkgs.xdg-desktop-portal-gnome ];
+                configPackages = [ cfg.package ];
+              };
+
+              security.polkit.enable = true;
+              services.gnome.gnome-keyring.enable = true;
+              systemd.user.services.niri-flake-polkit = {
+                description = "PolicyKit Authentication Agent provided by niri-flake";
+                wantedBy = [ "niri.service" ];
+                after = [ "graphical-session.target" ];
+                partOf = [ "graphical-session.target" ];
+                serviceConfig = {
+                  Type = "simple";
+                  ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
+                  Restart = "on-failure";
+                  RestartSec = 1;
+                  TimeoutStopSec = 10;
+                };
+              };
+
+              security.pam.services.swaylock = { };
+              programs.dconf.enable = nixpkgs.lib.mkDefault true;
+              fonts.enableDefaultPackages = nixpkgs.lib.mkDefault true;
+            })
+            (nixpkgs.lib.optionalAttrs (options ? home-manager) {
+              home-manager.sharedModules = [
+                self.homeModules.config
+                { programs.niri.package = nixpkgs.lib.mkForce cfg.package; }
+              ]
+              ++ nixpkgs.lib.optionals (options ? stylix) [ self.homeModules.stylix ];
+            })
+          ];
+        };
+      homeModules.niri =
+        {
+          config,
+          pkgs,
+          ...
+        }:
+        let
+          cfg = config.programs.niri;
+        in
+        {
+          imports = [
+            self.homeModules.config
+          ];
+          options.programs.niri = {
+            enable = nixpkgs.lib.mkEnableOption "niri";
+          };
+
+          config = nixpkgs.lib.mkIf cfg.enable {
+            home.packages = [ cfg.package ];
+            services.gnome-keyring.enable = true;
+            xdg.portal = {
+              enable = true;
+              extraPortals = nixpkgs.lib.mkIf (
+                !cfg.package.cargoBuildNoDefaultFeatures
+assets  flake.lock  format.sh  LICENSE.dwl  LICENSE.sway    LICENSE.wlroots  meson.build        mmsg  protocols  src
+docs    flake.nix   LICENSE    LICENSE.dwm  LICENSE.tinywl  mangowm.scm      meson_options.txt  nix   README.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/README.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/basics.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/monitors.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/xdg-portals.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/ipc.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/quick-start.md
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/config/parse_config.h
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/README.md:217:Use the home-manager module to declare configuration and autostart for mango.
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/README.md:267:                            autostart_sh = ''
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/README.md:268:                              # see autostart.sh
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/basics.md:3:description: Learn how to configure mangowm files, environment variables, and autostart scripts.
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/basics.md:67:## Autostart
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/basics.md:73:| exec-once | Runs **only once** when mangowm starts. | Status bars, Wallpapers, Notification daemons |
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/basics.md:80:exec-once=waybar
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/basics.md:83:exec-once=swaybg -i ~/.config/mango/wallpaper/room.png
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/monitors.md:216:**In autostart:**
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/monitors.md:223:**Edit autostart for XWayland:**
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/monitors.md:246:exec-once=xwayland-satellite :2
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/xdg-portals.md:23:2. **Optional: Add to autostart**
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/xdg-portals.md:25:   In some situations the portal may not start automatically. You can add this to your autostart script to ensure it launches:
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/xdg-portals.md:45:**Autostart Config:**
+"mango"
+
+Verified from your output:
+
+    niri-flake’s nixosModules.niri disables the nixpkgs niri module. It has enable and package (default niri-stable), adds the niri.cachix.org substituter, a polkit agent bound to niri.service, and the session entry.
+    Under niri the user service niri.service runs and pulls in graphical-session.target, so Noctalia’s default systemd.target should work. Not yet tested on a live session.
+    mangowc has no systemd or UWSM wiring in what I’ve seen. Autostart is exec-once= lines in its config, and the binary is mango. Whether it reaches graphical-session.target is UNVERIFIED. Until it’s confirmed, I’ll launch Noctalia from exec-once under mangowm.
+
+Send these:
+
+sed -n 55,100p $M/docs/configuration/basics.md
+sed -n 210,300p $M/README.md
+grep -rniE "graphical-session|systemctl|dbus-update|uwsm" $M/docs $M/README.md $M/src | head -15
+nix eval --raw github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2#packages.x86_64-linux.default.meta.mainProgram
+
+Step 4: compositor module (research 3) Status: blocked
+Changed: none
+Verified: niri-flake nixosModules.niri source read (lines 415-560)
+Owner must: the four commands above
+Open: none
+
+[nix-shell:~/Proyectos/MyNixOS]$ sed -n 55,100p $M/docs/configuration/basics.md
+sed -n 210,300p $M/README.md
+grep -rniE "graphical-session|systemctl|dbus-update|uwsm" $M/docs $M/README.md $M/src | head -15
+nix eval --raw github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2#packages.x86_64-linux.default.meta.mainProgram
+
+## Environment Variables
+
+You can define environment variables directly within your config file. These are set before the window manager fully initializes.
+
+    **Warning:** Environment variables defined here will be **reset** every time you reload the configuration.
+
+env=QT_IM_MODULES,wayland;fcitx
+env=XMODIFIERS,@im=fcitx
+
+## Autostart
+
+mangowm can automatically run commands or scripts upon startup. There are two modes for execution:
+
+| Command | Behavior | Usage Case |
+| :--- | :--- | :--- |
+| exec-once | Runs **only once** when mangowm starts. | Status bars, Wallpapers, Notification daemons |
+| exec | Runs **every time** the config is reloaded. | Scripts that need to refresh settings |
+
+### Example Setup
+
+# Start the status bar once
+exec-once=waybar
+
+# Set wallpaper
+exec-once=swaybg -i ~/.config/mango/wallpaper/room.png
+
+# Reload a custom script on config change
+exec=bash ~/.config/mango/reload-settings.sh
+
+or the website docs docs
+
+# NixOS + Home-manager
+
+The repo contains a flake that provides a NixOS module and a home-manager module for mango.
+Use the NixOS module to install mango with other necessary components of a working Wayland environment.
+Use the home-manager module to declare configuration and autostart for mango.
+
+Here's an example of using the modules in a flake:
+
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    mango = {
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs =
+    inputs@{ self, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      debug = true;
+      systems = [ "x86_64-linux" ];
+      flake = {
+        nixosConfigurations = {
+          hostname = inputs.nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              inputs.home-manager.nixosModules.home-manager
+
+              # Add mango nixos module
+              inputs.mango.nixosModules.mango
+              {
+                programs.mango.enable = true;
+              }
+              {
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  backupFileExtension = "backup";
+                  users."username".imports =
+                    [
+                      (
+                        { ... }:
+                        {
+                          wayland.windowManager.mango = {
+                            enable = true;
+                            settings = ''
+                              # see config.conf
+                            '';
+                            autostart_sh = ''
+                              # see autostart.sh
+                              # Note: here no need to add shebang
+                            '';
+                          };
+                        }
+                      )
+                    ]
+                    ++ [
+                      # Add mango hm module
+                      inputs.mango.hmModules.mango
+                    ];
+                };
+              }
+            ];
+          };
+        };
+      };
+    };
+}
+
+# Packaging mango
+
+To package mango for other distributions, you can check the reference setup for:
+
+    nix
+    arch.
+    gentoo
+
+You might need to package scenefx for your distribution, check availability here.
+
+If you encounter build errors when packaging mango, feel free to create an issue and ask a question, but
+Read The Friendly Manual on packaging software in your distribution first.
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/xdg-portals.md:13:> **Warning:** If you previously added dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots to your config, remove it. Mango now handles this automatically.
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4896:    // first command: dbus-update-activation-environment
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4898:    char *cmd1 = string_printf("dbus-update-activation-environment %s", arg1);
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4906:    // second command: systemctl --user
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4908:    char *cmd2 = string_printf("systemctl --user %s %s", action, env_keys);
+noctalia
+[nix-shell:~/Proyectos/MyNixOS]$ sed -n 55,100p $M/docs/configuration/basics.md
+sed -n 210,300p $M/README.md
+grep -rniE "graphical-session|systemctl|dbus-update|uwsm" $M/docs $M/README.md $M/src | head -15
+nix eval --raw github:noctalia-dev/noctalia-shell/2d3545609f4d2d0952ae169cebac6bb658c3a7b2#packages.x86_64-linux.default.meta.mainProgram
+
+## Environment Variables
+
+You can define environment variables directly within your config file. These are set before the window manager fully initializes.
+
+    **Warning:** Environment variables defined here will be **reset** every time you reload the configuration.
+
+env=QT_IM_MODULES,wayland;fcitx
+env=XMODIFIERS,@im=fcitx
+
+## Autostart
+
+mangowm can automatically run commands or scripts upon startup. There are two modes for execution:
+
+| Command | Behavior | Usage Case |
+| :--- | :--- | :--- |
+| exec-once | Runs **only once** when mangowm starts. | Status bars, Wallpapers, Notification daemons |
+| exec | Runs **every time** the config is reloaded. | Scripts that need to refresh settings |
+
+### Example Setup
+
+# Start the status bar once
+exec-once=waybar
+
+# Set wallpaper
+exec-once=swaybg -i ~/.config/mango/wallpaper/room.png
+
+# Reload a custom script on config change
+exec=bash ~/.config/mango/reload-settings.sh
+
+or the website docs docs
+
+# NixOS + Home-manager
+
+The repo contains a flake that provides a NixOS module and a home-manager module for mango.
+Use the NixOS module to install mango with other necessary components of a working Wayland environment.
+Use the home-manager module to declare configuration and autostart for mango.
+
+Here's an example of using the modules in a flake:
+
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    mango = {
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs =
+    inputs@{ self, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      debug = true;
+      systems = [ "x86_64-linux" ];
+      flake = {
+        nixosConfigurations = {
+          hostname = inputs.nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              inputs.home-manager.nixosModules.home-manager
+
+              # Add mango nixos module
+              inputs.mango.nixosModules.mango
+              {
+                programs.mango.enable = true;
+              }
+              {
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  backupFileExtension = "backup";
+                  users."username".imports =
+                    [
+                      (
+                        { ... }:
+                        {
+                          wayland.windowManager.mango = {
+                            enable = true;
+                            settings = ''
+                              # see config.conf
+                            '';
+                            autostart_sh = ''
+                              # see autostart.sh
+                              # Note: here no need to add shebang
+                            '';
+                          };
+                        }
+                      )
+                    ]
+                    ++ [
+                      # Add mango hm module
+                      inputs.mango.hmModules.mango
+                    ];
+                };
+              }
+            ];
+          };
+        };
+      };
+    };
+}
+
+# Packaging mango
+
+To package mango for other distributions, you can check the reference setup for:
+
+    nix
+    arch.
+    gentoo
+
+You might need to package scenefx for your distribution, check availability here.
+
+If you encounter build errors when packaging mango, feel free to create an issue and ask a question, but
+Read The Friendly Manual on packaging software in your distribution first.
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/docs/configuration/xdg-portals.md:13:> **Warning:** If you previously added dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots to your config, remove it. Mango now handles this automatically.
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4896:    // first command: dbus-update-activation-environment
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4898:    char *cmd1 = string_printf("dbus-update-activation-environment %s", arg1);
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4906:    // second command: systemctl --user
+/nix/store/c0nwp3q8bavbcbiz9h3d4w7j8bv64pxy-source/src/mango.c:4908:    char *cmd2 = string_printf("systemctl --user %s %s", action, env_keys);
+noctalia
+Checking how mango's autostart and config files are loaded
+
+Verified from your output:
+
+    The mango source runs dbus-update-activation-environment and systemctl --user import-environment, but nothing starts graphical-session.target. So under mangowm, Noctalia must start from exec-once in ~/.config/mango/config.conf.
+    Under niri, niri.service pulls in graphical-session.target, so programs.noctalia.systemd.enable works there.
+    The Noctalia binary is noctalia.
+    UNVERIFIED: whether mangowc 0.12.8 reads ~/.config/mango/config.conf exactly. The docs in its source say ~/.config/mango/.
+
+Two design choices before I write code:
+
+Q: How is the mangowm config (with the Noctalia exec-once line) delivered?
+A: Dotfiles symlink: hosts/<host>/dotfiles/mango/config.conf in the repo (recommended, editable without rebuild)
+
+Q: Default compositor value in hosts/desktop and hosts/laptop?
+A: niri on both (as you chose)
+Failed to send. A retry control is available on the message.
+

@@ -1,4 +1,7 @@
 # Networking: NetworkManager, firewall, reverse-path.
+# Nothing is opened on every interface any more: services open their own ports on
+# tailscale0 only (see media-stack.nix, homepage.nix, caddy.nix). Jellyfin and
+# Sunshine still open theirs themselves.
 { config, lib, ... }:
 
 {
@@ -6,21 +9,8 @@
     networking.networkmanager.enable = true;
     networking.firewall = {
       enable = true;
-      allowedTCPPorts = [
-        80
-        443
-      ];
-      allowedUDPPortRanges = [
-        {
-          from = 4000;
-          to = 4007;
-        }
-        {
-          from = 8000;
-          to = 8010;
-        }
-      ];
+      # "loose" is what Tailscale needs; `false` switched reverse-path filtering off entirely.
+      checkReversePath = "loose";
     };
-    networking.firewall.checkReversePath = false;
   };
 }

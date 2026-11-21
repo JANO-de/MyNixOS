@@ -20,6 +20,9 @@
     noctalia.url = "github:noctalia-dev/noctalia-shell/3abfa1fc09b62dc4cdeeb7b787886f075696f0b7";
 
     # --- apps ---
+    ytm-player = {
+      url = "github:peternaame-boop/ytm-player";
+    };
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";

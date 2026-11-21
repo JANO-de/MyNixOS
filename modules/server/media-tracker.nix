@@ -83,6 +83,7 @@ in
 
     systemd.services.media-tracker = {
       description = "Register new media files in the tracker spreadsheet";
+      unitConfig.StartLimitIntervalSec = 0;
       after = [ "local-fs.target" ];
       serviceConfig = {
         Type = "oneshot";
@@ -110,7 +111,7 @@ in
           PathChanged = "${cfg.mediaDir}/${folder}";
           Unit = "media-tracker.service";
           TriggerLimitIntervalSec = "60s";
-          TriggerLimitBurst = 1;
+          TriggerLimitBurst = 1000;
         };
       }
     ) watched;

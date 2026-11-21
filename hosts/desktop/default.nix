@@ -3,6 +3,9 @@
 
 {
   imports = [
+    ../../modules/services/backup.nix
+    ../../modules/services/scrub.nix
+    ../../modules/server/navidrome.nix
     ./hardware-configuration.nix
     ../../modules
   ];
@@ -16,6 +19,7 @@
   modules.services.qmk.enable = true;
   modules.services.virtualbox.enable = true;
   modules.services.tailscale.enable = true;
+  modules.server.enable = true; # all home-server services (tailscale stays separate)
   modules.theme.enable = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
@@ -33,14 +37,6 @@
 
   # Internal data drives (ext4). "nofail" keeps boot snappy if one is missing,
   # "noatime" avoids needless write traffic.
-  fileSystems."/mnt/data" = {
-    device = "/dev/disk/by-uuid/f6a19317-f36e-4a3f-8934-423b2e3d8ed4";
-    fsType = "ext4";
-    options = [
-      "nofail"
-      "noatime"
-    ];
-  };
   fileSystems."/mnt/ssd" = {
     device = "/dev/disk/by-uuid/949f3a95-eae7-4068-a57a-ff0d695142e1";
     fsType = "ext4";
@@ -66,13 +62,10 @@
   programs.nyaa-si.enable = true;
   programs.neo-mangal.enable = true;
   programs.vid-dl.enable = true;
+  programs.ytm-player.enable = true;
+  programs.ytui.enable = true;
 
   modules.desktop.dotfiles.enable = true;
-  modules.services.odysseus.enable = false;
-  modules.services.mediaTracker.enable = true;
-  modules.services.jellyfin.enable = true;
-  modules.services.homepage.enable = true;
-  modules.services.mediaStack.enable = true;
 
   system.stateVersion = "26.05";
 }

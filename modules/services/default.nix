@@ -16,12 +16,7 @@
     ./artcraft
     ./virtualbox.nix
     ./qmk.nix
-    ./odysseus.nix
     ./tailscale.nix
-    ./jellyfin.nix
-    ./homepage.nix
     ./artcraft
-    ./media-tracker.nix
-    ./media-stack.nix
   ];
 }

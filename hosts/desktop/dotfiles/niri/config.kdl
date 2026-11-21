@@ -619,13 +619,15 @@ binds {
 // Desktop outputs and window rules
 
 output "HDMI-A-1" {
-    position x=0 y=0
-    transform "90"
+    position x=1080 y=0
+    mode "3840x2160"
+    scale 1
 }
 
-output "HDMI-A-2" {
-    position x=1080 y=0
-}
+    output "HDMI-A-2" {
+        position x=0 y=0
+        transform "90"
+    }
 
 window-rule {
     match app-id="SimpMusic"

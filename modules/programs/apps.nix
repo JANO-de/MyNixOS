@@ -22,6 +22,7 @@ in
       vivaldi
       vesktop
       strawberry
+      parabolic
       bazaar
       bitwarden-cli
       inputs.opencode-flake.packages.${system}.opencode-avx

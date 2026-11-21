@@ -51,6 +51,8 @@
     ./neo-mangal
     ./vid-dl
     ./ytm-rs.nix
+    ./ytm-player.nix
+    ./ytui.nix
     ./deviload.nix
   ];
 }
