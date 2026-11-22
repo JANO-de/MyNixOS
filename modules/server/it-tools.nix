@@ -1,5 +1,10 @@
 # IT-Tools: static developer toolbox served by Caddy at https://\<host\>:18090 (tailnet only).
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.modules.services.itTools;

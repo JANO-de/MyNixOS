@@ -22,7 +22,8 @@ let
   site = port: { extraConfig = "reverse_proxy 127.0.0.1:${toString port}"; };
 in
 {
-  options.modules.services.caddy.enable = lib.mkEnableOption "Caddy HTTPS reverse proxy (tailnet only)";
+  options.modules.services.caddy.enable =
+    lib.mkEnableOption "Caddy HTTPS reverse proxy (tailnet only)";
 
   config = lib.mkIf cfg.enable {
     # Let Caddy fetch the *.ts.net certificate from tailscaled.
@@ -30,16 +31,18 @@ in
 
     services.caddy = {
       enable = true;
-      virtualHosts =
-        { "${host}" = site 8080; }
-        // lib.mapAttrs' (
-          _: port: lib.nameValuePair "${host}:${toString (port + offset)}" (site port)
-        ) apps;
+      virtualHosts = {
+        "${host}" = site 8080;
+      }
+      // lib.mapAttrs' (
+        _: port: lib.nameValuePair "${host}:${toString (port + offset)}" (site port)
+      ) apps;
     };
 
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80
       443
-    ] ++ map (port: port + offset) (lib.attrValues apps);
+    ]
+    ++ map (port: port + offset) (lib.attrValues apps);
   };
 }

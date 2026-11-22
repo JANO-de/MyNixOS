@@ -223,8 +223,16 @@ in
                 view = "monthly";
                 maxEvents = 10;
                 integrations = [
-                  { type = "sonarr"; service_group = "Automation"; service_name = "Sonarr"; }
-                  { type = "radarr"; service_group = "Automation"; service_name = "Radarr"; }
+                  {
+                    type = "sonarr";
+                    service_group = "Automation";
+                    service_name = "Sonarr";
+                  }
+                  {
+                    type = "radarr";
+                    service_group = "Automation";
+                    service_name = "Radarr";
+                  }
                 ];
               };
             })
@@ -288,12 +296,42 @@ in
       bookmarks = [
         {
           "Dev" = [
-            (svc "Stirling PDF" [ { abbr = "SP"; href = "https://${host}:18085"; } ])
-            (svc "GitHub" [ { abbr = "GH"; href = "https://github.com"; } ])
-            (svc "NixOS Search" [ { abbr = "NS"; href = "https://search.nixos.org"; } ])
-            (svc "Home Manager" [ { abbr = "HM"; href = "https://home-manager-options.extranix.com"; } ])
-            (svc "NixOS Wiki" [ { abbr = "NW"; href = "https://wiki.nixos.org"; } ])
-            (svc "Torrent Claw" [ {abbr = "TC"; href = "https://torrentclaw.com/es"; } ])
+            (svc "Stirling PDF" [
+              {
+                abbr = "SP";
+                href = "https://${host}:18085";
+              }
+            ])
+            (svc "GitHub" [
+              {
+                abbr = "GH";
+                href = "https://github.com";
+              }
+            ])
+            (svc "NixOS Search" [
+              {
+                abbr = "NS";
+                href = "https://search.nixos.org";
+              }
+            ])
+            (svc "Home Manager" [
+              {
+                abbr = "HM";
+                href = "https://home-manager-options.extranix.com";
+              }
+            ])
+            (svc "NixOS Wiki" [
+              {
+                abbr = "NW";
+                href = "https://wiki.nixos.org";
+              }
+            ])
+            (svc "Torrent Claw" [
+              {
+                abbr = "TC";
+                href = "https://torrentclaw.com/es";
+              }
+            ])
           ];
         }
       ];

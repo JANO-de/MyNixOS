@@ -1,4 +1,8 @@
-{ lib, rustPlatform, fetchFromGitHub }:
+{
+  lib,
+  rustPlatform,
+  fetchFromGitHub,
+}:
 
 rustPlatform.buildRustPackage rec {
   pname = "localsend-cli";
@@ -15,8 +19,14 @@ rustPlatform.buildRustPackage rec {
     lockFile = "${src}/Cargo.lock";
   };
 
-  cargoBuildFlags = [ "-p" "localsend-cli" ];
-  cargoTestFlags = [ "-p" "localsend-cli" ];
+  cargoBuildFlags = [
+    "-p"
+    "localsend-cli"
+  ];
+  cargoTestFlags = [
+    "-p"
+    "localsend-cli"
+  ];
 
   meta = {
     description = "LocalSend CLI (official)";

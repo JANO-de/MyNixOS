@@ -10,8 +10,7 @@ let
   cfg = config.modules.services.powertop;
 in
 {
-  options.modules.services.powertop.enable =
-    lib.mkEnableOption "powertop --auto-tune once per boot";
+  options.modules.services.powertop.enable = lib.mkEnableOption "powertop --auto-tune once per boot";
 
   config = lib.mkIf cfg.enable {
     systemd.services.powertop-auto-tune = {

@@ -23,7 +23,7 @@ in
           "/var/lib/kapowarr:/app/db"
           "/mnt/storage/downloads/kapowarr:/app/temp_downloads"
           "${media}/Comics:/comics-1"
-	  "${media}/Manga:/manga-1"
+          "${media}/Manga:/manga-1"
         ];
       };
       warp = {
@@ -61,7 +61,19 @@ in
     services.caddy.enable = true;
     services.caddy.virtualHosts."${host}:15656".extraConfig = "reverse_proxy 127.0.0.1:5656";
     services.caddy.virtualHosts."${host}:18084".extraConfig = "reverse_proxy 127.0.0.1:8084";
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 15656 18084 ];
-    networking.firewall.interfaces."docker0".allowedTCPPorts = [ 8989 7878 9696 8686 6767 5055 8112 1080 ];
+    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
+      15656
+      18084
+    ];
+    networking.firewall.interfaces."docker0".allowedTCPPorts = [
+      8989
+      7878
+      9696
+      8686
+      6767
+      5055
+      8112
+      1080
+    ];
   };
 }

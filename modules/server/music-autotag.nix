@@ -35,7 +35,12 @@ let
 
   watcher = pkgs.writeShellApplication {
     name = "music-autotag";
-    runtimeInputs = [ pkgs.beets pkgs.chromaprint pkgs.inotify-tools pkgs.coreutils ];
+    runtimeInputs = [
+      pkgs.beets
+      pkgs.chromaprint
+      pkgs.inotify-tools
+      pkgs.coreutils
+    ];
     text = ''
       export BEETSDIR=${beetsDir}
       install -Dm644 ${beetsConfig} "$BEETSDIR/config.yaml"

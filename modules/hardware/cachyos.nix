@@ -11,7 +11,8 @@ let
   cfg = config.modules.hardware.cachyos;
 in
 {
-  options.modules.hardware.cachyos.enable = lib.mkEnableOption "the CachyOS kernel overlay (pinned build)";
+  options.modules.hardware.cachyos.enable =
+    lib.mkEnableOption "the CachyOS kernel overlay (pinned build)";
 
   config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [ inputs.nix-cachyos-kernel.overlays.pinned ];

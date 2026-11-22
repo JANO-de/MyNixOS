@@ -16,7 +16,10 @@ in
     enable = lib.mkEnableOption "OpenRGB server and the `rgb` on/off command";
 
     motherboard = lib.mkOption {
-      type = lib.types.enum [ "amd" "intel" ];
+      type = lib.types.enum [
+        "amd"
+        "intel"
+      ];
       default = "amd";
       description = "Motherboard platform, used to load the right i2c driver for RAM and headers.";
     };

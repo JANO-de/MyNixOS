@@ -4,7 +4,10 @@ let
   musicDir = "/mnt/storage/media/Music";
   musicDl = pkgs.writeShellApplication {
     name = "music-dl";
-    runtimeInputs = [ pkgs.yt-dlp pkgs.ffmpeg ];
+    runtimeInputs = [
+      pkgs.yt-dlp
+      pkgs.ffmpeg
+    ];
     text = ''
       if [ "$#" -eq 0 ]; then
         echo "Usage: music-dl <music.youtube.com album/playlist URL> [more URLs]"

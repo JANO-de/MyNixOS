@@ -14,7 +14,12 @@ let
   py = pkgs.python3.withPackages (ps: [ ps.openpyxl ]);
 
   script = pkgs.writeShellScript "media-tracker" ''
-    export PATH=${lib.makeBinPath [ pkgs.ffmpeg-headless pkgs.poppler-utils ]}:$PATH
+    export PATH=${
+      lib.makeBinPath [
+        pkgs.ffmpeg-headless
+        pkgs.poppler-utils
+      ]
+    }:$PATH
     export MEDIA_DIR=${lib.escapeShellArg cfg.mediaDir}
     export TRACKER_FILE=${lib.escapeShellArg cfg.trackerFile}
     export STATE_FILE=/var/lib/media-tracker/state.json
@@ -57,10 +62,22 @@ in
     };
 
     folders = {
-      movies = lib.mkOption { type = lib.types.str; default = "Movies"; };
-      shows = lib.mkOption { type = lib.types.str; default = "TV Shows"; };
-      music = lib.mkOption { type = lib.types.str; default = "Music"; };
-      books = lib.mkOption { type = lib.types.str; default = "Books"; };
+      movies = lib.mkOption {
+        type = lib.types.str;
+        default = "Movies";
+      };
+      shows = lib.mkOption {
+        type = lib.types.str;
+        default = "TV Shows";
+      };
+      music = lib.mkOption {
+        type = lib.types.str;
+        default = "Music";
+      };
+      books = lib.mkOption {
+        type = lib.types.str;
+        default = "Books";
+      };
     };
 
     settleSeconds = lib.mkOption {

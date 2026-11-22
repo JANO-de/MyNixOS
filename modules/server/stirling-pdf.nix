@@ -16,7 +16,8 @@ in
       environment.SERVER_PORT = backend;
     };
     services.caddy.enable = true;
-    services.caddy.virtualHosts."${host}:${toString port}".extraConfig = "reverse_proxy 127.0.0.1:${toString backend}";
+    services.caddy.virtualHosts."${host}:${toString port}".extraConfig =
+      "reverse_proxy 127.0.0.1:${toString backend}";
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ port ];
   };
 }

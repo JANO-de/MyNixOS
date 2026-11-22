@@ -1,28 +1,40 @@
-{ inputs, system }:
+# Dev tooling: treefmt (nix fmt), formatting check, pre-commit hook, dev shell.
+{
+  inputs,
+  system,
+  self,
+}:
 let
   pkgs = import inputs.nixpkgs { inherit system; };
-  nixfmt = pkgs.nixfmt;
-in
-{
-  shells = {
-    default = pkgs.mkShell {
-      packages = [
-        pkgs.rustc
-        pkgs.cargo
-        pkgs.pkg-config
-        pkgs.gtk4
-        pkgs.libadwaita
-        pkgs.glib
-        pkgs.sqlite
-        nixfmt
-      ];
+  treefmt = inputs.treefmt-nix.lib.evalModule pkgs {
+    projectRootFile = "flake.nix";
+    programs.nixfmt.enable = true;
+  };
+  hooks = inputs.git-hooks.lib.${system}.run {
+    src = self;
+    hooks.treefmt = {
+      enable = true;
+      package = treefmt.config.build.wrapper;
     };
   };
-  formatter = nixfmt;
+in
+{
+  shells.default = pkgs.mkShell {
+    packages = [
+      pkgs.rustc
+      pkgs.cargo
+      pkgs.pkg-config
+      pkgs.gtk4
+      pkgs.libadwaita
+      pkgs.glib
+      pkgs.sqlite
+      treefmt.config.build.wrapper
+    ];
+    inherit (hooks) shellHook;
+  };
+  formatter = treefmt.config.build.wrapper;
   checks = {
-    nixfmt = pkgs.runCommand "nixfmt-check" { } ''
-      ${nixfmt}/bin/nixfmt --check ${../../flake.nix} ${./default.nix} ${./dev.nix}
-      touch $out
-    '';
+    formatting = treefmt.config.build.check self;
+    pre-commit = hooks;
   };
 }

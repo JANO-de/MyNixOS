@@ -69,6 +69,16 @@
     # CachyOS kernel (laptop). Release branch = CI-built and cached; do NOT
     # override its nixpkgs input. Pin to 7.2.8 build (avoid 7.3.0 compile).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";
+
+    # --- dev tooling ---
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -77,7 +87,7 @@
       system = "x86_64-linux";
       theme = import ./modules/theme/palette.nix;
       pkgsOut = import ./modules/pkgs { inherit inputs system; };
-      dev = import ./modules/pkgs/dev.nix { inherit inputs system; };
+      dev = import ./modules/pkgs/dev.nix { inherit inputs system self; };
       mkHost =
         host:
         nixpkgs.lib.nixosSystem {

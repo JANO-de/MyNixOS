@@ -1,4 +1,8 @@
-{ stdenvNoCC, fetchFromGitHub, gtk3 }:
+{
+  stdenvNoCC,
+  fetchFromGitHub,
+  gtk3,
+}:
 stdenvNoCC.mkDerivation {
   pname = "mactahoe-icon-theme";
   version = "git-839848b9a8a38a92a6936e30c4abe35cc6f2546d";
