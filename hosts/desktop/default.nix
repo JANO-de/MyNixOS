@@ -4,6 +4,8 @@
 {
   imports = [
     ../../modules/server/vikunja.nix
+    ../../modules/server/ntfy.nix
+    ../../modules/services/ntfy-alerts.nix
     ../../modules/services/wol.nix
     ../../modules/server/caddy-lan.nix
     ../../modules/server/adguard.nix
@@ -23,6 +25,7 @@
   modules.hardware.openrgb.enable = true;
   modules.services.enable = true;
   modules.services.qmk.enable = true;
+  modules.services.smartd.enable = true;
   modules.services.virtualbox.enable = true;
   modules.services.tailscale.enable = true;
   modules.server.enable = true; # all home-server services (tailscale stays separate)

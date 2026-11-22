@@ -214,6 +214,20 @@ in
                 key = "{{HOMEPAGE_VAR_QBIT_KEY}}";
               };
             })
+            (svc "Calendar" {
+              description = "Upcoming episodes and movies";
+              icon = "mdi-calendar";
+              widget = {
+                type = "calendar";
+                firstDayInWeek = "monday";
+                view = "monthly";
+                maxEvents = 10;
+                integrations = [
+                  { type = "sonarr"; service_group = "Automation"; service_name = "Sonarr"; }
+                  { type = "radarr"; service_group = "Automation"; service_name = "Radarr"; }
+                ];
+              };
+            })
           ];
         }
         {

@@ -10,6 +10,7 @@
       "/mnt/storage/jellyfin"
       "/mnt/storage/tracker"
       "/var/lib/navidrome"
+      "/var/lib/vikunja"
     ];
     exclude = [ "/mnt/storage/jellyfin/cache" ];
     timerConfig = {

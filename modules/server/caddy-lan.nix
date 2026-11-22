@@ -18,6 +18,7 @@ let
     navidrome = 4533;
     dash = 8080; # whatever caddy.nix serves on the bare tailnet host (Homepage)
     todo = 3456; # Vikunja
+    ntfy = 2586;
   };
 in
 {
