@@ -9,7 +9,7 @@
 
 ## Flake polish
 - [x] Keep the custom module loader (no flake-parts)
-- [ ] nix-gaming input and cachix substituter
+- [x] nix-gaming input and cachix substituter
 - [x] treefmt + git-hooks, `nix flake check`
 - [ ] Study fufexan (checks, hooks) and billimek (dendritic)
 
