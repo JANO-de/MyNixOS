@@ -8,5 +8,6 @@
     frontendScheme = "http";
     frontendHostname = "todo.home.arpa";
     port = 3456;
+    settings.service.enableregistration = false;
   };
 }
