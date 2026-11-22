@@ -8,3 +8,4 @@ target/
 .idea/
 hosts/*/dotfiles/kitty/themes/
 hosts/desktop/dotfiles/kitty/themes/noctalia.conf
+.pre-commit-config.yaml
