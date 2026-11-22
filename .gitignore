@@ -7,3 +7,4 @@ target/
 *.bak.*
 .idea/
 hosts/*/dotfiles/kitty/themes/
+hosts/desktop/dotfiles/kitty/themes/noctalia.conf
