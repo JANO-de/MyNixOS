@@ -50,17 +50,13 @@
       flake = false;
     };
 
-    deepseek-harness.url = "github:moraxyc/deepseek-harness.nix";
+    tuimessenger = {
+      url = "github:whyyor/tuimessenger";
+    };
 
     # Rust toolchain (Orchard needs >=1.96)
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    ambxst.url = "github:Axenide/Ambxst";
-    caelestia-shell = {
-      url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -88,7 +84,6 @@
             inputs.niri-flake.nixosModules.niri
             inputs.mangowc.nixosModules.mango
             inputs.noctalia.nixosModules.default
-            inputs.deepseek-harness.nixosModules.default
             ./hosts/${host}/default.nix
             {
               nixpkgs.overlays = [
