@@ -17,7 +17,7 @@ _: {
             "lean"
           ];
           default = "full";
-          description = "Which program set this host gets. 'lean' is for low-RAM / small-disk machines (the Surface).";
+          description = "Which program set this host gets. 'lean' is for low-RAM / small-disk machines.";
         };
 
         deskflow = {

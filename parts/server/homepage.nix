@@ -258,11 +258,6 @@ _: {
             }
             {
               "System" = [
-                (svc "Sunshine" {
-                  href = "https://${host}:47990";
-                  description = "Game/desktop streaming (self-signed cert)";
-                  icon = "sunshine.png";
-                })
                 (svc "Stirling PDF" {
                   href = "https://${host}:18085";
                   description = "PDF tools";

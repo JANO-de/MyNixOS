@@ -1,4 +1,4 @@
-# Lean profile: CLI essentials + ffmpeg/yt-dlp + zathura + moonlight + deskflow (all hosts).
+# Lean profile: CLI essentials + ffmpeg/yt-dlp + zathura + deskflow (all hosts).
 _: {
   flake.nixosModules.programs-lean =
     {
@@ -64,7 +64,6 @@ _: {
         yt-dlp
 
         deskflow
-        moonlight-qt
 
         (zathura.override {
           plugins = with zathuraPkgs; [

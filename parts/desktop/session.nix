@@ -31,8 +31,8 @@ _: {
       config = lib.mkMerge [
         (lib.mkIf cfg.enable {
           # ---- login screen ------------------------------------------------------
-          # X11 greeter on every host: the reliable path (NVIDIA on desktop/laptop,
-          # touch on the Surface). The session itself is Wayland.
+          # X11 greeter on every host: the reliable path with NVIDIA on desktop/laptop.
+          # The session itself is Wayland.
           services.xserver.enable = true;
           services.displayManager.sddm = {
             enable = true;

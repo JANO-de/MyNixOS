@@ -82,7 +82,6 @@ let
     "services-printing"
     "services-ssh"
     "services-flatpak"
-    "services-sunshine"
     "services-waydroid"
     "services-powertop"
     "services-smartd"

@@ -1,4 +1,4 @@
-# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Aureli.
+# Desktop PC: AMD + NVIDIA (GTX 1060). niri + Noctalia.
 { self, ... }:
 {
   flake.nixosModules.host-desktop =
@@ -27,7 +27,7 @@
 
       # Without this, custom substituters (e.g. from a flake's nixConfig) are
       # silently ignored for this user's builds, and the daemon just rebuilds from
-      # source. Also lets the Surface receive unsigned paths pushed from here.
+      # source.
       nix.settings.trusted-users = [
         "root"
         "jano"
@@ -43,11 +43,6 @@
           "noatime"
         ];
       };
-
-      # The Surface acts as an extra monitor via this sunshine server + moonlight.
-      # Capture runs on the NVIDIA/Intel hybrid GPU under Wayland: if streaming is
-      # flaky, test the KMS backend.
-      modules.services.sunshine.enable = true;
 
       # Deskflow: this machine joins the laptop's keyboard/mouse server.
       modules.programs.deskflow = {
