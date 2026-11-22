@@ -70,6 +70,12 @@
     # override its nixpkgs input. Pin to 7.2.8 build (avoid 7.3.0 compile).
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/b61eddd37538bf161f54929ae0a283d31df64cef";
 
+    # --- gaming ---
+    nix-gaming = {
+      url = "github:fufexan/nix-gaming";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # --- dev tooling ---
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -100,6 +106,7 @@
             inputs.mangowc.nixosModules.mango
             inputs.noctalia.nixosModules.default
             inputs.stylix.nixosModules.stylix
+            inputs.nix-gaming.nixosModules.platformOptimizations
             ./hosts/${host}/default.nix
             {
               nixpkgs.overlays = [
