@@ -8,5 +8,6 @@ in
 
   config = lib.mkIf cfg {
     programs.gamemode.enable = true;
+    users.users.jano.extraGroups = [ "gamemode" ];
   };
 }

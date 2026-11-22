@@ -1,5 +1,5 @@
 # Steam + Gamescope.
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.modules.gaming.steam;
 in
@@ -13,7 +13,14 @@ in
       localNetworkGameTransfers.openFirewall = true;
       gamescopeSession.enable = true;
     };
-    programs.gamescope.enable = true;
+    programs.gamescope = {
+      enable = true;
+      capSysNice = true;
+    };
     hardware.graphics.enable32Bit = true;
+    environment.systemPackages = [
+      pkgs.xwayland-satellite
+      pkgs.vulkan-tools
+    ];
   };
 }
