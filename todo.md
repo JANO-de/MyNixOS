@@ -11,7 +11,7 @@
 - [x] Keep the custom module loader (no flake-parts)
 - [x] nix-gaming input and cachix substituter
 - [x] treefmt + git-hooks, `nix flake check`
-- [ ] Study fufexan (checks, hooks) and billimek (dendritic)
+- [x] Study fufexan (ported nh, registry pinning, store optimise)
 
 ## Desktop
 - [x] gamescope CAP_SYS_NICE
