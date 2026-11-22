@@ -2,19 +2,31 @@
 
 ## Tree
 
-- `flake.nix`: inputs + thin outputs. `nixosConfigurations` = one per folder in `hosts/`; packages, apps, overlay and the dev shell come from `modules/pkgs`.
-- `hosts/{desktop,laptop,halos1}/`: per-host switchboard (`default.nix` sets `modules.*` flags) + hardware + host-only modules. `hosts/<host>/dotfiles/`: app-written configs kept in git.
-- `modules/`: every capability (see `layout.md`), auto-imported by `modules/default.nix`.
-- `modules/desktop/halo/src/`: Halo QML shell (rsync source of `halo-dev`). `modules/desktop/dynisland/src/`: dynisland QML.
-- `modules/scripts/`: helper commands (see `modules/scripts/README.md`).
-- `.plan/`: guide + status for the junior/agent; `.plan/docs/`: this directory.
+- `flake.nix`: inputs + `flake-parts.lib.mkFlake` with `imports = [ (import-tree ./parts) ]`.
+- `parts/`: every flake-parts module (see `layout.md`). Features define `flake.nixosModules.*`; `parts/hosts/*.nix` also define `flake.nixosConfigurations.*`.
+- `parts/lib.nix`: `flake.lib.mkHost` (the one place that builds a `nixosSystem`) and `flake.lib.commonModules`.
+- `parts/packages.nix` + `pkgs/`: packages, apps and `flake.overlays.default`.
+- `parts/dev.nix`: treefmt (nixfmt, statix, deadnix), the pre-commit hook, the dev shell and `checks`.
+- `hosts/<host>/`: `hardware-configuration.nix` and `dotfiles/` (app-written configs kept in git).
+- `.plan/docs/`: this directory.
 
 ## How a host is assembled
 
-`flake.nix` (`mkHost`) → `hosts/<name>/default.nix` → `modules/` (loader). `mkHost` adds home-manager, forge modules and the overlays (`rust-overlay`, `self.overlays.default`). The CachyOS kernel overlay is the host option `modules.hardware.cachyos.enable` (off everywhere).
+`parts/hosts/<name>.nix` defines two things:
+
+1. `flake.nixosModules.host-<name>`: the host switchboard (`modules.*` flags, hostname, state version, host-only settings).
+2. `flake.nixosConfigurations.<name> = self.lib.mkHost { modules = [ "host-<name>" ... ] ++ self.lib.commonModules; }`.
+
+`mkHost` builds `nixosSystem` with `specialArgs = { inputs, theme }` and these modules, in order: home-manager, forge, niri-flake, noctalia, stylix, nix-gaming platform optimizations, then the host's module list (names resolve to `self.nixosModules.<name>`, duplicates removed), then an overlay module (`rust-overlay`, `self.overlays.default`).
+
+`commonModules` is every option-gated feature module. Each is off until the host sets its `modules.*` option, so a host only lists extras that have no enable switch. The order matches the old loader so list-valued options merge the same way. The CachyOS kernel overlay is `modules.hardware.cachyos.enable` (off everywhere).
+
+## Dev tooling
+
+`nix fmt` runs treefmt with nixfmt, statix and deadnix (`--no-lambda-arg`, edits in place). The same wrapper is the pre-commit hook and the `checks.formatting` check.
 
 ## Known impurities
 
-- `chronos.url = "git+file:///home/jano/Proyectos/chronos"` and `classwork.url = "git+file:///home/jano/Proyectos/Classwork"`: absolute paths, break on other machines/CI. Owner decision pending.
-- `modules/desktop/dotfiles.nix` links `~/.config/*` to the live checkout (`repoPath`), not the store, on purpose.
-- The immaterial module seeds `~/.config/hypr` from the upstream dots copy-once (never overwrites).
+- `modules.desktop.dotfiles` links `~/.config/*` to the live checkout (`repoPath`), not the store, on purpose.
+- `classwork` is commented out in `flake.nix` (absolute local path, breaks on other machines/CI).
+- Service secrets are files on the host (`/var/lib/...`, `/root/...`), created empty by tmpfiles where the service needs them to exist.
