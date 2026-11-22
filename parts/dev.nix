@@ -8,6 +8,11 @@
       treefmt = inputs.treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
         programs.nixfmt.enable = true;
+        programs.statix.enable = true;
+        programs.deadnix.enable = true;
+        settings.formatter.deadnix.options = [
+          "--no-lambda-arg"
+        ];
       };
       hooks = inputs.git-hooks.lib.${system}.run {
         src = self;
