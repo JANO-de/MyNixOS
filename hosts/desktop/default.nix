@@ -31,6 +31,7 @@
   modules.services.tailscale.enable = true;
   modules.server.enable = true; # all home-server services (tailscale stays separate)
   modules.theme.enable = true;
+  modules.gaming.all = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
   modules.desktop.compositor = "niri";

@@ -17,6 +17,7 @@
   modules.services.virtualbox.enable = true;
   modules.services.tailscale.enable = true;
   modules.theme.enable = true;
+  modules.gaming.all = true;
   modules.programs.enable = true;
   modules.desktop.enable = true;
   modules.desktop.compositor = "niri";
