@@ -9,7 +9,7 @@
       name = "macOS";
       size = 24;
     };
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     fonts = {
       sansSerif = {
         package = pkgs.inter;
