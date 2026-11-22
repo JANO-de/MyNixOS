@@ -76,6 +76,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    import-tree.url = "github:mightyiam/import-tree";
+
     # --- dev tooling ---
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -88,49 +91,9 @@
   };
 
   outputs =
-    inputs@{ nixpkgs, self, ... }:
-    let
-      system = "x86_64-linux";
-      theme = import ./modules/theme/palette.nix;
-      pkgsOut = import ./modules/pkgs { inherit inputs system; };
-      dev = import ./modules/pkgs/dev.nix { inherit inputs system self; };
-      mkHost =
-        host:
-        nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs theme; };
-          modules = [
-            inputs.home-manager.nixosModules.home-manager
-            inputs.forge.nixosModules.default
-            inputs.niri-flake.nixosModules.niri
-            inputs.mangowc.nixosModules.mango
-            inputs.noctalia.nixosModules.default
-            inputs.stylix.nixosModules.stylix
-            inputs.nix-gaming.nixosModules.platformOptimizations
-            ./hosts/${host}/default.nix
-            {
-              nixpkgs.overlays = [
-                inputs.rust-overlay.overlays.default
-                self.overlays.default
-              ];
-            }
-          ];
-        };
-      hosts = builtins.attrNames (
-        nixpkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts)
-      );
-    in
-    {
-      packages.${system} = pkgsOut.packages;
-      apps.${system} = pkgsOut.apps;
-      overlays.default = pkgsOut.overlay;
-      nixosModules.orchard = ./modules/programs/orchard/default.nix;
-      nixosModules.niXscout = ./modules/programs/nixscout/default.nix;
-      nixosModules.nyaa-si = ./modules/programs/nyaa-si/default.nix;
-      nixosModules.neo-mangal = ./modules/programs/neo-mangal/default.nix;
-      nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
-      devShells.${system} = dev.shells;
-      formatter.${system} = dev.formatter;
-      checks.${system} = dev.checks;
+    inputs@{ flake-parts, import-tree, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
+      imports = [ (import-tree ./parts) ];
     };
 }
