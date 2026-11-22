@@ -28,7 +28,6 @@ _: {
           python3
           ruff
           uv
-          nodejs_22
           nixd
           nixfmt
           direnv

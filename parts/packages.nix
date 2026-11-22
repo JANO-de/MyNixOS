@@ -39,18 +39,22 @@
         orchard = {
           type = "app";
           program = "${orchard}/bin/orchard";
+          meta.description = "Orchard music client";
         };
         niXscout = {
           type = "app";
           program = "${niXscout}/bin/niXscout";
+          meta.description = "Read-only browser for the Nix world";
         };
         nyaa-si = {
           type = "app";
           program = "${nyaa-si}/bin/nyaa-si";
+          meta.description = "nyaa.si TUI explorer and BitTorrent client";
         };
         neo-mangal = {
           type = "app";
           program = "${neo-mangal}/bin/neo-mangal";
+          meta.description = "Manga TUI downloader and KCC processor";
         };
       };
     };
