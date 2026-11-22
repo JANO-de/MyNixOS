@@ -1,6 +1,6 @@
 # Orchard
 
-YouTube Music client (Qt6/QML + Rust audio core). Packaged for MyNixOS as `modules/programs/orchard/pkg`.
+YouTube Music client (Qt6/QML + Rust audio core). Packaged for MyNixOS as `pkgs/orchard`.
 
 ## Enable
 
@@ -24,7 +24,7 @@ Enabled on `desktop` and `laptop` hosts. Requires `allowUnfree = true` (PolyForm
 
 ## Update procedure
 
-1. Bump `rev` in `modules/programs/orchard/pkg/default.nix`.
+1. Bump `rev` in `pkgs/orchard/default.nix`.
 2. Reset `hash` and `npmDepsHash`/cargo hashes to `lib.fakeHash`.
 3. Rebuild; copy real hashes from errors.
 4. Run `nix flake check` and `nixos-rebuild build --flake .#desktop`.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Behaviour-neutral check: drvPath of the three hosts before/after a change.
-# usage: .plan/v2/drv-check.sh before   (then edit)   .plan/v2/drv-check.sh after
+# usage: scripts/drv-check.sh before   (then edit)   scripts/drv-check.sh after
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 case "${1:-}" in before | after) ;; *) echo "usage: $0 before|after" >&2; exit 2 ;; esac

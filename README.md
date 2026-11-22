@@ -96,7 +96,7 @@ modules.imi.enable = true;          # the shell
 | `laptop` | Deskflow server, PRIME offload, Sunshine |
 | `halos1` | lean profile, tablet mode, touch layer, Halo greeter + splash, Droidloom, deployed from the PC over SSH, no hardware-configuration (disks by label) |
 
-Details: [`.plan/docs/hosts.md`](.plan/docs/hosts.md), [`.plan/docs/halos1/`](.plan/docs/halos1).
+Details: [`.plan/docs/hosts.md`](.plan/docs/hosts.md).
 
 ## Modules
 
@@ -123,7 +123,6 @@ Every option, with its file: [`.plan/docs/modules.md`](.plan/docs/modules.md).
 | dynisland | `modules.desktop.shell = "dynisland"` | legacy | `modules/desktop/dynisland/` |
 | chronos | `modules.desktop.shell = "chronos"` | legacy | `modules/desktop/chronos/` (input commented out) |
 
-Halo suite style guide: [`.plan/docs/suite-style.md`](.plan/docs/suite-style.md).
 
 ## Dotfiles
 
@@ -143,7 +142,7 @@ nixpkgs `nixos-26.05`, home-manager, hyprland (no `follows`, keeps Cachix valid)
 
 **Remove a module**: delete the file (and its name in `parts/lib.nix`), drop its flake input, `nix flake lock`, compare drv paths.
 
-**Prove a refactor changes nothing**: `.plan/v2/drv-check.sh before`, edit, `.plan/v2/drv-check.sh after` (prints `IDENTICAL`).
+**Prove a refactor changes nothing**: `scripts/drv-check.sh before`, edit, `scripts/drv-check.sh after` (prints `IDENTICAL`).
 
 **Add a host**: new `parts/hosts/<name>.nix` (copy desktop: a `host-<name>` module with the flags + `self.lib.mkHost`) and `hosts/<name>/hardware-configuration.nix`.
 
@@ -157,27 +156,4 @@ nixpkgs `nixos-26.05`, home-manager, hyprland (no `follows`, keeps Cachix valid)
 
 ## The .plan folder
 
-`.plan/` is the working brain of the repo: the rules the agent follows, the project status and the docs.
-
-| Path | What |
-|------|------|
-| [`.plan/README.md`](.plan/README.md) | index of the plan |
-| [`.plan/guidelines.md`](.plan/guidelines.md) | rules, repo facts, test loop, git flow |
-| [`.plan/ask-first.md`](.plan/ask-first.md) | the questions asked before any step |
-| [`.plan/todo.md`](.plan/todo.md) | open work and open questions |
-| [`.plan/v2/STATUS.md`](.plan/v2/STATUS.md) | milestone checklist (M, L, W, R, ...) |
-| [`.plan/v2/M-modules.md`](.plan/v2/M-modules.md) | the modules-layout plan this README describes |
-| [`.plan/docs/`](.plan/docs/README.md) | the wiki pages: layout, architecture, hosts, modules, inputs, workflow, orchard, niXscout, suite-style |
-| `.plan/docs/archive/`, `.plan/docs/roadmap/` | history and roadmap |
-
-Where to look:
-
-| Question | Page |
-|----------|------|
-| Where does X live? | [layout](.plan/docs/layout.md) |
-| What option turns X on? | [modules](.plan/docs/modules.md) |
-| How is a host built? | [architecture](.plan/docs/architecture.md) |
-| What is each machine? | [hosts](.plan/docs/hosts.md) |
-| Why this input / pin? | [inputs](.plan/docs/inputs.md) |
-| How do I build, deploy, roll back? | [workflow](.plan/docs/workflow.md) |
-| What is done, what is next? | [STATUS](.plan/v2/STATUS.md), [todo](.plan/todo.md) |
+Notes and docs live in [`.plan/`](.plan/README.md); open work is in [`todo.md`](todo.md). The wiki pages are indexed in [`.plan/docs/README.md`](.plan/docs/README.md).
