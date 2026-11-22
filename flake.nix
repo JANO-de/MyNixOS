@@ -6,6 +6,11 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
 
+    stylix = {
+      url = "github:nix-community/stylix/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mangowc.url = "github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f";
-    noctalia.url = "github:noctalia-dev/noctalia-shell/3abfa1fc09b62dc4cdeeb7b787886f075696f0b7";
+    noctalia.url = "github:noctalia-dev/noctalia";
 
     # --- apps ---
     ytm-player = {
@@ -84,6 +89,7 @@
             inputs.niri-flake.nixosModules.niri
             inputs.mangowc.nixosModules.mango
             inputs.noctalia.nixosModules.default
+            inputs.stylix.nixosModules.stylix
             ./hosts/${host}/default.nix
             {
               nixpkgs.overlays = [

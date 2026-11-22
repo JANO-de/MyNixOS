@@ -6,6 +6,7 @@
     ../../modules/server/vikunja.nix
     ../../modules/server/ntfy.nix
     ../../modules/services/ntfy-alerts.nix
+    ../../modules/theme/stylix.nix
     ../../modules/services/wol.nix
     ../../modules/server/caddy-lan.nix
     ../../modules/server/adguard.nix

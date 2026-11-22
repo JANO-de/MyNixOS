@@ -80,9 +80,10 @@ in
       { environment.systemPackages = [ launcher ]; }
 
       (lib.mkIf (cfg.shell == "noctalia") {
-        services.noctalia-shell = {
+        programs.noctalia = {
           enable = true;
           package = noctalia;
+          systemd.enable = true;
         };
       })
 

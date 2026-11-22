@@ -1,4 +1,4 @@
-# Spotify through Spicetify (Catppuccin Mocha, Marketplace). The spicetify NixOS module is always
+# Spotify through Spicetify (colours from Stylix, Marketplace). The spicetify NixOS module is always
 # imported (it only declares options); nothing is installed until modules.programs.spotify.enable.
 {
   config,
@@ -19,8 +19,6 @@ in
   config = lib.mkIf cfg.enable {
     programs.spicetify = {
       enable = true;
-      theme = spicePkgs.themes.catppuccin;
-      colorScheme = "mocha";
 
       enabledCustomApps = with spicePkgs.apps; [
         marketplace
