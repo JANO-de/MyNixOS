@@ -5,8 +5,8 @@
     enable = true;
     polarity = "dark";
     cursor = {
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Ice";
+      package = pkgs.callPackage ./n-cursor.nix { };
+      name = "N-Murder-Drones";
       size = 24;
     };
     base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";

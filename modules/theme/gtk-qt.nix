@@ -12,8 +12,8 @@
   gtk = {
     enable = true;
     iconTheme = {
-      name = "WhiteSur-dark";
-      package = pkgs.whitesur-icon-theme;
+      name = "MacTahoe-dark";
+      package = pkgs.callPackage ./mactahoe-icons.nix { };
     };
   };
 
