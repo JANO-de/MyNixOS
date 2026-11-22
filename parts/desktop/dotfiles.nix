@@ -18,7 +18,6 @@ _: {
       hmDag = inputs.home-manager.lib.hm.dag;
       names = [
         "kitty"
-        "mango"
         "niri"
         "rofi"
       ];

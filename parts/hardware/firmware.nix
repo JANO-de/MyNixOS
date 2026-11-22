@@ -17,7 +17,7 @@ _: {
         services.libinput.enable = true;
         hardware.graphics.enable = true;
 
-        # Stable symlinks for hybrid-GPU selection by Hyprland (AQ_DRM_DEVICES).
+        # Stable /dev/dri/igpu and /dev/dri/dgpu symlinks to pick a GPU by driver (e.g. niri render-drm-device).
         services.udev.extraRules = ''
           SUBSYSTEM=="drm", KERNEL=="card[0-9]*", DRIVERS=="i915", SYMLINK+="dri/igpu"
           SUBSYSTEM=="drm", KERNEL=="card[0-9]*", DRIVERS=="amdgpu", SYMLINK+="dri/igpu"

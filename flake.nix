@@ -22,7 +22,6 @@
       url = "github:sodiboo/niri-flake/9ee3e13b60643448228353097880521658b2fe0e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    mangowc.url = "github:DreamMaoMao/mangowc/42609fad025602047c9adf883c829658dc95936f";
     noctalia.url = "github:noctalia-dev/noctalia";
 
     # --- apps ---

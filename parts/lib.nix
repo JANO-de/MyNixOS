@@ -111,7 +111,6 @@ in
           inputs.home-manager.nixosModules.home-manager
           inputs.forge.nixosModules.default
           inputs.niri-flake.nixosModules.niri
-          inputs.mangowc.nixosModules.mango
           inputs.noctalia.nixosModules.default
           inputs.stylix.nixosModules.stylix
           inputs.nix-gaming.nixosModules.platformOptimizations
