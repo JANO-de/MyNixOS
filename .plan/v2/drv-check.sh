@@ -6,7 +6,7 @@ cd "$(git rev-parse --show-toplevel)"
 case "${1:-}" in before | after) ;; *) echo "usage: $0 before|after" >&2; exit 2 ;; esac
 git add -A
 out="/tmp/mynixos-drv-$1.txt"
-for h in desktop laptop halos1; do
+for h in desktop laptop; do
   printf '%s %s\n' "$h" "$(nix eval --raw ".#nixosConfigurations.$h.config.system.build.toplevel.drvPath")"
 done | tee "$out"
 if [ "$1" = after ]; then

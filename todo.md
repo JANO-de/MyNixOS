@@ -8,10 +8,11 @@
 - [ ] Test steam, `gamemoded -t`, `gamescope -- vkcube`
 
 ## Flake polish
-- [x] Keep the custom module loader (no flake-parts)
+- [x] Dendritic layout: flake-parts + import-tree, parts/ (replaces the custom loader)
 - [x] nix-gaming input and cachix substituter
 - [x] treefmt + git-hooks, `nix flake check`
 - [x] Study fufexan (ported nh, registry pinning, store optimise)
+- [ ] statix + deadnix in treefmt
 
 ## Desktop
 - [x] gamescope CAP_SYS_NICE

@@ -1,0 +1,39 @@
+# Everyday apps: browsers, chat, password manager, Claude, OpenCode, VPN.
+{ ... }:
+{
+  flake.nixosModules.programs-apps =
+    {
+      config,
+      lib,
+      pkgs,
+      inputs,
+      ...
+    }:
+    let
+      cfg = config.modules.programs.apps;
+      system = pkgs.stdenv.hostPlatform.system;
+    in
+    {
+      options.modules.programs.apps.enable =
+        lib.mkEnableOption "everyday apps (Zen, Chromium, Vesktop, Bazaar, Bitwarden, Claude Desktop, OpenCode, Proton VPN)";
+
+      config = lib.mkIf cfg.enable {
+        environment.systemPackages = with pkgs; [
+          inputs.zen-browser.packages.${system}.default
+          chromium
+          obsidian
+          vivaldi
+          vesktop
+          inputs.tuimessenger.packages.${system}.default
+          mpv # media previews for tuimessenger
+          strawberry
+          parabolic
+          bazaar
+          bitwarden-cli
+          inputs.opencode-flake.packages.${system}.opencode-avx
+          inputs.viu.packages.${system}.default
+          codex
+        ];
+      };
+    };
+}

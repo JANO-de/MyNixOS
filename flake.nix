@@ -1,5 +1,6 @@
-# Flake entry point: inputs + thin outputs. Hosts are the folders in ./hosts; packages, apps and
-# the dev shell live in modules/pkgs.
+# Flake entry point: inputs + flake-parts. Every .nix file under ./parts is a flake-parts module
+# (loaded by import-tree): features, hosts, packages, dev tooling. Files or folders whose name
+# starts with _ are skipped by import-tree.
 {
   description = "MyNixOS: desktop and laptop";
 
@@ -45,7 +46,7 @@
     # it still uses the removed `nodePackages` top-level attr.
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
 
-    # --- TUI apps: plain upstream sources, packaged in modules/programs/<name>/pkg ---
+    # --- TUI apps: plain upstream sources, packaged in pkgs/<name> ---
     nyaa-si-src = {
       url = "https://codeberg.org/madLinux/nyaa-si/archive/v1.0.0.tar.gz";
       flake = false;

@@ -47,11 +47,14 @@ More: [`.plan/docs/workflow.md`](.plan/docs/workflow.md).
 ## Repo map
 
 ```
-flake.nix        inputs + thin outputs (hosts = the folders in hosts/)
+flake.nix        inputs + flake-parts entry (import-tree ./parts)
 flake.lock       never edited by hand
-hosts/<host>/    switchboard (default.nix) + hardware + host-only files
-  dotfiles/      app-written configs kept in git (mango, ...)
-modules/         every capability, one module each
+parts/           every flake-parts module (dendritic): one file per feature, host or output
+  hosts/         one file per host: its modules.* switches + its module list
+  lib.nix        mkHost and commonModules (the modules every host gets)
+hosts/<host>/    hardware-configuration.nix + dotfiles/ (app-written configs kept in git)
+pkgs/            package definitions (plain callPackage files) and the overlay
+assets/          non-Nix files that modules read (flatpak bundle, cursors, tracker.py)
 .plan/           guide, status and docs (see below)
 ```
 
@@ -60,15 +63,16 @@ Full table: [`.plan/docs/layout.md`](.plan/docs/layout.md).
 ## How it fits together
 
 ```
-flake.nix ──mkHost──▶ hosts/<host>/default.nix ──imports──▶ modules/default.nix (loader)
-                              │                                      │
-                      sets modules.* flags                walks modules/ and imports
-                                                          every module it finds
+flake.nix ──import-tree──▶ parts/**.nix  (each defines flake.nixosModules.<name>)
+                              │
+     parts/hosts/<host>.nix ──mkHost──▶ nixosConfigurations.<host>
+        sets modules.* flags, lists host-only modules, adds lib.commonModules
 ```
 
-- `mkHost` (in `flake.nix`) adds Home Manager, the forge module and the overlays (`rust-overlay`, `self.overlays.default`).
-- **Loader** (`modules/default.nix`): a `*.nix` file is one module; a folder with its own `default.nix` is one unit (that file imports its children). Folders named `pkg`, `src`, `dotfiles`, `pkgs` hold packages and sources and are skipped.
-- A new host is just a new folder in `hosts/`; the flake picks it up.
+- `mkHost` (in `parts/lib.nix`) adds Home Manager, the forge module and the overlays (`rust-overlay`, `self.overlays.default`).
+- **Dendritic**: every file under `parts/` is a flake-parts module found by `import-tree`; a feature is `flake.nixosModules.<area>-<name>`. Names starting with `_` are skipped.
+- `lib.commonModules` lists the option-gated modules every host gets; a host lists only its own extras (modules with no enable switch).
+- A new host is `parts/hosts/<name>.nix` (see desktop) plus `hosts/<name>/hardware-configuration.nix`.
 
 Details: [`.plan/docs/architecture.md`](.plan/docs/architecture.md).
 
@@ -132,16 +136,16 @@ nixpkgs `nixos-26.05`, home-manager, hyprland (no `follows`, keeps Cachix valid)
 ## Recipes
 
 **Add a module**
-1. Create `modules/<area>/<name>.nix` (or `<name>/default.nix`) with `options.modules.<area>.<name> = lib.mkEnableOption ...` and `config = lib.mkIf ...`.
-2. If the area has its own `default.nix`, add the file to its `imports`.
-3. Switch it on in `hosts/<host>/default.nix`.
+1. Create `parts/<area>/<name>.nix` defining `flake.nixosModules.<area>-<name>` with `options.modules.<area>.<name> = lib.mkEnableOption ...` and `config = lib.mkIf ...`.
+2. Add `"<area>-<name>"` to `commonModules` in `parts/lib.nix` (or to one host's list if it has no enable switch).
+3. Switch it on in `parts/hosts/<host>.nix`.
 4. `git add -A`, `nix flake check`, build the hosts.
 
-**Remove a module**: delete the file or folder (and its `imports` line), drop its flake input, `nix flake lock`, compare drv paths.
+**Remove a module**: delete the file (and its name in `parts/lib.nix`), drop its flake input, `nix flake lock`, compare drv paths.
 
 **Prove a refactor changes nothing**: `.plan/v2/drv-check.sh before`, edit, `.plan/v2/drv-check.sh after` (prints `IDENTICAL`).
 
-**Add a host**: new folder `hosts/<name>/default.nix` that imports `../../modules` and sets its flags.
+**Add a host**: new `parts/hosts/<name>.nix` (copy desktop: a `host-<name>` module with the flags + `self.lib.mkHost`) and `hosts/<name>/hardware-configuration.nix`.
 
 ## Rules
 
