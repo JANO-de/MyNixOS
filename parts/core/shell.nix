@@ -1,8 +1,7 @@
 # Shell (zsh + starship) and base programs.
-{ ... }:
-{
+_: {
   flake.nixosModules.core-shell =
-    { pkgs, lib, ... }:
+    { lib, ... }:
 
     {
       programs.mtr.enable = true;

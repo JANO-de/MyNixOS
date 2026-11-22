@@ -1,7 +1,6 @@
 # Wake-on-LAN for the wired NIC. Also needs the BIOS setting (ASUS: "Power On By PCI-E"
 # or similar, and ErP Ready disabled). The magic packet only works from the LAN.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-wol =
     { pkgs, ... }:
     let

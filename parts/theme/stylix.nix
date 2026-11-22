@@ -1,6 +1,5 @@
 # Stylix: system-wide theme from one base16 scheme (Gruvbox dark). Independent of the shell.
-{ ... }:
-{
+_: {
   flake.nixosModules.theme-stylix =
     { pkgs, theme, ... }:
     {

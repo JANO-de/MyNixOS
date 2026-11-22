@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-ytm-rs =
     {
       config,

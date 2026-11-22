@@ -1,6 +1,5 @@
 # Printing.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-printing =
     { config, lib, ... }:
 

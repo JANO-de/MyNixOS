@@ -1,6 +1,5 @@
 # Nix daemon settings, nh (rebuilds + weekly cleanup), registry pinning and nixpkgs config.
-{ ... }:
-{
+_: {
   flake.nixosModules.core-nix =
     {
       config,

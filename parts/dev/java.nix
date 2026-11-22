@@ -1,6 +1,5 @@
 # Java development: IDEs, JDK and build tools.
-{ ... }:
-{
+_: {
   flake.nixosModules.dev-java =
     {
       config,

@@ -1,8 +1,7 @@
 # Media tracker: scans /mnt/storage/media (Movies, TV Shows, Music, Books), reads file
 # metadata (ffprobe, EPUB/PDF/ComicInfo) and registers new content in an .xlsx tracker
 # as OnServer. Triggered by path watchers on the library folders + a periodic timer.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-media-tracker =
     {
       config,

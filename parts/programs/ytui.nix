@@ -1,6 +1,5 @@
 # ytui (programs.ytui.enable): keyboard-driven TUI download manager for yt-dlp, from PyPI.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-ytui =
     {
       config,

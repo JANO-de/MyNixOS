@@ -1,8 +1,7 @@
 # Media automation: Prowlarr (indexers) -> Sonarr/Radarr/Lidarr (library) -> qBittorrent (downloads)
 # -> /mnt/storage/media (Jellyfin), plus Jellyseerr (request page) and Bazarr (subtitles).
 # Web UIs are only opened on the tailscale0 interface.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-media-stack =
     {
       config,

@@ -1,7 +1,6 @@
 # Push a notification to ntfy when a systemd unit fails or smartd reports a disk problem.
 # Attach to a unit with: unitConfig.OnFailure = "ntfy-failure@%n.service";
-{ ... }:
-{
+_: {
   flake.nixosModules.services-ntfy-alerts =
     { pkgs, ... }:
     {

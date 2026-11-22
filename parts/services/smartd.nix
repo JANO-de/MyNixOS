@@ -1,6 +1,5 @@
 # smartd: background SMART polling.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-smartd =
     { config, lib, ... }:
 

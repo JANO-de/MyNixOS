@@ -1,8 +1,7 @@
 # ArtCraft launcher (Flatpak bundle shipped in this repo). Enable with modules.artcraft.enable = true.
 # Installs the bundle system-wide at boot; its runtime (org.freedesktop.Platform 26.08) comes from Flathub.
 # To update: replace the .flatpak file, change `bundle` below, git add, rebuild.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-artcraft =
     {
       config,

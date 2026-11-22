@@ -1,12 +1,9 @@
 # Program sets: modules.programs.enable, .profile and .deskflow.*
 # Each program is its own module in this folder.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs =
     {
-      config,
       lib,
-      pkgs,
       ...
     }:
 

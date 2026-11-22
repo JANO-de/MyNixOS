@@ -1,6 +1,5 @@
 # File management: Nautilus (default for folders), Yazi and its previewers, archive tools, gvfs.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-files =
     {
       config,

@@ -1,6 +1,5 @@
 # Stirling PDF on localhost:8085 (8080 is Homepage), HTTPS via Caddy at :18085 (tailnet only).
-{ ... }:
-{
+_: {
   flake.nixosModules.server-stirling-pdf =
     { config, lib, ... }:
 

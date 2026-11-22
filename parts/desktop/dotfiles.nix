@@ -4,8 +4,7 @@
 # name in `names`. One folder per host, because some files are machine-specific.
 # The links point at the live checkout (not the Nix store), so edits apply without a rebuild.
 # `names` lists the app configs linked from the repo; add niri here once its config is tracked.
-{ ... }:
-{
+_: {
   flake.nixosModules.desktop-dotfiles =
     {
       config,

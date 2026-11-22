@@ -1,7 +1,6 @@
 # Deskflow server/client services (deskflow >= 1.2x: single `deskflow-core <server|client>` binary).
 # Screen layout / server address live in Deskflow's own settings (configure once in the `deskflow` GUI).
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-deskflow =
     {
       config,

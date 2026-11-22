@@ -1,7 +1,6 @@
 # CachyOS kernel overlay (nix-cachyos-kernel, pinned build). Off on every host today;
 # a host opts in with modules.hardware.cachyos.enable (replaces the old cachyos flag in the host table).
-{ ... }:
-{
+_: {
   flake.nixosModules.hardware-cachyos =
     {
       config,

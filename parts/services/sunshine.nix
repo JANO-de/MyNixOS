@@ -1,6 +1,5 @@
 # Sunshine: GPU screen-streaming server.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-sunshine =
     { config, lib, ... }:
 

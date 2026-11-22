@@ -1,8 +1,7 @@
 # OpenRGB: RGB control for RAM, motherboard headers and fans.
 # Off until a host sets modules.hardware.openrgb.enable.
 # Usage: rgb on [hex] | rgb off | rgb toggle
-{ ... }:
-{
+_: {
   flake.nixosModules.hardware-openrgb =
     {
       config,
@@ -37,7 +36,7 @@
       config = lib.mkIf cfg.enable {
         services.hardware.openrgb = {
           enable = true;
-          motherboard = cfg.motherboard;
+          inherit (cfg) motherboard;
         };
 
         environment.systemPackages = [

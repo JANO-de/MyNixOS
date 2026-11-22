@@ -10,8 +10,6 @@
   pkg-config,
   nodejs,
   python3,
-  rustc,
-  cargo,
   qt6,
   ffmpeg,
   alsa-lib,

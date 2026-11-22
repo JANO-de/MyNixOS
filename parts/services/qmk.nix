@@ -1,6 +1,5 @@
 # QMK/Keychron keyboards (Via/Vial/Launcher access without root).
-{ ... }:
-{
+_: {
   flake.nixosModules.services-qmk =
     {
       config,

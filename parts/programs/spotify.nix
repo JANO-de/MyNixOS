@@ -1,7 +1,6 @@
 # Spotify through Spicetify (colours from Stylix, Marketplace). The spicetify NixOS module is always
 # imported (it only declares options); nothing is installed until modules.programs.spotify.enable.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-spotify =
     {
       config,

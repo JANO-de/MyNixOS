@@ -1,6 +1,5 @@
 # Flatpak, with Flathub registered at activation.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-flatpak =
     {
       config,

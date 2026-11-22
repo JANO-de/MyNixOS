@@ -14,8 +14,7 @@
 # Under niri the shell is a systemd user unit (niri.service pulls in graphical-session.target).
 # mangowm never starts that target, so its config runs `desktop-shell` (exec-once), a tiny
 # launcher on PATH that execs whichever shell is selected. Compositor configs never name a shell.
-{ ... }:
-{
+_: {
   flake.nixosModules.desktop-shell =
     {
       config,
@@ -30,7 +29,7 @@
       noctalia = inputs.noctalia.packages.${sys}.default;
       ambxst = inputs.ambxst.packages.${sys}.default;
       caelestia = inputs.caelestia-shell.packages.${sys}.default;
-      quickshell = pkgs.quickshell;
+      inherit (pkgs) quickshell;
 
       # Shells you install yourself: name = where to get it.
       cloned = {

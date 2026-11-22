@@ -1,7 +1,6 @@
 # Full profile (desktop, laptop): a bundle. It switches on every program module a full machine has.
 # Members use mkDefault, so a host can still turn one off, e.g. modules.programs.ai.enable = false.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-full =
     { config, lib, ... }:
     let

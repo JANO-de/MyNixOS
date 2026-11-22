@@ -1,6 +1,5 @@
 # nyaa-si program module (programs.nyaa-si.enable): nyaa.si TUI explorer + BitTorrent client.
-{ ... }:
-{
+_: {
   flake.nixosModules.nyaa-si =
     {
       config,

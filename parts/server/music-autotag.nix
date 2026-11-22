@@ -1,8 +1,7 @@
 # Auto-tag new music: beets (MusicBrainz tags + cover art + genres) triggered by a
 # recursive inotify watcher on the Music folder. Tags are written in place; files are
 # never moved or renamed. Albums beets is not confident about are skipped (quiet mode).
-{ ... }:
-{
+_: {
   flake.nixosModules.server-music-autotag =
     { pkgs, ... }:
     let

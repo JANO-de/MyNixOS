@@ -1,6 +1,5 @@
 # Waydroid: Android in a container on top of the Wayland session.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-waydroid =
     {
       config,

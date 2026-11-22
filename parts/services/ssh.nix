@@ -1,6 +1,5 @@
 # SSH server.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-ssh =
     { config, lib, ... }:
 

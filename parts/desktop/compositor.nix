@@ -3,8 +3,7 @@
 # niri.service pulls in graphical-session.target, so shell units start with it. mangowm never
 # starts that target, so mango launches `desktop-shell` itself (exec-once in hosts/<host>/dotfiles/mango).
 # kitty (terminal) and rofi (launcher) are installed for both compositors.
-{ ... }:
-{
+_: {
   flake.nixosModules.desktop-compositor =
     {
       config,

@@ -1,6 +1,5 @@
 # Everyday apps: browsers, chat, password manager, Claude, OpenCode, VPN.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-apps =
     {
       config,

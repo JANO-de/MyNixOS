@@ -3,7 +3,7 @@
 { self, ... }:
 {
   flake.nixosModules.host-laptop =
-    { lib, pkgs, ... }:
+    { pkgs, ... }:
 
     {
 

@@ -1,6 +1,5 @@
 # Docker for OpenWA (WhatsApp API gateway). Compose app lives in ~/openwa.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-openwa =
     { config, lib, ... }:
     let

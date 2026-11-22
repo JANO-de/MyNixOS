@@ -1,8 +1,7 @@
 # Kapowarr (comics) + Shelfmark (books), Docker, localhost only; HTTPS via Caddy (tailnet only).
 #   Kapowarr  https://\<host\>:15656 -> <mediaDir>/Comics
 #   Shelfmark https://\<host\>:18084 -> <mediaDir>/Books
-{ ... }:
-{
+_: {
   flake.nixosModules.server-books =
     { config, lib, ... }:
 

@@ -1,7 +1,6 @@
 # FreshRSS: RSS reader. Caddy vhost https://\<host\>:18087 (tailnet only).
 # Login password: put it in /var/lib/freshrss-password (file is created empty, owned by freshrss).
-{ ... }:
-{
+_: {
   flake.nixosModules.server-freshrss =
     { config, lib, ... }:
 

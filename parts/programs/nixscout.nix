@@ -1,6 +1,5 @@
 # niXscout program module (programs.niXscout.enable).
-{ ... }:
-{
+_: {
   flake.nixosModules.niXscout =
     {
       config,

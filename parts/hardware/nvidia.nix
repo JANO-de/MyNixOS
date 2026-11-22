@@ -1,7 +1,6 @@
 # NVIDIA driver. Off until a host sets modules.hardware.nvidia.enable
 # (the Surface only has Intel graphics).
-{ ... }:
-{
+_: {
   flake.nixosModules.hardware-nvidia =
     { config, lib, ... }:
 

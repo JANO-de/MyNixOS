@@ -2,8 +2,7 @@
 # Nothing is opened on every interface any more: services open their own ports on
 # tailscale0 only (see media-stack.nix, homepage.nix, caddy.nix). Jellyfin and
 # Sunshine still open theirs themselves.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-networking =
     { config, lib, ... }:
 

@@ -1,6 +1,5 @@
 # Tailscale VPN: tailscaled as a system service.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-tailscale =
     { config, lib, ... }:
 

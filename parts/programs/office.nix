@@ -1,6 +1,5 @@
 # Office suite.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-office =
     {
       config,

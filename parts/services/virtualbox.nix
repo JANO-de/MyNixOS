@@ -1,6 +1,5 @@
 # VirtualBox: host kernel modules and the user group needed to run VMs.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-virtualbox =
     {
       config,

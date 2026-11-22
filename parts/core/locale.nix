@@ -1,8 +1,7 @@
 # Time zone, locale and console key map.
-{ ... }:
-{
+_: {
   flake.nixosModules.core-locale =
-    { ... }:
+    _:
 
     {
       time.timeZone = "Europe/Madrid";

@@ -1,6 +1,5 @@
 # IT-Tools: static developer toolbox served by Caddy at https://\<host\>:18090 (tailnet only).
-{ ... }:
-{
+_: {
   flake.nixosModules.server-it-tools =
     {
       config,

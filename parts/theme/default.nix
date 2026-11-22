@@ -2,8 +2,7 @@
 # palette (plain data) is parts/theme/_palette.nix: lib.nix passes it to every module as `theme`.
 # GTK/Qt colours, fonts and cursor come from Stylix (theme-stylix); the Home Manager part below
 # only keeps the account basics and the icon theme.
-{ ... }:
-{
+_: {
   flake.nixosModules.theme =
     { config, lib, ... }:
     {

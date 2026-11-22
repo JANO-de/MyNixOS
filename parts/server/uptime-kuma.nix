@@ -1,7 +1,6 @@
 # Uptime Kuma: pings/monitors your services and alerts you when one goes down.
 # Listens on localhost only; reach it through Caddy at https://<tailnet-name>:13001.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-uptime-kuma =
     { config, lib, ... }:
 

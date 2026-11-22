@@ -4,8 +4,7 @@
 # Certificates come from Tailscale (needs "HTTPS Certificates" enabled in the Tailscale
 # admin console, DNS page). Sonarr/Radarr/Lidarr/Prowlarr/Bazarr/qBittorrent are NOT
 # proxied: they trust requests from localhost, which would bypass their login.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-caddy =
     { config, lib, ... }:
 

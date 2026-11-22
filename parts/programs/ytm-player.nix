@@ -1,6 +1,5 @@
 # ytm-player (programs.ytm-player.enable): YouTube Music TUI, packaged by its upstream flake.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-ytm-player =
     {
       config,

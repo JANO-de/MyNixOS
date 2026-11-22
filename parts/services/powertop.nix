@@ -1,6 +1,5 @@
 # powertop: automatic power tuning once per boot.
-{ ... }:
-{
+_: {
   flake.nixosModules.services-powertop =
     {
       config,

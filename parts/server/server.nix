@@ -1,7 +1,6 @@
 # modules.server.enable turns on every home-server service. Tailscale is NOT
 # included (laptop uses it too): enable modules.services.tailscale on the host.
-{ ... }:
-{
+_: {
   flake.nixosModules.server =
     { config, lib, ... }:
 

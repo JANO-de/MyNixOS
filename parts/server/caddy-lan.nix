@@ -4,8 +4,7 @@
 #
 # Deliberately NOT proxied (same reason as caddy.nix): sonarr, radarr, bazarr, prowlarr,
 # qbittorrent trust requests from localhost, which Caddy would make look local.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-caddy-lan =
     { config, lib, ... }:
     let

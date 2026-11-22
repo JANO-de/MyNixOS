@@ -1,6 +1,5 @@
 # Orchard program module (programs.orchard.enable). Imported by hosts.
-{ ... }:
-{
+_: {
   flake.nixosModules.orchard =
     {
       config,

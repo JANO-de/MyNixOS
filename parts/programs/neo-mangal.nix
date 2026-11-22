@@ -1,6 +1,5 @@
 # neo-mangal program module (programs.neo-mangal.enable): manga TUI downloader + KCC converter.
-{ ... }:
-{
+_: {
   flake.nixosModules.neo-mangal =
     {
       config,

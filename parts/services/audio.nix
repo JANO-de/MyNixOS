@@ -1,11 +1,9 @@
 # Audio: PipeWire (replacing PulseAudio).
-{ ... }:
-{
+_: {
   flake.nixosModules.services-audio =
     {
       config,
       lib,
-      pkgs,
       ...
     }:
 

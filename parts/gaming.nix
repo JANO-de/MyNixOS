@@ -1,6 +1,5 @@
 # Gaming: steam + gamescope, gamemode, and the `all` bundle.
-{ ... }:
-{
+_: {
   flake.nixosModules.gaming =
     {
       config,

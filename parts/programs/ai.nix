@@ -1,6 +1,5 @@
 # Local AI: llama.cpp server (Vulkan) with two Qwen3 models, Forge TUI and the `llm` alias.
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-ai =
     {
       config,

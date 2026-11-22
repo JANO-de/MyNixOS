@@ -1,6 +1,5 @@
 # XAMPP workbench (/opt/lampp): laptop only (imported by hosts/laptop).
 {
-  config,
   lib,
   pkgs,
   ...

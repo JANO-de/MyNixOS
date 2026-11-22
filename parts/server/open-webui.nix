@@ -1,8 +1,7 @@
 # Open WebUI: chat front end for the local llama.cpp server (services.llama-cpp, :8081).
 # Listens on localhost only; reach it through Caddy at https://<tailnet-name>:18082.
 # First account you create becomes the admin.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-open-webui =
     { config, lib, ... }:
 

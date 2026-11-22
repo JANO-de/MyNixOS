@@ -2,7 +2,7 @@
 { self, ... }:
 {
   flake.nixosModules.host-desktop =
-    { lib, ... }:
+    _:
 
     {
 

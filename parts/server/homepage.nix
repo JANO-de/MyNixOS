@@ -1,7 +1,6 @@
 # Homepage: one dashboard listing the services hosted on this machine.
 # Widget secrets (API keys) live in /var/lib/homepage-secrets.env, NOT in the repo.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-homepage =
     { config, lib, ... }:
 

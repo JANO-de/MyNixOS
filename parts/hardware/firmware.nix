@@ -1,6 +1,5 @@
 # Firmware, graphics, input.
-{ ... }:
-{
+_: {
   flake.nixosModules.hardware-firmware =
     {
       config,

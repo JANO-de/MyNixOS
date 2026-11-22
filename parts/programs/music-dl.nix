@@ -1,6 +1,5 @@
 # music-dl: download music as real audio with tags + cover, into Artist/Album/ folders
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-music-dl =
     { pkgs, ... }:
     let

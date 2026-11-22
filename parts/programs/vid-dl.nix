@@ -1,6 +1,5 @@
 # vid-dl program module (programs.vid-dl.enable): portable PyInstaller video downloader.
-{ ... }:
-{
+_: {
   flake.nixosModules.vid-dl =
     {
       config,

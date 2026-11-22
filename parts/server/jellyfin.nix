@@ -1,7 +1,6 @@
 # Jellyfin: media server. Data, cache and the media library live on the
 # "storage" dual-disk btrfs pool; NVENC/NVDEC transcode on the GTX 1060.
-{ ... }:
-{
+_: {
   flake.nixosModules.server-jellyfin =
     {
       config,
@@ -40,8 +39,8 @@
       config = lib.mkIf cfg.enable {
         services.jellyfin = {
           enable = true;
-          dataDir = cfg.dataDir;
-          cacheDir = cfg.cacheDir;
+          inherit (cfg) dataDir;
+          inherit (cfg) cacheDir;
           openFirewall = true;
 
           hardwareAcceleration = {

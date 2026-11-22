@@ -1,6 +1,5 @@
 # Full-stack development: editor, compilers, Rust (cargo), language tooling, Nix tooling, nix-ld.
-{ ... }:
-{
+_: {
   flake.nixosModules.dev-fullstack =
     {
       config,

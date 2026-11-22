@@ -1,6 +1,5 @@
 # System fonts.
-{ ... }:
-{
+_: {
   flake.nixosModules.core-fonts =
     { pkgs, ... }:
 

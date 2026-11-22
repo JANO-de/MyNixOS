@@ -1,8 +1,7 @@
 # Boot loader (systemd-boot) and compressed in-memory swap (zram).
-{ ... }:
-{
+_: {
   flake.nixosModules.core-boot =
-    { pkgs, lib, ... }:
+    _:
 
     {
       boot.loader.systemd-boot.enable = true;

@@ -1,6 +1,5 @@
 # Lean profile: CLI essentials + ffmpeg/yt-dlp + zathura + moonlight + deskflow (all hosts).
-{ ... }:
-{
+_: {
   flake.nixosModules.programs-lean =
     {
       config,

@@ -1,6 +1,5 @@
 # Primary user account.
-{ ... }:
-{
+_: {
   flake.nixosModules.core-users =
     { pkgs, ... }:
 

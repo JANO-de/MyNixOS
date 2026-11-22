@@ -1,6 +1,5 @@
 # Bluetooth.
-{ ... }:
-{
+_: {
   flake.nixosModules.hardware-bluetooth =
     { config, lib, ... }:
 

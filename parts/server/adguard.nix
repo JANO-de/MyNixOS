@@ -5,10 +5,9 @@
 # all that matters is that "*.home.arpa" resolves to the server's LAN IP and that
 # the router hands that server out as the DNS server. Caddy does the routing.
 # ---------------------------------------------------------------------------
-{ ... }:
-{
+_: {
   flake.nixosModules.server-adguard =
-    { ... }:
+    _:
     let
       serverIp = "192.168.0.114"; # replaced by deploy.sh; keep it static (DHCP reservation)
       domain = "home.arpa"; # reserved for home networks (RFC 8375); avoid .home / .local

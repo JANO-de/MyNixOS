@@ -1,7 +1,4 @@
 { lib, pkgs }:
-let
-  stdenv = pkgs.stdenv;
-in
 pkgs.python3Packages.buildPythonPackage rec {
   pname = "aureli";
   version = "0.1.0";

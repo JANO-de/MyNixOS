@@ -1,7 +1,6 @@
 # Desktop session: the SDDM login screen and the Wayland session basics every host shares.
 # Compositor and shell come with the compositor module.
-{ ... }:
-{
+_: {
   flake.nixosModules.desktop-session =
     {
       config,

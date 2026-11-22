@@ -1,7 +1,6 @@
 # Kavita: reader/server for the Books folder (ebooks, PDFs, comics, manga).
 # Reachable over Tailscale (http :5000, https :15000 via caddy.nix).
-{ ... }:
-{
+_: {
   flake.nixosModules.server-kavita =
     {
       config,
