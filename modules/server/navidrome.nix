@@ -3,6 +3,7 @@
 {
   services.navidrome = {
     enable = true;
+    environmentFile = "/root/navidrome.env";
     group = "users"; # media is jano:users, 0775
     openFirewall = true; # remove if Caddy fronts it
     settings = {

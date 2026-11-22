@@ -3,6 +3,12 @@
 
 {
   imports = [
+    ../../modules/server/vikunja.nix
+    ../../modules/services/wol.nix
+    ../../modules/server/caddy-lan.nix
+    ../../modules/server/adguard.nix
+    ../../modules/programs/music-dl.nix
+    ../../modules/server/music-autotag.nix
     ../../modules/services/backup.nix
     ../../modules/services/scrub.nix
     ../../modules/server/navidrome.nix

@@ -21,6 +21,8 @@ in
       obsidian
       vivaldi
       vesktop
+      inputs.tuimessenger.packages.${system}.default
+      mpv # media previews for tuimessenger
       strawberry
       parabolic
       bazaar

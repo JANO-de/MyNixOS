@@ -24,7 +24,7 @@ in
       enable = true;
       listenPort = 8080;
       # Homepage rejects requests whose Host header isn't listed here.
-      allowedHosts = "${host},${host}:8080,localhost:8080,127.0.0.1:8080";
+      allowedHosts = "${host},${host}:8080,localhost:8080,127.0.0.1:8080,dash.home.arpa";
       environmentFiles = [ secretsFile ];
 
       # Gradient only shows if the background image can't load (offline).
@@ -97,7 +97,7 @@ in
         {
           "Media" = [
             (svc "Jellyfin" {
-              href = "https://${host}:18096";
+              href = "http://jellyfin.home.arpa";
               description = "Watch movies, shows and music";
               icon = "jellyfin.png";
               siteMonitor = "${local}:8096";
@@ -112,7 +112,7 @@ in
               };
             })
             (svc "Jellyseerr" {
-              href = "https://${host}:15055";
+              href = "http://seerr.home.arpa";
               description = "Request movies and shows";
               icon = "jellyseerr.png";
               siteMonitor = "${local}:5055";
@@ -141,13 +141,13 @@ in
               siteMonitor = "${local}:8084";
             })
             (svc "Kavita" {
-              href = "https://${host}:15000";
+              href = "http://kavita.home.arpa";
               description = "Books, comics and manga";
               icon = "kavita.png";
               siteMonitor = "${local}:5000";
             })
             (svc "Navidrome" {
-              href = "http://${host}:4533";
+              href = "http://navidrome.home.arpa";
               description = "Music streaming (Subsonic)";
               icon = "navidrome.png";
               siteMonitor = "${local}:4533";
@@ -225,7 +225,7 @@ in
               siteMonitor = "${local}:8081";
             })
             (svc "Open WebUI" {
-              href = "https://${host}:18082";
+              href = "http://chat.home.arpa";
               description = "Chat with the local models";
               icon = "open-webui.png";
               siteMonitor = "${local}:8082";
@@ -251,10 +251,16 @@ in
               icon = "it-tools.png";
             })
             (svc "Uptime Kuma" {
-              href = "https://${host}:13001";
+              href = "http://uptime.home.arpa";
               description = "Service monitoring and alerts";
               icon = "uptime-kuma.png";
               siteMonitor = "${local}:3001";
+            })
+            (svc "Vikunja" {
+              href = "http://todo.home.arpa";
+              description = "To-do lists and tasks";
+              icon = "vikunja.png";
+              siteMonitor = "${local}:3456";
             })
             (svc "Tailscale" {
               href = "https://login.tailscale.com/admin/machines";
