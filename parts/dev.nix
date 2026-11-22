@@ -1,4 +1,4 @@
-# Dev tooling: treefmt (nix fmt), formatting check, pre-commit hook, dev shell.
+# Dev tooling: treefmt (nix fmt), formatting check, pre-commit hook, dev shell, host build checks.
 { inputs, self, ... }:
 {
   perSystem =
@@ -40,6 +40,9 @@
       checks = {
         formatting = treefmt.config.build.check self;
         pre-commit = hooks;
+        # `nix flake check --no-build` only evaluates these; without --no-build it builds both systems.
+        host-desktop = self.nixosConfigurations.desktop.config.system.build.toplevel;
+        host-laptop = self.nixosConfigurations.laptop.config.system.build.toplevel;
       };
     };
 }

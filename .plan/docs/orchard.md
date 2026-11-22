@@ -17,7 +17,7 @@ Enabled on `desktop` and `laptop` hosts. Requires `allowUnfree = true` (PolyForm
 
 ## Known limits
 
-- Adaptive mix requires a WebGPU-capable GPU; expected to fail on the Surface GPU. Documented limit, not blocker.
+- Adaptive mix requires a WebGPU-capable GPU. Documented limit, not blocker.
 - Self-updater disabled (Nix store read-only); `ORCHARD_BOOTSTRAPPER`/`ORCHARD_INSTALL_ROOT` unset → `BootstrapperClient` inert.
 - Google sign-in via WebEngine; test with default env first.
 - Licence: AGPL-3.0-or-later + PolyForm Shield 1.0.0 (unfree).

@@ -1,0 +1,45 @@
+# Weekly `nix flake update`, opened as a pull request. Review it, run `nh os build` locally and
+# merge. (Pull requests created with GITHUB_TOKEN do not trigger the check workflow by themselves:
+# push an empty commit or close and reopen the PR to run it.)
+name: update-flake-lock
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Update flake.lock
+        run: nix flake update
+      - name: Open a pull request when the lock changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet flake.lock; then
+            echo "flake.lock is up to date"
+            exit 0
+          fi
+          branch="flake-lock-update"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add flake.lock
+          git commit -m "flake.lock: update inputs"
+          git push --force origin "$branch"
+          if [ -z "$(gh pr list --head "$branch" --json number --jq '.[0].number')" ]; then
+            gh pr create --head "$branch" --base main \
+              --title "flake.lock: update inputs" \
+              --body "Weekly \`nix flake update\`. Build locally with \`nh os build\` before merging."
+          fi
