@@ -6,6 +6,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
+    ../../modules/theme/stylix.nix
   ];
 
   networking.hostName = "laptop";
