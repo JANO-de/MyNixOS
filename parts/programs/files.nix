@@ -22,6 +22,7 @@ _: {
           poppler-utils
           p7zip
           unzip
+          zip
         ];
 
         services.gvfs.enable = true;

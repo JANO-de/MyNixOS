@@ -1,13 +1,30 @@
 # Stirling PDF on localhost:8085 (8080 is Homepage), HTTPS via Caddy at :18085 (tailnet only).
 _: {
   flake.nixosModules.server-stirling-pdf =
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
 
     let
       cfg = config.modules.services.stirlingPdf;
       host = "desktop.tailc8366c.ts.net";
       backend = 8085;
       port = 18085;
+      # The nixpkgs service Python lacks pdf2image (png_to_webp.py needs it).
+      # Same modules as its env plus pdf2image, first on the service PATH.
+      python = pkgs.python3.withPackages (
+        ps: with ps; [
+          pdf2image
+          pillow
+          numpy
+          opencv4
+          weasyprint
+          fonttools
+        ]
+      );
     in
     {
       options.modules.services.stirlingPdf.enable = lib.mkEnableOption "Stirling PDF";
@@ -17,6 +34,7 @@ _: {
           enable = true;
           environment.SERVER_PORT = backend;
         };
+        systemd.services.stirling-pdf.path = lib.mkBefore [ python ];
         services.caddy.enable = true;
         services.caddy.virtualHosts."${host}:${toString port}".extraConfig =
           "reverse_proxy 127.0.0.1:${toString backend}";

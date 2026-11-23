@@ -30,6 +30,12 @@ _: {
           package = noctalia;
           systemd.enable = true;
         };
+
+        # Video wallpaper plugin (noctalia/mpvpaper) shells out to this.
+        environment.systemPackages = [
+          pkgs.mpvpaper
+          pkgs.nix-search-tv
+        ];
       };
     };
 }

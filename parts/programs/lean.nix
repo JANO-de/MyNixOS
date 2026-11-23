@@ -58,6 +58,17 @@ _: {
         ncdu
         tmux
         yq-go
+
+        # network + system CLI basics
+        bind.dnsutils # dig, nslookup, host
+        whois
+        nmap
+        rsync
+        lsof
+        psmisc # killall, fuser, pstree
+        pciutils # lspci
+        usbutils # lsusb
+        file
         inputs.forge.packages.${system}.forge
         appimage-run
         ffmpeg

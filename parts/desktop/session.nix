@@ -16,7 +16,7 @@ _: {
       # Change embeddedTheme (astronaut, black_hole, cyberpunk, hyprland_kath,
       # japanese_aesthetic, pixel_sakura, purple_leaves...) or add themeConfig keys.
       astronaut = pkgs.sddm-astronaut.override {
-        embeddedTheme = "purple_leaves";
+        embeddedTheme = "jake_the_dog";
         themeConfig.HeaderText = "Welcome";
       };
     in
@@ -57,6 +57,9 @@ _: {
 
           programs.kdeconnect.enable = true;
           services.tumbler.enable = true;
+          # Secret Service for Noctalia (Google Calendar tokens): GNOME Keyring, unlocked by the SDDM login.
+          services.gnome.gnome-keyring.enable = true;
+          security.pam.services.sddm.enableGnomeKeyring = true;
           hardware.bluetooth.enable = true;
           services.blueman.enable = true;
           programs.dconf.enable = true;

@@ -32,6 +32,7 @@ _: {
           inputs.opencode-flake.packages.${system}.opencode-avx
           inputs.viu.packages.${system}.default
           codex
+          stirling-pdf-desktop
         ];
       };
     };
